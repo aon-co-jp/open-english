@@ -107,6 +107,52 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
     移植・生成速度改善・SBM/DeepSeek調査の結果を確認し、完了後にこの
     CLAUDE.md・README.mdへ反映すること。
 
+- **2026-08-10(続き3) 4項目タスク(速度改善→モデル差し替え→フロントエンド
+  Rust移植→SBM/DeepSeek調査)着手、うち3番目を「RPoemサーバー側Rust化」に
+  スコープ変更して実装**:
+  1. **項目1(速度改善)・項目2(モデル差し替え)は`aruaru-llm`側で対応**
+     (詳細は`aruaru-llm/CLAUDE.md`同日HANDOFF参照)。distilgpt2(82M)へ
+     既定モデルを切替し約42%高速化(8.37秒→4.83秒/24トークン)。
+  2. **項目3(フロントエンドRust移植)の調査結果**: `app.js`(533行)は
+     DOM操作・fetch・Web Speech API(`SpeechSynthesis`+非標準
+     `webkitSpeechRecognition`)制御が中心で計算負荷の高い処理が無く、
+     Rust/WASM化に性能上のメリットが無いと判断(`SpeechRecognition`は
+     web-sysに標準バインディングが無く手書きFFIが必要という追加コストも
+     ある)。ユーザー確認の上、**フロントエンドJS自体の移植は見送り**、
+     代わりに「配信サーバー側のRust化」へスコープを変更した。
+  3. **新規`server/`crate**(`open-english-server`、RPoem
+     `open-runo-poem-compat`をpath依存): `python3 -m http.server`への
+     依存(2026-08-10(続き)HANDOFFに記載の既知の制約——`file://`直接
+     オープン時に一部ブラウザが`fetch()`をブロックし`auto-update.js`の
+     ポーリングが無効化される問題への回避策として案内していたコマンド)
+     を解消。既存の`open_runo_poem_compat::hyper_compat::
+     static_file_handler`(新規実装なし、既存関数の再利用)で
+     `index.html`/`style.css`/`app.js`/`auto-update.js`/`version.json`/
+     `manifest.json`/アイコン一式をディスクから配信する。既定
+     `http://127.0.0.1:4601/`(`aruaru-llm`の既定`:4600`とは別ポート、
+     `OPEN_ENGLISH_SERVER_BIND`環境変数で上書き可)。
+  4. **実機検証**: `cargo build --release`成功。実際にバイナリを起動し
+     `curl`で`/`(200・index.html本文確認)・`/version.json`(200・
+     `buildId`確認)・`/app.js`(200・`content-type: application/
+     javascript`・26935バイト)・`/style.css`(200・6363バイト)を実HTTPで
+     確認済み。
+  5. **正直な開示**: (1) ファイルはディスクから都度読み込む設計
+     (`tokio::fs::read`、既存`static_file_handler`の実装通り)——
+     埋め込み(`include_bytes!`)ではないため、配布時はこの`server/`
+     バイナリと静的ファイル群を同じ相対位置に置く必要がある
+     (`CARGO_MANIFEST_DIR`の親ディレクトリを実行時に解決)。
+     (2) HEADメソッドは未対応(GETのみ登録、`curl -I`は405を返す——
+     ブラウザの通常のページロード〈GET〉には影響しない)。
+     (3) JSONを扱う処理は無い(静的ファイルをバイト列のまま配信するのみ)
+     ため、ユーザー指示のあった「JSONはRS-JSON(`rust-json`クレート)へ
+     切替」は本サーバーには該当箇所なし。
+  6. **項目4(東芝SBM/DeepSeek調査)は未着手**(次回セッションへ持ち越し)。
+  - 次にすべきこと: (1) `README.md`/`README-English.md`の「確実に動かす
+    には`python3 -m http.server`」という案内を、この新サーバーの案内
+    (`cargo run --release`、`server/`ディレクトリ)へ更新する、
+    (2) `launchers/`(Windows `.lnk`等)がこの新サーバーを起動する形に
+    更新するか検討、(3) 項目4(東芝SBM/DeepSeek技術組み込み構想)への着手。
+
 - **2026-08-10 リポジトリ着手**: `index.html`/`style.css`/`app.js`による
   静的フロントエンド(Phase 0)を新規作成。`aruaru-llm`の実際のHTTP API
   (`/v1/generate`・`/v1/chat`・`/healthz`、既定ポート4600)をソースから

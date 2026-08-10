@@ -1,0 +1,10 @@
+[package]
+name = "open-english-server"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "open-englishの静的フロントエンド(index.html/style.css/app.js等)をRPoem(open-runo-poem-compat)で配信するローカルサーバー。file://やpython3 -m http.serverへの依存を解消し、auto-update.jsのfetch()が確実に動作するようにする。"
+
+[dependencies]
+open-runo-poem-compat = { path = "../../RPoem/crates/open-runo-poem-compat" }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
