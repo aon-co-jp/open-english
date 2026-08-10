@@ -1,5 +1,22 @@
 # open-english
 
+> 📌 **最近の更新(2026-08-10、続き5)**: Google Custom Search JSON API
+> によるブリッジ式検索補強(`POST /v1/generate-with-search`、ユーザー
+> 自身のAPIキーが必要・未設定時は自動フォールバック)+「Google search
+> boost」トグルをUIに追加。Android WebViewアプリ(`android/`、タブレット
+> でも同一アプリで動作)・Windowsインストーラー(`installer/windows/`、
+> Inno Setup)に着手(実機/実ビルド検証は一部次回持ち越し、詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-10(続き5)HANDOFF参照)。
+>
+> *English*: Added a bridge-style Google Custom Search JSON API
+> integration (`POST /v1/generate-with-search`, requires your own API
+> key, falls back automatically when unset) + a "Google search boost"
+> UI toggle. Started an Android WebView app (`android/`, same app works
+> on tablets) and a Windows installer (`installer/windows/`, Inno
+> Setup) — some real-device/build verification is carried over to next
+> time, see the 2026-08-10 (continued 5) HANDOFF entry in
+> [CLAUDE.md](CLAUDE.md).
+
 > 📌 **最近の更新(2026-08-10、続き)**: (1) 既定モデルを`gpt2`(124M)から
 > `distilgpt2`(82M)へ切替(約42%高速化、詳細は`aruaru-llm/CLAUDE.md`
 > 参照)。(2) フロントエンドJSのRust/WASM移植は「性能上のメリットが無く

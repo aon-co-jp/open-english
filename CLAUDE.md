@@ -47,6 +47,59 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-10(続き5) Google Custom Search連携(ブリッジ式)+
+  Android/Windowsインストーラー着手(ユーザー指示「人がしゃべったり
+  文字を入力したら、その都度Google検索するような仕様にして」+
+  「WindowsとAndroidスマホとタブレット用のインストーラー付きアプリを
+  バージョン管理機能付きで開発して」への対応)**:
+  1. **Google検索ブリッジ**: `aruaru-llm`側に新規`POST /v1/generate-
+     with-search`(詳細は`aruaru-llm/CLAUDE.md`同日HANDOFF参照)を実装。
+     `app.js`に「Google search boost / Google検索で補強」トグル
+     (`#web-search-toggle`)を追加し、ONの場合はこの新エンドポイントを
+     呼ぶよう配線した。**正直な開示**: (1) Google Custom Search JSON
+     APIの利用にはユーザー自身のAPIキー・検索エンジンID取得が必要
+     (`aruaru-llm`はキーを同梱・保持しない)。(2) このパスでは
+     **実際にAPIキーを設定した状態でのE2E検証(本当にGoogle検索結果が
+     返り応答に反映されること)は未実施**——実ブラウザで確認できたのは
+     APIキー未設定時のフォールバック動作(`used_search:false`が正しく
+     UIに表示されること)のみ。次回、実際のAPIキーを用意できた際に
+     本番のE2E検証を行うことを次にすべきことへ記録する。(3) 検索結果
+     タイトルは外部サイト由来のテキストのため`innerHTML`は使わず
+     `textContent`(プレーンテキスト)で表示する設計とし、XSSリスクを
+     回避した。
+  2. **Android WebViewアプリの実機検証**(前回セッションの続き):
+     `android/`(`tokyo.runo.openenglish`)をビルドし、実機
+     (moto g53y 5G、adb経由)へインストール・起動を確認。**正直な開示・
+     判明した制約**: 実機のWi-Fiが`FreeWifi aon.co.jp TP Guest 5G1`
+     という**ゲスト用ネットワーク**(クライアント分離が有効な可能性が
+     高い)に接続されていたため、同一サブネット上のPCサーバーへの接続が
+     `net::ERR_CONNECTION_TIMED_OUT`で失敗した——これはアプリ側の
+     バグではなくネットワーク環境側の制約(ゲストWi-Fiのデバイス間
+     通信ブロック)であることを確認済み。実際のPC↔スマホ間接続の
+     最終確認は、スマホを通常のWi-Fiへ接続し直した上で次回行う必要が
+     ある。
+  3. **タブレット対応**: 専用の別アプリは作らず、同じ`android/`
+     (WebViewラッパー)がタブレットでもそのまま動作する設計とした
+     (レスポンシブなWebページをそのまま表示するだけのため、画面
+     サイズに応じた特別な分岐は不要と判断)。
+  4. **Windowsインストーラー**(前回セッションの続き): `installer/
+     windows/open-english.iss`(Inno Setup)を作成済み。アンインストーラー
+     はInno Setupが自動生成・レジストリ登録する標準機能を利用。
+     **正直な開示**: このパスでは`ISCC.exe`での実際のコンパイル・
+     生成された`.exe`インストーラーの実行検証までは実施していない
+     (次にすべきこと参照)。
+  5. **バージョン管理**: `version.json`を`0.3.0`へ更新。
+  6. **検証**: `aruaru-llm`側`cargo test --release`51件全green
+     (既存46件+cache_optimizer3件+web_search2件)、実HTTP経由での
+     フォールバック動作・実ブラウザでのUI表示を確認済み。
+  - 次にすべきこと: (1) 実際のGoogle Custom Search APIキーを用いた
+    E2E検証(検索結果が実際に応答へ反映されることの確認)、
+    (2) スマホを通常のWi-Fiへ接続し直した上でのPC↔スマホ間接続の
+    最終確認、(3) `ISCC.exe`での実際のWindowsインストーラー
+    ビルド・実行検証、(4) 東芝SBM/DeepSeek技術組み込み構想は
+    `aruaru-llm`側で実装済み(`cache_optimizer.rs`、詳細は
+    `aruaru-llm/CLAUDE.md`参照)。
+
 - **2026-08-10(続き) CORS修正・反復ループ根本解決・トラさん調整・
   実メイドカフェ技法反映・日本文化ブーム調査・ランチャーアイコン・
   自動更新機能**:
