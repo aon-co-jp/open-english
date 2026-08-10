@@ -19,6 +19,11 @@
 #define MyAppExeName "open-english-server.exe"
 
 [Setup]
+; PrivilegesRequired=lowest: このアプリは管理者権限を必要とする操作
+; (システム領域への書き込み・サービス登録等)を一切行わないため、
+; UAC昇格プロンプトを不要にする(ユーザー体験の改善、かつ非対話的な
+; 自動インストール検証を可能にするための実用上の理由もある)。
+PrivilegesRequired=lowest
 AppId={{8F2C9B1A-6E44-4B7E-9C10-2C3E7B4A9D01}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}

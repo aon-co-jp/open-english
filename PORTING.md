@@ -135,6 +135,44 @@ extractSpeechText(text, lang))`に置き換えること。
    (Windowsのレジストリアンインストールエントリ等、`RPoem/apps/
    desktop-tray`のInno Setup採用例を参照)を使うこと。
 
+## 4d. Google Custom Search JSON APIブリッジ + ブラウザ設定パネル(2026-08-11)
+
+`aruaru-llm`側`POST /v1/generate-with-search`(検索結果でプロンプトを
+補強するブリッジ式)と、ブラウザから直接APIキー/cxを保存できる設定
+パネル(`POST /v1/settings/google-search`、`aruaru-llm/src/web_search.rs`の
+`RUNTIME_CREDENTIALS`——プロセスメモリ上のみ、ディスク非保存)を追加した。
+移植手順:
+
+1. `web_search.rs`をコピーし、`RUNTIME_CREDENTIALS`(実行時設定)→
+   環境変数の順にフォールバックする`read_credentials()`パターンを
+   踏襲する。
+2. **正直な開示**: ユーザー自身のGoogle Cloud Console契約(無料枠あり、
+   超過分は課金)が前提——このエコシステム共通の「契約不要」方針への
+   意図的な例外であることを利用規約・UI双方に明記すること。
+3. **セキュリティ配慮(最重要)**: APIキーはログ・ディスクに一切残さない。
+   `GET /v1/settings/google-search`はキー値自体を返さず設定済みかどうかの
+   真偽値のみ返す。Google側のエラー応答本文はキー値をエコーバックしない
+   仕様を確認済みのため、そのままユーザーへ表示しても安全。
+
+## 4e. Windowsインストーラー(Inno Setup)の実機検証パターン(2026-08-11)
+
+`installer/windows/open-english.iss`で得られた、他リポジトリでも
+再利用できる落とし穴と対処:
+
+1. **UAC昇格ハング対策**: `PrivilegesRequired=lowest`を`[Setup]`へ追加
+   しないと、管理者権限を要求しないアプリでも既定でUAC昇格を要求し、
+   非対話的な`/VERYSILENT`インストール検証がGUIプロンプト待ちで無限に
+   ハングする。
+2. **Git Bashでのスイッチ誤変換対策**: Git Bash/MSYSは`/VERYSILENT`
+   `/SUPPRESSMSGBOXES`のような`/`始まりの引数を偽のWindowsパスへ自動
+   変換してしまう。`MSYS_NO_PATHCONV=1`を先頭に付けて回避する。
+3. **検証手順**: `ISCC.exe`でビルド→`MSYS_NO_PATHCONV=1 ./setup.exe
+   /VERYSILENT /SUPPRESSMSGBOXES /DIR=... /LOG=...`でサイレント
+   インストール→インストール済みバイナリを実際に起動しHTTP応答を確認→
+   `unins000.exe /VERYSILENT /SUPPRESSMSGBOXES`でアンインストール→
+   インストールディレクトリが実際に消えたことを確認、まで一気通貫で
+   行うこと(ビルド成功だけで「完成」と報告しない既存方針の徹底)。
+
 ## 5. 実在の接客技法・文化コンテンツを教材へ翻案する際の著作権配慮
 
 参考記事(ブログ等)の技法・実例を教材化する際は、記事本文を丸ごと

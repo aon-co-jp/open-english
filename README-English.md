@@ -1,6 +1,18 @@
 # open-english
 
-> 📌 **Recent update (2026-08-10, continued)**: (1) Switched the default
+> 📌 **Recent update (2026-08-11)**: Added a settings panel for saving
+> your Google Search API key/cx directly from the browser
+> (`POST /v1/settings/google-search`, in-memory only, never written to
+> disk). The Windows installer (`installer/windows/`, Inno Setup) has
+> now been actually built, installed, launched, and uninstalled on real
+> hardware (no admin rights required). See the 2026-08-11 HANDOFF entry
+> in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: ブラウザから直接Google検索APIキー・cxを保存できる設定パネルを
+> 追加(メモリ上保持のみ)。Windowsインストーラーを実際にビルド・
+> インストール・起動・アンインストールまで実機検証済み。
+
+> 📌 **Older update (2026-08-10, continued)**: (1) Switched the default
 > model from `gpt2` (124M) to `distilgpt2` (82M), ~42% faster (see
 > `aruaru-llm/CLAUDE.md`). (2) Decided **against** porting the frontend
 > JS to Rust/WASM (no performance benefit, and `SpeechRecognition` has

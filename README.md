@@ -1,6 +1,20 @@
 # open-english
 
-> 📌 **最近の更新(2026-08-10、続き5)**: Google Custom Search JSON API
+> 📌 **最近の更新(2026-08-11)**: ブラウザから直接Google検索APIキー・
+> 検索エンジンIDを保存できる設定パネルを追加(`POST /v1/settings/
+> google-search`、メモリ上保持のみ)。Windowsインストーラー
+> (`installer/windows/`)を実際にビルド・インストール・起動・
+> アンインストールまで実機検証済み(Inno Setup、UAC不要)。
+> 詳細は[CLAUDE.md](CLAUDE.md)の2026-08-11 HANDOFF参照。
+>
+> *English*: Added a settings panel for saving your Google Search API
+> key/cx directly from the browser (`POST /v1/settings/google-search`,
+> in-memory only). The Windows installer (`installer/windows/`) has
+> now been actually built, installed, launched, and uninstalled on
+> real hardware (Inno Setup, no admin rights required). See the
+> 2026-08-11 HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+
+> 📌 **旧更新(2026-08-10、続き5)**: Google Custom Search JSON API
 > によるブリッジ式検索補強(`POST /v1/generate-with-search`、ユーザー
 > 自身のAPIキーが必要・未設定時は自動フォールバック)+「Google search
 > boost」トグルをUIに追加。Android WebViewアプリ(`android/`、タブレット
