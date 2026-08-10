@@ -74,6 +74,67 @@ extractSpeechText(text, lang))`に置き換えること。
    握りつぶして静かに何もしないだけで、他機能への影響は無い)。確実に
    動かすには簡易HTTPサーバー経由での配信が必要。
 
+## 4a. RPoemベースの静的配信サーバー(`server/`)——`python3 -m http.server`代替
+
+`python3 -m http.server`はPythonの有無・バージョンに依存し、
+`auto-update.js`の`fetch()`が`file://`ではブロックされうるという既存の
+制約への恒久対応として、`server/`(独立Rustクレート`open-english-server`)を
+新設した。移植手順:
+
+1. `server/Cargo.toml`を作成し、`open-runo-poem-compat = { path =
+   "<RPoemリポジトリへの相対パス>/crates/open-runo-poem-compat" }`を
+   path依存として追加(このエコシステムのsibling-repo path依存パターン、
+   `aruaru-llm`の`opencuda-llm`依存等と同じ)。
+2. `server/src/main.rs`で`open_runo_poem_compat::hyper_compat::
+   static_file_handler(path, content_type)`(**既存関数の再利用、
+   新規実装は不要**)を配信したい静的ファイルの数だけ`Route::new()
+   .at(url_path, get(static_file_handler(...)))`へ登録し、
+   `Server::new(TcpListener::bind(addr)).run(app)`で起動する。
+3. **正直な開示**: このハンドラは`tokio::fs::read`でリクエストごとに
+   ディスクから読み直す設計(埋め込み配信ではない)——配布時はこの
+   バイナリと静的ファイル群を同じ相対位置(`server/`の親ディレクトリ)に
+   置く必要がある。HEADメソッドは未登録(GETのみ)。
+
+## 4b. ハイブリッド(英日併記)応答の構造的保証(`ensureHybridReply`)
+
+英語中心のBPE語彙で事前学習された小型LLM(GPT-2系)は、プロンプトで
+「英語と日本語を混ぜて返答して」と指示しても、日本語を一切含まない
+応答を返すことが多い(モデルの本質的な限界であり、プロンプト調整では
+解決しない)。移植手順:
+
+1. `containsJapanese(text)`(ひらがな・カタカナ・漢字のUnicodeプロパティ
+   エスケープ`\p{Script=Hiragana}`等での判定)と`ensureHybridReply
+   (completion, userText)`をコピーする。
+2. モデルの応答に日本語が含まれない場合、機械翻訳の質を偽って主張せず、
+   定型の短い日本語の一言(「このAIはまだ日本語が苦手です」等)を
+   フロントエンド側で追記するに留める——これにより「英日併記」という
+   *構造*だけは常に保証できる(意味内容の翻訳精度は保証しない)。
+3. ユーザー発話が日本語の場合はその事実をプロンプトへ明示すると
+   (`containsJapanese(userText)`で判定)、モデルが日本語混じりの応答を
+   返す確率がやや上がる(保証はされない、実測ベースで確認すること)。
+
+## 4c. バージョン管理+旧バージョンのブラウザ側クリーンアップ
+
+`version.json`に`buildId`(自動更新のトリガー用)に加え`version`
+(セマンティックバージョン、画面への表示用)を追加。移植手順:
+
+1. `version.json`に`{"version": "x.y.z", "buildId": "..."}`の形式で
+   両方保持する。
+2. アプリのフッター等に`fetch("version.json")`で取得した`version`を
+   表示する(`app.js`の`showAppVersion`参照)。
+3. **正直な開示・スコープ**: このアプリはネイティブインストーラーを
+   持たない静的Webアプリのため、「旧バージョンの自動アンインストール」は
+   ディスク上のファイル削除としては実装していない(他のファイルを
+   誤って削除するリスクを避けるため)。代わりに、新バージョン検出時に
+   このアプリ専用の名前空間(`openEnglish.`接頭辞)を持つ
+   `localStorage`キーを削除し、キャッシュ破棄付き(`?v=<buildId>`
+   クエリ付き)で再読み込みする、という「ブラウザ側の痕跡クリーンアップ」
+   に限定している(`auto-update.js`の`clearOwnLocalStorage`/
+   `reloadBustingCache`参照)。ネイティブアプリへ移植する場合は、
+   この節の設計をそのまま流用せず、OS標準のアンインストーラー機構
+   (Windowsのレジストリアンインストールエントリ等、`RPoem/apps/
+   desktop-tray`のInno Setup採用例を参照)を使うこと。
+
 ## 5. 実在の接客技法・文化コンテンツを教材へ翻案する際の著作権配慮
 
 参考記事(ブログ等)の技法・実例を教材化する際は、記事本文を丸ごと

@@ -1,5 +1,43 @@
 # open-english
 
+> 📌 **最近の更新(2026-08-10、続き)**: (1) 既定モデルを`gpt2`(124M)から
+> `distilgpt2`(82M)へ切替(約42%高速化、詳細は`aruaru-llm/CLAUDE.md`
+> 参照)。(2) フロントエンドJSのRust/WASM移植は「性能上のメリットが無く
+> `SpeechRecognition`は非標準APIで手書きFFIが必要」と判断し見送り、
+> 代わりに**配信サーバー側をRust化**(新規`server/`、RPoem
+> `open-runo-poem-compat`ベース、`python3 -m http.server`依存を解消)。
+> (3) 日本語で話しかけてもハイブリッド(英日併記)応答を必ず返すよう
+> 改善(`app.js`の`ensureHybridReply`——モデルが日本語を含む応答を
+> 生成できなかった場合はフロントエンド側で日本語の一言を自動補完し、
+> 「英日併記」という構造を保証する。機械翻訳の質を偽って主張はしない)。
+> (4) バージョン管理機能(`version.json`にセマンティックバージョン追加+
+> 画面下部に表示)と、旧バージョンの自動クリーンアップ
+> (`auto-update.js`——新バージョン検出時にこのアプリ専用の
+> localStorageを破棄しキャッシュ破棄付きで再読み込み。ネイティブ
+> インストーラーではない静的Webアプリのため「旧ファイルの自動削除」は
+> 安全性の観点から行わず、ブラウザ側の痕跡クリーンアップに限定)。
+> 詳細は[CLAUDE.md](CLAUDE.md)の2026-08-10(続き3)HANDOFF参照。
+>
+> *English*: (1) Switched the default model from `gpt2` (124M) to
+> `distilgpt2` (82M), ~42% faster (see `aruaru-llm/CLAUDE.md`).
+> (2) Decided **against** porting the frontend JS to Rust/WASM (no
+> performance benefit, and `SpeechRecognition` has no standard web-sys
+> binding) — instead **ported the local file server to Rust**
+> (new `server/` crate, built on RPoem's `open-runo-poem-compat`,
+> removing the `python3 -m http.server` dependency). (3) Improved
+> Japanese input handling so hybrid (English+Japanese) replies are
+> always guaranteed (`app.js`'s `ensureHybridReply` — if the model's
+> reply contains no Japanese, the frontend appends a short honest
+> Japanese note itself; it does not fake machine-translation quality).
+> (4) Added version management (`version.json` now has a semantic
+> `version` field, shown in the footer) and automatic cleanup of old
+> versions' browser-side traces (`auto-update.js` clears this app's own
+> `localStorage` and does a cache-busting reload on update — since this
+> is a static web app with no native installer, "uninstalling old
+> versions" is scoped to browser-side leftovers only, not disk files).
+> See the 2026-08-10 (continued 3) HANDOFF entry in
+> [CLAUDE.md](CLAUDE.md) for details.
+
 > 📌 **最近の更新(2026-08-10)**: CORS対応(`aruaru-llm`側に
 > `.with_cors()`実装)、GPT-2貪欲デコードの反復ループ根本解決
 > (`open-cuda`側`GptModel::generate_with_repetition_penalty`、既定
@@ -73,38 +111,33 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 ## 実行方法
 
 1. [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm)を
-   `cargo run --release`で起動(既定`http://localhost:4600`)。
-2. このリポジトリの`index.html`をブラウザで開く(`aruaru-llm`と同一
-   オリジンで配信する場合はそのURLを、直接`file://`で開く場合は
-   ブラウザのローカルファイルfetch制限に注意——Chromeの場合
-   `--allow-file-access-from-files`等が必要になる場合がある)。
+   `cargo run --release`で起動(既定`http://localhost:4600`、既定モデルは
+   `distilgpt2`)。
+2. `server/`ディレクトリで`cargo run --release`を実行し、このリポジトリの
+   静的フロントエンドを`http://127.0.0.1:4601/`で配信する(RPoemベース、
+   `python3 -m http.server`は不要になった——`OPEN_ENGLISH_SERVER_BIND`
+   環境変数でポート変更可)。
+3. ブラウザで`http://127.0.0.1:4601/`を開く。`file://`で直接開くことも
+   可能だが、一部ブラウザは`fetch()`をブロックし自動更新機能が無効化
+   されるため、上記手順2のサーバー経由を推奨する。
 
 ## 次にすべきこと
 
 1. ~~`aruaru-llm`側へのCORS対応~~ **完了(2026-08-10)**。
 2. ~~GPT-2貪欲デコードの反復ループ~~ **根本解決済み(2026-08-10、
-   繰り返しペナルティ実装)**。対話特化モデルへの入れ替え自体は
-   進行中(下記「別セッションで進行中」参照)。
-3. 音声合成(TTS)・リップシンクアニメーションの追加。
-4. レベル別カリキュラム(文法・単語リスト等)の実装。
-5. **(ユーザー指示、2026-08-10)** `open-directx`/`open-cuda`/
+   繰り返しペナルティ実装)**。
+3. ~~既定モデルの高速化~~ **完了(2026-08-10、distilgpt2切替、約42%
+   高速化)**。
+4. ~~日本語入力時のハイブリッド応答保証~~ **完了(2026-08-10)**。
+5. ~~配信サーバーのRust化~~ **完了(2026-08-10、`server/`crate)**。
+   フロントエンドJS自体のRust/WASM移植は性能上のメリットが無いと判断し
+   見送り(調査結果は`CLAUDE.md`参照)。
+6. 音声合成(TTS)・リップシンクアニメーションの追加。
+7. レベル別カリキュラム(文法・単語リスト等)の実装。
+8. **(ユーザー指示、2026-08-10)** `open-directx`/`open-cuda`/
    `aruaru-llm`をブラウザ単体(WASM/WebGPU)でも動作させ、
    `RPoem`(GraphQL Federationプラットフォーム)とも連携させる構想。
    現在のPhase 0(ローカル常駐サーバー+localhost接続)とは別方向の
    大規模なアーキテクチャ変更(WASMコンパイル・WebGPU移植)を伴うため、
    MVP完成後に別途スコープを切って着手する。
-
-## 別セッションで進行中(2026-08-10開始)
-
-ユーザー指示により、以下の大規模タスクを別セッション(バックグラウンド
-タスク`task_076ef43b`)で進行中:
-1. GPT-2→対話ファインチューニング済みモデルへの差し替え検討+日英Web
-   調査(英会話学習アプリのベストプラクティス調査含む)。
-2. フロントエンド(`app.js`)をRust+RPoemパターン(`RPoem/apps/
-   desktop-wasm`)へ移植。
-3. `open-directx`/`open-cuda`/`aruaru-llm`/RPoemの組み合わせでGPT-2
-   生成速度のボトルネック改善(実測ベース)。
-4. 東芝SBM・DeepSeek系技術(Multi-Token Prediction・Speculative
-   decoding等)の適用可否調査(こじつけ禁止、正直な判断を記録)。
-
-進捗はそのセッション・各リポジトリのCLAUDE.md HANDOFFを確認すること。
+9. 東芝SBM・DeepSeek系技術の適用可否調査(未着手)。
