@@ -47,6 +47,29 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-12 シャットダウン前チェックポイント(v0.6.0リリースCI対応、
+  中断)**: `v0.6.0`タグのリリースCIがWindows向けビルドで
+  `dxc(DirectX Shader Compiler)未検出`エラーで失敗していた件、
+  根本原因は`RS-SmartTCP`が依存する`zfs_accel_hlsl`の既定feature
+  (`gpu`)がWindows CIランナーに無い`dxc`を要求すること。`open-raid-z`
+  自身のCIが同じ理由でWindows向けも`--no-default-features`を選んでいる
+  既存方針に揃え、`RS-SmartTCP/Cargo.toml`を「OS問わず常に
+  `default-features = false`」へ修正し、`cargo test --lib`で82件全pass
+  確認の上コミット・push済み(`16caba7`)。**このリポジトリ
+  (`open-english`)自体には未コミットの変更は無い**(`git status`で
+  確認済み、作業ツリーはクリーン)。
+  - 次にすべきこと(次回セッション再開時): (1) `RS-SmartTCP`修正が
+    反映された状態で`open-english`の`v0.6.0`リリースCI
+    (`gh run list --workflow=release.yml`で確認、直近の失敗run ID
+    `31536706862`)を再実行し、Windows向けビルドが今回こそ成功するか
+    確認(既存タグ`v0.6.0`は変更不要——CIはRS-SmartTCPを`main`branchから
+    都度cloneするため再pushは不要、`gh workflow run`または
+    `gh run rerun`での再トリガーのみで良い)。(2) 全3プラットフォーム
+    成功後、GitHub Releaseに3種のインストーラー/tarballが実際に添付
+    されているか`gh release view v0.6.0`で確認。(3) Android実機での
+    アップデート検知確認・Windows`self_update.rs`のE2E確認(いずれも
+    まだ実施していない、詳細は本ファイルの過去のHANDOFF参照)。
+
 - **2026-08-12 v0.6.0チェックポイント: README/README-English.mdに
   最新バナー追記、`version.json`/Android`versionName`をバンプ
   (ユーザー指示「完成したらリリースして。READMEとCLAUDEとPORTINGを
