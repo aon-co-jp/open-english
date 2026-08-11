@@ -47,6 +47,48 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-11(続き10) Linux/macOS版インストーラー(`install.sh`)+CI
+  ジョブを新設、資格試験対策の問題数を増量(ユーザー指示「Windows/
+  Linux/macOS版インストーラーの横展開、モデル重み自動配置、各試験の
+  問題数拡充」への対応、うち1番目・3番目を実施)**:
+  1. **`installer/unix/install.sh`+`fetch-aruaru-llm.sh`(新設)**:
+     Windows版(`installer/windows/`、Inno Setup)の「まとめてインス
+     トール」設計をLinux/macOS共通のroot権限不要インストールスクリプト
+     として移植。`--with-aruaru-llm`フラグでaruaru-llm本体(実行
+     ファイルのみ)も取得可能(Windows版の`fetch-aruaru-llm.ps1`と
+     同じ設計、GitHub Releases APIから対応OSのアセットを検索)。
+     Linuxのみ`.desktop`ランチャーも作成(macOSにはこの仕組みが無い
+     ため対象外)。**実機検証**: 実際に`server/target/release/`の
+     バイナリ+静的アセットを使い、`sh install.sh`を実行→インストール
+     先に正しく配置→ランチャー経由で起動→`curl`で`http://
+     127.0.0.1:4601/`(200・index.html本文)・`/version.json`(200)への
+     到達を確認した(型チェックのみで完了と報告しない方針の徹底)。
+  2. **`.github/workflows/release.yml`拡張**: `build-unix-installer`
+     ジョブ(`ubuntu-latest`/`macos-latest`のマトリクス、既存の
+     `build-windows-installer`と同じsibling path依存checkoutパターン)
+     を新設し、Linux(`x86_64`)・macOS(`aarch64`)向けtarball
+     (バイナリ+静的アセット+`install.sh`+`fetch-aruaru-llm.sh`)を
+     ビルド・GitHub Releaseへ添付するようにした。**正直な開示**:
+     `aruaru-llm`自体はまだmacOS向けのCIビルドを持たない
+     (`aruaru-llm/.github/workflows/release.yml`確認済み、Linux/
+     Windowsのみ)——`fetch-aruaru-llm.sh`のmacOS(Darwin)分岐は
+     現時点では該当アセットが見つからず「見つからない」旨を正直に
+     案内するのみに留まる。
+  3. **資格試験対策の問題数増量**: 英検3級・TOEIC・JLPT N5をそれぞれ
+     5問→10問(既存5問に5問追加)。他の区分(英検1級/2級/準2級/4級/
+     5級・TOEFL・JLPT N1-N4・日本語検定1-3級)は今回未着手のまま
+     (時間の都合で優先度の高い3区分のみ、次回以降拡充)。
+  4. **検証**: `node --check app.js`構文確認、Android実機へAPK再
+     インストール・再起動し、両プロセス(`libopenenglishserver.so`/
+     `libaruarullm.so`)が引き続き生存することを確認(regression無し)。
+  - 次にすべきこと: (1) 残りの資格試験区分の問題数増量、(2) モデル
+    重み(GPT-2系・multilingual-e5-small)のAndroid自動配置——現状は
+    ユーザー自身が内部ストレージへ手動配置する前提のまま、
+    (3) `aruaru-llm`側にmacOS向けCIビルドを追加するかの検討、
+    (4) 実際にタグをpushしてLinux/macOSインストーラーが正しく
+    GitHub Releaseへ添付されることの実CI検証(今回はローカルでの
+    `install.sh`単体動作確認のみ、CI経由の実ビルドは未実施)。
+
 - **2026-08-11(続き9) aruaru-llm(AI応答エンジン)をAndroidへ実際に同梱・
   実機で動作確認+JLPT N1〜N5・日本語検定・学びたい言語選択・aruaru-db
   セットアップ導線を追加(ユーザー指示「最優先で…アンドロイド…に開発」

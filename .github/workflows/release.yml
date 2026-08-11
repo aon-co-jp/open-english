@@ -1,4 +1,4 @@
-name: Release Windows installer
+name: Release installers (Windows/Linux/macOS)
 
 # タグ(例: v0.5.1)をpushすると、open-english-server(RPoemベース静的
 # 配信サーバー)をビルドし、Inno Setupでインストーラーをパッケージ化して
@@ -52,13 +52,53 @@ jobs:
           name: open-english-windows-installer
           path: installer/windows/dist/*.exe
 
+  build-unix-installer:
+    name: Unix installer (${{ matrix.os_label }})
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            os_label: linux-x86_64
+          - runner: macos-latest
+            os_label: macos-aarch64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout RPoem (sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/RPoem.git ../RPoem
+      - name: Checkout open-web-server (RPoem's own sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/open-web-server.git ../open-web-server
+      - name: Checkout RS-SmartTCP (open-web-server's own sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/RS-SmartTCP.git ../RS-SmartTCP
+      - name: Build open-english-server
+        working-directory: server
+        run: cargo build --release
+      - name: Package tarball
+        run: |
+          set -eu
+          PKG="open-english-${{ matrix.os_label }}"
+          mkdir -p "$PKG/icons"
+          cp server/target/release/open-english-server "$PKG/"
+          cp index.html style.css app.js auto-update.js version.json manifest.json "$PKG/"
+          cp icons/* "$PKG/icons/"
+          cp installer/unix/install.sh installer/unix/fetch-aruaru-llm.sh "$PKG/"
+          chmod +x "$PKG/install.sh" "$PKG/fetch-aruaru-llm.sh" "$PKG/open-english-server"
+          tar -czf "$PKG.tar.gz" "$PKG"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: open-english-${{ matrix.os_label }}
+          path: open-english-${{ matrix.os_label }}.tar.gz
+
   release:
     name: GitHub Releaseへ添付
-    needs: [build-windows-installer]
+    needs: [build-windows-installer, build-unix-installer]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/download-artifact@v4
       - uses: softprops/action-gh-release@v2
         with:
-          files: open-english-windows-installer/*.exe
+          files: |
+            open-english-windows-installer/*.exe
+            open-english-linux-x86_64/*.tar.gz
+            open-english-macos-aarch64/*.tar.gz
