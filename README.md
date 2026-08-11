@@ -1,6 +1,20 @@
 # open-english
 
-> 📌 **最近の更新(2026-08-11、続き)**: 日本47都道府県・米国50州・主要
+> 📌 **最近の更新(2026-08-11、続き2)**: 就職・転職・観光の話題を検出し、
+> aruaru.tokyo(AI駆動開発 CLAUDE CODE DESKTOP)・audiocafe.tokyo/aruaru
+> (IT・建築系求人)・audiocafe.tokyo/aruaru-lady(女性向け求人)・
+> nasa.tokyoへのリンクを日英併記で案内する機能を追加(通常チャット・
+> 研修モード両方で動作)。実機でも実際にリンク表示を確認済み。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-11(続き4)HANDOFF参照。
+>
+> *English*: Added detection for job-hunting/career-change/tourism
+> topics that introduces aruaru.tokyo, audiocafe.tokyo/aruaru,
+> audiocafe.tokyo/aruaru-lady, and nasa.tokyo in both English and
+> Japanese (works in both normal chat and training mode). Verified
+> live. See the 2026-08-11 (continued 4) HANDOFF entry in
+> [CLAUDE.md](CLAUDE.md).
+
+> 📌 **旧更新(2026-08-11、続き)**: 日本47都道府県・米国50州・主要
 > 世界首都(観光名所・名物料理・お土産)のDBと連携し、自己紹介研修の
 > 話題を動的化。富士山が話題になると安全上の注意(スキーウェア・
 > ヘルメット着用、山小屋の事前予約推奨)・山小屋/登山バス/登山用品店

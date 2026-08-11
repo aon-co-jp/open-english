@@ -47,6 +47,33 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-11(続き4) 就職・転職・観光の話題検出+エコシステム内サイト
+  紹介機能を追加(`aruaru-llm`側新設`POST /v1/referrals/check`)、
+  **通常チャットモードでも動作**する設計**:
+  1. **`referralsSuffix(userText)`新設**(`app.js`): 発話文を
+     `/v1/referrals/check`へ渡し、就職・転職・観光の話題と判定された
+     場合のみaruaru.tokyo・audiocafe.tokyo/aruaru・audiocafe.tokyo/
+     aruaru-lady・nasa.tokyoへのリンクを日英併記で会話に追記する。
+     `askTrainer()`(通常チャット)・`advanceTrainingMode()`(研修モード)
+     の両方から呼ぶ——ユーザー指示が「しゃべったり文字入力すると」と
+     研修モード限定でなかったため、両モードに配線した。
+  2. **実機検証**: 実際に`aruaru-llm`(60件全green)+`open-english-
+     server`を起動し、通常チャットモードで"I want to change my job
+     soon."と発話→実際に4件のリンクすべてが日英併記で表示される
+     ことをブラウザ上で確認済み。
+  - 次にすべきこと: 特になし(今回のスコープは完了)。
+  - **正直な開示・今回スコープ外として明確に分離**: ユーザーから同時に
+    依頼のあった「Android/タブレット向けインストーラー付きアプリを
+    PC/LinuxのWebサーバー不要でオンラインアップデート対応にする」は、
+    既存のAndroid WebViewアプリ(PCサーバーへの接続が前提)とは根本的に
+    異なるアーキテクチャ(LLM推論・DBを端末上で完結させる、または
+    クラウド側にバックエンドを新設する、のいずれか)を要する大きな
+    構想であり、今回は着手していない——過去に検討済みのWASM移植調査
+    (`open-cuda`側`open-cuda-llm-wasm`、worktree-agentブランチ、未マージ)
+    や「スマホ単体動作」の議論を踏まえ、次回は専用のスコープを切って
+    ホスティング方針(オンデバイス推論 vs クラウドバックエンド)を
+    ユーザーと確認した上で着手すべき。
+
 - **2026-08-11(続き3) 富士山の安全案内+観光ツアー検索をトレーニング
   モードへ連携(`aruaru-llm`側新設`/v1/geo/fuji`・`/v1/geo/tours`、
   詳細は`aruaru-llm/CLAUDE.md`同日HANDOFF参照)**:

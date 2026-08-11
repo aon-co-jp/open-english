@@ -1,6 +1,18 @@
 # open-english
 
-> 📌 **Recent update (2026-08-11, continued)**: Linked to a new geo/
+> 📌 **Recent update (2026-08-11, continued 2)**: Added detection for
+> job-hunting/career-change/tourism topics that introduces aruaru.tokyo
+> (AI-driven development, Claude Code Desktop), audiocafe.tokyo/aruaru
+> (IT/construction jobs), audiocafe.tokyo/aruaru-lady (jobs for women),
+> and nasa.tokyo in both English and Japanese — works in both normal
+> chat and training mode, verified live. See the 2026-08-11 (continued
+> 4) HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: 就職・転職・観光の話題を検出し、aruaru.tokyo・
+> audiocafe.tokyo/aruaru・aruaru-lady・nasa.tokyoへのリンクを日英併記で
+> 案内する機能を追加(通常チャット・研修モード両方)。
+
+> 📌 **Older update (2026-08-11, continued)**: Linked to a new geo/
 > tourism database (all 47 Japanese prefectures, 50 US states, major
 > world capitals with landmarks/food/souvenirs) to make the self-
 > introduction training dynamic. When Mount Fuji comes up, the app now
