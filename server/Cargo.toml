@@ -7,4 +7,14 @@ description = "open-englishの静的フロントエンド(index.html/style.css/a
 
 [dependencies]
 open-runo-poem-compat = { path = "../../RPoem/crates/open-runo-poem-compat" }
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "time"] }
+# 自動アップデート機能(2026-08-11追加、ユーザー指示「起動時の自動
+# メンテナンスで自動UPDATEの自動バージョンアップ機能も搭載して、
+# 自動でGithubから最新版を見つけて古いのは自動でアンインストールして
+# 最新版を自動インストールする機能を搭載して」)向け。GitHub Releases
+# APIの問い合わせ+インストーラーアセットのダウンロードに使う
+# (OpenSSL不要のrustls-tls、他リポジトリの既定方針と同じ)。
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"

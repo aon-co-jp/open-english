@@ -16,6 +16,8 @@ use open_runo_poem_compat::{get, Route, Server, TcpListener};
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 
+mod self_update;
+
 /// (URLパス, 実ファイル名, Content-Type)。リポジトリ直下に存在する
 /// 静的アセットのみを列挙する(推測でパスを増やさない)。
 const STATIC_FILES: &[(&str, &str, &str)] = &[
@@ -57,6 +59,15 @@ async fn main() {
         let file_path = root.join(rel_file);
         app = app.at(url_path, get(static_file_handler(file_path, content_type)));
     }
+
+    // 起動時の自動メンテナンス/自動アップデート(2026-08-11追加、ユーザー
+    // 指示「起動時の自動メンテナンスで自動UPDATEの自動バージョンアップ
+    // 機能も搭載して」)。サーバーの起動(=フロントエンド側のメンテナンス
+    // バナー表示中)をブロックしないよう、非同期タスクとしてバック
+    // グラウンドで実行する。新バージョンが見つかった場合、この関数は
+    // アンインストール/インストールを起動した上でプロセス自体を終了する
+    // (`self_update.rs`のモジュールdoc参照)。
+    tokio::spawn(self_update::check_and_apply_update());
 
     let addr = bind_addr();
     println!("open-english static server listening on http://{addr}/");

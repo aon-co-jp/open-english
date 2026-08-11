@@ -1,6 +1,23 @@
 # open-english
 
-> 📌 **最近の更新(2026-08-11、続き2)**: 就職・転職・観光の話題を検出し、
+> 📌 **最近の更新(2026-08-11、続き3)**: 起動時に自動でGitHubの最新版を
+> 確認し、新しいバージョンがあれば自動でアンインストール→自動で
+> インストールする機能を追加(Windowsのみ、`server/src/self_update.rs`)。
+> **正直な開示**: 現時点でGitHub Releaseがまだ1件も無いため、実際の
+> 自動更新の一気通貫の動作確認はまだできていない(バージョン比較ロジック・
+> 「リリース無し時に正直に継続する」動作は実機確認済み)。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-11(続き5)HANDOFF参照。
+>
+> *English*: Added an automatic self-update feature (Windows only) that
+> checks GitHub for the latest release at startup and, if newer,
+> automatically uninstalls the old version and installs the new one.
+> Honest disclosure: no GitHub Release exists yet, so the full
+> uninstall→install flow hasn't been end-to-end verified yet (version-
+> comparison logic and the "no release found, continue safely" path
+> have been). See the 2026-08-11 (continued 5) HANDOFF entry in
+> [CLAUDE.md](CLAUDE.md).
+
+> 📌 **旧更新(2026-08-11、続き2)**: 就職・転職・観光の話題を検出し、
 > aruaru.tokyo(AI駆動開発 CLAUDE CODE DESKTOP)・audiocafe.tokyo/aruaru
 > (IT・建築系求人)・audiocafe.tokyo/aruaru-lady(女性向け求人)・
 > nasa.tokyoへのリンクを日英併記で案内する機能を追加(通常チャット・

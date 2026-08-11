@@ -1,6 +1,19 @@
 # open-english
 
-> 📌 **Recent update (2026-08-11, continued 2)**: Added detection for
+> 📌 **Recent update (2026-08-11, continued 3)**: Added an automatic
+> self-update feature (Windows only) that checks GitHub for the latest
+> release at startup and, if newer, automatically uninstalls the old
+> version and installs the new one. Honest disclosure: no GitHub
+> Release exists yet, so the full uninstall→install flow hasn't been
+> end-to-end verified (version-comparison logic and the "no release
+> found, continue safely" path have been). See the 2026-08-11
+> (continued 5) HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: 起動時にGitHubの最新版を自動確認し、新しければ自動で
+> アンインストール→自動インストールする機能を追加(Windowsのみ)。
+> リリースがまだ無いため一気通貫の動作確認は次回持ち越し。
+
+> 📌 **Older update (2026-08-11, continued 2)**: Added detection for
 > job-hunting/career-change/tourism topics that introduces aruaru.tokyo
 > (AI-driven development, Claude Code Desktop), audiocafe.tokyo/aruaru
 > (IT/construction jobs), audiocafe.tokyo/aruaru-lady (jobs for women),

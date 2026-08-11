@@ -1,0 +1,57 @@
+name: Release Windows installer
+
+# タグ(例: v0.5.1)をpushすると、open-english-server(RPoemベース静的
+# 配信サーバー)をビルドし、Inno Setupでインストーラーをパッケージ化して
+# GitHub Releasesへ添付する。server/src/self_update.rs(このリポジトリの
+# 自動アップデート機能)がこのアセットを検出できるよう、`.iss`側の
+# OutputBaseFilename(`open-english-setup-{version}.exe`)と同じ、
+# ファイル名に"setup"を含む.exeとしてアップロードする。
+#
+# sibling path依存: server/Cargo.tomlが`../../RPoem/crates/
+# open-runo-poem-compat`をpath依存しているため、CI環境でも同じ相対位置
+# (このリポジトリのチェックアウトディレクトリの1つ上)へRPoemを
+# checkoutする(他リポジトリで踏んだ「sibling path依存を忘れるとCI失敗」
+# という罠を踏まないための対応、詳細はopen-raid-z/CLAUDE.md参照)。
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows-installer:
+    name: Windows installer (Inno Setup)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout RPoem (sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/RPoem.git ../RPoem
+      - name: Build open-english-server
+        working-directory: server
+        run: cargo build --release
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+      - name: Build installer
+        working-directory: installer/windows
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" open-english.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: open-english-windows-installer
+          path: installer/windows/dist/*.exe
+
+  release:
+    name: GitHub Releaseへ添付
+    needs: [build-windows-installer]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/download-artifact@v4
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: open-english-windows-installer/*.exe
