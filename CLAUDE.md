@@ -47,6 +47,69 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-11(続き7) Android版を「PC/LinuxのWEBサーバー不要の単体動作
+  アプリ」へ全面刷新+実機検証で発見した重大バグを修正(ユーザー指示
+  「アンドロイドスマホとタブレットにインストーラー付きアプリでPCや
+  LINUXのWEBサーバー不要でオンラインでUPDATEする機能を搭載して」+
+  「単体で動作する設計で」+実機接続の上でのTEST依頼)**:
+  1. **アーキテクチャ変更**: 従来はPC上で起動済みの`server/`へ同一
+     Wi-Fi経由で接続する薄いクライアントだった。`cargo ndk`で
+     `open-english-server`をaarch64-linux-android向けにクロス
+     コンパイルし、`jniLibs/arm64-v8a/libopenenglishserver.so`として
+     APKへ同梱(`open-web-server`Android版と同じTermux方式、
+     `useLegacyPackaging=true`)。静的アセット(`index.html`等)は
+     `assets/webroot/`に同梱し、初回起動時にアプリの内部ストレージへ
+     展開してから`OPEN_ENGLISH_SERVER_ROOT`環境変数で渡す
+     (`server/src/main.rs`に`OPEN_ENGLISH_SERVER_ROOT`環境変数による
+     配信元ディレクトリ上書きを新設、コンパイル時固定パスの代替)。
+     `MainActivity.kt`が`ProcessBuilder`でこのバイナリを`127.0.0.1`
+     限定でローカル起動し、WebViewが`http://127.0.0.1:<port>/`を読み
+     込む——**外部ネットワーク・PC・Linuxサーバーは一切不要**。
+  2. **クロスコンパイルで発覚・修正した実バグ1(`RS-SmartTCP`側)**:
+     `open-english/server`のAndroidビルドが`zfs_accel_hlsl`
+     (Windows専用D3D12、`rs-smarttcp`が同日追加した依存)で225件の
+     コンパイルエラーを起こして失敗。`RS-SmartTCP`側でターゲット別に
+     依存を切り替えて修正(詳細は`RS-SmartTCP/CLAUDE.md`同日HANDOFF
+     参照)。
+  3. **実機検証で発覚・修正した実バグ2(このリポジトリ側、より重大)**:
+     修正1の後、実際にAndroid実機(`adb`接続確認済み)へインストールし
+     起動したところ、アプリ画面には正しくWebUIが表示されたにも
+     関わらず、内蔵サーバーの子プロセスが実際には存在しないことを
+     `ps -A`で発見。`/data/local/tmp/`へバイナリを手動配置して直接
+     実行したところ、`self_update.rs`の自動更新機構(元々Windows専用の
+     設計)が**プラットフォーム判定を一切行っておらず**、Android上でも
+     GitHub Releaseの新バージョンを検出するたびにWindows用インストーラー
+     の起動を試み(実機ログで`cmd: Can't find service: /C`エラーを実際に
+     確認)、直後に`std::process::exit`でサーバー自身を強制終了させて
+     いた。`check_and_apply_update()`冒頭に`if !cfg!(target_os =
+     "windows") { return; }`を追加して修正。
+  4. **実機再検証**: 修正後のバイナリを実機へ配置して単体実行し、
+     `open-english self-update: skipped (this update mechanism is
+     Windows-only)`のログの後もサーバーがタイムアウトまで生存し
+     続けることを確認。続けてAPKを再ビルド・再インストールし、
+     `ps -A`で`libopenenglishserver.so`(親PIDがアプリ本体)が実際に
+     子プロセスとして存在し続けることを確認した(型チェック・ビルド
+     成功だけで完了と報告しない方針の徹底、実機で2段階の不具合を
+     発見・修正)。
+  5. **正直な開示・今回のスコープ外**: (a) アプリ自体の自動更新
+     (Windows版のようなサイレント差し替え)はAndroidの仕組み上
+     実現できない(Play Store配布ではないため)——引き続きKotlin側の
+     `checkForAppUpdate`がGitHub Releasesページへのリンクを表示する
+     のみ。(b) 英検/TOEIC/TOEFLレベル別模擬試験機能は別リクエストとして
+     受領済みだが、今回のセッションでは未着手(次回対応)。(c) x86_64
+     エミュレータ向けjniLibsは今回同梱していない(実機〈arm64-v8a〉
+     での検証を優先)。(d) `aruaru-llm`(AI応答エンジン)は依然として
+     別プロセス・別インストールが前提のまま——今回同梱したのは静的
+     フロントエンド配信サーバーのみで、チャット機能自体は`aruaru-llm`
+     が別途起動している必要がある(このAndroid版単体では静的UIの
+     表示までが実証範囲)。
+  - 次にすべきこと: (1) 英検1級〜5級・TOEIC・TOEFLの模擬試験機能
+    (オリジナル問題、著作権保護対象の実際の試験問題は使わない)の実装、
+    (2) `aruaru-llm`自体もAndroid向けにクロスコンパイル・同梱できるかの
+    検討(実現すればチャット機能も完全に単体動作可能になる、現状は
+    静的UIの単体配信のみ)、(3) x86_64エミュレータ向けjniLibs追加、
+    (4) APK署名・正式リリースビルド。
+
 - **2026-08-11(続き6) リポジトリを公開(PUBLIC)化+過去の履歴書き換え+
   小さい文字サイズの底上げ(ユーザー指示「自動アップデート機能が
   動くように、個人情報は削除した上で公開して」+「一番小さな文字の

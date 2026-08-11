@@ -138,6 +138,22 @@ fn tracing_log_if_available(msg: &str) {
 /// 未存在(404)等は正直にログへ記録するだけで、サーバー自体の起動は
 /// 妨げない(既存の「サービスを止めない」方針を踏襲)。
 pub async fn check_and_apply_update() {
+    // 2026-08-11修正: この自動更新機構は「実行中の自分自身のexeを
+    // アンインストーラー→新インストーラーで差し替え、プロセスを終了する」
+    // というWindows専用の設計(モジュールdoc冒頭参照)。プラットフォーム
+    // 判定を一切していなかったため、Android版(単体動作アプリに同梱した
+    // このバイナリ)でも新しいGitHub Releaseを検出するたびに
+    // Windows用インストーラーの起動を試み(実機で`cmd: Can't find
+    // service: /C`エラーとして実際に確認)、直後に`std::process::exit`
+    // でサーバー自体を毎回強制終了させてしまう実バグがあった——
+    // Android上ではこの機構全体を無効化する。Android版のアプリ更新は
+    // 別途Kotlin側(`MainActivity.checkForAppUpdate`)がGitHub
+    // Releasesページへのリンク表示のみを行う設計に委ねる。
+    if !cfg!(target_os = "windows") {
+        tracing_log_if_available("open-english self-update: skipped (this update mechanism is Windows-only)");
+        return;
+    }
+
     let release = match fetch_latest_release().await {
         Ok(r) => r,
         Err(e) => {

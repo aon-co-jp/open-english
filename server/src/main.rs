@@ -35,7 +35,16 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/icons/open-english.ico", "icons/open-english.ico", "image/x-icon"),
 ];
 
+/// 静的ファイルの配信元ディレクトリ。既定はこのバイナリのビルド元
+/// リポジトリルート(開発機・Windowsインストーラー向け)だが、
+/// `OPEN_ENGLISH_SERVER_ROOT`環境変数が設定されていればそれを優先する
+/// (2026-08-11追加、Android版向け——Androidではコンパイル時のパスは
+/// 存在せず、アプリの内部ストレージへ展開した静的ファイル群を指す
+/// パスを実行時に渡す必要があるため)。
 fn repo_root() -> PathBuf {
+    if let Ok(root) = std::env::var("OPEN_ENGLISH_SERVER_ROOT") {
+        return PathBuf::from(root);
+    }
     // このバイナリは`open-english/server/`配下でビルドされる前提
     // (Cargo.tomlのpath依存が`../../RPoem/...`である通り)。
     Path::new(env!("CARGO_MANIFEST_DIR"))
