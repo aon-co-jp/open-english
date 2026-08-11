@@ -1,6 +1,22 @@
 # open-english
 
-> 📌 **Recent update (2026-08-11)**: Added a settings panel for saving
+> 📌 **Recent update (2026-08-11, continued)**: Linked to a new geo/
+> tourism database (all 47 Japanese prefectures, 50 US states, major
+> world capitals with landmarks/food/souvenirs) to make the self-
+> introduction training dynamic. When Mount Fuji comes up, the app now
+> shows a bilingual safety advisory (wear ski gear + a helmet, reserve
+> a mountain hut in advance) plus real hut/bus/gear-shop info and a
+> tour-booking search. Added age-group/level/business-English selection
+> UI. Verified live against a real running `aruaru-llm` + static server
+> (found and fixed 3 real bugs in the process). See the 2026-08-11
+> HANDOFF entries in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: 地理・観光DBと連携し自己紹介研修の話題を動的化。富士山の
+> 話題では安全上の注意・山小屋/バス/登山用品店情報・観光ツアー検索を
+> 日英併記で案内。年齢層・レベル・ビジネス英会話選択UIも追加。実機で
+> 検証し3件のバグを修正済み。
+
+> 📌 **Older update (2026-08-11)**: Added a settings panel for saving
 > your Google Search API key/cx directly from the browser
 > (`POST /v1/settings/google-search`, in-memory only, never written to
 > disk). The Windows installer (`installer/windows/`, Inno Setup) has

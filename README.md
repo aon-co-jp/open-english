@@ -1,6 +1,26 @@
 # open-english
 
-> 📌 **最近の更新(2026-08-11)**: ブラウザから直接Google検索APIキー・
+> 📌 **最近の更新(2026-08-11、続き)**: 日本47都道府県・米国50州・主要
+> 世界首都(観光名所・名物料理・お土産)のDBと連携し、自己紹介研修の
+> 話題を動的化。富士山が話題になると安全上の注意(スキーウェア・
+> ヘルメット着用、山小屋の事前予約推奨)・山小屋/登山バス/登山用品店
+> 一覧・観光ツアーのオンライン予約検索を日英併記で案内する機能を追加。
+> 年齢層(乳幼児〜シニア)・レベル(超初心者〜ネイティブ)・ビジネス
+> 英会話追加選択のUIも追加。実際に`aruaru-llm`+配信サーバーを起動し
+> ブラウザで検証済み(発見した3件の実バグも修正済み)。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-11の各HANDOFF参照。
+>
+> *English*: Linked to a new geo/tourism database (all 47 Japanese
+> prefectures, 50 US states, major world capitals with landmarks/food/
+> souvenirs) to make the self-introduction training dynamic. When Mount
+> Fuji comes up, the app now shows a bilingual safety advisory (wear
+> ski gear + a helmet, reserve a mountain hut in advance) plus real hut/
+> bus/gear-shop info and a tour-booking search. Added age-group/level/
+> business-English selection UI. Verified live against a real running
+> `aruaru-llm` + static server (found and fixed 3 real bugs in the
+> process). See the 2026-08-11 HANDOFF entries in [CLAUDE.md](CLAUDE.md).
+
+> 📌 **旧更新(2026-08-11)**: ブラウザから直接Google検索APIキー・
 > 検索エンジンIDを保存できる設定パネルを追加(`POST /v1/settings/
 > google-search`、メモリ上保持のみ)。Windowsインストーラー
 > (`installer/windows/`)を実際にビルド・インストール・起動・
