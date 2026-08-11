@@ -41,7 +41,7 @@ fi
 echo "==> ${INSTALL_DIR} へファイルを配置"
 mkdir -p "$INSTALL_DIR/icons"
 install -m 755 "$SCRIPT_DIR/open-english-server" "$INSTALL_DIR/open-english-server"
-for f in index.html style.css app.js auto-update.js version.json manifest.json; do
+for f in index.html style.css app.js auto-update.js version.json manifest.json exam-prep-questions.json; do
     cp "$SCRIPT_DIR/$f" "$INSTALL_DIR/$f"
 done
 cp "$SCRIPT_DIR"/icons/* "$INSTALL_DIR/icons/" 2>/dev/null || true

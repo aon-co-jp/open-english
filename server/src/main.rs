@@ -28,6 +28,7 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/auto-update.js", "auto-update.js", "application/javascript; charset=utf-8"),
     ("/version.json", "version.json", "application/json; charset=utf-8"),
     ("/manifest.json", "manifest.json", "application/manifest+json; charset=utf-8"),
+    ("/exam-prep-questions.json", "exam-prep-questions.json", "application/json; charset=utf-8"),
     ("/icons/icon-32.png", "icons/icon-32.png", "image/png"),
     ("/icons/icon-180.png", "icons/icon-180.png", "image/png"),
     ("/icons/icon-192.png", "icons/icon-192.png", "image/png"),

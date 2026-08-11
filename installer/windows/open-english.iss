@@ -55,6 +55,7 @@ Source: "..\..\app.js"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\auto-update.js"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\version.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\manifest.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\exam-prep-questions.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\icons\*"; DestDir: "{app}\icons"; Flags: ignoreversion recursesubdirs
 Source: "README-INSTALLED.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-aruaru-llm.ps1"; DestDir: "{app}"; Flags: ignoreversion

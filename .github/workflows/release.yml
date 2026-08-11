@@ -86,7 +86,7 @@ jobs:
           PKG="open-english-${{ matrix.os_label }}"
           mkdir -p "$PKG/icons"
           cp server/target/release/open-english-server "$PKG/"
-          cp index.html style.css app.js auto-update.js version.json manifest.json "$PKG/"
+          cp index.html style.css app.js auto-update.js version.json manifest.json exam-prep-questions.json "$PKG/"
           cp icons/* "$PKG/icons/"
           cp installer/unix/install.sh installer/unix/fetch-aruaru-llm.sh "$PKG/"
           chmod +x "$PKG/install.sh" "$PKG/fetch-aruaru-llm.sh" "$PKG/open-english-server"
