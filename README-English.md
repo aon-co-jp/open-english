@@ -1,6 +1,27 @@
 # open-english
 
-> 📌 **Recent update (2026-08-11, continued 3)**: Added an automatic
+> 📌 **Latest update (2026-08-11–12, v0.6.0)**: Android/tablet now runs
+> fully standalone — no PC or Linux server required. The AI response
+> engine (`aruaru-llm`) itself is now bundled into the APK; on-device
+> verification confirmed both processes stay alive and respond to
+> `/healthz`/`/v1/chat`. Also added: a certification exam-prep corner
+> (Eiken 1-5, TOEIC, TOEFL, JLPT N1-N5, Nihongo Kentei 1-3, 10 original
+> questions each) that hands missed questions to the AI trainer after
+> scoring (auto-switching to a "Japanese classroom" mode for JLPT/
+> Nihongo Kentei), a "which language to learn" selector, and Linux/
+> macOS installers (`installer/unix/install.sh`). Honest disclosure:
+> model weights (GPT-2 family, embedding model) are not bundled in the
+> APK — using AI chat on Android still requires placing model files in
+> internal storage manually (no auto-download yet). See the 2026-08-11
+> (continued 7-10) HANDOFF entries in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: Android/タブレットがPC/Linuxサーバー不要で単体動作する
+> アプリになりました。AI応答エンジン自体もAPKへ同梱し実機で動作
+> 確認済み。資格試験対策コーナー(英検/TOEIC/TOEFL/JLPT/日本語検定、
+> 各10問)+採点後のAI講師連携、学びたい言語選択、Linux/macOS版
+> インストーラーを追加。モデル重みは未同梱(手動配置が必要)。
+
+> 📌 **Older update (2026-08-11, continued 3)**: Added an automatic
 > self-update feature (Windows only) that checks GitHub for the latest
 > release at startup and, if newer, automatically uninstalls the old
 > version and installs the new one. Honest disclosure: no GitHub

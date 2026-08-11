@@ -47,6 +47,31 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-12 v0.6.0チェックポイント: README/README-English.mdに
+  最新バナー追記、`version.json`/Android`versionName`をバンプ
+  (ユーザー指示「完成したらリリースして。READMEとCLAUDEとPORTINGを
+  日本語と英語で編集してコミットして」への対応、うちドキュメント編集・
+  コミットまでを実施——実際のタグpush・GitHub Release作成は
+  ユーザー指示「コミットしたら停止して」により次回へ持ち越し)**:
+  1. **`version.json`**: `0.5.3`→`0.6.0`(buildId:
+     `2026-08-12-android-standalone-exam-prep-unix-installer`)。
+  2. **`android/app/build.gradle.kts`**: `versionName`を`0.6.0`へ、
+     `versionCode`を`1`→`2`へ同期(既存の運用ルール「versionCode/
+     versionNameは`version.json`の`version`と手動で同期させること」
+     に従った)。
+  3. **README.md/README-English.md**: 直近(2026-08-11〜12)の主要機能
+     (Android単体動作化+aruaru-llm実同梱、資格試験対策コーナー、
+     学びたい言語選択、Linux/macOS版インストーラー)を要約した新しい
+     バナーを日英両方の先頭に追加。
+  - 次にすべきこと: (1) 実際に`git tag v0.6.0`→pushし、
+    `.github/workflows/release.yml`(Windows/Linux/macOS
+    インストーラー3種)を実行させ、GitHub Releaseとして公開する、
+    (2) リリース後、Android実機で`checkForAppUpdate()`が新バージョンを
+    正しく検出することの確認、(3) Windowsの`self_update.rs`が実際に
+    この新リリースを検出→アンインストール→インストールする一気通貫の
+    実機検証(現時点でまだ一度も実施していない、`v0.5.2`リリース時から
+    持ち越しの既知の未検証事項)。
+
 - **2026-08-11(続き10) Linux/macOS版インストーラー(`install.sh`)+CI
   ジョブを新設、資格試験対策の問題数を増量(ユーザー指示「Windows/
   Linux/macOS版インストーラーの横展開、モデル重み自動配置、各試験の
