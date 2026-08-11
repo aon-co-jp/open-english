@@ -12,6 +12,9 @@ name: Release Windows installer
 # (このリポジトリのチェックアウトディレクトリの1つ上)へRPoemを
 # checkoutする(他リポジトリで踏んだ「sibling path依存を忘れるとCI失敗」
 # という罠を踏まないための対応、詳細はopen-raid-z/CLAUDE.md参照)。
+# **さらに、RPoem自身が`open-web-server`(open-web-server-wire/-core/
+# -ledger)へのsibling path依存を持つ**(RPoem単体のcheckoutだけでは
+# 不十分——実際にこのワークフローの初回実行で踏んだ実バグ、2026-08-11)。
 
 on:
   push:
@@ -30,6 +33,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Checkout RPoem (sibling path dependency)
         run: git clone --depth=1 https://github.com/aon-co-jp/RPoem.git ../RPoem
+      - name: Checkout open-web-server (RPoem's own sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/open-web-server.git ../open-web-server
+      - name: Checkout RS-SmartTCP (open-web-server's own sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/RS-SmartTCP.git ../RS-SmartTCP
       - name: Build open-english-server
         working-directory: server
         run: cargo build --release
