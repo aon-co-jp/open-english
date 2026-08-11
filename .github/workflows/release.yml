@@ -15,6 +15,9 @@ name: Release installers (Windows/Linux/macOS)
 # **さらに、RPoem自身が`open-web-server`(open-web-server-wire/-core/
 # -ledger)へのsibling path依存を持つ**(RPoem単体のcheckoutだけでは
 # 不十分——実際にこのワークフローの初回実行で踏んだ実バグ、2026-08-11)。
+# **さらに、`RS-SmartTCP`自身も`open-raid-z`(open_raid_z_core/
+# zfs_accel_hlsl、RAID-Z2/Z3パリティ計算ブリッジ)へのsibling path依存を
+# 持つ**(v0.6.0リリースタグで初めて実際に踏んだCI失敗、2026-08-11)。
 
 on:
   push:
@@ -37,6 +40,8 @@ jobs:
         run: git clone --depth=1 https://github.com/aon-co-jp/open-web-server.git ../open-web-server
       - name: Checkout RS-SmartTCP (open-web-server's own sibling path dependency)
         run: git clone --depth=1 https://github.com/aon-co-jp/RS-SmartTCP.git ../RS-SmartTCP
+      - name: Checkout open-raid-z (RS-SmartTCP's own sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/open-raid-z.git ../open-raid-z
       - name: Build open-english-server
         working-directory: server
         run: cargo build --release
@@ -70,6 +75,8 @@ jobs:
         run: git clone --depth=1 https://github.com/aon-co-jp/open-web-server.git ../open-web-server
       - name: Checkout RS-SmartTCP (open-web-server's own sibling path dependency)
         run: git clone --depth=1 https://github.com/aon-co-jp/RS-SmartTCP.git ../RS-SmartTCP
+      - name: Checkout open-raid-z (RS-SmartTCP's own sibling path dependency)
+        run: git clone --depth=1 https://github.com/aon-co-jp/open-raid-z.git ../open-raid-z
       - name: Build open-english-server
         working-directory: server
         run: cargo build --release
