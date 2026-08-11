@@ -35,15 +35,40 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/icons/open-english.ico", "icons/open-english.ico", "image/x-icon"),
 ];
 
-/// 静的ファイルの配信元ディレクトリ。既定はこのバイナリのビルド元
-/// リポジトリルート(開発機・Windowsインストーラー向け)だが、
-/// `OPEN_ENGLISH_SERVER_ROOT`環境変数が設定されていればそれを優先する
-/// (2026-08-11追加、Android版向け——Androidではコンパイル時のパスは
-/// 存在せず、アプリの内部ストレージへ展開した静的ファイル群を指す
-/// パスを実行時に渡す必要があるため)。
+/// 静的ファイルの配信元ディレクトリ。
+///
+/// **正直な開示・実機テストで発覚した実バグ(2026-08-12)**: 以前は
+/// 既定値をビルド時の`CARGO_MANIFEST_DIR`(コンパイルを実行した
+/// マシン上のリポジトリパス)の親ディレクトリとしていたが、これは
+/// GitHub Actions CIでビルドした配布用バイナリ(Windows installer/
+/// Linux・macOS tarball)には全く無意味な値——CIランナー上の
+/// `D:\a\open-english\open-english`や`/home/runner/work/...`が
+/// バイナリに焼き込まれ、実際にインストールしたユーザーの環境には
+/// そのパスは存在しないため、`index.html`等が見つからず**全ページが
+/// 404になる**(Windows installer・Linux tarball実機インストールで
+/// 実際に再現・確認した——ビルドはCI green、リリースも作れていたが、
+/// 配布されたインストーラー自体が実際には機能しない状態だった)。
+/// 実際のインストーラー/tarballのレイアウト(Windows Inno Setupの
+/// `{app}`、Unix `install.sh`のインストール先)は、いずれも
+/// 実行ファイルと`index.html`等を同じディレクトリへ**フラットに**
+/// 配置する。このため既定値は「実行ファイルと同じディレクトリ」に
+/// 変更し、そこに`index.html`が実在する場合のみ採用する。存在しない
+/// 場合(開発機で`cargo run`する場合、`server/target/debug/`直下には
+/// `index.html`が無い)は、開発時の便宜として`CARGO_MANIFEST_DIR`の
+/// 親ディレクトリ(リポジトリルート)へフォールバックする。
+/// `OPEN_ENGLISH_SERVER_ROOT`環境変数が設定されていれば常にそれを
+/// 最優先する(Android版向け、2026-08-11追加——アプリの内部ストレージ
+/// へ展開した静的ファイル群を指すパスを実行時に渡す必要があるため)。
 fn repo_root() -> PathBuf {
     if let Ok(root) = std::env::var("OPEN_ENGLISH_SERVER_ROOT") {
         return PathBuf::from(root);
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(exe_dir) = exe.parent() {
+            if exe_dir.join("index.html").exists() {
+                return exe_dir.to_path_buf();
+            }
+        }
     }
     // このバイナリは`open-english/server/`配下でビルドされる前提
     // (Cargo.tomlのpath依存が`../../RPoem/...`である通り)。
