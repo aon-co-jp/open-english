@@ -82,7 +82,15 @@ Filename: "powershell.exe"; \
     StatusMsg: "Downloading aruaru-llm... / aruaru-llmをダウンロード中..."; \
     Flags: runhidden waituntilterminated; \
     Tasks: installaruarullm
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
+; 実機E2E検証(2026-08-12)で発覚した実バグ: self_update.rsは
+; `/VERYSILENT`でこのインストーラーを起動して無人での自動更新を行う
+; ため、サーバー起動エントリに`skipifsilent`が付いていると更新後に
+; サーバーが自動起動しない(GUIウィザードでの「起動する」チェックボックス
+; 相当の分岐がサイレント時は常にスキップされるため)。ブラウザを開く方は
+; 無人更新中にユーザーの意図しないウィンドウが突然開くのを避けるため
+; `skipifsilent`を維持する(通常のGUIインストールでは表示、サイレント
+; 自動更新では非表示、のままで問題ない)。
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall
 Filename: "http://127.0.0.1:4601/"; Flags: shellexec nowait postinstall skipifsilent runasoriginaluser
 
 [UninstallDelete]
