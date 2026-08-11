@@ -64,18 +64,28 @@ fn is_newer(remote: &str, local: &str) -> bool {
 
 /// 現在の実行ファイルと同じディレクトリにある`version.json`の
 /// `version`フィールドを読む(インストーラーがコピーする配置、
-/// `open-english.iss`の`[Files]`参照)。読めない場合は`"0.0.0"`
-/// (安全側——アップデート判定を「常に新しいと見なす」誤検知にしない)。
-fn local_version() -> String {
-    let Ok(exe) = std::env::current_exe() else { return "0.0.0".to_string() };
-    let Some(dir) = exe.parent() else { return "0.0.0".to_string() };
+/// `open-english.iss`の`[Files]`参照)。
+///
+/// **正直な開示・実機テストで発覚した実バグ(2026-08-12)**: 以前は
+/// 読めない場合に`"0.0.0"`を返していたが、これは`cargo build`の
+/// `target/release/`から直接バイナリを実行する開発時やCI検証時など
+/// (`version.json`が隣に存在しない)、常に「ローカルは0.0.0=最も古い」
+/// と誤判定させ、`check_and_apply_update`が実際にGitHub Releaseの
+/// インストーラーをダウンロードして無人インストールしてしまう
+/// (このマシン自体で実際に再現・実害を確認した)。インストール済み
+/// 配布物としての目印である`version.json`が無い=「インストーラー
+/// 経由でインストールされたコピーではない」と判断し、`None`を返して
+/// 呼び出し元でアップデート処理自体をスキップするよう変更。
+fn local_version() -> Option<String> {
+    let exe = std::env::current_exe().ok()?;
+    let dir = exe.parent()?;
     let path = dir.join("version.json");
-    let Ok(text) = std::fs::read_to_string(&path) else { return "0.0.0".to_string() };
+    let text = std::fs::read_to_string(&path).ok()?;
     #[derive(Deserialize)]
     struct V {
         version: String,
     }
-    serde_json::from_str::<V>(&text).map(|v| v.version).unwrap_or_else(|_| "0.0.0".to_string())
+    serde_json::from_str::<V>(&text).ok().map(|v: V| v.version)
 }
 
 async fn fetch_latest_release() -> anyhow::Result<LatestRelease> {
@@ -164,7 +174,12 @@ pub async fn check_and_apply_update() {
         }
     };
 
-    let local = local_version();
+    let Some(local) = local_version() else {
+        tracing_log_if_available(
+            "open-english self-update: skipped (no version.json next to the executable — not an installed copy)",
+        );
+        return;
+    };
     if !is_newer(&release.tag_name, &local) {
         tracing_log_if_available(&format!(
             "open-english self-update: up to date (local {local}, latest release {})",
