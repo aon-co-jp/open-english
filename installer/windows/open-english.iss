@@ -13,7 +13,7 @@
 ; このディレクトリで`ISCC.exe open-english.iss`を実行する。
 
 #define MyAppName "open-english"
-#define MyAppVersion "0.3.0"
+#define MyAppVersion "0.4.0"
 #define MyAppPublisher "aon-co-jp"
 #define MyAppURL "https://github.com/aon-co-jp/open-english"
 #define MyAppExeName "open-english-server.exe"
@@ -57,6 +57,7 @@ Source: "..\..\version.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\manifest.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\icons\*"; DestDir: "{app}\icons"; Flags: ignoreversion recursesubdirs
 Source: "README-INSTALLED.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "fetch-aruaru-llm.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
@@ -65,8 +66,22 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDi
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+; 「まとめてインストール」機能(ユーザー指示「他にも必要な関連リポジトリ
+; やプロジェクトもインストールする時にまとめてインストールしますか？
+; などの機能が欲しい」への対応、2026-08-11)。既定でチェック済み——
+; open-englishはaruaru-llm無しでは動作しない(AI応答が返らない)ため。
+; 正直な開示: これが取得するのはaruaru-llm本体(実行ファイル)のみ。
+; GPT-2/DistilGPT-2の実モデル重み(数百MB〜数GB)・aruaru-db・PostgreSQL
+; は含まない(それぞれ別途セットアップが必要、インストール後に表示する
+; README-INSTALLED.txtに手順を明記)。
+Name: "installaruarullm"; Description: "Also install aruaru-llm (AI backend) / aruaru-llm(AI応答エンジン)も一緒にインストール"; Flags: checkedonce
 
 [Run]
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-aruaru-llm.ps1"" -DestDir ""{app}\aruaru-llm"""; \
+    StatusMsg: "Downloading aruaru-llm... / aruaru-llmをダウンロード中..."; \
+    Flags: runhidden waituntilterminated; \
+    Tasks: installaruarullm
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
 Filename: "http://127.0.0.1:4601/"; Flags: shellexec nowait postinstall skipifsilent runasoriginaluser
 
