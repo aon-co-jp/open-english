@@ -13,7 +13,7 @@
 ; このディレクトリで`ISCC.exe open-english.iss`を実行する。
 
 #define MyAppName "open-english"
-#define MyAppVersion "0.6.1"
+#define MyAppVersion "0.6.2"
 #define MyAppPublisher "aon-co-jp"
 #define MyAppURL "https://github.com/aon-co-jp/open-english"
 #define MyAppExeName "open-english-server.exe"
