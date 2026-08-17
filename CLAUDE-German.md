@@ -1,0 +1,62 @@
+# Entwicklungsphilosophie & Umgebungsregeln (open-english)
+
+> **Hinweis**: Dies ist eine kondensierte Übersetzung des aktuellen
+> Zustands. Das ausführliche historische HANDOFF-Änderungsprotokoll
+> (Dutzende von Einträgen seit 2026-08-10) bleibt aus Gründen der
+> Kürze nur auf Japanisch in [CLAUDE.md](CLAUDE.md) verfügbar — siehe
+> dort für Details zu einzelnen Sitzungen.
+
+Arbeitslaufwerk: `F:\runo`. Dieser Abschnitt folgt der Praxis, den
+entsprechenden Abschnitt aus dem `CLAUDE.md` von
+[`open-raid-z`](https://github.com/aon-co-jp/open-raid-z) als
+Referenz zu übernehmen und in jedes Projekt zu kopieren. GitHub-Repo:
+[aon-co-jp/open-english](https://github.com/aon-co-jp/open-english).
+
+**Entwicklungsbeginn: 2026-08-10.**
+
+## Rolle dieses Projekts
+
+Eine Web-App zum Englischlernen für PC/Tablet/Smartphone. Im Stil
+einer "Maid-Café-Englischstunde" begleitet eine magische Maid-Figur
+(Originaldesign, animiert) Lernende vom Anfänger bis zum
+Fortgeschrittenen. Die KI-Antworten übernimmt
+[`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm).
+
+## Architektur (gemäß Nutzeranweisung, 2026-08-10)
+
+- **Linux (VPS)-Seite**: nur ein Download-Verteilserver. Die
+  App-Verwaltung übernimmt
+  [`open-easy-web`](https://github.com/aon-co-jp/open-easy-web).
+- **Nutzergerät-Seite**: das statische Web-Frontend dieses Repos +
+  ein lokal laufender nativer Server aus `aruaru-llm` (nutzt intern
+  die Inferenz-Backends von `open-directx`/`open-cuda`), den der
+  Nutzer selbst herunterlädt und ausführt. Der Browser verbindet
+  sich lokal (online/offline) mit `http://localhost:4600`.
+
+## Ehrliche Offenlegung / bekannte Einschränkungen (Stand 2026-08-10)
+
+- `aruaru-llm`s `/v1/generate` ist GPT-2 (englischzentriert, kein
+  Dialog-Finetuning) — Antwortqualität und Level-Einhaltung sind
+  nicht garantiert.
+- CORS wurde am 2026-08-10 behoben (`.with_cors()` bei `aruaru-llm`).
+- Sprachsynthese (TTS)/Lippensynchronisation für die Trainer-
+  Charaktere ist per Web Speech API angebunden; die Animation der
+  Maid-Figur selbst ist weiterhin eine einfache CSS-Mundöffnungs-
+  schleife.
+
+## Zukunftsvision (gemäß Nutzeranweisung, 2026-08-10, noch nicht begonnen)
+
+Es gibt die Idee, `open-directx`/`open-cuda`/`aruaru-llm` auch
+eigenständig im Browser (WASM/WebGPU) laufen zu lassen und mit
+`RPoem` (einer GraphQL-Federation-Plattform) zu integrieren. Da dies
+eine große architektonische Änderung gegenüber dem aktuellen
+Phase-0-Design (lokaler residenter Server + localhost-Verbindung)
+bedeutet, wird dies erst nach Abschluss des MVP und mit eigenem
+Scope in Angriff genommen.
+
+---
+
+Weitere Sprachen: [日本語 (Original, mit vollständigem HANDOFF-Verlauf)](CLAUDE.md) ·
+[Italiano](CLAUDE-Italian.md) · [Français](CLAUDE-French.md) ·
+[Русский](CLAUDE-Russian.md) · [Українська](CLAUDE-Ukrainian.md) ·
+[עברית](CLAUDE-Hebrew.md) · [فارسی](CLAUDE-Persian.md)

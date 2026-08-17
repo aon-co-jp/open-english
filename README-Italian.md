@@ -1,0 +1,182 @@
+# open-english
+
+> 📌 **Ultimo aggiornamento (2026-08-11–12, v0.6.0)**: Android/tablet ora
+> funziona in modo completamente autonomo, senza bisogno di un PC o di
+> un server Linux. Il motore di risposta AI (`aruaru-llm`) è ora
+> integrato direttamente nell'APK; la verifica sul dispositivo ha
+> confermato che entrambi i processi restano attivi e rispondono a
+> `/healthz`/`/v1/chat`. Aggiunto anche: un angolo di preparazione agli
+> esami di certificazione (Eiken 1-5, TOEIC, TOEFL, JLPT N1-N5, Nihongo
+> Kentei 1-3, 10 domande originali ciascuno) che, dopo la valutazione,
+> passa le domande sbagliate al tutor AI (passaggio automatico alla
+> modalità "aula di giapponese" per JLPT/Nihongo Kentei), un selettore
+> "quale lingua vuoi imparare" e installer Linux/macOS
+> (`installer/unix/install.sh`). Divulgazione onesta: i pesi del
+> modello (famiglia GPT-2, modello di embedding) non sono inclusi
+> nell'APK: usare la chat AI su Android richiede ancora di posizionare
+> manualmente i file del modello nella memoria interna (nessun download
+> automatico per ora). Vedi le voci HANDOFF del 2026-08-11 (continua
+> 7-10) in [CLAUDE.md](CLAUDE.md).
+
+> 📌 **Aggiornamento precedente (2026-08-11, continua 3)**: Aggiunta
+> l'auto-aggiornamento (solo Windows) che al avvio controlla l'ultima
+> versione su GitHub e, se più recente, disinstalla automaticamente la
+> vecchia e installa la nuova. Divulgazione onesta: non esiste ancora
+> alcuna GitHub Release, quindi il flusso completo di disinstallazione→
+> installazione non è ancora stato verificato end-to-end (la logica di
+> confronto versioni e il percorso "nessuna release trovata, continua
+> in sicurezza" sono stati verificati).
+
+> 📌 **Aggiornamento precedente (2026-08-11, continua 2)**: Aggiunto il
+> rilevamento di argomenti su ricerca di lavoro/cambio carriera/turismo
+> che presenta aruaru.tokyo, audiocafe.tokyo/aruaru, audiocafe.tokyo/
+> aruaru-lady e nasa.tokyo sia in inglese che in giapponese — funziona
+> sia in chat normale che in modalità training, verificato dal vivo.
+
+> 📌 **Aggiornamento precedente (2026-08-11, continua)**: Collegato a un
+> nuovo database geo/turistico (tutte le 47 prefetture giapponesi, i 50
+> stati USA, le principali capitali mondiali con luoghi d'interesse/
+> cibo/souvenir) per rendere dinamico il training di auto-presentazione.
+> Quando si parla del Monte Fuji, l'app mostra ora un avviso di
+> sicurezza bilingue (indossare abbigliamento da sci + casco, prenotare
+> in anticipo un rifugio) più informazioni reali su rifugi/bus/negozi di
+> attrezzatura e una ricerca di prenotazione tour. Aggiunta UI di
+> selezione fascia d'età/livello/inglese business. Verificato dal vivo
+> con `aruaru-llm` + server statico realmente in esecuzione (trovati e
+> corretti 3 bug reali).
+
+> 📌 **Aggiornamento precedente (2026-08-11)**: Aggiunto un pannello di
+> impostazioni per salvare la propria chiave API di Google Search/cx
+> direttamente dal browser (`POST /v1/settings/google-search`, solo in
+> memoria, mai scritto su disco). L'installer Windows
+> (`installer/windows/`, Inno Setup) è stato effettivamente compilato,
+> installato, avviato e disinstallato su hardware reale (senza
+> privilegi di amministratore).
+
+> 📌 **Aggiornamento precedente (2026-08-10, continua)**: (1) Passato dal
+> modello predefinito `gpt2` (124M) a `distilgpt2` (82M), ~42% più
+> veloce. (2) Deciso di **non** portare il JS del frontend a Rust/WASM
+> (nessun vantaggio in termini di prestazioni, e `SpeechRecognition` non
+> ha un binding web-sys standard) — invece è stato **portato a Rust il
+> server dei file locale** (nuovo crate `server/`, basato su
+> `open-runo-poem-compat` di RPoem, eliminando la dipendenza da
+> `python3 -m http.server`). (3) Migliorata la gestione dell'input in
+> giapponese così che le risposte ibride (inglese+giapponese) siano
+> sempre garantite. (4) Aggiunta la gestione delle versioni
+> (`version.json` con un campo `version` semantico, mostrato a piè di
+> pagina) e la pulizia automatica delle tracce lato browser delle
+> versioni precedenti.
+
+> 📌 **Aggiornamento recente (2026-08-10)**: Aggiunto supporto CORS,
+> risolta alla radice la ripetizione degenerata del greedy decoding di
+> GPT-2 (`generate_with_repetition_penalty` di `open-cuda`, penalty
+> predefinita 1,3), ritoccato l'aspetto del personaggio Tora-san +
+> aggiunto un jingle al cambio personaggio + corretta la sua auto-
+> presentazione, aggiunto un passo di training basato sulla tecnica di
+> servizio clienti reale di un vero maid café di Akihabara
+> (@ほぉ～むカフェ), ricercato e aggiunto un passo sul boom attuale
+> all'estero della cultura giapponese (anime/manga, canzoni anime,
+> videogiochi, studenti di giapponese, collezione di goshuin, turismo
+> onsen/ryokan, cibo giapponese), aggiunte icone di avvio per
+> Windows/Mac/Linux/Android/iPhone/iPad e implementato un meccanismo di
+> auto-aggiornamento.
+
+Un'app web (Fase 0) per l'apprendimento della conversazione in inglese,
+utilizzabile da PC/tablet/smartphone. In stile "lezione di inglese in un
+maid café", un personaggio maid da maga (design originale, animato)
+accompagna gli studenti dal principiante assoluto all'avanzato.
+
+## Architettura (su indicazione dell'utente, 2026-08-10)
+
+- **Lato Linux (VPS)**: solo un server di distribuzione per il
+  download (non è dove gira effettivamente l'app). La gestione
+  dell'app è affidata a
+  [`open-easy-web`](https://github.com/aon-co-jp/open-easy-web).
+- **Lato dispositivo dell'utente (PC/tablet/telefono)**: il frontend
+  web statico di questo repo (HTML/CSS/JS, gira nel browser) + un
+  server nativo eseguito localmente da
+  [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm) (che usa
+  internamente i backend di inferenza di `open-directx`/`open-cuda`),
+  scaricato ed eseguito dall'utente stesso. Il browser si connette
+  localmente (online od offline) a `http://localhost:4600` (porta
+  predefinita di aruaru-llm) — un design "ibrido".
+
+## Ambito attuale (Fase 0) — divulgazione onesta
+
+- **Qualità delle risposte AI**: `/v1/generate` di `aruaru-llm` esegue
+  generazione di testo autoregressiva con GPT-2 (124M-1,5B, centrato
+  sull'inglese, senza fine-tuning per il dialogo). La fluidità o
+  l'adeguatezza al livello non sono garantite — questo è dichiarato a
+  schermo, non esagerato. Dal 2026-08-10, una penalità di ripetizione
+  (predefinita 1,3) risolve il precedente bug del loop di ripetizione
+  infinita.
+- **CORS**: risolto dal 2026-08-10 — il server HTTP di `aruaru-llm` ora
+  invia header `Access-Control-*`, quindi questo frontend può essere
+  aperto cross-origin (o via `file://`) e comunque raggiungere
+  `http://localhost:4600`.
+- **Selezione del livello**: il selettore di livello da principiante ad
+  avanzato esiste nell'interfaccia, ma l'applicazione effettiva del
+  livello si limita a una breve istruzione nel prompt — GPT-2 non è
+  garantito che la rispetti.
+- **Voce/TTS**: la vera Web Speech API (SpeechSynthesis per l'output,
+  SpeechRecognition per l'input microfono) è collegata, con
+  regolazione di tono/velocità per personaggio.
+- **Modalità training**: uno script deterministico di auto-presentazione
+  (non generato dall'AI) che ora include anche la tecnica di
+  conversazione a parole di un vero maid café di Akihabara e un passo
+  che riassume il boom attuale della cultura giapponese all'estero.
+- **Icone di avvio**: `icons/` + `manifest.json` (PWA) + `launchers/`
+  permettono di avviare l'app da un'icona sul desktop
+  (Windows/Mac/Linux) o dalla schermata home (Android/iPhone/iPad).
+- **Auto-aggiornamento**: `auto-update.js` interroga `version.json`
+  ogni 5s e ricarica la pagina quando cambia il build ID.
+  **Limitazione nota**: alcuni browser bloccano `fetch()` di file
+  locali sotto lo schema `file://` — funziona garantito se servito da
+  un server HTTP locale, altrimenti si disattiva silenziosamente.
+
+## Come avviare l'app
+
+1. Avviare [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm) con
+   `cargo run --release` (predefinito `http://localhost:4600`, modello
+   predefinito ora `distilgpt2`).
+2. Nella cartella `server/`, eseguire `cargo run --release` per servire
+   il frontend statico di questo repo su `http://127.0.0.1:4601/`
+   (basato su RPoem — `python3 -m http.server` non è più necessario;
+   porta configurabile con la variabile d'ambiente
+   `OPEN_ENGLISH_SERVER_BIND`).
+3. Aprire `http://127.0.0.1:4601/` nel browser. Aprire direttamente
+   `index.html` via `file://` funziona ancora, ma alcuni browser
+   bloccano `fetch()` in quel caso e disabilitano l'auto-aggiornamento
+   — è consigliato il server del passo 2.
+
+## Prossimi passi
+
+1. ~~Supporto CORS lato `aruaru-llm`~~ **Fatto (2026-08-10)**.
+2. ~~Loop di ripetizione del greedy decoding GPT-2~~ **Causa
+   principale risolta (2026-08-10, penalità di ripetizione)**.
+3. ~~Velocizzare il modello predefinito~~ **Fatto (2026-08-10, passato
+   a distilgpt2, ~42% più veloce)**.
+4. ~~Garantire risposte ibride per l'input in giapponese~~ **Fatto
+   (2026-08-10)**.
+5. ~~Portare in Rust il server dei file locale~~ **Fatto (2026-08-10,
+   crate `server/`)**. Portare a Rust/WASM il JS del frontend stesso è
+   stato valutato e scartato (nessun vantaggio prestazionale — vedi
+   `CLAUDE.md`).
+6. Aggiungere rifiniture a TTS/lip-sync.
+7. Implementare un curriculum per livello (grammatica, liste di
+   vocabolario, ecc.).
+8. **(su indicazione dell'utente, 2026-08-10)** Un'idea futura per far
+   girare `open-directx`/`open-cuda`/`aruaru-llm` direttamente nel
+   browser (WASM/WebGPU) e integrarli con `RPoem` (una piattaforma
+   GraphQL Federation). Si tratta di una direzione architetturale
+   ampia e separata rispetto all'attuale design di Fase 0, rimandata a
+   dopo il completamento dell'MVP.
+9. Verificare se le tecniche di Toshiba SBM o della famiglia DeepSeek
+   abbiano applicazioni reali qui (non ancora iniziato).
+
+---
+
+Altre lingue: [日本語](README.md) · [English](README-English.md) ·
+[Deutsch](README-German.md) · [Français](README-French.md) ·
+[Русский](README-Russian.md) · [Українська](README-Ukrainian.md) ·
+[עברית](README-Hebrew.md) · [فارسی](README-Persian.md)

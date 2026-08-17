@@ -1,0 +1,72 @@
+# PORTING.md — Guide de portage d'open-english (version condensée)
+
+> **Note** : ceci est une traduction condensée. Le guide technique
+> complet avec détails de code et pièges reste disponible uniquement
+> en japonais dans [PORTING.md](PORTING.md) — s'y référer avant
+> d'adopter réellement un pattern.
+
+Résumé des patterns d'implémentation réutilisables de ce projet, au
+cas où ils seraient portés vers un autre projet :
+
+1. **Pattern d'intégration `aruaru-llm`** : nécessite un support CORS
+   (`.with_cors()`) et une pénalité de répétition
+   (`generate_with_repetition_penalty`, par défaut 1,3) côté
+   `aruaru-llm`, sinon le navigateur bloque `fetch()` ou le décodage
+   glouton de GPT-2 tombe dans une boucle de répétition.
+2. **Extraction de la langue pour le TTS** (`extractSpeechText`) :
+   sépare les lignes bilingues au format "English / 日本語" avant de
+   les passer à `SpeechSynthesisUtterance`, pour éviter une
+   prononciation saccadée.
+3. **Jeu d'icônes de lancement** (`icons/` + `manifest.json` +
+   `launchers/`) : encodeur PNG/ICO écrit à la main sans outils
+   graphiques externes, plus des scripts pour `.lnk` Windows,
+   `.desktop` Linux et `.app` macOS.
+4. **Mise à jour automatique** (`auto-update.js` + `version.json`) :
+   simple polling du `buildId` toutes les 5s avec `location.reload()`.
+5. **Serveur statique basé sur RPoem** (`server/`) : remplace
+   `python3 -m http.server` par un crate Rust réutilisant le
+   `static_file_handler` de `open-runo-poem-compat`.
+6. **Garantie structurelle des réponses hybrides**
+   (`ensureHybridReply`) : ajoute automatiquement une courte note en
+   japonais si la réponse du modèle ne contient pas de japonais — sans
+   exagérer la qualité de traduction.
+7. **Gestion des versions + nettoyage côté navigateur des anciennes
+   versions** : `version.json` avec un champ `version`, suppression
+   des clés `localStorage` propres à l'application lors d'une nouvelle
+   version.
+8. **Bridge Google Custom Search JSON API + panneau de paramètres dans
+   le navigateur** : identifiants uniquement en mémoire de processus,
+   jamais sur disque.
+9. **Installateur Windows (Inno Setup) — étapes de vérification
+   réelle** : `PrivilegesRequired=lowest` contre les blocages UAC,
+   `MSYS_NO_PATHCONV=1` pour les installations silencieuses depuis Git
+   Bash.
+10. **Base de données géo/tourisme avec avis de sécurité pilotés par le
+    sujet** : recherche par sous-chaîne plutôt que correspondance
+    exacte ; pour les sujets dangereux (ex. alpinisme), toujours
+    joindre un avis de sécurité.
+11. **Mise à jour automatique via GitHub Releases (Windows uniquement)** :
+    doit être implémentée côté natif (pas dans le JS du navigateur) ;
+    son propre .exe en cours d'exécution ne peut pas être supprimé
+    sous Windows — lancer d'abord un script batch détaché, puis
+    terminer son propre processus.
+12. **Les classes CSS des modales nécessitent `max-height`/
+    `overflow-y`** : chaque classe de conteneur de modale doit définir
+    la scrollabilité, sinon le contenu long est inaccessible sur
+    mobile.
+13. **Inclusion d'un serveur Rust sur Android** : rendre les chemins
+    surchargeables au runtime via une variable d'environnement ;
+    toujours protéger la logique de mise à jour automatique spécifique
+    à Windows avec `cfg!(target_os = "windows")`.
+
+**Avertissement important** : ce projet est un prototype de Phase 0 —
+la qualité des réponses IA (basée sur GPT-2), le naturel de la synthèse
+vocale et l'adaptation fiable au niveau ne sont pas garantis. Cela doit
+également être clairement indiqué lors de tout portage.
+
+---
+
+Autres langues : [日本語 (original, détails complets)](PORTING.md) ·
+[Deutsch](PORTING-German.md) · [Italiano](PORTING-Italian.md) ·
+[Русский](PORTING-Russian.md) · [Українська](PORTING-Ukrainian.md) ·
+[עברית](PORTING-Hebrew.md) · [فارسی](PORTING-Persian.md)

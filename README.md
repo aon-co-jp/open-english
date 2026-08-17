@@ -1,5 +1,11 @@
 # open-english
 
+*English*: [README-English.md](README-English.md) ·
+*Other languages*: [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
+[Français](README-French.md) · [Русский](README-Russian.md) ·
+[Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
+[فارسی](README-Persian.md)
+
 > 📌 **最新の更新(2026-08-11〜12、v0.6.0)**: Android/タブレットが
 > PC/Linuxサーバー不要で単体動作するアプリになりました——AI応答
 > エンジン(`aruaru-llm`)自体もAPKへ実際に同梱し、実機で両プロセスの
