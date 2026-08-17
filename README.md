@@ -225,6 +225,28 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
   開閉ループ)で「喋っている」演出をするプレースホルダー。実際の
   音声合成(TTS)・リップシンクは未実装(次回以降のロードマップ)。
 
+## 必要なインストーラー一覧(2026-08-17新設)
+
+open-englishを動かすには、以下2つのソフトをダウンロード・インストール
+する必要があります(ソースからのビルドが不要な、ワンタップに近い方法)。
+
+| # | 何か | Windows | Linux | Android/タブレット |
+|---|---|---|---|---|
+| 1 | **open-english本体**(このリポジトリ、静的フロントエンド+配信サーバー) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest)(アセット一覧から`.apk`を選択) |
+| 2 | **aruaru-llm**(AI応答エンジン、必須——無いとチャット機能が動きません) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Android版は同梱済み(open-englishのAPK内に含まれる、別途インストール不要) |
+
+**正直な開示**: 上記の表の「latest」リンクはGitHub Releasesの最新版を指す
+自動追従リンクです(タグを固定した特定バージョンが欲しい場合は
+[Releasesページ](https://github.com/aon-co-jp/open-english/releases)から
+個別に選んでください)。macOS向けの`aruaru-llm`ビルド済み配布は現時点で
+まだ無く(`open-english`側はLinux/macOS両対応のtar.gzがありますが、
+`aruaru-llm`はLinux/Windowsのみ)、macOSで動かす場合は`aruaru-llm`を
+ソースからビルドする必要があります。
+
+Windows版はインストール後、起動時に自動アップデート機能
+(`server/src/self_update.rs`)がGitHub Releasesを確認し、新しいバージョンが
+あれば自動でアンインストール→インストールします(ユーザー操作不要)。
+
 ## 実行方法
 
 1. [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm)を

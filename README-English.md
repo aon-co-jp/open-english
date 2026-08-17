@@ -188,6 +188,27 @@ students from complete beginner to advanced.
   for a one-line `python3 -m http.server` example), and silently
   no-ops (doesn't break anything) if blocked under `file://`.
 
+## Required installers (added 2026-08-17)
+
+To run open-english, you need to download and install the following two pieces of
+software (no build-from-source required, close to a one-tap install).
+
+| # | What | Windows | Linux | Android/tablet |
+|---|---|---|---|---|
+| 1 | **open-english itself** (this repo — static frontend + delivery server) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (pick the `.apk` asset) |
+| 2 | **aruaru-llm** (the AI response engine — required, chat won't work without it) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Bundled already (included inside open-english's APK, no separate install needed) |
+
+**Honest disclosure**: the "latest" links above always point to the newest GitHub
+Release (use the [Releases page](https://github.com/aon-co-jp/open-english/releases)
+directly if you want a specific pinned version). There is no prebuilt macOS binary for
+`aruaru-llm` yet (open-english itself ships a macOS tar.gz, but `aruaru-llm` only ships
+Linux/Windows) — on macOS you'll need to build `aruaru-llm` from source.
+
+On Windows, after installation the app's built-in auto-update feature
+(`server/src/self_update.rs`) checks GitHub Releases at startup and, if a newer version
+exists, automatically uninstalls the old one and installs the new one — no user action
+required.
+
 ## How to run
 
 1. Run [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm) with
