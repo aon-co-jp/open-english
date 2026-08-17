@@ -4,8 +4,10 @@ name: Release installers (Windows/Linux/macOS)
 # 配信サーバー)をビルドし、Inno Setupでインストーラーをパッケージ化して
 # GitHub Releasesへ添付する。server/src/self_update.rs(このリポジトリの
 # 自動アップデート機能)がこのアセットを検出できるよう、`.iss`側の
-# OutputBaseFilename(`open-english-setup-{version}.exe`)と同じ、
-# ファイル名に"setup"を含む.exeとしてアップロードする。
+# OutputBaseFilename(`open-english-install.exe`、2026-08-17変更——
+# 旧名`open-english-setup-{version}.exe`はバージョン同期漏れの温床
+# だったため、常に同じファイル名へ変更)と同じ、ファイル名に"install"
+# (旧リリースとの後方互換で"setup"も)を含む.exeとしてアップロードする。
 #
 # sibling path依存: server/Cargo.tomlが`../../RPoem/crates/
 # open-runo-poem-compat`をpath依存しているため、CI環境でも同じ相対位置
@@ -51,7 +53,16 @@ jobs:
         working-directory: installer/windows
         shell: pwsh
         run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" open-english.iss
+          # 2026-08-17変更: タグ名(例: v0.6.7)からバージョン番号を取り出し、
+          # `/DMyAppVersion=...`でInno Setupへ渡す(Add/Remove Programsに
+          # 表示されるバージョン番号を実際のリリースと同期させるため——
+          # 従来は.iss内のハードコード値が何度もリリースを跨いで取り残され、
+          # ファイル名(以前はバージョン入り)まで古いままになっていた
+          # 実バグの根本対応)。ファイル名自体は`open-english-install.exe`
+          # 固定(バージョン番号を含まない)なのでこのバージョン渡しは
+          # Add/Remove Programsの表示のみに影響する。
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$version" open-english.iss
       - uses: actions/upload-artifact@v4
         with:
           name: open-english-windows-installer

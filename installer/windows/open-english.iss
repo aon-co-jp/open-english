@@ -12,8 +12,16 @@
 ; ビルド方法: `server/`で`cargo build --release`を実行した後、
 ; このディレクトリで`ISCC.exe open-english.iss`を実行する。
 
+; MyAppVersion: 実際のリリースタグと手動で同期させる必要があったため
+; 2026-08-17時点で0.6.3のまま何度もリリースを跨いで取り残されていた
+; (ユーザー指摘「install.exeと分かりやすい名前にすべきでは」で発覚した
+; 副次的な実バグ)。CI(release.yml)が`/DMyAppVersion=...`でタグの
+; バージョン番号を渡すため、それが無い場合(手元でのローカルビルド等)の
+; フォールバック値としてのみこの値を使う。
 #define MyAppName "open-english"
-#define MyAppVersion "0.6.3"
+#ifndef MyAppVersion
+  #define MyAppVersion "0.0.0-local-build"
+#endif
 #define MyAppPublisher "aon-co-jp"
 #define MyAppURL "https://github.com/aon-co-jp/open-english"
 #define MyAppExeName "open-english-server.exe"
@@ -39,7 +47,16 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2
 SolidCompression=yes
 OutputDir=dist
-OutputBaseFilename=open-english-setup-{#MyAppVersion}
+; 2026-08-17変更(ユーザー指摘「install.exeと分かりやすい名前にすべき
+; では」への対応): 従来はバージョン番号入りのファイル名
+; (`open-english-setup-{version}.exe`)だったが、(a) バージョン部分が
+; 実際のリリースと同期されず何度も取り残されるバグの温床になっていた、
+; (b) ユーザーにとって「これがインストーラーだ」と一目で分かる名前では
+; なかった。エコシステム全体の命名規則として`<アプリ名>-install.exe`
+; (バージョン番号なし、常に同じファイル名)に統一する(ユーザー承認、
+; 2026-08-17)——`server/src/self_update.rs`のアセット検出ロジックも
+; "setup"ではなく"install"を含むファイル名を探すよう合わせて変更済み。
+OutputBaseFilename=open-english-install
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 

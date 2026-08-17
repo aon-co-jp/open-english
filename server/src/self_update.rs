@@ -100,8 +100,16 @@ async fn fetch_latest_release() -> anyhow::Result<LatestRelease> {
     Ok(res.json::<LatestRelease>().await?)
 }
 
+/// 2026-08-17変更: インストーラーのファイル名規則を`open-english-setup-
+/// {version}.exe`から`open-english-install.exe`(バージョン番号なし、
+/// ユーザーが一目でインストーラーと分かる名前)へ変更したため、
+/// マッチ対象の部分文字列も"setup"から"install"へ合わせた。旧リリース
+/// (v0.6.6以前)のアセット名との後方互換のため"setup"も引き続き許容する。
 fn windows_installer_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
-    release.assets.iter().find(|a| a.name.to_lowercase().ends_with(".exe") && a.name.to_lowercase().contains("setup"))
+    release.assets.iter().find(|a| {
+        let name = a.name.to_lowercase();
+        name.ends_with(".exe") && (name.contains("install") || name.contains("setup"))
+    })
 }
 
 /// 実行ファイルと同じディレクトリの`unins000.exe`(Inno Setup既定の
