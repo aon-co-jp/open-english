@@ -4,7 +4,7 @@
 *Other languages*: [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
 [Français](README-French.md) · [Русский](README-Russian.md) ·
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
-[فارسی](README-Persian.md)
+[فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
 > 📌 **Latest update (2026-08-11–12, v0.6.0)**: Android/tablet now runs
 > fully standalone — no PC or Linux server required. The AI response
