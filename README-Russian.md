@@ -128,6 +128,31 @@
   локальных файлов по схеме `file://` — гарантированно работает при
   раздаче через локальный HTTP-сервер, иначе тихо отключается.
 
+## Необходимые установщики (добавлено 2026-08-17)
+
+Чтобы запустить open-english, нужно скачать и установить следующие два
+компонента (сборка из исходников не требуется, почти как установка в
+одно касание).
+
+| # | Что | Windows | Linux | Android/планшет |
+|---|---|---|---|---|
+| 1 | **сам open-english** (этот репозиторий — статический фронтенд + сервер раздачи) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (выберите ассет `.apk`) |
+| 2 | **aruaru-llm** (движок ответов ИИ — обязателен, без него чат не работает) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Уже включён (встроен в APK open-english, отдельная установка не нужна) |
+
+**Честное раскрытие**: ссылки "latest" выше всегда указывают на самый
+свежий GitHub Release (если нужна конкретная зафиксированная версия,
+используйте
+[страницу Releases](https://github.com/aon-co-jp/open-english/releases)
+напрямую). Готовой сборки `aruaru-llm` под macOS пока нет (сам
+open-english поставляется в виде tar.gz для macOS, а `aruaru-llm` —
+только для Linux/Windows) — на macOS `aruaru-llm` придётся собирать из
+исходников.
+
+В Windows после установки встроенная функция автообновления
+(`server/src/self_update.rs`) при запуске проверяет GitHub Releases и,
+если есть более новая версия, автоматически удаляет старую и
+устанавливает новую — без каких-либо действий пользователя.
+
 ## Как запустить
 
 1. Запустить [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm)

@@ -134,6 +134,32 @@ accompagna gli studenti dal principiante assoluto all'avanzato.
   locali sotto lo schema `file://` — funziona garantito se servito da
   un server HTTP locale, altrimenti si disattiva silenziosamente.
 
+## Programmi di installazione necessari (aggiunto il 2026-08-17)
+
+Per eseguire open-english è necessario scaricare e installare i seguenti
+due programmi (non serve compilare dal codice sorgente, è quasi un
+processo a un tocco).
+
+| # | Cosa | Windows | Linux | Android/tablet |
+|---|---|---|---|---|
+| 1 | **open-english stesso** (questo repository — frontend statico + server di distribuzione) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (scegliere l'asset `.apk`) |
+| 2 | **aruaru-llm** (il motore di risposta IA — obbligatorio, senza di esso la chat non funziona) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Già incluso (integrato nell'APK di open-english, non serve installarlo separatamente) |
+
+**Divulgazione onesta**: i link "latest" sopra puntano sempre alla
+release GitHub più recente (usare la
+[pagina Releases](https://github.com/aon-co-jp/open-english/releases)
+direttamente se si desidera una versione specifica fissata). Non esiste
+ancora un binario macOS precompilato per `aruaru-llm` (open-english
+stesso distribuisce un tar.gz per macOS, ma `aruaru-llm` solo per
+Linux/Windows) — su macOS occorre compilare `aruaru-llm` dal codice
+sorgente.
+
+Su Windows, dopo l'installazione, la funzione di aggiornamento
+automatico integrata (`server/src/self_update.rs`) controlla le GitHub
+Releases all'avvio e, se esiste una versione più recente, disinstalla
+automaticamente quella vecchia e installa quella nuova — senza alcuna
+azione da parte dell'utente.
+
 ## Come avviare l'app
 
 1. Avviare [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm) con

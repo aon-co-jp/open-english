@@ -107,6 +107,28 @@
   חלק מהדפדפנים חוסמים `fetch()` של קבצים מקומיים תחת סכימת `file://`
   — מובטח לעבוד כאשר מוגש דרך שרת HTTP מקומי, ואחרת מושבת בשקט.
 
+## מתקינים נדרשים (נוסף ב-2026-08-17)
+
+כדי להריץ את open-english, יש להוריד ולהתקין את שני התוכנות הבאות (אין
+צורך בבנייה מקוד המקור, קרוב להתקנה בלחיצה אחת).
+
+| # | מה | Windows | Linux | Android/טאבלט |
+|---|---|---|---|---|
+| 1 | **open-english עצמו** (המאגר הזה — חזית סטטית + שרת הפצה) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (בחרו את הנכס `.apk`) |
+| 2 | **aruaru-llm** (מנוע התגובות של הבינה המלאכותית — חובה, בלעדיו הצ'אט לא יעבוד) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | כלול כבר (מוטמע בתוך ה-APK של open-english, אין צורך בהתקנה נפרדת) |
+
+**גילוי כן**: קישורי ה-"latest" למעלה מצביעים תמיד על ה-GitHub Release
+העדכני ביותר (אם רוצים גרסה מסוימת קבועה, יש להשתמש ב[עמוד
+Releases](https://github.com/aon-co-jp/open-english/releases) ישירות).
+אין עדיין בינארי macOS מוכן מראש עבור `aruaru-llm` (open-english עצמו
+מספק tar.gz עבור macOS, אך `aruaru-llm` זמין רק ל-Linux/Windows) —
+ב-macOS יש לבנות את `aruaru-llm` מקוד המקור.
+
+ב-Windows, לאחר ההתקנה, תכונת העדכון האוטומטי המובנית
+(`server/src/self_update.rs`) בודקת את GitHub Releases בעת ההפעלה,
+ואם קיימת גרסה חדשה יותר, מסירה אוטומטית את הישנה ומתקינה את החדשה —
+ללא כל פעולה מצד המשתמש.
+
 ## איך להריץ
 
 1. הפעילו את [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm)

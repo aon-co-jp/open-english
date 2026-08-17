@@ -142,6 +142,31 @@ l'avancé.
   fonctionner lorsqu'il est servi via un serveur HTTP local, sinon se
   désactive silencieusement.
 
+## Installateurs requis (ajouté le 2026-08-17)
+
+Pour lancer open-english, vous devez télécharger et installer les deux
+logiciels suivants (aucune compilation depuis les sources requise,
+proche d'une installation en un clic).
+
+| # | Quoi | Windows | Linux | Android/tablette |
+|---|---|---|---|---|
+| 1 | **open-english lui-même** (ce dépôt — frontend statique + serveur de diffusion) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (choisir l'asset `.apk`) |
+| 2 | **aruaru-llm** (le moteur de réponse IA — obligatoire, le chat ne fonctionne pas sans lui) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Déjà inclus (intégré dans l'APK d'open-english, aucune installation séparée nécessaire) |
+
+**Divulgation honnête**: les liens "latest" ci-dessus pointent toujours
+vers la dernière Release GitHub (utilisez directement la
+[page Releases](https://github.com/aon-co-jp/open-english/releases) si
+vous voulez une version précise figée). Il n'existe pas encore de
+binaire macOS précompilé pour `aruaru-llm` (open-english lui-même
+fournit un tar.gz macOS, mais `aruaru-llm` ne propose que Linux/Windows)
+— sur macOS, il faudra compiler `aruaru-llm` depuis les sources.
+
+Sous Windows, après l'installation, la fonction de mise à jour
+automatique intégrée (`server/src/self_update.rs`) vérifie les GitHub
+Releases au démarrage et, si une version plus récente existe,
+désinstalle automatiquement l'ancienne et installe la nouvelle — sans
+aucune action de l'utilisateur.
+
 ## Comment lancer l'application
 
 1. Lancer [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm) avec

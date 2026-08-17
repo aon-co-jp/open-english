@@ -128,6 +128,31 @@ vom absoluten Anfänger bis zum Fortgeschrittenen.
   `file://`-Schema — garantiert funktionsfähig bei Bereitstellung über
   einen lokalen HTTP-Server, deaktiviert sich sonst stillschweigend.
 
+## Erforderliche Installationsprogramme (hinzugefügt am 2026-08-17)
+
+Um open-english auszuführen, müssen die folgenden zwei Programme
+heruntergeladen und installiert werden (kein Bauen aus dem Quellcode
+nötig, nahezu ein Ein-Klick-Verfahren).
+
+| # | Was | Windows | Linux | Android/Tablet |
+|---|---|---|---|---|
+| 1 | **open-english selbst** (dieses Repository — statisches Frontend + Auslieferungsserver) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (die `.apk`-Datei aus der Asset-Liste wählen) |
+| 2 | **aruaru-llm** (die KI-Antwort-Engine — erforderlich, ohne sie funktioniert der Chat nicht) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Bereits enthalten (in der APK von open-english eingebettet, keine separate Installation nötig) |
+
+**Ehrliche Offenlegung**: Die "latest"-Links oben verweisen immer auf das
+neueste GitHub-Release (nutze die
+[Releases-Seite](https://github.com/aon-co-jp/open-english/releases)
+direkt, wenn du eine bestimmte, fest angegebene Version möchtest). Für
+`aruaru-llm` gibt es derzeit noch keine vorgefertigte macOS-Binärdatei
+(open-english selbst bietet ein macOS-tar.gz, aber `aruaru-llm` nur
+Linux/Windows) — unter macOS muss `aruaru-llm` aus dem Quellcode gebaut
+werden.
+
+Unter Windows prüft die eingebaute Auto-Update-Funktion
+(`server/src/self_update.rs`) nach der Installation beim Start die
+GitHub Releases und deinstalliert und installiert automatisch die neue
+Version, falls eine neuere verfügbar ist — ohne Zutun des Benutzers.
+
 ## Ausführung
 
 1. [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm) mit

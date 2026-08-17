@@ -125,6 +125,29 @@
   سرویس‌دهی از طریق یک سرور HTTP محلی کار کند، در غیر این صورت
   به‌آرامی غیرفعال می‌شود.
 
+## نصب‌کننده‌های مورد نیاز (اضافه‌شده در 2026-08-17)
+
+برای اجرای open-english، باید دو نرم‌افزار زیر را دانلود و نصب کنید
+(نیازی به ساخت از کد منبع نیست، تقریباً یک نصب تک‌ضربه‌ای).
+
+| # | چه چیزی | Windows | Linux | Android/تبلت |
+|---|---|---|---|---|
+| 1 | **خود open-english** (این مخزن — رابط کاربری استاتیک + سرور توزیع) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (فایل `.apk` را از فهرست دارایی‌ها انتخاب کنید) |
+| 2 | **aruaru-llm** (موتور پاسخ‌دهی هوش مصنوعی — الزامی، بدون آن گفتگو کار نمی‌کند) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | از قبل گنجانده شده (درون APK مربوط به open-english جاسازی شده، نیازی به نصب جداگانه نیست) |
+
+**افشای صادقانه**: پیوندهای "latest" در بالا همیشه به تازه‌ترین
+GitHub Release اشاره می‌کنند (اگر نسخهٔ مشخص و ثابتی می‌خواهید، مستقیماً
+از [صفحهٔ Releases](https://github.com/aon-co-jp/open-english/releases)
+استفاده کنید). هنوز باینری از پیش ساخته‌شده برای macOS برای `aruaru-llm`
+وجود ندارد (خود open-english یک tar.gz برای macOS ارائه می‌دهد، اما
+`aruaru-llm` فقط برای Linux/Windows ارائه می‌شود) — روی macOS باید
+`aruaru-llm` را از کد منبع بسازید.
+
+در Windows، پس از نصب، ویژگی به‌روزرسانی خودکار داخلی
+(`server/src/self_update.rs`) هنگام اجرا، GitHub Releases را بررسی
+می‌کند و در صورت وجود نسخهٔ جدیدتر، به‌طور خودکار نسخهٔ قدیمی را حذف و
+نسخهٔ جدید را نصب می‌کند — بدون نیاز به هیچ اقدامی از سوی کاربر.
+
 ## نحوه اجرا
 
 ۱. [`aruaru-llm`](https://github.com/aon-co-jp/aruaru-llm) را با
