@@ -27,6 +27,29 @@
 > 各10問)+採点後のAI講師連携、学びたい言語選択、Linux/macOS版
 > インストーラーを追加。モデル重みは未同梱(手動配置が必要)。
 
+> 📌 **Latest update (2026-08-18)**: Started building a proper local
+> database for conversation history/settings. **Why not SQLite alone**
+> — SQLite remains the always-available local baseline, but when
+> `aruaru-db` (PostgreSQL) is configured, writes are also mirrored
+> there automatically. Combined with `aruaru-db`'s own
+> `DUAL_DATABASE_URL` feature (self-healing mirroring between two
+> PostgreSQL instances), **if one database instance fails, the other
+> automatically repairs it and protects your data** — a safer setup
+> than SQLite alone. If no mirror is configured or the connection
+> fails, the app keeps working on SQLite only, so availability is
+> never sacrificed. This increment implements SQLite persistence for
+> messages/settings plus the `/v1/db/*` API, verified over real HTTP
+> (see `server/src/db.rs`) — the usage pie chart, storage-location
+> picker (e.g. microSD), external rsync backup, and multi-device sync
+> are planned for the next increment.
+>
+> *日本語*: 会話履歴・設定の本格的なローカルデータベース化に着手。
+> SQLiteを常時利用可能な基盤にしつつ、`aruaru-db`(PostgreSQL)を
+> 設定すればそちらへも自動ミラー。`aruaru-db`のDUAL DB自己修復機能と
+> 組み合わせ、片側障害時にもう片側から自動修復する安全性の高い構成。
+> 未設定時はSQLiteのみで継続動作。円グラフ表示・保存先選択・外部
+> バックアップ・複数端末同期は次の増分で対応。
+
 > 📌 **Older update (2026-08-11, continued 3)**: Added an automatic
 > self-update feature (Windows only) that checks GitHub for the latest
 > release at startup and, if newer, automatically uninstalls the old

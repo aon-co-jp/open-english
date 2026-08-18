@@ -35,6 +35,35 @@
 > manually (no auto-download yet). See the 2026-08-11 (continued 7-10)
 > HANDOFF entries in [CLAUDE.md](CLAUDE.md).
 
+> 📌 **最新の更新(2026-08-18)**: 会話履歴・設定の本格的なローカル
+> データベース化に着手しました。**なぜSQLite単体ではないか**——SQLiteは
+> 常時利用可能なローカルコピーとして必須の基盤にしつつ、`aruaru-db`
+> (PostgreSQL)を設定すればそちらへも自動でミラー書き込みします。
+> `aruaru-db`自身が持つ`DUAL_DATABASE_URL`(2つのPostgreSQLインスタンス
+> 間の自己修復ミラーリング)機能と組み合わせることで、**片側のDBに
+> 障害が起きてももう片側から自動修復し、データを守る**、SQLite単体より
+> 安全性の高い構成になります。接続先未設定・接続失敗時はSQLiteのみで
+> 動作を継続するため、可用性は損ないません。今回実装したのは会話履歴・
+> 設定のSQLite永続化+`/v1/db/*`API+実HTTPでの動作確認まで
+> (`server/src/db.rs`参照)——円グラフでの使用率表示・保存先選択
+> (マイクロSD等)・外部rsyncバックアップ・複数端末間の同期は次の
+> 増分で着手します。
+>
+> *English*: Started building a proper local database for conversation
+> history/settings. **Why not SQLite alone** — SQLite remains the
+> always-available local baseline, but when `aruaru-db` (PostgreSQL) is
+> configured, writes are also mirrored there automatically. Combined with
+> `aruaru-db`'s own `DUAL_DATABASE_URL` feature (self-healing mirroring
+> between two PostgreSQL instances), **if one database instance fails,
+> the other automatically repairs it and protects your data** — a safer
+> setup than SQLite alone. If no mirror is configured or the connection
+> fails, the app keeps working on SQLite only, so availability is never
+> sacrificed. This increment implements SQLite persistence for messages/
+> settings plus the `/v1/db/*` API, verified over real HTTP (see
+> `server/src/db.rs`) — the usage pie chart, storage-location picker
+> (e.g. microSD), external rsync backup, and multi-device sync are
+> planned for the next increment.
+
 > 📌 **旧更新(2026-08-11、続き3)**: 起動時に自動でGitHubの最新版を
 > 確認し、新しいバージョンがあれば自動でアンインストール→自動で
 > インストールする機能を追加(Windowsのみ、`server/src/self_update.rs`)。

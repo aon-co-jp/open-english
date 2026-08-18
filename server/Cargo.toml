@@ -18,3 +18,12 @@ reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 anyhow = "1"
+# 会話履歴・設定の永続化(2026-08-18追加、ユーザー指示「DATABASEは…
+# 本格的なローカルデータベース化してから」への対応)。常時利用可能な
+# ローカルコピーとしてSQLite(`bundled` featureで静的リンク、利用者の
+# 環境にシステムSQLiteが入っているかに依存しない)を必須の基盤とし、
+# `aruaru-db`(PostgreSQL、自身のDUAL_DATABASE_URL機能で自己修復する
+# 冗長化構成を持つ)を設定されていればオプトインでミラー先として使う
+# (`aruaru-llm`側`geo_content.rs`と同じ`tokio-postgres`直結パターン)。
+rusqlite = { version = "0.32", features = ["bundled"] }
+tokio-postgres = "0.7"

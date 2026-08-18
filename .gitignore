@@ -4,3 +4,4 @@
 /android/.gradle/
 /android/app/build/
 /android/local.properties
+/data/

@@ -11,12 +11,16 @@
 //! `http://127.0.0.1:4601/`を配信する(`OPEN_ENGLISH_SERVER_BIND`環境変数で
 //! 上書き可)。`aruaru-llm`(既定`http://localhost:4600`)とは別ポート。
 
-use open_runo_poem_compat::hyper_compat::static_file_handler;
-use open_runo_poem_compat::{get, Route, Server, TcpListener};
+use open_runo_poem_compat::hyper_compat::{json_response, static_file_handler};
+use open_runo_poem_compat::{get, handler_fn, post, Json, Request, Response, Route, Server, StatusCode, TcpListener};
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
+mod db;
 mod self_update;
+
+use db::Db;
 
 /// (URLパス, 実ファイル名, Content-Type)。リポジトリ直下に存在する
 /// 静的アセットのみを列挙する(推測でパスを増やさない)。
@@ -86,13 +90,146 @@ fn bind_addr() -> SocketAddr {
         .unwrap_or_else(|| "127.0.0.1:4601".parse().unwrap())
 }
 
+#[derive(serde::Deserialize)]
+struct AddMessageRequest {
+    role: String,
+    content: String,
+}
+
+async fn db_add_message(req: Request, db: Arc<Db>) -> Response {
+    let Json(body): Json<AddMessageRequest> = match Json::from_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match db.add_message(&body.role, &body.content) {
+        Ok(()) => json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+async fn db_list_messages(db: Arc<Db>) -> Response {
+    match db.list_messages(500) {
+        Ok(msgs) => json_response(StatusCode::OK, &msgs),
+        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+async fn db_clear_messages(db: Arc<Db>) -> Response {
+    match db.clear_messages() {
+        Ok(()) => json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct SetSettingRequest {
+    key: String,
+    value: String,
+}
+
+async fn db_set_setting(req: Request, db: Arc<Db>) -> Response {
+    let Json(body): Json<SetSettingRequest> = match Json::from_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match db.set_setting(&body.key, &body.value) {
+        Ok(()) => json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+async fn db_get_settings(db: Arc<Db>) -> Response {
+    match db.get_all_settings() {
+        Ok(pairs) => {
+            let map: std::collections::HashMap<String, String> = pairs.into_iter().collect();
+            json_response(StatusCode::OK, &map)
+        }
+        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+/// **正直な開示**: `used_disk_bytes`/`total_disk_bytes`はこのコミット
+/// 時点では未実装で常に`null`を返す(クロスプラットフォームのディスク
+/// 空き容量取得はOS別実装が必要な別増分——Windows/Linux/macOS/Android
+/// それぞれ異なるAPIが必要で、今回のスコープには含めていない)。
+/// `db_file_size_bytes`(実際のDBファイルサイズ)・
+/// `postgres_mirror_configured`(aruaru-db/PostgreSQLミラーが設定
+/// 済みか)は実データを返す。フロントエンド側の円グラフ・保存先選択
+/// UIは、この情報が出揃ってから次の増分で実装する。
+async fn db_info(db: Arc<Db>) -> Response {
+    json_response(
+        StatusCode::OK,
+        &serde_json::json!({
+            "db_path": db.path.display().to_string(),
+            "db_file_size_bytes": db.file_size_bytes(),
+            "postgres_mirror_configured": db.has_postgres_mirror(),
+            "used_disk_bytes": serde_json::Value::Null,
+            "total_disk_bytes": serde_json::Value::Null,
+        }),
+    )
+}
+
 #[tokio::main]
 async fn main() {
     let root = repo_root();
+    let db_path = db::db_path(&root);
+    let db = Arc::new(Db::open(db_path).expect("failed to open local SQLite DB (data/open-english.sqlite3)"));
+    println!(
+        "conversation DB: {} (aruaru-db/PostgreSQL mirror: {})",
+        db.path.display(),
+        if db.has_postgres_mirror() { "enabled via OPEN_ENGLISH_DATABASE_URL" } else { "disabled (SQLite only)" }
+    );
+
     let mut app = Route::new();
     for (url_path, rel_file, content_type) in STATIC_FILES {
         let file_path = root.join(rel_file);
         app = app.at(url_path, get(static_file_handler(file_path, content_type)));
+    }
+
+    // 会話履歴・設定の永続化API(2026-08-18新設、db.rsモジュールdoc参照)。
+    {
+        let db_for_add = Arc::clone(&db);
+        let db_for_list = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/history",
+            post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_add);
+                async move { db_add_message(req, db).await }
+            }))
+            .get(handler_fn(move |_req, _p| {
+                let db = Arc::clone(&db_for_list);
+                async move { db_list_messages(db).await }
+            })),
+        );
+        let db_for_clear = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/history/clear",
+            post(handler_fn(move |_req, _p| {
+                let db = Arc::clone(&db_for_clear);
+                async move { db_clear_messages(db).await }
+            })),
+        );
+        let db_for_set = Arc::clone(&db);
+        let db_for_get = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/settings",
+            post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_set);
+                async move { db_set_setting(req, db).await }
+            }))
+            .get(handler_fn(move |_req, _p| {
+                let db = Arc::clone(&db_for_get);
+                async move { db_get_settings(db).await }
+            })),
+        );
+        let db_for_info = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/info",
+            get(handler_fn(move |_req, _p| {
+                let db = Arc::clone(&db_for_info);
+                async move { db_info(db).await }
+            })),
+        );
     }
 
     // 起動時の自動メンテナンス/自動アップデート(2026-08-11追加、ユーザー
