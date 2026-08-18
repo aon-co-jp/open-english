@@ -64,14 +64,28 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
      さらに実際にサーバーを起動し`Invoke-RestMethod`で5エンドポイント
      すべてを実HTTP経由で確認(メッセージ追加→一覧取得→設定保存→
      設定一覧取得→DB情報取得、いずれも期待通りのJSONを返すことを確認)。
-  4. **RS-JSONへの切替は今回対象外(正直な開示)**: ユーザー指示「使うなら
-     JSONではなく、RS-JSONにして」への回答。このリポジトリの過去の
-     HANDOFF(2026-08-10続き3・続き4)で既に確立した方針——RS-JSON
-     (`rust-json`クレート)は埋め込み/静的JSON**ファイル**のパース向けで
-     あり、RPoemの`Json<T>`抽出・HTTPレスポンスの`serde_json::json!`構築
-     には適用しない(該当箇所なし)——を今回も踏襲。`db.rs`/`main.rs`の
-     新規コードはHTTPボディの読み書きのみで埋め込みJSONファイルは
-     扱っていないため、RS-JSONの適用対象は無い。
+  4. **【訂正・2026-08-18追記】RS-JSONを`/v1/db/*`のHTTPボディへ実際に
+     適用した**: 直後にユーザーから「RS-JSONは埋め込み/静的JSONファイル
+     向け?HTTPボディ処理は対象外とはどういう事?」と指摘を受け、過去の
+     方針(2026-08-10続き3・続き4、「RS-JSONはHTTPボディ処理には適用
+     しない」)を再検証した結果、**過度に狭い解釈だった**と判断し撤回。
+     `RS-JSON`(`rust-json`クレート)の`full`モジュールには
+     `from_slice_strict<T: DeserializeOwned>`/`to_vec_strict<T:
+     Serialize>`というRPC/wire format向けの型付き入出力APIが最初から
+     用意されており(クレート自身のdoc「storage records, RPC/replication
+     wire formats, backup manifests, ...」に明記)、HTTPボディを除外する
+     技術的理由は無かった。`server/src/main.rs`に`read_rs_json_body`/
+     `rs_json_response`ヘルパーを新設し、RPoemの`Json<T>`(内部は素の
+     `serde_json`)経由だったリクエスト/レスポンス双方を`rust_json::
+     from_slice_strict`/`to_vec_strict`経由へ置き換えた。**正直な
+     開示**: RFC 8259厳密モード(`serde_json::from_str`委譲)を通すため、
+     受理するJSONの範囲自体はRPoemの`Json<T>`と同じ(JSON5風の寛容拡張は
+     このエンドポイントでは意図的に無効——リクエスト元は自分自身の
+     フロントエンドJSであり寛容さは不要なため)。実HTTPで(1)正常系の
+     往復、(2)JSON5風(クォート無しキー+トレイリングカンマ)入力が
+     `BadRequest`で正しく拒否されること、の両方を確認済み。
+     `aruaru-db`/`open-raid-z`等でも同様のパターンが適用可能かは
+     このコミットのスコープ外(次回検討)。
   5. **未着手のまま次回へ持ち越し**: (a)
      「aruaru-llmのバージョンアップとして、既存の古い物からDATABASE
      システムに移動も簡単にする機能を搭載して」——aruaru-llmと

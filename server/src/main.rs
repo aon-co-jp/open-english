@@ -11,8 +11,8 @@
 //! `http://127.0.0.1:4601/`を配信する(`OPEN_ENGLISH_SERVER_BIND`環境変数で
 //! 上書き可)。`aruaru-llm`(既定`http://localhost:4600`)とは別ポート。
 
-use open_runo_poem_compat::hyper_compat::{json_response, static_file_handler};
-use open_runo_poem_compat::{get, handler_fn, post, Json, Request, Response, Route, Server, StatusCode, TcpListener};
+use open_runo_poem_compat::hyper_compat::static_file_handler;
+use open_runo_poem_compat::{get, handler_fn, post, Request, Response, Route, Server, StatusCode, TcpListener};
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -90,6 +90,37 @@ fn bind_addr() -> SocketAddr {
         .unwrap_or_else(|| "127.0.0.1:4601".parse().unwrap())
 }
 
+/// `/v1/db/*`のHTTPボディを、RPoemの`Json<T>`(内部は素の`serde_json`)
+/// ではなく、Rust-JSON(`../../RS-JSON`)の`from_slice_strict`/
+/// `to_vec_strict`経由で読み書きする(2026-08-18、ユーザー指摘「HTTP
+/// ボディ処理は対象外とはどういう事?」への対応)。**訂正した理解**:
+/// Rust-JSONの`from_slice_strict<T: DeserializeOwned>`/
+/// `to_vec_strict<T: Serialize>`はRPC/wire format向けの型付き入出力を
+/// 明示的に想定したAPIであり(クレート自身のdoc参照)、埋め込み/静的
+/// JSONファイルのパースに限定される理由は無かった——過去のHANDOFFの
+/// 「対象外」判断は撤回する。RFC 8259厳密モード(`parse_strict`と同じ
+/// 検証)を経由するため、挙動はRPoemの`Json<T>`(`serde_json::from_slice`
+/// 直接呼び出し)と等価——検証の通り道をRust-JSON経由に変えただけで、
+/// 受理するJSONの範囲自体は変わらない(正直な開示)。
+async fn read_rs_json_body<T: serde::de::DeserializeOwned>(req: Request) -> Result<T, Response> {
+    use http_body_util::BodyExt;
+    let bytes = match req.into_body().collect().await {
+        Ok(collected) => collected.to_bytes(),
+        Err(_) => return Err(rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": "failed to read request body"}))),
+    };
+    rust_json::from_slice_strict::<T>(&bytes)
+        .map_err(|e| rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": format!("invalid JSON body (Rust-JSON strict mode): {e}")})))
+}
+
+fn rs_json_response(status: StatusCode, value: &impl serde::Serialize) -> Response {
+    let body = rust_json::to_vec_strict(value).unwrap_or_else(|_| b"{}".to_vec());
+    hyper::Response::builder()
+        .status(status)
+        .header("content-type", "application/json")
+        .body(open_runo_poem_compat::hyper_compat::fixed_body(bytes::Bytes::from(body)))
+        .expect("building a response from a fixed set of valid headers cannot fail")
+}
+
 #[derive(serde::Deserialize)]
 struct AddMessageRequest {
     role: String,
@@ -97,27 +128,27 @@ struct AddMessageRequest {
 }
 
 async fn db_add_message(req: Request, db: Arc<Db>) -> Response {
-    let Json(body): Json<AddMessageRequest> = match Json::from_body(req).await {
+    let body: AddMessageRequest = match read_rs_json_body(req).await {
         Ok(v) => v,
         Err(resp) => return resp,
     };
     match db.add_message(&body.role, &body.content) {
-        Ok(()) => json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
-        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
     }
 }
 
 async fn db_list_messages(db: Arc<Db>) -> Response {
     match db.list_messages(500) {
-        Ok(msgs) => json_response(StatusCode::OK, &msgs),
-        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+        Ok(msgs) => rs_json_response(StatusCode::OK, &msgs),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
     }
 }
 
 async fn db_clear_messages(db: Arc<Db>) -> Response {
     match db.clear_messages() {
-        Ok(()) => json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
-        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
     }
 }
 
@@ -128,13 +159,13 @@ struct SetSettingRequest {
 }
 
 async fn db_set_setting(req: Request, db: Arc<Db>) -> Response {
-    let Json(body): Json<SetSettingRequest> = match Json::from_body(req).await {
+    let body: SetSettingRequest = match read_rs_json_body(req).await {
         Ok(v) => v,
         Err(resp) => return resp,
     };
     match db.set_setting(&body.key, &body.value) {
-        Ok(()) => json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
-        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
     }
 }
 
@@ -142,9 +173,9 @@ async fn db_get_settings(db: Arc<Db>) -> Response {
     match db.get_all_settings() {
         Ok(pairs) => {
             let map: std::collections::HashMap<String, String> = pairs.into_iter().collect();
-            json_response(StatusCode::OK, &map)
+            rs_json_response(StatusCode::OK, &map)
         }
-        Err(e) => json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
     }
 }
 
@@ -157,7 +188,7 @@ async fn db_get_settings(db: Arc<Db>) -> Response {
 /// 済みか)は実データを返す。フロントエンド側の円グラフ・保存先選択
 /// UIは、この情報が出揃ってから次の増分で実装する。
 async fn db_info(db: Arc<Db>) -> Response {
-    json_response(
+    rs_json_response(
         StatusCode::OK,
         &serde_json::json!({
             "db_path": db.path.display().to_string(),

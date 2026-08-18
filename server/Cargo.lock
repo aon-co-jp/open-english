@@ -1603,9 +1603,13 @@ name = "open-english-server"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bytes",
+ "http-body-util",
+ "hyper",
  "open-runo-poem-compat",
  "reqwest 0.12.28",
  "rusqlite",
+ "rust-json",
  "serde",
  "serde_json",
  "tokio",
@@ -2559,6 +2563,15 @@ dependencies = [
  "hashlink",
  "libsqlite3-sys",
  "smallvec",
+]
+
+[[package]]
+name = "rust-json"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
 ]
 
 [[package]]

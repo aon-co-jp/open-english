@@ -27,3 +27,14 @@ anyhow = "1"
 # (`aruaru-llm`側`geo_content.rs`と同じ`tokio-postgres`直結パターン)。
 rusqlite = { version = "0.32", features = ["bundled"] }
 tokio-postgres = "0.7"
+# /v1/db/*のHTTPボディ処理(2026-08-18追加、ユーザー指摘「HTTPボディ処理は
+# 対象外とはどういう事？」への対応)。過去のHANDOFFにあった「RS-JSONは
+# 埋め込み/静的JSONファイル向けのみ」という整理は、Rust-JSON側の実際の
+# API(`from_slice_strict<T: DeserializeOwned>`/`to_vec_strict<T: Serialize>`
+# ——RPC/wire formatの型付き入出力を明示的に想定した関数)を踏まえると
+# 過度に狭い解釈だったため撤回し、この新規HTTPエンドポイントでは実際に
+# RS-JSONの厳密モード(`parse_strict`と同じRFC 8259検証)を経由させる。
+rust-json = { path = "../../RS-JSON" }
+bytes = "1.9"
+http-body-util = "0.1"
+hyper = { version = "1.10", features = ["full"] }
