@@ -1,6 +1,16 @@
 # open-english
 
-> 📌 **Dernière mise à jour (2026-08-11–12, v0.6.0)**: Android/tablette
+> 📌 **Dernière mise à jour (2026-08-18)**: Ajout d'une véritable base de
+> données locale pour l'historique des conversations/paramètres (SQLite
+> + miroir optionnel auto-réparateur `aruaru-db`/PostgreSQL), ainsi que
+> des API de sélection de l'emplacement de stockage, de sauvegarde rsync
+> et d'import de données héritées. Si `rsync` n'est pas installé,
+> l'application affiche un message bilingue **"Let's install RSync!"**
+> et peut l'installer automatiquement via le gestionnaire de paquets du
+> système, puis lance aussitôt la sauvegarde. Détails dans
+> [CLAUDE.md](CLAUDE.md) (entrées HANDOFF du 2026-08-18, en japonais).
+
+> 📌 **Mise à jour précédente (2026-08-11–12, v0.6.0)**: Android/tablette
 > fonctionne désormais de manière totalement autonome — plus besoin de
 > PC ni de serveur Linux. Le moteur de réponse IA (`aruaru-llm`)
 > lui-même est maintenant intégré dans l'APK ; la vérification sur

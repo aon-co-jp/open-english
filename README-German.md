@@ -1,6 +1,15 @@
 # open-english
 
-> 📌 **Neuestes Update (2026-08-11–12, v0.6.0)**: Android/Tablet läuft
+> 📌 **Neuestes Update (2026-08-18)**: Eine echte lokale Datenbank für
+> Chatverlauf/Einstellungen hinzugefügt (SQLite + optionaler
+> selbstheilender `aruaru-db`/PostgreSQL-Spiegel), plus APIs für
+> Speicherort-Auswahl, rsync-Backup und Import alter Daten. Fehlt
+> `rsync`, zeigt die App zweisprachig **"Let's install RSync!"** an und
+> kann es automatisch über den Paketmanager des Betriebssystems
+> installieren und danach sofort das Backup ausführen. Details siehe
+> [CLAUDE.md](CLAUDE.md) (2026-08-18 HANDOFF-Einträge, Japanisch).
+
+> 📌 **Älteres Update (2026-08-11–12, v0.6.0)**: Android/Tablet läuft
 > jetzt vollständig eigenständig — kein PC oder Linux-Server mehr
 > nötig. Die KI-Antwort-Engine (`aruaru-llm`) selbst ist jetzt in die
 > APK gebündelt; die Verifikation auf dem Gerät bestätigte, dass beide

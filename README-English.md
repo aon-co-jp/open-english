@@ -39,16 +39,24 @@
 > fails, the app keeps working on SQLite only, so availability is
 > never sacrificed. This increment implements SQLite persistence for
 > messages/settings plus the `/v1/db/*` API, verified over real HTTP
-> (see `server/src/db.rs`) — the usage pie chart, storage-location
-> picker (e.g. microSD), external rsync backup, and multi-device sync
-> are planned for the next increment.
+> (see `server/src/db.rs`). Also added: a storage-location picker
+> (`/v1/db/storage-path`), rsync backup (`/v1/db/rsync-backup`), and a
+> generic legacy-data import endpoint (`/v1/db/migrate-legacy`). If
+> rsync isn't installed, the API replies with a bilingual **"Let's
+> install RSync!"** prompt, and `/v1/db/install-rsync` auto-installs it
+> via the right package manager for the OS (winget/choco on Windows,
+> apt-get/dnf/pacman on Linux, brew on macOS, pkg on Android) and
+> immediately retries the backup on success. Usage pie chart display
+> and multi-device sync are still planned for the next increment.
 >
 > *日本語*: 会話履歴・設定の本格的なローカルデータベース化に着手。
 > SQLiteを常時利用可能な基盤にしつつ、`aruaru-db`(PostgreSQL)を
 > 設定すればそちらへも自動ミラー。`aruaru-db`のDUAL DB自己修復機能と
 > 組み合わせ、片側障害時にもう片側から自動修復する安全性の高い構成。
-> 未設定時はSQLiteのみで継続動作。円グラフ表示・保存先選択・外部
-> バックアップ・複数端末同期は次の増分で対応。
+> 未設定時はSQLiteのみで継続動作。保存先選択・rsyncバックアップ・
+> 旧データ取り込みも実装済み。rsync未導入時は「RSyncをインストール
+> しましょう！」と案内し、自動インストール+成功後の自動バックアップ
+> まで1回で完了。円グラフ表示・複数端末同期は次の増分で対応。
 
 > 📌 **Older update (2026-08-11, continued 3)**: Added an automatic
 > self-update feature (Windows only) that checks GitHub for the latest

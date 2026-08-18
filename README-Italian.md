@@ -1,6 +1,16 @@
 # open-english
 
-> 📌 **Ultimo aggiornamento (2026-08-11–12, v0.6.0)**: Android/tablet ora
+> 📌 **Ultimo aggiornamento (2026-08-18)**: Aggiunto un vero database
+> locale per cronologia chat/impostazioni (SQLite + specchio opzionale
+> auto-riparante `aruaru-db`/PostgreSQL), oltre alle API per la scelta
+> della posizione di archiviazione, il backup rsync e l'importazione di
+> dati legacy. Se `rsync` non è installato, l'app mostra un messaggio
+> bilingue **"Let's install RSync!"** e può installarlo automaticamente
+> tramite il gestore pacchetti del sistema operativo, eseguendo poi
+> subito il backup. Dettagli in [CLAUDE.md](CLAUDE.md) (voci HANDOFF del
+> 2026-08-18, in giapponese).
+
+> 📌 **Aggiornamento precedente (2026-08-11–12, v0.6.0)**: Android/tablet ora
 > funziona in modo completamente autonomo, senza bisogno di un PC o di
 > un server Linux. Il motore di risposta AI (`aruaru-llm`) è ora
 > integrato direttamente nell'APK; la verifica sul dispositivo ha

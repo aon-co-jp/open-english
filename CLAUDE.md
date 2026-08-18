@@ -47,6 +47,45 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-18(続き2) RSyncインストール促進+自動インストール+成功後の
+  自動バックアップを実装(ユーザー指示「同期バックアップを機能させる
+  には、RSyncをインストールしましょう！を英語と日本語で表示して簡単に
+  インストールして簡単に自動で移行する機能を搭載して」への対応)**:
+  1. **`db.rs`に`RsyncError`列挙型を新設**(`NotInstalled`/`Other`)。
+     `backup_via_rsync`が`std::io::ErrorKind::NotFound`を判別し
+     `NotInstalled`を返すことで、`main.rs`側が「rsyncが無い」ケースを
+     明確に分岐できるようにした。
+  2. **`POST /v1/db/rsync-backup`**: rsync未検出時、`ok:false`+
+     `rsync_missing:true`と共に`message_en`("Let's install RSync! ...")・
+     `message_ja`("RSyncをインストールしましょう！...")を返すよう変更。
+  3. **`POST /v1/db/install-rsync`新設**(`Db::install_rsync`):
+     OS別パッケージマネージャを順に試す(Windows: winget→choco、
+     Linux: apt-get→dnf→pacman、macOS: brew、Android/Termux: pkg)。
+     `retry_destination`を渡せば、インストール成功直後にそのまま
+     `backup_via_rsync`まで実行する(ユーザー指示「簡単に自動で移行
+     する機能」への対応、インストール+バックアップをボタン1回で
+     完結させる設計)。**正直な開示**: このアプリ自身はrsyncの
+     インストーラーを同梱・ダウンロードしない——各OS標準/準標準の
+     パッケージマネージャを子プロセスとして呼ぶのみ。該当する
+     パッケージマネージャが1つも無い環境では、その旨と手動インストール
+     手順(日英併記)を返す。
+  4. **実機検証**: `cargo build --release`成功、`cargo test --release`
+     (db::以下3件)全green。実サーバー起動+`Invoke-RestMethod`で
+     (a) rsync未検出時に`rsync-backup`が日英併記メッセージを正しく
+     返すこと、(b) この開発機にはwinget/chocoともに存在しないため
+     `install-rsync`が「両方とも見つからなかった」旨を正直に返すこと、
+     の両方を確認した。**正直な開示**: 「実際にパッケージマネージャが
+     存在する環境でインストールが成功し、続けてバックアップが実際に
+     走る」という一気通貫のE2E検証は、この開発機の制約上まだ実施
+     できていない——次回、Windows(winget/choco導入済み環境)または
+     Linux/macOS/VPS/Android実機で確認する必要がある。
+  - 次にすべきこと: (1) 上記4番のE2E検証(実際にパッケージマネージャが
+    存在する環境で)、(2) `app.js`フロントエンド側のUI実装(「💾
+    データベースバックアップ」モーダル、保存先選択・rsync宛先入力・
+    「RSyncをインストール」ボタン)——現状はバックエンドAPIの実装・
+    実HTTP検証のみでUIからは未接続、(3) 円グラフ使用率表示・複数端末
+    同期は引き続き次の増分。
+
 - **2026-08-18(続き) 保存先選択・rsync同期・旧データ取り込みを実装、実HTTP
   で3エンドポインドとも検証済み(ユーザー指示「DATAやDATABASE保存先は、
   既存の保存先でもそれ以外でも選択可能にして、同期先もRSyncで選択可能に

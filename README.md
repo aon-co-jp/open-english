@@ -47,7 +47,13 @@
 > 設定のSQLite永続化+`/v1/db/*`API+実HTTPでの動作確認まで
 > (`server/src/db.rs`参照)——円グラフでの使用率表示・保存先選択
 > (マイクロSD等)・外部rsyncバックアップ・複数端末間の同期は次の
-> 増分で着手します。
+> 増分で着手します。続けて保存先選択(`/v1/db/storage-path`)・rsync
+> バックアップ(`/v1/db/rsync-backup`)・旧データ取り込み(`/v1/db/
+> migrate-legacy`)も実装。rsyncが未導入の環境では「**RSyncを
+> インストールしましょう！**」という案内が返り、`/v1/db/install-rsync`
+> でOS別パッケージマネージャ(Windows: winget/choco、Linux: apt-get/dnf/
+> pacman、macOS: brew、Android: pkg)経由の自動インストール+成功直後の
+> 自動バックアップ実行までを1回の呼び出しで行えます。
 >
 > *English*: Started building a proper local database for conversation
 > history/settings. **Why not SQLite alone** — SQLite remains the
@@ -60,9 +66,15 @@
 > fails, the app keeps working on SQLite only, so availability is never
 > sacrificed. This increment implements SQLite persistence for messages/
 > settings plus the `/v1/db/*` API, verified over real HTTP (see
-> `server/src/db.rs`) — the usage pie chart, storage-location picker
-> (e.g. microSD), external rsync backup, and multi-device sync are
-> planned for the next increment.
+> `server/src/db.rs`). Also added: storage-location picker
+> (`/v1/db/storage-path`), rsync backup (`/v1/db/rsync-backup`), and a
+> generic legacy-data import endpoint (`/v1/db/migrate-legacy`). If rsync
+> isn't installed, the API replies with a bilingual **"Let's install
+> RSync!"** prompt, and `/v1/db/install-rsync` auto-installs it via the
+> right package manager for the OS (winget/choco on Windows, apt-get/dnf/
+> pacman on Linux, brew on macOS, pkg on Android) and immediately retries
+> the backup on success. Usage pie chart display and multi-device sync
+> are still planned for the next increment.
 
 > 📌 **旧更新(2026-08-11、続き3)**: 起動時に自動でGitHubの最新版を
 > 確認し、新しいバージョンがあれば自動でアンインストール→自動で
