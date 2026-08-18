@@ -191,13 +191,85 @@ async fn db_info(db: Arc<Db>) -> Response {
     rs_json_response(
         StatusCode::OK,
         &serde_json::json!({
-            "db_path": db.path.display().to_string(),
+            "db_path": db.path().display().to_string(),
             "db_file_size_bytes": db.file_size_bytes(),
             "postgres_mirror_configured": db.has_postgres_mirror(),
             "used_disk_bytes": serde_json::Value::Null,
             "total_disk_bytes": serde_json::Value::Null,
         }),
     )
+}
+
+/// 保存先変更(ユーザー指示「DATA保存先は、既存の保存先でもそれ以外でも
+/// 選択可能にして」への対応、2026-08-18新設)。`new_path`にフルパスを
+/// 渡す(例: 増設したマイクロSDのマウント先配下)。
+#[derive(serde::Deserialize)]
+struct RelocateRequest {
+    new_path: String,
+}
+
+async fn db_relocate(req: Request, db: Arc<Db>) -> Response {
+    let body: RelocateRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match db.relocate(PathBuf::from(&body.new_path)) {
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "new_path": db.path().display().to_string()})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+/// rsync同期先を選択して即時バックアップを実行する(ユーザー指示「同期先も
+/// RSyncで選択可能にして」への対応、2026-08-18新設)。`destination`は
+/// rsyncのCLIがそのまま受理する文字列(ローカルパス・`user@host:/path`の
+/// いずれも可)。
+#[derive(serde::Deserialize)]
+struct RsyncBackupRequest {
+    destination: String,
+}
+
+async fn db_rsync_backup(req: Request, db: Arc<Db>) -> Response {
+    let body: RsyncBackupRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    let destination = body.destination;
+    match tokio::task::spawn_blocking(move || db.backup_via_rsync(&destination)).await {
+        Ok(Ok(msg)) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "detail": msg})),
+        Ok(Err(e)) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("rsync task panicked: {e}")})),
+    }
+}
+
+/// 旧形式データの取り込み(ユーザー指示「既存の古い物からDATABASE
+/// システムに移動も簡単にする機能」への対応、2026-08-18新設。実際に
+/// 存在する旧データ形式は無い〈`db.rs`の`import_legacy`doc参照〉ため、
+/// 汎用的な取り込み口として実装)。
+#[derive(serde::Deserialize)]
+struct LegacyMessage {
+    role: String,
+    content: String,
+}
+
+#[derive(serde::Deserialize)]
+struct MigrateLegacyRequest {
+    #[serde(default)]
+    messages: Vec<LegacyMessage>,
+    #[serde(default)]
+    settings: std::collections::HashMap<String, String>,
+}
+
+async fn db_migrate_legacy(req: Request, db: Arc<Db>) -> Response {
+    let body: MigrateLegacyRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    let messages: Vec<(String, String)> = body.messages.into_iter().map(|m| (m.role, m.content)).collect();
+    let settings: Vec<(String, String)> = body.settings.into_iter().collect();
+    match db.import_legacy(&messages, &settings) {
+        Ok((n_msg, n_set)) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "imported_messages": n_msg, "imported_settings": n_set})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
 }
 
 #[tokio::main]
@@ -207,7 +279,7 @@ async fn main() {
     let db = Arc::new(Db::open(db_path).expect("failed to open local SQLite DB (data/open-english.sqlite3)"));
     println!(
         "conversation DB: {} (aruaru-db/PostgreSQL mirror: {})",
-        db.path.display(),
+        db.path().display(),
         if db.has_postgres_mirror() { "enabled via OPEN_ENGLISH_DATABASE_URL" } else { "disabled (SQLite only)" }
     );
 
@@ -259,6 +331,30 @@ async fn main() {
             get(handler_fn(move |_req, _p| {
                 let db = Arc::clone(&db_for_info);
                 async move { db_info(db).await }
+            })),
+        );
+        let db_for_relocate = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/storage-path",
+            post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_relocate);
+                async move { db_relocate(req, db).await }
+            })),
+        );
+        let db_for_rsync = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/rsync-backup",
+            post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_rsync);
+                async move { db_rsync_backup(req, db).await }
+            })),
+        );
+        let db_for_migrate = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/migrate-legacy",
+            post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_migrate);
+                async move { db_migrate_legacy(req, db).await }
             })),
         );
     }

@@ -54,7 +54,10 @@ use std::sync::Mutex;
 
 pub struct Db {
     conn: Mutex<Connection>,
-    pub path: PathBuf,
+    /// **2026-08-18変更**: 保存先パスを実行時に変更できるよう
+    /// `Mutex`化(ユーザー指示「DATA保存先は、既存の保存先でもそれ以外
+    /// でも選択可能にして」への対応、`relocate`メソッド参照)。
+    path: Mutex<PathBuf>,
     /// `OPEN_ENGLISH_DATABASE_URL`が設定されていれば`Some`
     /// (aruaru-db/PostgreSQLへの追加ミラー先URL、接続自体はリクエスト
     /// ごとに行う——常時接続を維持する複雑さを避けた簡易実装)。
@@ -138,11 +141,87 @@ impl Db {
             ",
         )
         .context("failed to run schema migration")?;
-        Ok(Self { conn: Mutex::new(conn), path, postgres_url: postgres_url_from_env() })
+        Ok(Self { conn: Mutex::new(conn), path: Mutex::new(path), postgres_url: postgres_url_from_env() })
     }
 
     pub fn has_postgres_mirror(&self) -> bool {
         self.postgres_url.is_some()
+    }
+
+    pub fn path(&self) -> PathBuf {
+        self.path.lock().unwrap().clone()
+    }
+
+    /// 保存先を`new_path`へ変更する(ユーザー指示「DATA保存先は、既存の
+    /// 保存先でもそれ以外でも選択可能にして」への対応、2026-08-18新設)。
+    /// 現在のSQLite接続を閉じ、既存DBファイルを新しい場所へコピーした
+    /// 上で新しい場所を開き直す——コピー完了まで元ファイルは削除しない
+    /// (コピー失敗時に元データを失わないため)。
+    pub fn relocate(&self, new_path: PathBuf) -> Result<()> {
+        if let Some(parent) = new_path.parent() {
+            std::fs::create_dir_all(parent).with_context(|| format!("failed to create DB directory {parent:?}"))?;
+        }
+        let mut conn_guard = self.conn.lock().unwrap();
+        let mut path_guard = self.path.lock().unwrap();
+        // 保留中のSQLiteページキャッシュをディスクへ確実に反映してから
+        // ファイルをコピーする(WALモード等の未フラッシュデータの
+        // 取りこぼしを防ぐ)。
+        conn_guard.execute("PRAGMA wal_checkpoint(FULL)", []).ok();
+        std::fs::copy(&*path_guard, &new_path).with_context(|| format!("failed to copy DB file from {:?} to {new_path:?}", *path_guard))?;
+        let new_conn = Connection::open(&new_path).with_context(|| format!("failed to open relocated DB at {new_path:?}"))?;
+        let old_path = path_guard.clone();
+        *conn_guard = new_conn;
+        *path_guard = new_path;
+        drop(conn_guard);
+        drop(path_guard);
+        // 元ファイルは安全のため自動削除しない(ユーザー自身の判断で
+        // 削除できるよう、パスをログへ出すのみに留める——誤って
+        // データを失わせないための意図的な保守的挙動)。
+        eprintln!("open-english: DB relocated, old file left in place at {old_path:?} (delete manually once verified)");
+        Ok(())
+    }
+
+    /// `rsync`を子プロセスとして起動し、現在のDBファイルを
+    /// `destination`(ローカルパス・`user@host:/path`のいずれも可、
+    /// rsyncのCLI仕様通り)へ複製する(ユーザー指示「外部のGoogle
+    /// ドライブやUSBスティックメモリーやVPSにもRsyncなどを使って
+    /// バックアップも簡単に取れる」+「同期先もRSyncで選択可能に」への
+    /// 対応、2026-08-18新設)。**正直な開示**: `rsync`本体はこのアプリに
+    /// 同梱していない——利用者の環境(Linux/macOS/VPS/Android Termux等)に
+    /// 既にインストールされている`rsync`をそのまま呼び出すのみ。
+    /// Windows開発機のようにPATH上に`rsync`が無い環境では、その旨を
+    /// 正直にエラーとして返す(黙って失敗にしない)。
+    pub fn backup_via_rsync(&self, destination: &str) -> Result<String> {
+        let path = self.path();
+        let output = std::process::Command::new("rsync").arg("-a").arg(&path).arg(destination).output().with_context(|| {
+            "failed to launch `rsync` (is it installed and on PATH? On Windows dev machines it typically isn't — this is expected there; use a Linux/macOS/VPS/Android target for real rsync backups)".to_string()
+        })?;
+        if output.status.success() {
+            Ok(format!("rsync backup of {path:?} to {destination} succeeded"))
+        } else {
+            anyhow::bail!("rsync exited with {}: {}", output.status, String::from_utf8_lossy(&output.stderr));
+        }
+    }
+
+    /// 旧形式のエクスポート(メッセージ配列+設定連想配列)を新しい
+    /// DATABASEシステムへ取り込む(ユーザー指示「既存の古い物から
+    /// DATABASEシステムに移動も簡単にする機能」への対応、2026-08-18
+    /// 新設)。**正直な開示**: このコミット時点でopen-english自体には
+    /// 実際に永続化された「古いデータ」は存在しない(`app.js`は
+    /// これまで会話履歴をlocalStorageへ保存していなかったことを実際に
+    /// 確認済み——バージョン管理用の一部キーのみ)。そのため本関数は
+    /// 実在する具体的な旧データ形式への対応ではなく、**将来どのような
+    /// 旧形式のエクスポートが持ち込まれても受け入れられる汎用的な
+    /// 取り込み口**として実装した(役割ID・本文の配列、キー/値設定の
+    /// 連想配列という最小公倍数的な形)。戻り値は取り込んだ件数。
+    pub fn import_legacy(&self, messages: &[(String, String)], settings: &[(String, String)]) -> Result<(usize, usize)> {
+        for (role, content) in messages {
+            self.add_message(role, content)?;
+        }
+        for (key, value) in settings {
+            self.set_setting(key, value)?;
+        }
+        Ok((messages.len(), settings.len()))
     }
 
     /// SQLiteへ同期的に保存し、`OPEN_ENGLISH_DATABASE_URL`が設定されて
@@ -199,7 +278,7 @@ impl Db {
     /// 表示機能向けの生データ、2026-08-18時点ではこの数値をそのまま
     /// JSONで返すのみで、円グラフ描画自体は未実装)。
     pub fn file_size_bytes(&self) -> u64 {
-        std::fs::metadata(&self.path).map(|m| m.len()).unwrap_or(0)
+        std::fs::metadata(self.path()).map(|m| m.len()).unwrap_or(0)
     }
 }
 
