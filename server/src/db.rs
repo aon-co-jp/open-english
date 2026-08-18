@@ -52,6 +52,26 @@ use rusqlite::Connection;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
+/// `rsync`実行時のエラー種別。`NotInstalled`かどうかで呼び出し側
+/// (`main.rs`のハンドラ)がインストール案内(bilingual message)を
+/// 出すかどうかを分岐できるようにする(2026-08-18新設)。
+#[derive(Debug)]
+pub enum RsyncError {
+    NotInstalled,
+    Other(String),
+}
+
+impl std::fmt::Display for RsyncError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RsyncError::NotInstalled => write!(f, "rsync is not installed / rsyncがインストールされていません"),
+            RsyncError::Other(s) => write!(f, "{s}"),
+        }
+    }
+}
+
+impl std::error::Error for RsyncError {}
+
 pub struct Db {
     conn: Mutex<Connection>,
     /// **2026-08-18変更**: 保存先パスを実行時に変更できるよう
@@ -191,16 +211,62 @@ impl Db {
     /// 既にインストールされている`rsync`をそのまま呼び出すのみ。
     /// Windows開発機のようにPATH上に`rsync`が無い環境では、その旨を
     /// 正直にエラーとして返す(黙って失敗にしない)。
-    pub fn backup_via_rsync(&self, destination: &str) -> Result<String> {
+    pub fn backup_via_rsync(&self, destination: &str) -> Result<String, RsyncError> {
         let path = self.path();
-        let output = std::process::Command::new("rsync").arg("-a").arg(&path).arg(destination).output().with_context(|| {
-            "failed to launch `rsync` (is it installed and on PATH? On Windows dev machines it typically isn't — this is expected there; use a Linux/macOS/VPS/Android target for real rsync backups)".to_string()
+        let output = std::process::Command::new("rsync").arg("-a").arg(&path).arg(destination).output().map_err(|e| {
+            if e.kind() == std::io::ErrorKind::NotFound {
+                RsyncError::NotInstalled
+            } else {
+                RsyncError::Other(format!("failed to launch `rsync`: {e}"))
+            }
         })?;
         if output.status.success() {
             Ok(format!("rsync backup of {path:?} to {destination} succeeded"))
         } else {
-            anyhow::bail!("rsync exited with {}: {}", output.status, String::from_utf8_lossy(&output.stderr));
+            Err(RsyncError::Other(format!("rsync exited with {}: {}", output.status, String::from_utf8_lossy(&output.stderr))))
         }
+    }
+
+    /// `rsync`が実際にPATH上で実行可能か(バージョン問い合わせのみ、
+    /// 副作用なし)。インストール後の「本当に使えるようになったか」の
+    /// 確認に使う。
+    pub fn rsync_available() -> bool {
+        std::process::Command::new("rsync").arg("--version").output().map(|o| o.status.success()).unwrap_or(false)
+    }
+
+    /// このOS向けに`rsync`のインストールを試みる(ユーザー指示
+    /// 「RSyncをインストールしましょう！を…表示して簡単にインストール
+    /// して簡単に自動で移行する機能を搭載して」への対応、2026-08-18
+    /// 新設)。利用可能なパッケージマネージャを順に試す——
+    /// **正直な開示**: このアプリ自身が`rsync`のインストーラーを同梱・
+    /// ダウンロードするわけではなく、各OS標準/準標準のパッケージ
+    /// マネージャ(Windows: winget→choco、Linux: apt-get→dnf→pacman、
+    /// macOS: brew、Android/Termux: pkg)を子プロセスとして呼び出す
+    /// だけ。該当するパッケージマネージャが1つも見つからない環境
+    /// (例: 素のWindows開発機でwinget/chocoともに未導入)では、その旨を
+    /// 正直に返し、手動インストール手順への案内に委ねる。
+    pub fn install_rsync() -> Result<String, RsyncError> {
+        let candidates: &[(&str, &[&str])] = if cfg!(target_os = "windows") {
+            &[("winget", &["install", "-e", "--id", "cwrsync.cwrsync", "--accept-package-agreements", "--accept-source-agreements"]), ("choco", &["install", "rsync", "-y"])]
+        } else if cfg!(target_os = "macos") {
+            &[("brew", &["install", "rsync"])]
+        } else if std::env::var("PREFIX").map(|p| p.contains("com.termux")).unwrap_or(false) {
+            &[("pkg", &["install", "-y", "rsync"])]
+        } else {
+            &[("apt-get", &["install", "-y", "rsync"]), ("dnf", &["install", "-y", "rsync"]), ("pacman", &["-S", "--noconfirm", "rsync"])]
+        };
+        let mut tried = Vec::new();
+        for (cmd, args) in candidates {
+            match std::process::Command::new(cmd).args(*args).output() {
+                Ok(output) if output.status.success() => {
+                    return Ok(format!("installed rsync via `{cmd}`"));
+                }
+                Ok(output) => tried.push(format!("{cmd}: exited with {} ({})", output.status, String::from_utf8_lossy(&output.stderr).trim())),
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => tried.push(format!("{cmd}: not found")),
+                Err(e) => tried.push(format!("{cmd}: {e}")),
+            }
+        }
+        Err(RsyncError::Other(format!("no working package manager found for rsync install (tried: {})", tried.join("; "))))
     }
 
     /// 旧形式のエクスポート(メッセージ配列+設定連想配列)を新しい

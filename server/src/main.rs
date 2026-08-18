@@ -228,6 +228,14 @@ struct RsyncBackupRequest {
     destination: String,
 }
 
+/// 「Let's install RSync! / RSyncをインストールしましょう！」の英日併記
+/// メッセージ(ユーザー指示、2026-08-18新設)。`rsync`未導入で
+/// バックアップに失敗した際、フロントエンドがこの文言+
+/// `/v1/db/install-rsync`呼び出しボタンを表示できるよう、
+/// `rsync_missing: true`と共に返す。
+const INSTALL_RSYNC_PROMPT_EN: &str = "Let's install RSync! Click \"Install RSync\" to set it up automatically, then your backup will run right away.";
+const INSTALL_RSYNC_PROMPT_JA: &str = "RSyncをインストールしましょう！「RSyncをインストール」を押すと自動でセットアップし、そのままバックアップを実行します。";
+
 async fn db_rsync_backup(req: Request, db: Arc<Db>) -> Response {
     let body: RsyncBackupRequest = match read_rs_json_body(req).await {
         Ok(v) => v,
@@ -236,8 +244,59 @@ async fn db_rsync_backup(req: Request, db: Arc<Db>) -> Response {
     let destination = body.destination;
     match tokio::task::spawn_blocking(move || db.backup_via_rsync(&destination)).await {
         Ok(Ok(msg)) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "detail": msg})),
+        Ok(Err(db::RsyncError::NotInstalled)) => rs_json_response(
+            StatusCode::OK,
+            &serde_json::json!({
+                "ok": false,
+                "rsync_missing": true,
+                "message_en": INSTALL_RSYNC_PROMPT_EN,
+                "message_ja": INSTALL_RSYNC_PROMPT_JA,
+            }),
+        ),
         Ok(Err(e)) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
         Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("rsync task panicked: {e}")})),
+    }
+}
+
+/// `rsync`を自動インストールし、`retry_destination`が指定されていれば
+/// 成功直後にそのままバックアップまで実行する(ユーザー指示「簡単に
+/// インストールして簡単に自動で移行する機能を搭載して」への対応、
+/// 2026-08-18新設——「インストール」ボタン1回でインストール→
+/// バックアップまで通しで完了する設計)。
+#[derive(serde::Deserialize)]
+struct InstallRsyncRequest {
+    #[serde(default)]
+    retry_destination: Option<String>,
+}
+
+async fn db_install_rsync(req: Request, db: Arc<Db>) -> Response {
+    let body: InstallRsyncRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    let install_result = tokio::task::spawn_blocking(Db::install_rsync).await;
+    let install_msg = match install_result {
+        Ok(Ok(msg)) => msg,
+        Ok(Err(e)) => {
+            return rs_json_response(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &serde_json::json!({
+                    "ok": false,
+                    "error": e.to_string(),
+                    "message_en": "Automatic install failed. Please install rsync manually for your OS (e.g. `winget install cwrsync.cwrsync` on Windows, `apt-get install rsync` on Linux, `brew install rsync` on macOS, `pkg install rsync` on Android/Termux).",
+                    "message_ja": "自動インストールに失敗しました。お使いのOS向けに手動でrsyncをインストールしてください(例: Windowsは`winget install cwrsync.cwrsync`、Linuxは`apt-get install rsync`、macOSは`brew install rsync`、Android/Termuxは`pkg install rsync`)。",
+                }),
+            )
+        }
+        Err(e) => return rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("install task panicked: {e}")})),
+    };
+    let Some(destination) = body.retry_destination else {
+        return rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "detail": install_msg, "backup_ran": false}));
+    };
+    match tokio::task::spawn_blocking(move || db.backup_via_rsync(&destination)).await {
+        Ok(Ok(backup_msg)) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "detail": install_msg, "backup_ran": true, "backup_detail": backup_msg})),
+        Ok(Err(e)) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "detail": install_msg, "backup_ran": false, "backup_error": e.to_string()})),
+        Err(e) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "detail": install_msg, "backup_ran": false, "backup_error": format!("rsync task panicked: {e}")})),
     }
 }
 
@@ -355,6 +414,14 @@ async fn main() {
             post(handler_fn(move |req, _p| {
                 let db = Arc::clone(&db_for_migrate);
                 async move { db_migrate_legacy(req, db).await }
+            })),
+        );
+        let db_for_install_rsync = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/install-rsync",
+            post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_install_rsync);
+                async move { db_install_rsync(req, db).await }
             })),
         );
     }
