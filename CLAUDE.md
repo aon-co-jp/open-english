@@ -47,6 +47,73 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き11) aruaru-db/PostgreSQLも同時rsyncバックアップ可能に
+  (ユーザー指示「RSyncで、open-englishのaruaru-dbとpostgresqlを他の
+  デバイスなどにバックアップ同時を可能に、その設定方法も簡単にして」
+  への対応)**:
+  1. **事前調査**: `aruaru-db`(`F:\runo\aruaru-db`)は独自のストレージ
+     エンジン(fjall LSM行ストア + Prolly Tree + WAL、`README.md`
+     アーキテクチャ図参照)であり、稼働中のデータディレクトリを
+     `rsync`で直接ファイルコピーすると、書き込み中のファイルを
+     中途半端な状態で複製する一貫性リスクがあると判断した(PostgreSQL
+     本体のデータディレクトリを止めずにそのままrsyncするのが危険なのと
+     同じ理由)。また`open-english`は`aruaru-db`のデータディレクトリへ
+     直接アクセスできる位置関係にあるとは限らない
+     (`OPEN_ENGLISH_DATABASE_URL`はネットワーク越しの接続文字列で
+     あり得る)。`aruaru-db`自身が持つ`aruaru-backup`クレート
+     (Parquetフル/増分/スナップショットバックアップ)はin-process
+     ライブラリで`QueryEngine`インスタンスを直接要求する設計であり、
+     アーキテクチャ方針(`open-english`は`aruaru-db`に直接依存せず
+     普通のPostgreSQLクライアントとして振る舞う)上、このクレートへ
+     直接依存させることはしなかった。
+  2. **採用した方式**: 標準の`pg_dump`(PostgreSQLワイヤプロトコル
+     経由、単一トランザクションのスナップショットとして一貫性のある
+     ダンプを取得する標準クライアントツール)でSQLダンプファイルへ
+     書き出した上で、そのダンプファイル1個だけを`rsync`で複製する。
+     `server/src/db.rs`に`Db::backup_postgres_via_pg_dump(destination)`
+     を新設(`OPEN_ENGLISH_DATABASE_URL`未設定時は`None`を返し
+     「対象なし」として扱う)。
+  3. **新規`POST /v1/db/rsync-backup-all`**(`server/src/main.rs`):
+     宛先を1つ受け取り、既存のSQLite会話DBバックアップと
+     `pg_dump`+rsyncバックアップを同時に実行し、両方の結果を
+     `{sqlite_backup, postgres_backup}`として返す。**設定を簡単に
+     する狙い**の実現方法: 利用者は宛先を1箇所入力するだけでよい
+     (既存の`/v1/db/rsync-backup`とは別エンドポイントとして追加、
+     既存機能は変更していない)。
+  4. **UI(`index.html`/`app.js`/`style.css`)**: 既存の「💾 Data &
+     Model Storage」パネル内に「Backup conversation DB + aruaru-db/
+     PostgreSQL together / 会話履歴DBとaruaru-db/PostgreSQLを同時に
+     バックアップ」節を新設し、宛先1つの入力欄+「🔄 Backup both now /
+     両方を今すぐバックアップ」ボタンを追加。`pg_dump`経由である旨・
+     データ一貫性への配慮を日英併記で明記した。`.setup-note`に
+     `white-space: pre-line`を追加(結果メッセージを2行〈SQLite側/
+     aruaru-db側〉で見やすく表示するため)。
+  5. **正直な開示・検証範囲の限界(重要)**: (a) この開発機には
+     `cargo`/`rustc`がPATH上に無く(既存HANDOFFに記載済みの既知の
+     制約)、新設したRustコード(`db.rs`/`main.rs`)は**実際に
+     コンパイルして検証できていない**——手作業でのコードレビュー
+     (既存の`backup_via_rsync`/`db_rsync_backup`と同型のエラー
+     処理・型シグネチャに揃えた)にとどまる。(b) UI側
+     (`index.html`/`app.js`/`style.css`)は、既存のビルド済み
+     旧バイナリ(新エンドポイント未搭載)を実際に起動し、Claude
+     Browserで実機確認した: パネルの新セクションが正しく描画される
+     こと、宛先未入力→エラーメッセージ表示、宛先入力→ボタン押下で
+     `fetch`が実際に発火し(新エンドポイントが無いため404、期待通り)
+     例外を投げずに日英併記の失敗メッセージへフォールバックすること、
+     コンソールに新規のJSエラーが出ないこと、を確認した。(c) この
+     開発環境に到達可能な`aruaru-db`インスタンス・`pg_dump`バイナリが
+     無いため、「`aruaru-db`のpgwire実装が実際に`pg_dump`の要求する
+     クエリに対応しているか」自体も未検証(モジュールdocに明記済み)
+     ——対応していない場合は`pg_dump`のエラーをそのまま利用者へ
+     返す設計にしている(黙って成功したことにしない)。
+  - 次にすべきこと: (1) `cargo`が使える環境で`cargo build --release`
+    ・`cargo test`を実施し、新規コードの実コンパイル確認、(2) 実際の
+    `aruaru-db`インスタンス+`OPEN_ENGLISH_DATABASE_URL`+`pg_dump`が
+    揃った環境での`/v1/db/rsync-backup-all`のE2E検証(`pg_dump`が
+    `aruaru-db`のpgwireに対して実際に成功するかの確認を含む)、
+    (3) rsync実在環境での実ファイル複製確認(既存`/v1/db/rsync-backup`
+    と同じ既知の未検証事項の延長)。
+
 - **2026-08-19(続き10) 「使わなくなったスマホもフル動員しましょう」
   日英併記バナーを追加(ユーザー指示への対応、詳細な検出実装は
   `aruaru-llm`側、本リポジトリはUI表示のみ)**:

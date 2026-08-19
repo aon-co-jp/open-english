@@ -377,6 +377,57 @@ async fn db_install_rsync(req: Request, db: Arc<Db>) -> Response {
     }
 }
 
+/// SQLite会話履歴DB + aruaru-db/PostgreSQLミラー(設定されていれば)を
+/// **1回の呼び出しで同時に**同じ宛先へrsyncバックアップする(ユーザー
+/// 指示「RSyncで、open-englishのaruaru-dbとpostgresqlを他のデバイス
+/// などにバックアップ同時を可能に、その設定方法も簡単にして」への
+/// 対応、2026-08-19新設)。**設定を簡単にする狙い**: 利用者は宛先を
+/// 1箇所入力するだけでよく、SQLite側は`<destination>`直下へ、
+/// aruaru-db側は`db_rs::backup_postgres_via_pg_dump`が同じ宛先文字列を
+/// そのまま`rsync`へ渡す(pg_dumpしたファイル1個の複製のため、
+/// ディレクトリ宛先であれば両者は自動的に別ファイル名で共存する)。
+/// aruaru-dbミラー未設定時は`postgres_backup: null`を返す(存在しない
+/// 対象を「失敗」として扱わない)。データ一貫性への配慮は`db.rs`の
+/// `backup_postgres_via_pg_dump`のdoc参照(稼働中データディレクトリの
+/// 直接rsyncではなく`pg_dump`のトランザクション一貫スナップショットを
+/// 経由する)。
+async fn db_rsync_backup_all(req: Request, db: Arc<Db>) -> Response {
+    let body: RsyncBackupRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    let destination = body.destination;
+    let sqlite_destination = destination.clone();
+    let db_for_sqlite = Arc::clone(&db);
+    let sqlite_result = tokio::task::spawn_blocking(move || db_for_sqlite.backup_via_rsync(&sqlite_destination)).await;
+    let sqlite_json = match sqlite_result {
+        Ok(Ok(msg)) => serde_json::json!({"ok": true, "detail": msg}),
+        Ok(Err(db::RsyncError::NotInstalled)) => serde_json::json!({
+            "ok": false, "rsync_missing": true,
+            "message_en": INSTALL_RSYNC_PROMPT_EN, "message_ja": INSTALL_RSYNC_PROMPT_JA,
+        }),
+        Ok(Err(e)) => serde_json::json!({"ok": false, "error": e.to_string()}),
+        Err(e) => serde_json::json!({"ok": false, "error": format!("rsync task panicked: {e}")}),
+    };
+
+    let postgres_destination = destination;
+    let db_for_pg = Arc::clone(&db);
+    let pg_result = tokio::task::spawn_blocking(move || db_for_pg.backup_postgres_via_pg_dump(&postgres_destination)).await;
+    let postgres_json = match pg_result {
+        Ok(None) => serde_json::Value::Null,
+        Ok(Some(Ok(msg))) => serde_json::json!({"ok": true, "detail": msg}),
+        Ok(Some(Err(db::RsyncError::NotInstalled))) => serde_json::json!({
+            "ok": false, "rsync_or_pg_dump_missing": true,
+            "message_en": "Let's install RSync and PostgreSQL client tools (pg_dump)! Please install rsync and the PostgreSQL client package (which provides pg_dump) for your OS, then try again.",
+            "message_ja": "RSyncとPostgreSQLクライアントツール(pg_dump)をインストールしましょう！お使いのOS向けにrsyncとPostgreSQLクライアントパッケージ(pg_dumpを含む)をインストールしてから、もう一度お試しください。",
+        }),
+        Ok(Some(Err(e))) => serde_json::json!({"ok": false, "error": e.to_string()}),
+        Err(e) => serde_json::json!({"ok": false, "error": format!("pg_dump/rsync task panicked: {e}")}),
+    };
+
+    rs_json_response(StatusCode::OK, &serde_json::json!({"sqlite_backup": sqlite_json, "postgres_backup": postgres_json}))
+}
+
 /// 旧形式データの取り込み(ユーザー指示「既存の古い物からDATABASE
 /// システムに移動も簡単にする機能」への対応、2026-08-18新設。実際に
 /// 存在する旧データ形式は無い〈`db.rs`の`import_legacy`doc参照〉ため、
@@ -484,6 +535,14 @@ async fn main() {
             post(handler_fn(move |req, _p| {
                 let db = Arc::clone(&db_for_rsync);
                 async move { db_rsync_backup(req, db).await }
+            })),
+        );
+        let db_for_rsync_all = Arc::clone(&db);
+        app = app.at(
+            "/v1/db/rsync-backup-all",
+            post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_rsync_all);
+                async move { db_rsync_backup_all(req, db).await }
             })),
         );
         let db_for_migrate = Arc::clone(&db);

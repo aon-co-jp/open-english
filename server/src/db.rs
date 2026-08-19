@@ -46,6 +46,33 @@
 //! クライアントとして振る舞う**設計。未設定・接続失敗時はSQLiteのみで
 //! 引き続き動作し続ける(既存の「サービスを止めない」方針、書き込み
 //! 失敗はログに警告を出すのみでリクエスト自体は失敗させない)。
+//!
+//! ## aruaru-db(PostgreSQL)側の同時rsyncバックアップ(2026-08-19追加)
+//!
+//! ユーザー指示「RSyncで、open-englishのaruaru-dbとpostgresqlを他の
+//! デバイスなどにバックアップ同時を可能に」への対応。**正直な開示・
+//! データ一貫性への配慮(重要)**: `aruaru-db`は独自のストレージ
+//! エンジン(fjall LSM行ストア + Prolly Tree + WAL、`aruaru-db/README.md`
+//! 参照)であり、稼働中のデータディレクトリを`rsync`で直接ファイル
+//! コピーすると、書き込み中のファイルを中途半端な状態で複製してしまう
+//! 一貫性リスクがある(PostgreSQL本体のデータディレクトリを止めずに
+//! そのまま`rsync`するのが危険なのと同じ理由)。このリポジトリは
+//! `aruaru-db`のデータディレクトリへ直接アクセスできる位置関係にある
+//! とは限らない(`OPEN_ENGLISH_DATABASE_URL`はネットワーク越しの
+//! 接続文字列であり、別ホスト上で稼働している可能性がある)ため、
+//! ファイルシステムレベルの`rsync`ではなく、**標準の`pg_dump`
+//! (PostgreSQLワイヤプロトコル経由、単一トランザクションのスナップ
+//! ショットとして一貫性のあるダンプを取得する標準ツール)でSQL
+//! ダンプファイルへ書き出した上で、そのダンプファイル1個だけを
+//! `rsync`で複製する**方式を採る。これにより、稼働中の`aruaru-db`を
+//! 止めずに一貫性のあるバックアップが取れる(`pg_dump`自体が
+//! アプリケーション側の一時停止を必要としない設計のツールであるため)。
+//! **未検証事項**: `aruaru-db`の`aruaru-wire`クレートがpgwireプロト
+//! コルのどこまでを実装しているか(`pg_dump`が要求する内部カタログ
+//! クエリ等に完全対応しているか)は、この開発環境に到達可能な
+//! `aruaru-db`インスタンスが無いため実機検証できていない——`pg_dump`
+//! が非対応のクエリを投げてエラーになった場合は、その旨をそのまま
+//! エラーメッセージとして利用者へ返す(黙って成功したことにしない)。
 
 use anyhow::{Context, Result};
 use rusqlite::Connection;
@@ -225,6 +252,50 @@ impl Db {
         } else {
             Err(RsyncError::Other(format!("rsync exited with {}: {}", output.status, String::from_utf8_lossy(&output.stderr))))
         }
+    }
+
+    /// `aruaru-db`/PostgreSQLミラー先を`pg_dump`で一貫性のあるSQL
+    /// ダンプへ書き出し、そのダンプファイルを`rsync`で`destination`へ
+    /// 複製する(ユーザー指示「aruaru-dbとpostgresqlも他のデバイスに
+    /// 同時にバックアップ」への対応、2026-08-19新設)。**正直な開示**:
+    /// モジュールdocの通り、稼働中データディレクトリの直接rsyncは
+    /// 一貫性リスクがあるため採用せず、`pg_dump`(標準PostgreSQL
+    /// クライアントツール、`OPEN_ENGLISH_DATABASE_URL`と同じPATH上に
+    /// 存在する前提)を経由する。`OPEN_ENGLISH_DATABASE_URL`未設定
+    /// (ミラー無効)の場合は`None`を返す——呼び出し側(`main.rs`)が
+    /// 「対象なし」として扱う。
+    pub fn backup_postgres_via_pg_dump(&self, destination: &str) -> Option<Result<String, RsyncError>> {
+        let url = self.postgres_url.clone()?;
+        Some((|| {
+            let dump_path = std::env::temp_dir().join(format!("open-english-aruaru-db-dump-{}.sql", std::process::id()));
+            let dump_output = std::process::Command::new("pg_dump").arg(&url).arg("-f").arg(&dump_path).output().map_err(|e| {
+                if e.kind() == std::io::ErrorKind::NotFound {
+                    RsyncError::NotInstalled
+                } else {
+                    RsyncError::Other(format!("failed to launch `pg_dump`: {e}"))
+                }
+            })?;
+            if !dump_output.status.success() {
+                return Err(RsyncError::Other(format!(
+                    "pg_dump exited with {}: {}",
+                    dump_output.status,
+                    String::from_utf8_lossy(&dump_output.stderr)
+                )));
+            }
+            let rsync_output = std::process::Command::new("rsync").arg("-a").arg(&dump_path).arg(destination).output().map_err(|e| {
+                if e.kind() == std::io::ErrorKind::NotFound {
+                    RsyncError::NotInstalled
+                } else {
+                    RsyncError::Other(format!("failed to launch `rsync`: {e}"))
+                }
+            })?;
+            std::fs::remove_file(&dump_path).ok(); // 一時ダンプファイルは複製後に削除(失敗しても致命的ではないため無視)。
+            if rsync_output.status.success() {
+                Ok(format!("pg_dump + rsync backup of aruaru-db/PostgreSQL mirror to {destination} succeeded"))
+            } else {
+                Err(RsyncError::Other(format!("rsync exited with {}: {}", rsync_output.status, String::from_utf8_lossy(&rsync_output.stderr))))
+            }
+        })())
     }
 
     /// `rsync`が実際にPATH上で実行可能か(バージョン問い合わせのみ、
