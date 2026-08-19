@@ -47,6 +47,65 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き6) Windowsインストーラーへaruaru-db(任意)の同梱オプションを
+  追加(ユーザー指示「aruaru-dbも同梱して」への対応、直前の
+  aruaru-llm完全同梱作業とは別スレッドで並行実施)**:
+  1. **aruaru-dbの位置づけを`aruaru-db/CLAUDE.md`・`README.md`から
+     確認**: `aruaru-db`は「PostgreSQLワイヤプロトコル互換のPure Rust
+     実装データベース」で、外部にPostgreSQL本体を別途インストールする
+     必要はない(pgwireを自前実装、`aruaru-server`という単体バイナリ
+     として動作)。open-english側は`server/src/db.rs`が既に
+     SQLite(ローカルファイル)で会話履歴・設定を完結させており、
+     aruaru-dbは`OPEN_ENGLISH_DATABASE_URL`環境変数を設定した場合にのみ
+     有効になる**ベストエフォートの追加ミラー先**(未設定ならSQLite単体で
+     問題なく動作)。この位置づけを誤認せず、「aruaru-db同梱=DB機能の
+     必須要件化」ではなく「任意のオプション機能の同梱」として実装した。
+  2. **同梱の実現可能性**: `aruaru-db`の`.github/workflows/release.yml`
+     (`softprops/action-gh-release`)がWindows/Linux向けのビルド済み
+     単体バイナリを`aruaru-server-windows-x86_64.zip`等としてGitHub
+     Releasesへ既に添付していることを確認(`aruaru-llm`と全く同じ
+     配布パターン)。フルPostgreSQLサーバー自体の同梱が必要なケース
+     ではなかった。
+  3. **実装**: `installer/windows/fetch-aruaru-db.ps1`を新設
+     (`fetch-aruaru-llm.ps1`と同じ設計、GitHub Releases APIから
+     Windows向けzipを取得・展開、失敗してもインストーラー全体は止めない)。
+     `open-english.iss`へ`[Files]`(`fetch-aruaru-db.ps1`)・`[Tasks]`
+     (`installaruarudb`、**既定は未チェック**——aruaru-llmと異なり
+     open-english本体の動作に必須ではないため)・`[Run]`
+     (該当タスク選択時のみ`fetch-aruaru-db.ps1`を実行)を追加。
+     取得したaruaru-serverは自動起動しない(ユーザー自身が起動し
+     `OPEN_ENGLISH_DATABASE_URL`を設定する必要がある、手順は
+     `README-INSTALLED.txt`に日英併記で追記済み)。Tauri管理GUI・
+     Raft分散クラスタ構成・バックアップ運用等は同梱対象外(単体
+     サーバーバイナリのみ)であることも明記した。
+  4. **実装できなかった点・正直な開示**: この開発機に`ISCC.exe`
+     (Inno Setup Compiler)が無く、`.iss`ファイル自体の実コンパイル・
+     生成されたインストーラーでの実インストール検証はできていない
+     (PowerShellスクリプト単体の構文チェックのみ実施、エラー無し)。
+     次回、Inno Setupが利用可能な環境で実際に`ISCC.exe
+     open-english.iss`を実行し、「aruaru-dbも一緒にインストール」
+     チェック時に実際に`aruaru-server.exe`がダウンロード・配置される
+     ことのE2E検証が必要。
+  5. **他エージェントとの並行作業への配慮**: 着手前に`git status`を確認
+     したところ、別エージェントが`server/src/main.rs`(aruaru-llm自動
+     起動機能)・翻訳系ファイル群を並行編集中だったため、それらには
+     一切触れず、`installer/windows/open-english.iss`(このセッション
+     以前は未編集だった)への追記のみに限定した。`README-INSTALLED.txt`
+     は他エージェントも同時に大幅更新していたため、このセッションでは
+     aruaru-db向けの段落追記のみを行い(他エージェント側の変更を
+     上書き・競合させないよう確認)、コミットは`open-english.iss`と
+     新設`fetch-aruaru-db.ps1`の2ファイルに限定し、他エージェントの
+     変更が残る`README-INSTALLED.txt`・`server/src/main.rs`は今回
+     コミット対象から外した(他エージェントのコミット完了後に別途
+     整合を確認すること)。
+  - 次にすべきこと: (1) Inno Setup実機での`.iss`コンパイル+
+    「aruaru-dbも一緒にインストール」チェック時の実インストールE2E検証、
+    (2) 他エージェントの`README-INSTALLED.txt`変更が確定コミットされた
+    後、このセッションで追記したaruaru-db段落が正しく残っているか確認、
+    (3) Linux/macOS版インストーラー(`installer/unix/install.sh`)にも
+    同様の`--with-aruaru-db`オプションを追加するかの検討(今回は
+    Windows版のみ)。
+
 - **2026-08-19(続き5) 無料枠バナーへClaude(Anthropic)を追加(ユーザー指示
   「最初から有料でも良ければClaudeも選択可能にしておいて」への対応)**:
   1. **`provider-free-tiers.json`にClaudeエントリを追加**: `id: "claude"`。

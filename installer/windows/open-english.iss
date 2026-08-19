@@ -3,11 +3,16 @@
 ; ユーザー指示「Windows用とAndroidスマホ様にインストーラー付きアプリに
 ; して、アンインストーラーとバージョン管理機能も付けて」への対応。
 ;
-; 正直な開示: このインストーラーが同梱するのは本リポジトリ(open-english)
-; の静的フロントエンド+配信サーバー(server/、RPoemベース)のみ。
-; `aruaru-llm`(AI推論本体)は別リポジトリのため同梱しない——
-; https://github.com/aon-co-jp/aruaru-llm/releases から別途取得する
-; 必要がある(インストール後に表示するREADMEに明記)。
+; 正直な開示: このインストーラー自体が同梱するのは本リポジトリ
+; (open-english)の静的フロントエンド+配信サーバー(server/、RPoemベース)
+; のみ。`aruaru-llm`(AI推論本体)・`aruaru-db`(任意のPostgreSQLワイヤ
+; 互換ミラーDB)はいずれも別リポジトリの実行ファイルのため、インストーラー
+; 本体には含めず、[Tasks]でチェックされた場合のみ各fetch-*.ps1が
+; GitHub Releasesから追加ダウンロードする(2026-08-19、aruaru-db取得を
+; 追加)。手動で取得する場合はそれぞれ
+; https://github.com/aon-co-jp/aruaru-llm/releases /
+; https://github.com/aon-co-jp/aruaru-db/releases から取得する
+; (インストール後に表示するREADMEに明記)。
 ;
 ; ビルド方法: `server/`で`cargo build --release`を実行した後、
 ; このディレクトリで`ISCC.exe open-english.iss`を実行する。
@@ -76,6 +81,7 @@ Source: "..\..\exam-prep-questions.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\icons\*"; DestDir: "{app}\icons"; Flags: ignoreversion recursesubdirs
 Source: "README-INSTALLED.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-aruaru-llm.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "fetch-aruaru-db.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
@@ -89,10 +95,24 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; などの機能が欲しい」への対応、2026-08-11)。既定でチェック済み——
 ; open-englishはaruaru-llm無しでは動作しない(AI応答が返らない)ため。
 ; 正直な開示: これが取得するのはaruaru-llm本体(実行ファイル)のみ。
-; GPT-2/DistilGPT-2の実モデル重み(数百MB〜数GB)・aruaru-db・PostgreSQL
-; は含まない(それぞれ別途セットアップが必要、インストール後に表示する
+; GPT-2/DistilGPT-2の実モデル重み(数百MB〜数GB)は含まない(初回起動後に
+; 別途取得が必要)。aruaru-db本体は下記の別タスク(installaruarudb、
+; 2026-08-19追加)で任意に同梱可能——ただしこちらも任意機能である旨は
+; 変わらない(それぞれ別途セットアップが必要、インストール後に表示する
 ; README-INSTALLED.txtに手順を明記)。
 Name: "installaruarullm"; Description: "Also install aruaru-llm (AI backend) / aruaru-llm(AI応答エンジン)も一緒にインストール"; Flags: checkedonce
+; aruaru-db同梱タスク(ユーザー指示「aruaru-dbも同梱して」への対応、
+; 2026-08-19)。既定は未チェック——aruaru-llmと違いopen-english本体の
+; 動作に必須ではないため(会話履歴はSQLite単体で完結。aruaru-dbは
+; `OPEN_ENGLISH_DATABASE_URL`を設定した場合のみ有効になるオプションの
+; PostgreSQLワイヤ互換ミラー先)。正直な開示: 取得するのは`aruaru-server`
+; (単体で完結するPure Rustバイナリ、PostgreSQLワイヤプロトコルを自前実装
+; しており外部PostgreSQL本体のインストールは不要)の実行ファイルのみ。
+; Tauri管理GUI・Raft分散クラスタ構成・バックアップ運用等は含まれず、
+; 取得後も自動起動はしない(ユーザー自身が`aruaru-server.exe`を起動し
+; `OPEN_ENGLISH_DATABASE_URL`を設定する必要がある、手順はfetch-aruaru-db.ps1
+; の出力メッセージとREADME-INSTALLED.txtに記載)。
+Name: "installaruarudb"; Description: "Also install aruaru-db (optional PostgreSQL-wire mirror DB, not required) / aruaru-db(任意のPostgreSQL互換ミラーDB、必須ではありません)も一緒にインストール"; Flags: unchecked
 
 [Run]
 Filename: "powershell.exe"; \
@@ -100,6 +120,11 @@ Filename: "powershell.exe"; \
     StatusMsg: "Downloading aruaru-llm... / aruaru-llmをダウンロード中..."; \
     Flags: runhidden waituntilterminated; \
     Tasks: installaruarullm
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-aruaru-db.ps1"" -DestDir ""{app}\aruaru-db"""; \
+    StatusMsg: "Downloading aruaru-db (optional)... / aruaru-db(任意)をダウンロード中..."; \
+    Flags: runhidden waituntilterminated; \
+    Tasks: installaruarudb
 ; 実機E2E検証(2026-08-12)で発覚した実バグ: self_update.rsは
 ; `/VERYSILENT`でこのインストーラーを起動して無人での自動更新を行う
 ; ため、サーバー起動エントリに`skipifsilent`が付いていると更新後に
