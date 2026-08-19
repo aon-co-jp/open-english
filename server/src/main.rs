@@ -84,7 +84,9 @@ fn repo_root() -> PathBuf {
         .to_path_buf()
 }
 
-fn bind_addr() -> SocketAddr {
+/// `self_update.rs`のロールバック用ヘルスチェックからも参照するため
+/// `pub(crate)`にする(2026-08-19追加、自動ロールバック機能)。
+pub(crate) fn bind_addr() -> SocketAddr {
     std::env::var("OPEN_ENGLISH_SERVER_BIND")
         .ok()
         .and_then(|s| s.parse().ok())
@@ -111,6 +113,13 @@ async fn read_rs_json_body<T: serde::de::DeserializeOwned>(req: Request) -> Resu
     };
     rust_json::from_slice_strict::<T>(&bytes)
         .map_err(|e| rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": format!("invalid JSON body (Rust-JSON strict mode): {e}")})))
+}
+
+/// 単純な生存確認エンドポイント(2026-08-19新設、自動ロールバック機能の
+/// ヘルスチェック先として`self_update.rs`が使う。既存の`aruaru-llm`側
+/// `/healthz`と同じ命名に揃えた)。
+async fn healthz() -> Response {
+    rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true}))
 }
 
 fn rs_json_response(status: StatusCode, value: &impl serde::Serialize) -> Response {
@@ -348,6 +357,7 @@ async fn main() {
         let file_path = root.join(rel_file);
         app = app.at(url_path, get(static_file_handler(file_path, content_type)));
     }
+    app = app.at("/healthz", get(handler_fn(move |_req, _p| async move { healthz().await })));
 
     // 会話履歴・設定の永続化API(2026-08-18新設、db.rsモジュールdoc参照)。
     {

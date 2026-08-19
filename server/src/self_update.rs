@@ -55,6 +55,59 @@
 //! 比較・アセット名判定ロジック)の確認までにとどまり、実際のLinux
 //! 環境での最初から最後までのE2E検証は次回Linux実機で行う必要がある。
 //!
+//! ## 2026-08-19追記(続き): macOS対応+自動ロールバック機能を追加
+//!
+//! ユーザー指示「MAC版にも対応、失敗した時ダウングレードする機能も
+//! 搭載」への対応。
+//!
+//! - **macOS対応**: macOSもLinuxと同じくUnix系のファイルシステムの
+//!   仕組み(実行中のバイナリを`rename`/上書きしても既存プロセスは
+//!   古いinodeを掴んだまま動作を続けられる)を持つため、Linux向けに
+//!   実装済みだった`apply_update_linux`をそのまま流用できると判断し、
+//!   `apply_update_unix`へリネームして`cfg!(any(target_os = "linux",
+//!   target_os = "macos"))`の共通コードとした(重複実装を避ける
+//!   ユーザー指示に沿い、Linux/macOSでロジックを分岐させていない)。
+//!   アセット探索も`linux_tarball_asset`(名前に`"linux"`を含むものだけ
+//!   採用しmacOSを明示的に除外していた)を廃止し、`unix_tarball_asset`
+//!   として実行中のOSに応じて`"linux"`/`"macos"`のいずれかを含む
+//!   アセット名を探すよう一般化した。**正直な開示**: この開発機は
+//!   Windowsのため、macOS版の実機E2E検証(実際のmacOS実機での
+//!   ダウンロード→自己置換→再起動)は未実施——コンパイル成功・単体
+//!   テストの確認までにとどまる(Linux版と同じ既知の制約)。
+//! - **自動ロールバック(ダウングレード)機能**: 新バージョン適用前に
+//!   現在の実行ファイル(Windows/Linux/macOS共通、ネイティブバイナリ
+//!   配布のプラットフォームのみ対象)を`.bak`として退避し、新
+//!   バージョン起動後に`server/src/main.rs`へ新設した`/healthz`
+//!   エンドポイントへ一定秒数(`HEALTH_CHECK_SECS`)以内に到達できるかを
+//!   確認する。到達できない、または新プロセスが直後に終了した場合は
+//!   新プロセスを終了させ、退避しておいたバイナリを復元して起動し
+//!   直す、という単純な流れ(複雑な状態機械は組んでいない、ユーザー
+//!   指示「シンプルに」を踏まえた設計)。Unix系(Linux/macOS)では
+//!   まだ実ポートで稼働中の旧プロセス自身が新バイナリの生死判定まで
+//!   面倒を見る構造上、新バイナリの起動確認は一時的な別ポート
+//!   (実ポート+1)を使ったプローブ起動で行い、ヘルスチェック成功後に
+//!   改めて実ポートで正式起動してから旧プロセスが終了する(実ポートの
+//!   奪い合いを避けるための工夫)。Windows側は既存の「別プロセス
+//!   〈バッチスクリプト〉がアンインストール→インストールを行う間に
+//!   自分自身は終了する」という設計のため、ヘルスチェック→
+//!   失敗時のバックアップ復元もこのバッチスクリプト側に追記する形で
+//!   実装した(PowerShellの`Invoke-WebRequest`で`/healthz`を叩く)。
+//! - **Android/iOSでのロールバックについて(正直な開示)**: モジュール
+//!   doc冒頭に記載の通り、Android/iOSはOSの制約上そもそもAPKの
+//!   サイレント自動インストール自体ができない(`REQUEST_INSTALL_
+//!   PACKAGES`権限+ユーザーの明示的な確認タップが必須)。同じ理由で
+//!   「失敗時に自動でダウングレードする」機能も、旧APKの自動再
+//!   インストールをOSが許可しない以上、実現できない——本ロールバック
+//!   機能はネイティブサーバーバイナリを自己置換するWindows/Linux/
+//!   macOSに限定されるスコープであり、Android/iOSアプリ自体の更新は
+//!   引き続き既存の「新バージョン検出→ユーザーのタップでダウンロード
+//!   →Android標準インストーラー画面(最終確認はユーザー自身)」という
+//!   設計のまま変更していない。ダウングレードしたい場合、ユーザーが
+//!   GitHub Releasesページから旧バージョンのAPKを手動で入手し、
+//!   手動でインストールし直す以外の手段は無い(この制約はコード上の
+//!   不備ではなくAndroid/iOSのプラットフォーム制約そのものであり、
+//!   将来的にも回避できない)。
+//!
 //! ## 正直な開示(最重要)
 //!
 //! - **現時点でGitHub Releaseが1件も存在しない**(2026-08-11確認、
@@ -80,11 +133,18 @@
 //!   (既存の`open-english.iss`)がインストール後に自動でアプリを再起動
 //!   するため、ユーザー操作なしで新バージョンが起動し直す。
 
+use std::net::SocketAddr;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use serde::Deserialize;
 
 const GITHUB_REPO: &str = "aon-co-jp/open-english";
+
+/// 新バージョン起動後、ヘルスチェックへ猶予を与える秒数
+/// (2026-08-19新設、自動ロールバック機能)。「シンプルに」というユーザー
+/// 指示を踏まえ、複雑な指数バックオフ等は行わず固定秒数で1回判定する。
+const HEALTH_CHECK_SECS: u64 = 12;
 
 #[derive(Debug, Deserialize)]
 struct ReleaseAsset {
@@ -162,14 +222,18 @@ fn windows_installer_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
     })
 }
 
-/// Linux向けリリースtarball(`.github/workflows/release.yml`の
-/// `build-unix-installer`ジョブが生成する`open-english-linux-
-/// x86_64.tar.gz`のような命名)を探す。macOS向け(`macos`を含む)は
-/// 明示的に除外する。
-fn linux_tarball_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
+/// Unix系(Linux/macOS)向けリリースtarball(`.github/workflows/
+/// release.yml`の`build-unix-installer`ジョブが生成する`open-english-
+/// linux-x86_64.tar.gz`/`open-english-macos-aarch64.tar.gz`のような
+/// 命名)を探す。実行中のOSに応じて`"linux"`/`"macos"`のいずれかを
+/// 含むアセットのみ採用する(2026-08-19変更: 以前は`linux_tarball_
+/// asset`という名前でLinux決め打ち・macOSを明示的に除外していたが、
+/// macOS対応につき実行中のOSで振り分ける形へ一般化した)。
+fn unix_tarball_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
+    let os_label = if cfg!(target_os = "macos") { "macos" } else { "linux" };
     release.assets.iter().find(|a| {
         let name = a.name.to_lowercase();
-        name.ends_with(".tar.gz") && name.contains("linux")
+        name.ends_with(".tar.gz") && name.contains(os_label)
     })
 }
 
@@ -188,6 +252,17 @@ fn existing_uninstaller() -> Option<PathBuf> {
 /// 終了する(ファイルロック解放のため)。呼び出し元には戻らない
 /// (`std::process::exit`)。
 async fn apply_update_windows(installer_path: &std::path::Path) -> anyhow::Result<()> {
+    let exe = std::env::current_exe()?;
+    let install_dir = exe.parent().ok_or_else(|| anyhow::anyhow!("could not resolve install directory"))?.to_path_buf();
+
+    // バックアップ(2026-08-19新設、自動ロールバック機能): アンインストール
+    // する前に、インストールディレクトリ全体を退避しておく。新バージョン
+    // がヘルスチェックに失敗した場合、このバックアップから復元して
+    // 旧バージョンをそのまま起動し直す。
+    let backup_dir = std::env::temp_dir().join("open-english-self-update-backup");
+    let _ = std::fs::remove_dir_all(&backup_dir);
+    copy_dir_recursive(&install_dir, &backup_dir)?;
+
     let script_path = std::env::temp_dir().join("open-english-self-update.bat");
     let uninstaller = existing_uninstaller();
     let mut script = String::from("@echo off\r\nping 127.0.0.1 -n 3 > nul\r\n");
@@ -196,6 +271,28 @@ async fn apply_update_windows(installer_path: &std::path::Path) -> anyhow::Resul
         script += "ping 127.0.0.1 -n 3 > nul\r\n";
     }
     script += &format!("\"{}\" /VERYSILENT /SUPPRESSMSGBOXES\r\n", installer_path.display());
+
+    // ヘルスチェック→失敗時のロールバック(2026-08-19新設)。新
+    // インストーラーの`[Run]`セクションがインストール後に自動で
+    // アプリを再起動する設計(モジュールdoc参照)なので、少し待ってから
+    // `server/src/main.rs`に新設した`/healthz`へPowerShellで到達
+    // できるか確認する。失敗すればアプリを強制終了し、退避しておいた
+    // バックアップを復元してから旧exeを直接起動し直す(「シンプルに:
+    // 起動→N秒待つ→ヘルスチェック→失敗ならkill+restore+restart」という
+    // ユーザー指示通りの単純な流れ、複雑な状態管理はしていない)。
+    let addr = crate::bind_addr();
+    let exe_name = exe.file_name().and_then(|n| n.to_str()).unwrap_or("open-english-server.exe").to_string();
+    script += &format!("ping 127.0.0.1 -n {} > nul\r\n", HEALTH_CHECK_SECS + 3);
+    script += &format!(
+        "powershell -NoProfile -Command \"try {{ $r = Invoke-WebRequest -UseBasicParsing -TimeoutSec 3 'http://{addr}/healthz'; if ($r.StatusCode -ne 200) {{ exit 1 }} }} catch {{ exit 1 }}\"\r\n"
+    );
+    script += "if %errorlevel% neq 0 (\r\n";
+    script += &format!("  taskkill /IM \"{exe_name}\" /F >nul 2>nul\r\n");
+    script += "  ping 127.0.0.1 -n 2 > nul\r\n";
+    script += &format!("  xcopy \"{}\" \"{}\" /E /Y /I >nul\r\n", backup_dir.display(), install_dir.display());
+    script += &format!("  start \"\" \"{}\"\r\n", exe.display());
+    script += ")\r\n";
+    script += &format!("rd /S /Q \"{}\"\r\n", backup_dir.display());
     script += &format!("del \"{}\"\r\n", script_path.display());
     std::fs::write(&script_path, script)?;
 
@@ -203,22 +300,38 @@ async fn apply_update_windows(installer_path: &std::path::Path) -> anyhow::Resul
         .args(["/C", "start", "", script_path.to_string_lossy().as_ref()])
         .spawn()?;
 
-    tracing_log_if_available("open-english self-update: launched uninstall+reinstall script, exiting to release file locks");
+    tracing_log_if_available("open-english self-update: launched uninstall+reinstall+healthcheck script, exiting to release file locks");
     std::process::exit(0);
 }
 
-/// Linux版: ダウンロードした`open-english-linux-*.tar.gz`を展開し、
-/// 中身(バイナリ+静的アセット一式、`install.sh`が配置するのと同じ
-/// フラット構成)を現在の実行ファイルと同じディレクトリへ上書き
-/// コピーする。Windowsと異なり、実行中の自分自身の実行ファイルを
-/// 上書き(`rename`/コピー)してもLinuxのファイルシステムの仕組み上
-/// 問題ない(既に実行中のプロセスは古いinodeを掴んだまま動作を続け
-/// られる)ため、専用のアンインストーラーは不要。展開・コピー後、
-/// 新しいバイナリを別プロセスとして起動してから、このプロセス自身は
-/// 終了する(呼び出し元には戻らない、`std::process::exit`)。
-async fn apply_update_linux(tarball_path: &std::path::Path) -> anyhow::Result<()> {
+/// Linux/macOS共通版(2026-08-19、旧`apply_update_linux`からリネームし
+/// macOSも同じロジックで扱うよう一般化——モジュールdoc冒頭参照): ダウン
+/// ロードした`open-english-<linux|macos>-*.tar.gz`を展開し、中身
+/// (バイナリ+静的アセット一式、`install.sh`が配置するのと同じフラット
+/// 構成)を現在の実行ファイルと同じディレクトリへ上書きコピーする。
+/// Windowsと異なり、実行中の自分自身の実行ファイルを上書き(`rename`/
+/// コピー)してもUnix系のファイルシステムの仕組み上問題ない(既に
+/// 実行中のプロセスは古いinodeを掴んだまま動作を続けられる)ため、
+/// 専用のアンインストーラーは不要。
+///
+/// 自動ロールバック(2026-08-19新設): 上書き前に現在のバイナリを
+/// `.bak`として退避し、新バイナリをまず実ポート+1の一時プローブ
+/// ポートで起動してヘルスチェックする(このプロセス自身がまだ実
+/// ポートで稼働中のため、新バイナリをいきなり実ポートで起動すると
+/// ポート競合による即終了と実際の不具合を区別できないための工夫)。
+/// ヘルスチェックが通れば、改めて実ポートで新バイナリを正式起動して
+/// からこのプロセス自身を終了する(呼び出し元には戻らない、
+/// `std::process::exit`)。失敗すればプローブを止め、退避しておいた
+/// バイナリを復元し、このプロセス(旧バージョン)はそのまま動作を
+/// 継続する(旧プロセスを一度も止めていないため、単に何もしなかった
+/// ことにするだけで復旧が完了する——ここが「シンプルに」というユーザー
+/// 指示に沿える設計上の利点)。
+async fn apply_update_unix(tarball_path: &std::path::Path) -> anyhow::Result<()> {
     let exe = std::env::current_exe()?;
     let install_dir = exe.parent().ok_or_else(|| anyhow::anyhow!("could not resolve install directory"))?.to_path_buf();
+
+    let backup_path = install_dir.join("open-english-server.bak");
+    std::fs::copy(&exe, &backup_path)?;
 
     let extract_dir = std::env::temp_dir().join("open-english-self-update-extract");
     let _ = std::fs::remove_dir_all(&extract_dir);
@@ -245,18 +358,69 @@ async fn apply_update_linux(tarball_path: &std::path::Path) -> anyhow::Result<()
     copy_dir_recursive(&top_dir, &install_dir)?;
 
     let new_exe = install_dir.join("open-english-server");
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let mut perms = std::fs::metadata(&new_exe)?.permissions();
-        perms.set_mode(0o755);
-        std::fs::set_permissions(&new_exe, perms)?;
+    set_executable_permission(&new_exe)?;
+
+    let real_addr = crate::bind_addr();
+    let probe_addr = SocketAddr::new(real_addr.ip(), real_addr.port().wrapping_add(1));
+
+    let mut probe_child = tokio::process::Command::new(&new_exe)
+        .current_dir(&install_dir)
+        .env("OPEN_ENGLISH_SERVER_BIND", probe_addr.to_string())
+        .spawn()?;
+
+    if health_check_with_wait(&mut probe_child, &probe_addr).await {
+        let _ = probe_child.kill().await;
+        tokio::process::Command::new(&new_exe).current_dir(&install_dir).spawn()?;
+        tracing_log_if_available("open-english self-update: new version passed health check, switching over and exiting");
+        std::process::exit(0);
     }
 
-    tokio::process::Command::new(&new_exe).current_dir(&install_dir).spawn()?;
+    let _ = probe_child.kill().await;
+    tracing_log_if_available(
+        "open-english self-update: new version failed health check — rolling back to the previous binary (this process was never stopped, so no restart is needed)",
+    );
+    std::fs::copy(&backup_path, &new_exe)?;
+    set_executable_permission(&new_exe)?;
+    Ok(())
+}
 
-    tracing_log_if_available("open-english self-update: replaced binary and launched new version, exiting");
-    std::process::exit(0);
+/// 新バイナリを起動した子プロセスに対し、`HEALTH_CHECK_SECS`秒の猶予を
+/// 与えつつ、その間に自然終了していないか(即クラッシュしていないか)を
+/// 監視し、生存していれば最後に`/healthz`へ到達できるかを確認する
+/// (2026-08-19新設、自動ロールバック機能)。
+async fn health_check_with_wait(child: &mut tokio::process::Child, addr: &SocketAddr) -> bool {
+    for _ in 0..HEALTH_CHECK_SECS {
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        if let Ok(Some(status)) = child.try_wait() {
+            tracing_log_if_available(&format!("open-english self-update: new version exited immediately (status: {status})"));
+            return false;
+        }
+    }
+    health_check(addr).await
+}
+
+async fn health_check(addr: &SocketAddr) -> bool {
+    let url = format!("http://{addr}/healthz");
+    let Ok(client) = reqwest::Client::builder().timeout(Duration::from_secs(3)).build() else {
+        return false;
+    };
+    match client.get(&url).send().await {
+        Ok(res) => res.status().is_success(),
+        Err(_) => false,
+    }
+}
+
+#[cfg(unix)]
+fn set_executable_permission(path: &std::path::Path) -> std::io::Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+    let mut perms = std::fs::metadata(path)?.permissions();
+    perms.set_mode(0o755);
+    std::fs::set_permissions(path, perms)
+}
+
+#[cfg(not(unix))]
+fn set_executable_permission(_path: &std::path::Path) -> std::io::Result<()> {
+    Ok(())
 }
 
 fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
@@ -296,12 +460,14 @@ pub async fn check_and_apply_update() {
     // 別途Kotlin側(`MainActivity.checkForAppUpdate`)がGitHub
     // Releasesページへのリンク表示のみを行う設計に委ねる。
     // 2026-08-19変更: Windows専用ガードをWindows/Linuxへ拡張(モジュール
-    // doc冒頭の2026-08-19追記参照)。Android/iOS/macOSは引き続き対象外
-    // (Android/iOSはそもそもこのネイティブサーバーバイナリの自己更新
-    // 機構が原理的に使えない別プラットフォーム、macOSは今回未対応)。
-    if !cfg!(target_os = "windows") && !cfg!(target_os = "linux") {
+    // doc冒頭の2026-08-19追記参照)。
+    // 2026-08-19変更(続き): さらにmacOSへも拡張(モジュールdoc「macOS
+    // 対応+自動ロールバック機能を追加」節参照)。Android/iOSは引き続き
+    // 対象外(そもそもこのネイティブサーバーバイナリの自己更新機構が
+    // 原理的に使えない別プラットフォームのため)。
+    if !cfg!(any(target_os = "windows", target_os = "linux", target_os = "macos")) {
         tracing_log_if_available(
-            "open-english self-update: skipped (this update mechanism supports Windows and Linux only)",
+            "open-english self-update: skipped (this update mechanism supports Windows, Linux, and macOS only)",
         );
         return;
     }
@@ -331,9 +497,15 @@ pub async fn check_and_apply_update() {
     }
 
     let is_windows = cfg!(target_os = "windows");
-    let asset = if is_windows { windows_installer_asset(&release) } else { linux_tarball_asset(&release) };
+    let asset = if is_windows { windows_installer_asset(&release) } else { unix_tarball_asset(&release) };
     let Some(asset) = asset else {
-        let platform = if is_windows { "Windows installer" } else { "Linux tarball" };
+        let platform = if is_windows {
+            "Windows installer"
+        } else if cfg!(target_os = "macos") {
+            "macOS tarball"
+        } else {
+            "Linux tarball"
+        };
         tracing_log_if_available(&format!(
             "open-english self-update: newer release {} found but no {platform} asset attached — skipping",
             release.tag_name
@@ -349,7 +521,7 @@ pub async fn check_and_apply_update() {
     let dest = std::env::temp_dir().join(&asset.name);
     match download_to(&asset.browser_download_url, &dest).await {
         Ok(()) => {
-            let result = if is_windows { apply_update_windows(&dest).await } else { apply_update_linux(&dest).await };
+            let result = if is_windows { apply_update_windows(&dest).await } else { apply_update_unix(&dest).await };
             if let Err(e) = result {
                 tracing_log_if_available(&format!("open-english self-update: failed to launch update ({e})"));
             }
