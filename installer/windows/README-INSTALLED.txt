@@ -48,6 +48,18 @@ open-english-server.exe を起動してください(コマンド操作が必要�
 Tauri管理GUI・複数ノードのRaftクラスタ構成等は含まれません(単体の
 サーバー実行ファイルのみ)。
 
+【任意】open-easy-web / open-web-serverについて(2026-08-19追加):
+インストール時に「open-easy-webも一緒にインストール」「open-web-server
+も一緒にインストール」にそれぞれチェックを入れた場合、対応する実行
+ファイル一式が{app}\open-easy-web\・{app}\open-web-server\に取得されます。
+**正直な開示: これらはopen-englishの動作に一切関係のない、同じ
+エコシステムの独立した別製品です**(open-easy-webはVPS側のアプリ配布・
+管理ツール、open-web-serverは汎用リバースプロキシ/Webサーバー)。
+open-englishの英会話AI機能はaruaru-llmローカルサーバーへの接続のみで
+完結しており、これらをインストールしなくても何も変わりません。取得後も
+自動起動はしません——それぞれの製品を試したい場合のみ、ご自身で
+実行ファイルを起動してください(使い方は各製品自身のREADMEを参照)。
+
 ---
 
 Thank you for installing open-english.
@@ -101,3 +113,17 @@ OPEN_ENGLISH_DATABASE_URL environment variable to its endpoint
 (this is a one-time command-line step). The Tauri admin GUI and
 multi-node Raft clustering are not included (single server binary
 only).
+
+[Optional] About open-easy-web / open-web-server (added 2026-08-19):
+If you checked "Also install open-easy-web" / "Also install
+open-web-server" during setup, the corresponding executables were
+downloaded to {app}\open-easy-web\ and {app}\open-web-server\.
+**Honest disclosure: these are unrelated to how open-english works**
+— they are separate standalone products from the same ecosystem
+(open-easy-web is a VPS-side app distribution/management tool,
+open-web-server is a general-purpose reverse-proxy/web server).
+open-english's conversation-AI feature only ever talks to its own
+local aruaru-llm server; nothing changes whether or not you install
+these. Neither is auto-launched after download — only run their
+executables yourself if you want to try them (see each product's own
+README for setup).

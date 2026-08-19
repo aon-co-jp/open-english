@@ -5,13 +5,17 @@
 ;
 ; 正直な開示: このインストーラー自体が同梱するのは本リポジトリ
 ; (open-english)の静的フロントエンド+配信サーバー(server/、RPoemベース)
-; のみ。`aruaru-llm`(AI推論本体)・`aruaru-db`(任意のPostgreSQLワイヤ
-; 互換ミラーDB)はいずれも別リポジトリの実行ファイルのため、インストーラー
-; 本体には含めず、[Tasks]でチェックされた場合のみ各fetch-*.ps1が
-; GitHub Releasesから追加ダウンロードする(2026-08-19、aruaru-db取得を
-; 追加)。手動で取得する場合はそれぞれ
-; https://github.com/aon-co-jp/aruaru-llm/releases /
-; https://github.com/aon-co-jp/aruaru-db/releases から取得する
+; のみ。`aruaru-llm`(AI推論本体、既定同梱)・`aruaru-db`(任意の
+; PostgreSQLワイヤ互換ミラーDB)・`open-easy-web`/`open-web-server`
+; (いずれも任意、open-englishの動作には機能的に無関係な独立
+; エコシステム別製品)はいずれも別リポジトリの実行ファイルのため、
+; インストーラー本体には含めず、[Tasks]でチェックされた場合のみ各
+; fetch-*.ps1がGitHub Releasesから追加ダウンロードする(2026-08-19、
+; open-easy-web/open-web-server取得を追加)。手動で取得する場合は
+; それぞれ https://github.com/aon-co-jp/aruaru-llm/releases /
+; https://github.com/aon-co-jp/aruaru-db/releases /
+; https://github.com/aon-co-jp/open-easy-web/releases /
+; https://github.com/aon-co-jp/open-web-server/releases から取得する
 ; (インストール後に表示するREADMEに明記)。
 ;
 ; ビルド方法: `server/`で`cargo build --release`を実行した後、
@@ -82,6 +86,8 @@ Source: "..\..\icons\*"; DestDir: "{app}\icons"; Flags: ignoreversion recursesub
 Source: "README-INSTALLED.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-aruaru-llm.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-aruaru-db.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "fetch-open-easy-web.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "fetch-open-web-server.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
@@ -113,6 +119,17 @@ Name: "installaruarullm"; Description: "Also install aruaru-llm (AI backend) / a
 ; `OPEN_ENGLISH_DATABASE_URL`を設定する必要がある、手順はfetch-aruaru-db.ps1
 ; の出力メッセージとREADME-INSTALLED.txtに記載)。
 Name: "installaruarudb"; Description: "Also install aruaru-db (optional PostgreSQL-wire mirror DB, not required) / aruaru-db(任意のPostgreSQL互換ミラーDB、必須ではありません)も一緒にインストール"; Flags: unchecked
+; open-easy-web/open-web-server同梱タスク(ユーザー指示「open-easy-web も
+; open-web-serverもopen-englishの同梱に含めて」への対応、2026-08-19)。
+; 既定は両方とも未チェック——正直な開示: これら2つはopen-english自身の
+; CLAUDE.md「アーキテクチャ」節に明記の通り、open-englishの実際の動作
+; (英会話AI機能)に技術的な依存関係が無い、独立したエコシステム別製品
+; (open-easy-web=VPS側アプリ配布・管理ツール、open-web-server=汎用
+; リバースプロキシ/Webサーバー)。無関係なサーバーサービスが利用者の
+; 意図に反して勝手に追加インストールされることを避けるため、aruaru-db
+; と同様に既定オフの任意タスクとした。取得後も自動起動はしない。
+Name: "installopeneasyweb"; Description: "Also install open-easy-web (optional, unrelated standalone web-server manager, not required for open-english to work) / open-easy-web(任意、open-englishの動作には無関係な独立Webサーバー管理ツール、必須ではありません)も一緒にインストール"; Flags: unchecked
+Name: "installopenwebserver"; Description: "Also install open-web-server (optional, unrelated standalone reverse-proxy/web server, not required for open-english to work) / open-web-server(任意、open-englishの動作には無関係な独立リバースプロキシ/Webサーバー、必須ではありません)も一緒にインストール"; Flags: unchecked
 
 [Run]
 Filename: "powershell.exe"; \
@@ -125,6 +142,16 @@ Filename: "powershell.exe"; \
     StatusMsg: "Downloading aruaru-db (optional)... / aruaru-db(任意)をダウンロード中..."; \
     Flags: runhidden waituntilterminated; \
     Tasks: installaruarudb
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-open-easy-web.ps1"" -DestDir ""{app}\open-easy-web"""; \
+    StatusMsg: "Downloading open-easy-web (optional)... / open-easy-web(任意)をダウンロード中..."; \
+    Flags: runhidden waituntilterminated; \
+    Tasks: installopeneasyweb
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-open-web-server.ps1"" -DestDir ""{app}\open-web-server"""; \
+    StatusMsg: "Downloading open-web-server (optional)... / open-web-server(任意)をダウンロード中..."; \
+    Flags: runhidden waituntilterminated; \
+    Tasks: installopenwebserver
 ; 実機E2E検証(2026-08-12)で発覚した実バグ: self_update.rsは
 ; `/VERYSILENT`でこのインストーラーを起動して無人での自動更新を行う
 ; ため、サーバー起動エントリに`skipifsilent`が付いていると更新後に

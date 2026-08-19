@@ -47,6 +47,68 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き15) open-cuda/open-directx/open-easy-web/open-web-serverの
+  同梱要否を調査・判断(ユーザー指示「open-cuda/open-directxもopen-easy-web
+  もopen-web-serverもopen-englishの同梱に含めて」への対応)**:
+  1. **調査結果**:
+     - `open-cuda`: ライブラリクレート集+使い捨てベンチマークのみで
+       常駐サービスは無い。本アーキテクチャ節に既に明記の通り、
+       `aruaru-llm`のビルドに組み込まれる形で**既に間接的に**
+       open-english配布物に含まれている(`aruaru-llm`のGPU推論基盤)。
+       独立した実行ファイルとしての追加同梱は不要と判断——対応不要。
+     - `open-directx`: `open-directx/CLAUDE.md`の2026-07-23付HANDOFFで
+       「aruaru-llmとの直接の技術的依存関係は無い」と既に結論済み
+       であることを再確認した。デモ用実行ファイル(Breakout風2Dデモ)
+       のみで、open-englishの英会話AI機能とは無関係。**機能的関連性が
+       無いため同梱不要と判断し、実装しなかった**(過大な配布物サイズ
+       増加・無関係な同梱を避けるため)。
+     - `open-easy-web`/`open-web-server`: いずれも独立したスタンドアロン
+       Webサーバー製品(前者はVPS側アプリ配布・管理ツール、後者は汎用
+       リバースプロキシ/Webサーバー)。本ファイル冒頭「アーキテクチャ」
+       節に明記の通り、open-englishの利用者端末側は静的フロントエンド+
+       `aruaru-llm`ローカルサーバーへの接続のみで完結しており、
+       これら2つに機能的な依存関係は無い。ただしユーザーが明示的に
+       同梱を指示したため、`aruaru-db`と同じ設計(既定オフの任意
+       タスク)で実装した——機能的に不要なものを無理に既定オンにせず、
+       試したい利用者だけが選べる形にとどめた。
+  2. **実装内容**(`installer/windows/`): `fetch-open-easy-web.ps1`・
+     `fetch-open-web-server.ps1`を新設(`fetch-aruaru-db.ps1`と同型、
+     GitHub Releases APIからWindows向けzipを取得・展開、失敗しても
+     インストーラー全体は止めない)。`open-english.iss`へ`[Files]`・
+     `[Tasks]`(`installopeneasyweb`/`installopenwebserver`、いずれも
+     既定`unchecked`)・`[Run]`を追加。取得後も自動起動はしない
+     (無関係なサーバーサービスが利用者の意図に反して勝手に起動する
+     事態を避けるため)。`README-INSTALLED.txt`(日英併記)にも、
+     open-englishの動作には無関係な独立製品である旨を明記した節を追加。
+  3. **実機検証の範囲(正直な開示)**: この開発機に`ISCC.exe`
+     (Inno Setup Compiler)が無く、`.iss`ファイルの実コンパイル・
+     生成インストーラーでの実インストール検証はできていない
+     (`aruaru-db`同梱時の前例と同じ制約)。代わりに(a)
+     `open-easy-web`/`open-web-server`双方の`.github/workflows/
+     release.yml`を実際に確認し、Windows向けzipアセットが
+     `*-windows-x86_64.zip`の命名で実在することを確認した上でURL
+     パターンを実装、(b) 新設した2つの`.ps1`が実際にPowerShell 5.1
+     構文として正しくパースできることを`[System.Management.Automation.
+     Language.Parser]::ParseFile`で検証した。**このとき、直前の
+     コミット(`295153b`、他リポジトリ`open-easy-web`/`open-web-server`
+     側)と同種の実バグ(UTF-8 BOM欠落による日本語コメント誤読で
+     PowerShell 5.1がパースエラーになる)を新設した2ファイルで実際に
+     再現・自己発見し、BOM付きUTF-8で保存し直して解消した**(既存の
+     `fetch-aruaru-db.ps1`はBOM付きだったため無事だった)。
+  4. **他プロジェクトの並行作業への配慮**: 着手前に`git status`を
+     確認し、`android/oe_rot1.png`(未コミット)には一切触れていない。
+     `open-easy-web`/`open-web-server`双方に他エージェントの未コミット
+     変更(`self_update.rs`/`libopeneasywebserver.so`等)が存在したが、
+     このタスクはopen-english側の`installer/windows/`のみへの変更に
+     限定しており、それらのリポジトリへは一切触れていない。
+  - 次にすべきこと: (1) Inno Setup実機での`.iss`コンパイル+
+    「open-easy-webも一緒にインストール」「open-web-serverも一緒に
+    インストール」双方のチェック時の実インストールE2E検証(aruaru-db
+    同梱時から持ち越しの既知の未検証事項と同種)、(2) `open-cuda`側の
+    GPU推論基盤が実際にaruaru-llmのビルドへ組み込まれている経路の
+    最新状況を、別セッションで進行中の調査結果と突き合わせて確認する
+    (このセッションでは新規調査は行っていない)。
+
 - **2026-08-19(続き14) 自動UPDATE機能を「全ての関連リポジトリ」対応へ拡張
   (ユーザー指示「自動UPDATE機能は、全ての関連リポジトリを自動アップデート
   する機能搭載として」への対応)**:
