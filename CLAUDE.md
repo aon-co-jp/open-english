@@ -47,6 +47,72 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き4) AI/検索プロバイダの無料枠情報バナーを追加(ユーザー
+  指示「それらの無料枠については、メンテナンス時に情報を得て、
+  open-englishの上の方に表示して」への対応、DeepSeek/ChatGPT/Gemini
+  自体をプロバイダ選択肢に加える件は今回のスコープ外)**:
+  1. **正直な設計判断**: 各AIプロバイダの無料枠は変更されやすく、
+     機械可読なAPIで残り回数をリアルタイムに正確取得できる仕組みは
+     一般に存在しない(各社とも無料枠情報をAPIとして公式公開している
+     わけではない)。自動スクレイピングで常時最新を保証すると称する
+     実装は過大な約束になるため避け、代わりに「開発者が定期メンテナンス
+     時に手動更新する設定ファイル+それを表示するUI」という現実的な
+     設計にした。
+  2. **新規`provider-free-tiers.json`**(リポジトリ直下): Google検索
+     (Custom Search JSON API)・DeepSeek・ChatGPT(OpenAI API)・Google
+     Gemini・Claude(Anthropic、参考として追加)の5件、`last_updated`
+     フィールド付き。2026-08-19時点でWeb調査した内容を初期値として
+     埋めた(いずれも「researched」——調べられず「要確認」とすべき項目は
+     今回は無かった):
+     - Google Custom Search JSON API: 1日100クエリ無料(追加$5/1000件、
+       上限1万件/日)。**新規顧客への提供は終了しており、既存利用者も
+       2027-01-01までに代替手段への移行が必要**という重要な現状も明記。
+     - DeepSeek API: 新規登録時に500万トークンを1回限り無料付与
+       (30日間有効)。常時無料モデルは無く、消費後は従量課金
+       (2026-08-16よりピーク/オフピーク別料金制へ変更)。
+     - ChatGPT(OpenAI API): 自動無料クレジットは2025年半ばに廃止済み。
+       現在は新規アカウントに$5分のクレジット(3か月で失効)、クレジット
+       無しならGPT-3.5 Turbo限定・3RPMのみ。データ共有オプトイン時は
+       GPT-5系で最大1日100万トークンの無料枠あり。
+     - Google Gemini API: モデル別(Gemini 2.5 Pro/Flash/Flash-Lite)に
+       5〜15RPM・1日100〜1000件、共通25万TPM。2025年12月にクォータが
+       引き下げられた経緯あり、無料枠利用時はプロンプトがGoogle側の
+       改善に使われ得る点も明記。
+  3. **`index.html`**: 既存の`#maintenance-banner`(固定60秒で自動的に
+     隠れる)とは別に、`#free-tier-banner`(常設・折りたたみ式トグル
+     ボタン)を新設。既存バナーの直下に配置。
+  4. **`app.js`**: `showProviderFreeTiers()`(IIFE)を新設し、
+     `provider-free-tiers.json`を`fetch`して各プロバイダ名・無料枠内容・
+     最終更新日を日英併記でリスト表示。外部/JSON由来テキストのため
+     `innerHTML`は使わず`textContent`で組み立てる(既存の`referralsSuffix`
+     等と同じXSS回避方針)。読み込み失敗時も他機能に影響させない
+     (`catch`で握りつぶすのみ、既存の可用性優先方針を踏襲)。
+     UI内にも「※この情報は手動更新運用であり自動取得ではない、
+     最新情報は各社公式サイトで」という日英併記の注記を明記。
+  5. **`style.css`**: `.free-tier-banner`/`.free-tier-toggle`/
+     `.free-tier-body`等を新設(既存の`.maintenance-banner`と衝突しない
+     独立クラス)。
+  6. **`server/src/main.rs`**: `STATIC_FILES`へ`/provider-free-tiers.json`
+     を追加(既存`static_file_handler`の再利用のみ、新規ロジック無し)。
+  7. **実機検証**: `cargo build --release`成功。実際にサーバーを起動し
+     `Invoke-WebRequest`で`/provider-free-tiers.json`が実HTTP経由で
+     200・全プロバイダ情報を返すことを確認。さらにブラウザ(Claude
+     Browser)で実際にページを開き、トグルボタンクリックで
+     `#free-tier-body`の表示/非表示が切り替わること、
+     `#free-tier-list`に5件・`#free-tier-last-updated`に
+     `2026-08-19`が正しく反映されることをJS経由で確認した。
+  8. **他エージェントとの並行作業への配慮**: 同時に他エージェントが
+     `README.md`/`server/src/main.rs`/`server/src/self_update.rs`を
+     編集中だったため、着手前に`git status`/`git diff`で状態を確認し、
+     `main.rs`への変更は`STATIC_FILES`への1行追加のみに限定、
+     `README.md`・`self_update.rs`には一切触れていない。
+  - 次にすべきこと: (1) DeepSeek・ChatGPT・Geminiを実際の検索/AI応答
+    プロバイダとして選択できるようにする本体機能(ユーザーの別アイデア、
+    今回のスコープ外)、(2) `provider-free-tiers.json`の定期的な手動更新
+    (自動化されていない運用である旨を忘れないこと)、(3)
+    `README.md`/`README-English.md`への反映(今回は`CLAUDE.md`のみ、
+    索引的な性質が薄いため見送ったが、次回気になる場合は追記)。
+
 - **2026-08-19(続き3) macOS対応の自己アップデート機能+自動ロールバック
   (ダウングレード)機能を追加(ユーザー指示「MAC版にも対応、失敗した時
   ダウングレードする機能も搭載」への対応)**:
