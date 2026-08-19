@@ -47,6 +47,47 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き13) スマホ側の実計算ワーカー(NNAPI検出+CPUフォールバック)を
+  実装(ユーザー指示「実際のスマホ側計算処理を実装してほしい」への対応、
+  `aruaru-llm`側新設のタスク配布APIと対をなす)**:
+  1. **`android/app/src/main/java/tokyo/runo/openenglish/
+     PhoneAccelWorker.kt`新設**: PC側`aruaru-llm`の
+     `GET /v1/background-fold/task`(2本のベクトル)を5秒間隔でポーリング
+     し、コサイン類似度を計算して`POST /v1/background-fold/task-result`
+     で返す。通信経路は単純なHTTPポーリング(`adb forward`または
+     Wi-Fi/USBテザリング経由のPC IP直接指定、実機・USB接続環境がこの
+     開発機に無いため`adb forward`自体の実地検証はできていない、
+     設計判断の理由をファイルdocに明記)。
+  2. **NNAPI対応(正直な開示)**: `tensorflow-lite:2.16.1`をGradle依存に
+     追加し、起動時に`NnApiDelegate`の構築を試みてこの端末がNNAPIを
+     サポートするか検出・ログ表示する。ただし実際のコサイン類似度計算
+     そのものは常にCPU(Kotlin標準`FloatArray`)で行う——任意長ベクトル
+     内積用の`.tflite`モデルを実機NPUで検証する手段がこの開発環境には
+     無いため、「NNAPIが利用可能なら検出するが、実際の計算オフロードは
+     今回実装できなかった」という限界をコード・UI文言双方に明記した
+     (NPU活用を偽らない)。
+  3. **PC側(`aruaru-llm`)**: `src/phone_task.rs`新設、
+     `GET /v1/background-fold/task`・`POST /v1/background-fold/
+     task-result`を追加(詳細・実HTTP検証結果は`aruaru-llm/CLAUDE.md`
+     同日HANDOFF参照)。
+  4. **UI**: `activity_main.xml`にPC URL入力欄+開始/停止ボタンを追加、
+     `index.html`の「使わなくなったスマホもフル動員」バナー文言を
+     実装済みの範囲(タスク配布API+Androidワーカー実装済み、実機・
+     NPU検証は未実施)に合わせて更新。
+  5. **検証範囲(正直な開示、最重要)**: `gradlew :app:assembleDebug`が
+     TFLite依存込みで実際に成功することを確認(`BUILD SUCCESSFUL`)。
+     PC側は実際にサーバーを起動し`curl`/`Invoke-RestMethod`で
+     `GET /v1/background-fold/task`(実埋め込みベクトル384次元を確認)・
+     `POST /v1/background-fold/task-result`の往復を実HTTPで確認済み。
+     **実機Android端末・NPU搭載機・USB接続環境がこの開発環境に無いため、
+     Androidワーカーの実機動作(実際にタスクを取得・計算・送信できるか)
+     は未検証のまま**——ビルド成功までが今回の検証の限界。
+  - 次にすべきこと: (1) 実機Android端末でのE2E検証(PC側`aruaru-llm`を
+    起動した状態でアプリの「スマホ計算を開始」ボタンを押し、実際に
+    タスクが往復することの確認)、(2) `adb forward`経路の実地検証、
+    (3) 実際にNPU搭載機が用意でき次第、`.tflite`モデルを用意して
+    NNAPI経由の実計算オフロードへ発展させる。
+
 - **2026-08-19(続き12) コンソール版(PS/Switch/Wii/WiiU)は構想段階・
   許可待ちとして明文化(ユーザー指示「SONYのPSシリーズ版とNINTENDO
   SW1とSW2とWiiとWii U用も開発しておいて、SONYとNintendoの許可待ち
