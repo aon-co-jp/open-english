@@ -29,6 +29,16 @@
 > own device (`server/`). See the 2026-08-19 HANDOFF entry in
 > [CLAUDE.md](CLAUDE.md).
 
+> 📌 **追記(2026-08-19)**: 上部のAI/検索無料枠バナーに、有料前提の
+> Claude(Anthropic)を選択肢として追加しました(恒常的な無料枠は無く、
+> 新規登録時のごく少額クレジットのみ、と正直に記載)。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-19(続き5)HANDOFF参照。
+>
+> *English*: Added Claude (Anthropic) to the AI/search free-tier banner
+> as a paid-by-default option (honestly noted as having no ongoing free
+> tier, only a small signup credit if any). See the 2026-08-19
+> (continued 5) HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+
 > 📌 **最新の更新(2026-08-11〜12、v0.6.0)**: Android/タブレットが
 > PC/Linuxサーバー不要で単体動作するアプリになりました——AI応答
 > エンジン(`aruaru-llm`)自体もAPKへ実際に同梱し、実機で両プロセスの
