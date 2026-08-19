@@ -47,6 +47,34 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き12) コンソール版(PS/Switch/Wii/WiiU)は構想段階・
+  許可待ちとして明文化(ユーザー指示「SONYのPSシリーズ版とNINTENDO
+  SW1とSW2とWiiとWii U用も開発しておいて、SONYとNintendoの許可待ち
+  にしておいて」への対応)**: `PLATFORM-ROADMAP.md`を新設し、
+  PlayStation/Nintendo Switch(SW1/SW2)/Wii/Wii U向け対応の現状を
+  日英併記で記録した。**正直な開示として明記した内容**: (1) PS向けは
+  Sony PS Partner Programへの公式デベロッパー登録・審査・NDA・非公開
+  devkit入手が無いと実機ビルドは技術的に作成不可能、(2) Switch向けも
+  同様にNintendo Developer Portalでの登録・審査・NDA・専用devkitが
+  必須で、市販Switch上の非公式Homebrew手法は規約違反のため本
+  プロジェクトの正規リリースとして採用しない、(3) Wii/Wii Uは生産・
+  サポート終了済みで現行デベロッパープログラム対象外の可能性が高い
+  (要調査)。各コンソールの内蔵ブラウザ事情(PS4/PS5は過去に簡易
+  ブラウザが存在した時期がある、Switchは汎用ブラウザ非搭載、Wiiは
+  「インターネットチャンネル」、Wii UはOperaベースのブラウザ搭載)も
+  判明分のみ記載し、不明点は「要調査」と明記した。技術的な前向き
+  見立てとして「将来公式SDKでWebView埋め込みが許可されれば既存
+  フロントエンド資産を転用できる可能性がある」ことも、確約しない
+  トーンで付記した。**実装は一切していない**(技術的に不可能なため)。
+  `installer/`・`android/`と並ぶ形で`console-ports/`ディレクトリを
+  新設し、日英併記の説明のみを記したプレースホルダー`README.md`を
+  配置(実装コードなし)。`android/`配下の他エージェントの未コミット
+  変更(`android/oe_rot1.png`)には一切触れていない。
+  - 次にすべきこと: Sony PS Partner Program / Nintendo Developer
+    Portalへの公式デベロッパー登録の要否・可否をユーザー側で検討する
+    (このリポジトリの担当者が勝手に開発を進めることはできないため)。
+    承認・devkit入手が実現した場合のみ、あらためて技術検証に着手する。
+
 - **2026-08-19(続き11) aruaru-db/PostgreSQLも同時rsyncバックアップ可能に
   (ユーザー指示「RSyncで、open-englishのaruaru-dbとpostgresqlを他の
   デバイスなどにバックアップ同時を可能に、その設定方法も簡単にして」
