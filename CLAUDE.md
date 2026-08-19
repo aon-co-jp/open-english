@@ -47,6 +47,54 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き9) モデル重み保存先の表示+バックアップ/復元UI(日英併記)を実装
+  (ユーザー指示「Windows/Android両方でモデル重みの保存先明示・可能なら同期
+  バックアップを、日英併記UIで」への対応)**:
+  1. **事前調査**: モデル取得自体(Windows: `app.js`の`installAndSwitchModel`
+     経由でaruaru-llmの`/v1/models/install`、Android: `MainActivity.kt`の
+     `downloadModelsAndRestartAruaruLlm`)は既に他セッションで実装済みと判明
+     (2026-08-17)。また会話履歴・設定DBの保存先変更・rsyncバックアップAPI
+     (`/v1/db/storage-path`・`/v1/db/rsync-backup`・`/v1/db/install-rsync`)も
+     2026-08-18に実装済みだったが、`app.js`側から未接続のまま残っていた
+     (HANDOFF記載の既知のギャップ)。今回はこのギャップを埋めることに
+     スコープを絞った。
+  2. **`index.html`/`app.js`/`style.css`**: 新規「💾 Data & Model Storage /
+     データ・モデルの保存先」パネルを追加し、既存の`/v1/db/info`・
+     `/v1/db/storage-path`・`/v1/db/rsync-backup`・`/v1/db/install-rsync`
+     を初めてUIから呼び出せるようにした。**正直な開示**: このパネルが
+     直接バックアップ・移動できるのは会話履歴・設定のSQLite DBのみ——
+     `aruaru-llm`本体のモデル重み自体は別リポジトリ`aruaru-llm`の
+     `/v1/models/*`が管理しており対象外である旨をパネル冒頭に日英併記で
+     明記した。
+  3. **Android(`MainActivity.kt`/`activity_main.xml`/`strings.xml`)**:
+     モデル重みの内部ストレージ保存先(`filesDir/aruaru-llm-models`)を
+     常設のバイリンガルTextViewで表示するようにした(従来はダウンロード中
+     の一時的なステータス表示にしか現れなかった)。また「💾 モデルを外部
+     ストレージへバックアップ / Back up model to external storage」・
+     「📂 復元 / Restore」ボタンを新設し、`getExternalFilesDir`(権限不要、
+     ファイルマネージャから参照可能なアプリ専用領域)へモデル一式を
+     再帰コピーする簡易バックアップを実装した。**正直な開示**: クラウドへ
+     直接アップロードする機能ではない——利用者が復元先フォルダを
+     Googleドライブ等へ自分でアップロードする運用を想定した現実的な設計。
+  4. **実機検証**: Rustソース側の変更は無い(既存バイナリ
+     `server/target/release/open-english-server.exe`をそのまま利用、この
+     開発機に`cargo`が無い制約は従来通り)。ポート4711で起動しClaude
+     Browserで実際に(a) パネルを開き`/v1/db/info`の実データ(DBパス・
+     ファイルサイズ・aruaru-dbミラー無効)が表示されること、(b)
+     バックアップ先未入力状態で「今すぐバックアップ」を押すと`rsync`未検出
+     を検出し、「Let's install RSync! / RSyncをインストールしましょう！」+
+     「⬇ Install RSync」ボタンの表示切替が正しく動くことを確認した。
+     **未検証**: Android側(`backupModelsBtn`/`restoreModelsBtn`)は
+     この開発機にAndroid実機/エミュレータが無いためコードレビューレベルの
+     確認のみで、実機ビルド・実行はできていない——次回Android実機/
+     エミュレータで確認する必要がある。またrsyncが実在する環境での
+     「実際にファイルがコピーされる」E2Eも引き続き未検証(既知の制約の
+     まま)。
+  - 次にすべきこと: (1) Android実機/エミュレータでのバックアップ/復元
+    ボタンのE2E検証、(2) rsyncが実在する環境での`/v1/db/rsync-backup`の
+    実ファイルコピーE2E検証、(3) モデル重み自体(会話DBではなく)の
+    Windows版rsyncバックアップが必要か、次回ユーザーへ要否確認。
+
 - **2026-08-19(続き8) 1日の利用回数制限に到達した際の日英併記メッセージを
   実装(ユーザー指示「検索や質問などで1日の利用回数制限を超えた場合に、
   有料版切替の案内+他プロバイダの無料枠案内を日英併記で表示して」への
