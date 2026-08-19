@@ -85,6 +85,72 @@ fn repo_root() -> PathBuf {
         .to_path_buf()
 }
 
+/// aruaru-llm(AI応答エンジン)をコマンド操作なしで自動起動する
+/// (2026-08-19新設)。
+///
+/// **発端**: ユーザーがGitHub上で読んだ`README-INSTALLED.txt`には
+/// 「aruaru-llmは別途手動でダウンロード・起動が必要」と書かれていたが、
+/// 実際には`installer/windows/open-english.iss`の`installaruarullm`
+/// タスク(既定オン)が`fetch-aruaru-llm.ps1`でaruaru-llm本体を
+/// `{app}\aruaru-llm\`へ**取得済み**だった。矛盾の正体は
+/// 「取得はするが起動はしない」——`fetch-aruaru-llm.ps1`はダウンロード・
+/// 展開のみでプロセスは一切起動せず、インストーラーの`[Run]`セクションも
+/// `open-english-server.exe`しか起動していなかったため、結局ユーザーは
+/// 毎回aruaru-llm.exeを手動起動する必要があった(README-INSTALLED.txtの
+/// 記述自体は「含まれていません」という部分こそ古いが、「コマンド操作が
+/// 必要」という結論は皮肉にも正しかった)。
+///
+/// この関数は、サーバー起動時に`http://127.0.0.1:4600/healthz`へ
+/// 到達できるか確認し、できなければ実行ファイルと同じディレクトリ配下の
+/// `aruaru-llm\aruaru-llm.exe`(Windows)/`aruaru-llm/aruaru-llm`
+/// (Linux/macOS、`installer/unix/fetch-aruaru-llm.sh`が同じ相対配置で
+/// 取得する)を子プロセスとして起動する。**正直な開示**: バイナリが
+/// 存在しない(「まとめてインストール」を選ばなかった、または未取得の)
+/// 場合は何もしない——エラーにはせず、フロントエンド側の既存の接続状態
+/// 表示(`checkHealth`)がその旨を正直にユーザーへ伝える設計に委ねる。
+/// 起動した子プロセスはこのサーバープロセスの生存中にデタッチせず
+/// 保持する必要は無い(`std::process::Command::spawn`後は`Child`を
+/// drop——OS側でプロセス自体は起動したまま存続し続ける、Windows/Unix
+/// いずれも同様)。
+async fn maybe_launch_aruaru_llm() {
+    let aruaru_llm_bind = std::env::var("ARUARU_LLM_BIND").unwrap_or_else(|_| "127.0.0.1:4600".to_string());
+    let health_url = format!("http://{aruaru_llm_bind}/healthz");
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_millis(700))
+        .build()
+        .expect("building a minimal reqwest client cannot fail");
+    if client.get(&health_url).send().await.is_ok() {
+        println!("aruaru-llm already running at http://{aruaru_llm_bind}/ (skip auto-launch)");
+        return;
+    }
+
+    let Ok(exe) = std::env::current_exe() else { return };
+    let Some(exe_dir) = exe.parent() else { return };
+    let binary_name = if cfg!(target_os = "windows") { "aruaru-llm.exe" } else { "aruaru-llm" };
+    let candidate = exe_dir.join("aruaru-llm").join(binary_name);
+    if !candidate.exists() {
+        println!(
+            "aruaru-llm binary not found at {} - skipping auto-launch (install it via the installer's \
+             \"Also install aruaru-llm\" option, or start it manually)",
+            candidate.display()
+        );
+        return;
+    }
+
+    match std::process::Command::new(&candidate)
+        .env("ARUARU_LLM_BIND", &aruaru_llm_bind)
+        .current_dir(&exe_dir.join("aruaru-llm"))
+        .spawn()
+    {
+        Ok(child) => println!(
+            "auto-launched aruaru-llm (pid {}) from {} on http://{aruaru_llm_bind}/",
+            child.id(),
+            candidate.display()
+        ),
+        Err(e) => println!("failed to auto-launch aruaru-llm from {}: {e}", candidate.display()),
+    }
+}
+
 /// `self_update.rs`のロールバック用ヘルスチェックからも参照するため
 /// `pub(crate)`にする(2026-08-19追加、自動ロールバック機能)。
 pub(crate) fn bind_addr() -> SocketAddr {
@@ -437,6 +503,12 @@ async fn main() {
             })),
         );
     }
+
+    // aruaru-llmの自動起動(2026-08-19新設、上記maybe_launch_aruaru_llmの
+    // doc参照)。サーバー本体の起動をブロックしないよう非同期タスクで
+    // バックグラウンド実行する(ヘルスチェック自体に最大700msかかり
+    // 得るため)。
+    tokio::spawn(maybe_launch_aruaru_llm());
 
     // 起動時の自動メンテナンス/自動アップデート(2026-08-11追加、ユーザー
     // 指示「起動時の自動メンテナンスで自動UPDATEの自動バージョンアップ

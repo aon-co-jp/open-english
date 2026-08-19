@@ -47,6 +47,96 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き7) Windows版のコマンド操作ゼロ化(aruaru-llm自動起動)+
+  README-INSTALLED.txtの矛盾を解消(ユーザーがGitHub上で読んだ
+  `README-INSTALLED.txt`「aruaru-llmは別途手動でダウンロード・起動が
+  必要」という記述への「含めて下さい。コマンド操作を不要にして下さい」
+  指摘への対応)**:
+  1. **矛盾の正体を特定**: `installer/windows/open-english.iss`の
+     `installaruarullm`タスク(既定オン)は`fetch-aruaru-llm.ps1`で
+     aruaru-llm本体を`{app}\aruaru-llm\`へ**取得**していたが、
+     **起動する処理がどこにも無かった**(`[Run]`セクションは
+     `open-english-server.exe`しか起動しない、`fetch-aruaru-llm.ps1`も
+     ダウンロード・展開のみ)。つまり「取得はするが起動しない」が
+     矛盾の実体——`README-INSTALLED.txt`の「含まれていません」という
+     記述自体は古かったが、「コマンド操作が必要」という結論は
+     皮肉にも正しかった。
+  2. **`server/src/main.rs`に`maybe_launch_aruaru_llm()`を新設**:
+     サーバー起動時、`http://127.0.0.1:4600/healthz`(`ARUARU_LLM_BIND`
+     で上書き可)へ到達できなければ、実行ファイルと同じディレクトリの
+     `aruaru-llm\aruaru-llm.exe`(Windows)/`aruaru-llm/aruaru-llm`
+     (Linux/macOS、`fetch-aruaru-llm.sh`と同じ相対配置)を子プロセスと
+     して自動起動する。インストール時の一度きりではなく、
+     **ショートカットを実行するたび毎回**この判定が走るため、
+     「インストール直後だけ起動している」という見せかけを避けている。
+     バイナリが存在しない場合(「まとめてインストール」を外した、
+     または未取得)はエラーにせずログのみで正直にスキップする(既存の
+     フロントエンド側`checkHealth`が接続状態を正直に表示する設計に
+     委ねる)。
+  3. **`README-INSTALLED.txt`を全面的に書き直し**(日英併記):
+     「aruaru-llmも一緒にインストール」を選べばコマンド操作ゼロで
+     チャットまで到達できる旨、外した場合の手動手順、モデル重み別途
+     取得の制約、Windows向けアセットが見つからない場合の制約を正直に
+     明記。**Android版の記述も併せて訂正**——調査の結果、2026-08-11の
+     アーキテクチャ変更で既にAndroid版は単体動作版(サーバー・
+     aruaru-llmともに端末内蔵)になっており、PCのIPアドレス入力は
+     既に不要になっていた(`android/app/src/main/res/layout/
+     activity_main.xml`のコメント、`app.js`の`location.hostname`
+     自動補完コメント参照)。つまりユーザー要望2番(IPアドレス入力不要
+     化)は**Android用ネイティブアプリについては既に他セッションで
+     実現済み**で、今回は古いまま放置されていた案内文の訂正のみで
+     足りると判明した——実装漏れではなく、ドキュメントが実態に
+     追従していなかったことが原因。PCブラウザ経由でアクセスする
+     場合(Androidアプリではなく)も`app.js`の`apiBaseEl`が
+     `location.hostname`から自動補完する既存実装がある旨を参考情報
+     として追記した。
+  4. **実機E2E検証(型チェック・ビルド成功だけで完了と報告しない
+     方針の徹底)**: (a) `cargo build --release`成功。(b)
+     `server/target/release/aruaru-llm/aruaru-llm.exe`が存在しない
+     状態で起動→ログに「aruaru-llm binary not found ... skipping
+     auto-launch」と正直に出ることを確認。(c) 依存無しの最小スタブ
+     exe(`ARUARU_LLM_BIND`で待受・`/healthz`に200を返すのみ)を同じ
+     パスへ配置して再起動→ログに「auto-launched aruaru-llm (pid …)」
+     と出て実際に`http://127.0.0.1:4600/healthz`へ到達できることを
+     確認。(d) **本番と同じ経路での一気通貫検証**: `ISCC.exe`で
+     実際にインストーラーをビルドし、`/VERYSILENT /DIR=<一時
+     フォルダ>`で完全無人インストール→**コマンド操作を一切行わずに**
+     `open-english-server.exe`(PID確認済み)・`aruaru-llm.exe`(PID
+     確認済み)の両プロセスが自動的に立ち上がり、`http://
+     127.0.0.1:4601/healthz`(`{"ok":true}`)・`http://
+     127.0.0.1:4600/healthz`(200)の両方に実HTTPで到達できることを
+     確認した。検証後、両プロセスを終了し`unins000.exe /VERYSILENT`
+     でアンインストール・一時フォルダの削除も確認済み。
+  5. **他エージェントとの並行作業への配慮**: 着手前に`git log`/
+     `git status`を確認したところ、`README-English.md`等の翻訳
+     ファイル群・`android/oe_rot1.png`が他エージェントの未コミット
+     作業として存在していたため一切触れていない。また作業中に
+     `README-INSTALLED.txt`・`open-english.iss`へ別エージェントが
+     aruaru-db(任意コンポーネント)対応を並行して加えていたことが
+     判明したため、`README-INSTALLED.txt`の書き直しはその内容
+     (aruaru-dbの節)を保持したまま自分の変更を統合した。`app.js`にも
+     別エージェントによる「1日の利用回数制限」機能の未コミット変更が
+     あったため、このコミットには含めていない(自分が触っていない
+     ファイルとして除外)。
+  6. **正直な開示・今回のスコープ外**: (a) Android側の「IPアドレス
+     入力不要化」は上記3番の通り既に実現済みと判明したため、新規の
+     UDPブロードキャスト/mDNS/サブネットスキャン方式の実装は行って
+     いない——もし将来的にPCサーバーへブラウザ経由で接続する
+     ケースでの自動検出(現状はホスト名からの単純補完のみ)を
+     強化したい場合は、別途スコープを切って上記いずれかの方式を
+     検討すること。(b) Linux/macOS版(`installer/unix/`)は
+     `fetch-aruaru-llm.sh`が既にaruaru-llm本体を取得する設計だが、
+     今回の自動起動ロジック(`maybe_launch_aruaru_llm`)はWindows/
+     Linux/macOS共通コード(`cfg!(target_os = "windows")`でファイル名
+     のみ分岐)として実装したため理論上は動作するはずだが、この
+     開発機がWindowsのため**Linux/macOS実機でのE2E検証はまだ
+     行っていない**——次回、該当環境で確認する必要がある。
+  - 次にすべきこと: (1) Linux/macOS実機での`maybe_launch_aruaru_llm`の
+    E2E検証、(2) PCブラウザ経由アクセス時の自動検出強化(UDP
+    ブロードキャスト等)が必要かどうかの要否確認、(3) 他エージェントの
+    `app.js`(1日利用回数制限)・翻訳ファイル群のコミットは各担当
+    セッションに委ねる。
+
 - **2026-08-19(続き6) Windowsインストーラーへaruaru-db(任意)の同梱オプションを
   追加(ユーザー指示「aruaru-dbも同梱して」への対応、直前の
   aruaru-llm完全同梱作業とは別スレッドで並行実施)**:
