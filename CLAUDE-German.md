@@ -54,6 +54,23 @@ Phase-0-Design (lokaler residenter Server + localhost-Verbindung)
 bedeutet, wird dies erst nach Abschluss des MVP und mit eigenem
 Scope in Angriff genommen.
 
+## Neueste installationsbezogene Updates (2026-08-19)
+
+Vereinheitlichter Windows-Installer `open-english-install.exe`; das
+eingebaute Auto-Update (`server/src/self_update.rs`) wurde auf Linux
+und dann macOS erweitert, mit automatischem Rollback basierend auf
+einem `/healthz`-Health-Check, falls die neue Version nicht korrekt
+startet; neue Einstiegsseite `facebook.html` für Nutzer mit reinem
+Facebook-Zugang (ehrliche Offenlegung: keine offizielle
+Meta-Partnerschaft); und seit 2026-08-18 fördert und automatisiert die
+App die Installation von `rsync`, falls es fehlt, und startet
+anschließend direkt das Backup. Vollständige Details nur in den
+japanischen HANDOFF-Einträgen unten.
+
+*(Hinweis zur maschinellen Übersetzung: Diese Zusammenfassung wurde vom
+KI-Agenten selbst übersetzt, ohne Korrekturlesen durch einen
+Muttersprachler.)*
+
 ---
 
 Weitere Sprachen: [日本語 (Original, mit vollständigem HANDOFF-Verlauf)](CLAUDE.md) ·

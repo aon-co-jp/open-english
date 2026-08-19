@@ -56,6 +56,23 @@ majeur par rapport à la conception actuelle de la Phase 0 (serveur
 résident local + connexion localhost), cela ne sera abordé qu'après
 l'achèvement du MVP, avec un périmètre dédié.
 
+## Mises à jour récentes liées à l'installation (2026-08-19)
+
+Installateur Windows unifié `open-english-install.exe` ; la mise à jour
+automatique intégrée (`server/src/self_update.rs`) a été étendue à
+Linux puis à macOS, avec un retour arrière (rollback) automatique basé
+sur un contrôle de santé `/healthz` si la nouvelle version échoue à
+démarrer correctement ; nouvelle page d'entrée `facebook.html` pour les
+utilisateurs n'ayant accès qu'à Facebook (divulgation honnête : ce
+n'est pas un partenariat officiel avec Meta) ; et, depuis le
+2026-08-18, l'application encourage et automatise l'installation de
+`rsync` lorsqu'il est absent, avant de lancer directement la
+sauvegarde. Détails complets uniquement dans les entrées HANDOFF
+japonaises ci-dessous.
+
+*(Note de traduction automatique : ce résumé a été traduit par l'agent
+IA lui-même, sans relecture par un locuteur natif.)*
+
 ---
 
 Autres langues : [日本語 (original, avec l'historique complet des HANDOFF)](CLAUDE.md) ·

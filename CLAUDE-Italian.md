@@ -53,6 +53,21 @@ cambiamento architetturale rispetto all'attuale design di Fase 0
 (server residente locale + connessione localhost), verrà affrontato
 solo dopo il completamento dell'MVP, con un ambito dedicato.
 
+## Aggiornamenti recenti relativi all'installazione (2026-08-19)
+
+Installer Windows unificato `open-english-install.exe`; l'aggiornamento
+automatico integrato (`server/src/self_update.rs`) è stato esteso a
+Linux e poi a macOS, con rollback automatico basato su un controllo di
+salute `/healthz` se la nuova versione non si avvia correttamente;
+nuova pagina di ingresso `facebook.html` per utenti con accesso solo a
+Facebook (divulgazione onesta: non è una partnership ufficiale con
+Meta); e dal 2026-08-18 l'app promuove e automatizza l'installazione di
+`rsync` quando manca, avviando subito dopo il backup. Dettagli completi
+solo nelle voci HANDOFF in giapponese qui sotto.
+
+*(Nota sulla traduzione automatica: questo riepilogo è stato tradotto
+dall'agente IA stesso, senza revisione da parte di un madrelingua.)*
+
 ---
 
 Altre lingue: [日本語 (originale, con la cronologia completa degli HANDOFF)](CLAUDE.md) ·
