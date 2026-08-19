@@ -409,3 +409,9 @@ AI応答エンジン`aruaru-llm`本体も`libaruarullm.so`としてAPKへ同梱�
    大規模なアーキテクチャ変更(WASMコンパイル・WebGPU移植)を伴うため、
    MVP完成後に別途スコープを切って着手する。
 9. 東芝SBM・DeepSeek系技術の適用可否調査(未着手)。
+10. ~~自動UPDATE機能を全関連リポジトリ(aruaru-llm/aruaru-db)対応に
+    拡張~~ **完了(2026-08-19)**。同梱コンポーネントの自動アップデート
+    はaruaru-llm・aruaru-db(任意)のみ対応——macOS向けリリースアセットが
+    まだ両リポジトリのCIに存在しないため、macOSでは「対応アセットなし」
+    としてスキップされる(詳細は`CLAUDE.md`同日HANDOFF・
+    `PORTING.md`4h節参照)。

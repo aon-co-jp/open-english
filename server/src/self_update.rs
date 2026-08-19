@@ -144,31 +144,33 @@ const GITHUB_REPO: &str = "aon-co-jp/open-english";
 /// 新バージョン起動後、ヘルスチェックへ猶予を与える秒数
 /// (2026-08-19新設、自動ロールバック機能)。「シンプルに」というユーザー
 /// 指示を踏まえ、複雑な指数バックオフ等は行わず固定秒数で1回判定する。
-const HEALTH_CHECK_SECS: u64 = 12;
+/// 2026-08-19追記: `component_update.rs`(同梱コンポーネントの自動更新)
+/// からも同じ値を再利用する(`pub(crate)`化)。
+pub(crate) const HEALTH_CHECK_SECS: u64 = 12;
 
 #[derive(Debug, Deserialize)]
-struct ReleaseAsset {
-    name: String,
-    browser_download_url: String,
+pub(crate) struct ReleaseAsset {
+    pub(crate) name: String,
+    pub(crate) browser_download_url: String,
 }
 
 #[derive(Debug, Deserialize)]
-struct LatestRelease {
-    tag_name: String,
-    assets: Vec<ReleaseAsset>,
+pub(crate) struct LatestRelease {
+    pub(crate) tag_name: String,
+    pub(crate) assets: Vec<ReleaseAsset>,
 }
 
 /// `"v0.5.1"`や`"0.5.1"`のようなタグ文字列を`(major, minor, patch)`へ
 /// パースする。パース不可な部分は0扱い(誇張せず「不明時は最新とは
 /// 判断しない」安全側)。
-fn parse_version(raw: &str) -> (u64, u64, u64) {
+pub(crate) fn parse_version(raw: &str) -> (u64, u64, u64) {
     let trimmed = raw.trim().trim_start_matches('v');
     let mut parts = trimmed.split('.').map(|s| s.parse::<u64>().unwrap_or(0));
     (parts.next().unwrap_or(0), parts.next().unwrap_or(0), parts.next().unwrap_or(0))
 }
 
 /// リモート版がローカル版より新しいかどうか。
-fn is_newer(remote: &str, local: &str) -> bool {
+pub(crate) fn is_newer(remote: &str, local: &str) -> bool {
     parse_version(remote) > parse_version(local)
 }
 
@@ -199,10 +201,18 @@ fn local_version() -> Option<String> {
 }
 
 async fn fetch_latest_release() -> anyhow::Result<LatestRelease> {
+    fetch_latest_release_for(GITHUB_REPO).await
+}
+
+/// `component_update.rs`(同梱コンポーネントaruaru-llm/aruaru-dbの自動
+/// 更新、2026-08-19新設)からも同じGitHub Releases問い合わせロジックを
+/// 再利用するため、対象リポジトリを引数化した汎用版(`fetch_latest_
+/// release`本体はこの関数へ委譲するだけにした、重複実装を避ける)。
+pub(crate) async fn fetch_latest_release_for(repo: &str) -> anyhow::Result<LatestRelease> {
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(10))
         .build()?;
-    let url = format!("https://api.github.com/repos/{GITHUB_REPO}/releases/latest");
+    let url = format!("https://api.github.com/repos/{repo}/releases/latest");
     let res = client.get(&url).header("User-Agent", "open-english-self-updater").send().await?;
     if !res.status().is_success() {
         anyhow::bail!("GitHub releases API returned HTTP {}", res.status());
@@ -399,7 +409,7 @@ async fn health_check_with_wait(child: &mut tokio::process::Child, addr: &Socket
     health_check(addr).await
 }
 
-async fn health_check(addr: &SocketAddr) -> bool {
+pub(crate) async fn health_check(addr: &SocketAddr) -> bool {
     let url = format!("http://{addr}/healthz");
     let Ok(client) = reqwest::Client::builder().timeout(Duration::from_secs(3)).build() else {
         return false;
@@ -411,7 +421,7 @@ async fn health_check(addr: &SocketAddr) -> bool {
 }
 
 #[cfg(unix)]
-fn set_executable_permission(path: &std::path::Path) -> std::io::Result<()> {
+pub(crate) fn set_executable_permission(path: &std::path::Path) -> std::io::Result<()> {
     use std::os::unix::fs::PermissionsExt;
     let mut perms = std::fs::metadata(path)?.permissions();
     perms.set_mode(0o755);
@@ -419,11 +429,11 @@ fn set_executable_permission(path: &std::path::Path) -> std::io::Result<()> {
 }
 
 #[cfg(not(unix))]
-fn set_executable_permission(_path: &std::path::Path) -> std::io::Result<()> {
+pub(crate) fn set_executable_permission(_path: &std::path::Path) -> std::io::Result<()> {
     Ok(())
 }
 
-fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
+pub(crate) fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
     std::fs::create_dir_all(dst)?;
     for entry in std::fs::read_dir(src)? {
         let entry = entry?;
@@ -438,7 +448,7 @@ fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> std::io::
     Ok(())
 }
 
-fn tracing_log_if_available(msg: &str) {
+pub(crate) fn tracing_log_if_available(msg: &str) {
     println!("{msg}");
 }
 
@@ -532,7 +542,7 @@ pub async fn check_and_apply_update() {
     }
 }
 
-async fn download_to(url: &str, dest: &std::path::Path) -> anyhow::Result<()> {
+pub(crate) async fn download_to(url: &str, dest: &std::path::Path) -> anyhow::Result<()> {
     let client = reqwest::Client::builder().build()?;
     let bytes = client.get(url).header("User-Agent", "open-english-self-updater").send().await?.bytes().await?;
     std::fs::write(dest, &bytes)?;

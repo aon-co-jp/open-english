@@ -17,6 +17,7 @@ use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+mod component_update;
 mod db;
 mod self_update;
 
@@ -577,6 +578,14 @@ async fn main() {
     // アンインストール/インストールを起動した上でプロセス自体を終了する
     // (`self_update.rs`のモジュールdoc参照)。
     tokio::spawn(self_update::check_and_apply_update());
+
+    // 同梱コンポーネント(aruaru-llm・任意のaruaru-db)の自動アップデート
+    // (2026-08-19新設、`component_update.rs`のモジュールdoc参照、ユーザー
+    // 指示「自動UPDATE機能は、全ての関連リポジトリを自動アップデートする
+    // 機能搭載として」への対応)。open-english本体の自己更新
+    // (`self_update::check_and_apply_update`)とは独立のタスクとして
+    // バックグラウンド実行する。
+    tokio::spawn(component_update::check_and_apply_all());
 
     let addr = bind_addr();
     println!("open-english static server listening on http://{addr}/");
