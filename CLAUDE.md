@@ -47,6 +47,54 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き) 自動アップデート機能をWindows限定からWindows+Linux
+  対応へ拡張(ユーザー指示「(旧更新2026-08-11の)Windowsのみ、の所を
+  Android・iPhone・Linuxでも使えるようにしてほしい」への対応)**:
+  1. **プラットフォームごとの正直な評価(実装前の技術調査)**:
+     - **Linux**: 実行中のバイナリ自身を別バイナリで置き換えることは
+       Windowsと異なり技術的に可能(Linuxでは実行中の実行ファイルを
+       上書き・rename しても、既に起動中のプロセスは古いinodeを掴んだ
+       まま動作を続けられ、ファイルロックの制約が無い)。**実装した**。
+     - **Android**: OS自体がAPKの完全サイレント自動インストールを
+       許可しない(`REQUEST_INSTALL_PACKAGES`+ユーザーの明示的な確認
+       タップが必須)。調査の結果、`MainActivity.kt`の
+       `checkForAppUpdate`/`downloadAndInstallApk`が2026-08-17時点で
+       既に「新バージョン検出→タップでAPKダウンロード→Android標準
+       インストーラー画面を開く(最終確認はユーザー自身)」という、
+       OS制約内で可能な最大限の自動化まで実装済みだった——**今回の
+       スコープでは追加の実装は不要**(既存実装を確認し現状維持)。
+     - **iPhone/iOS**: このリポジトリに`ios/`相当のネイティブアプリは
+       存在しない(2026-08-19確認)。iOSアプリ自体が実在しないため
+       自己更新機構の実装対象が無く、「完全自動インストール」と
+       偽ることを避けるため実装しなかった。Webアプリとして使う場合は
+       既存の`auto-update.js`(`version.json`ポーリング→
+       `location.reload()`)がSafari等でも同様に動作する。
+  2. **`server/src/self_update.rs`変更**: 冒頭ガードを
+     `cfg!(target_os = "windows")`単独から`windows || linux`へ拡張。
+     `linux_tarball_asset`(CI`.github/workflows/release.yml`の
+     `build-unix-installer`が生成する`open-english-linux-x86_64.tar.gz`
+     命名を検出)・`apply_update_linux`(tarball展開→
+     `installer/unix/install.sh`と同じフラット構成で現在の実行
+     ディレクトリへ上書きコピー→新バイナリを子プロセスとして起動→
+     自身終了)を新設。Windows版と異なりLinux版にはアンインストーラー
+     手順が無い(root権限不要のユーザー空間コピーインストールの
+     ため単純な上書きで十分)。
+  3. **検証**: `cargo build --release`成功、`cargo test --release`
+     (self_update::以下2件)green。実際にサーバーを起動し
+     `Invoke-WebRequest`で`/version.json`への到達を確認、ログにも
+     従来通りの安全な「開発ビルドのため更新チェックをスキップ」
+     メッセージが出ることを確認した。**正直な開示**: この開発機は
+     Windowsのため、Linux版の「新バージョン検出→実際にダウンロード→
+     自己置換→再起動」という一連の流れの実機E2E検証はできていない
+     (コンパイル成功・単体テストの確認までにとどまる)——次回、
+     実際のLinux環境(VPS等)で確認する必要がある。
+  - 次にすべきこと: (1) 実際のLinux環境(conoha VPS等)でLinux版
+    自動更新のE2E検証(新バージョンをリリースし、旧バージョンが
+    実際に自己置換されることを確認)、(2) 将来iOSネイティブアプリを
+    新設する場合は、Apple審査ポリシー上サードパーティによる
+    バイナリ自己差し替えが原則禁止されている制約を踏まえた別方式
+    (App Store経由の通常アップデートのみ)を前提に設計すること。
+
 - **2026-08-19 Facebook経由の入口ページを新設(ユーザー指示「外国で
   スマホ契約がFacebookしかアクセスできない人でも使えるように、
   Facebookにアクセスしながら使用する仕様に変更、かつ自分の端末へ

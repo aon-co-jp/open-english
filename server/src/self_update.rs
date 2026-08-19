@@ -5,6 +5,56 @@
 //! 自動でアンインストールして最新版を自動インストールする機能も
 //! 搭載して」への対応。
 //!
+//! ## 2026-08-19追記: Windows限定ガードをLinuxへも拡張
+//!
+//! ユーザー指示「Windowsのみ、の所をAndroidスマホ・タブレット・
+//! iPhone・Linuxでも使えるようにしてほしい」への対応として、
+//! プラットフォームごとに正直に実現可能性を評価した結果は以下の通り:
+//!
+//! - **Linux**: 実行中のバイナリ自身を別バイナリで置き換えることは
+//!   Windowsと異なり技術的に可能(Linuxでは実行中の実行ファイルの
+//!   inodeを`rename`/上書きしても、既に起動済みのプロセスは古い
+//!   inodeを掴んだまま実行を続けられるため、ファイルロックの制約が
+//!   無い)。このため`apply_update_linux`を新設し、
+//!   `open-english-<os_label>.tar.gz`(CI`.github/workflows/
+//!   release.yml`の`build-unix-installer`が生成するのと同じ命名)を
+//!   ダウンロード→展開→現在の実行ディレクトリ(`installer/unix/
+//!   install.sh`が配置する構成、バイナリと静的アセットが同じ
+//!   ディレクトリに同居)へ上書きコピー→新バイナリを子プロセスとして
+//!   再起動→自身を終了、という流れで実装した。Windows版と異なり
+//!   アンインストーラーは無い(root権限不要のユーザー空間コピー
+//!   インストールのため、単純な上書きで十分)。
+//! - **Android**: OS自体がAPKの完全サイレント自動インストールを許可
+//!   しない(`REQUEST_INSTALL_PACKAGES`権限+ユーザーの明示的な確認
+//!   タップが必須)。この`self_update.rs`はデスクトップサーバー
+//!   バイナリ自身の差し替え機構であり、Android版はそもそも別の
+//!   バイナリ(`libopenenglishserver.so`、`jniLibs`同梱)として動作
+//!   するため対象外のまま——Android向けの更新は`android/app/src/
+//!   main/java/tokyo/runo/openenglish/MainActivity.kt`の
+//!   `checkForAppUpdate`/`downloadAndInstallApk`が別途、2026-08-17
+//!   時点で「新バージョン検出→タップでAPKダウンロード→Android標準
+//!   インストーラー画面を開く(最終確認はユーザー自身)」という、
+//!   OS制約内で可能な範囲まで既に実装済み(本HANDOFF着手前から
+//!   存在、今回は現状維持)。
+//! - **iPhone/iOS**: このリポジトリに`android/`はあるが`ios/`に相当
+//!   するネイティブアプリは存在しない(2026-08-19確認、`ios`という
+//!   名前のディレクトリ・Xcodeプロジェクトなし)。iOSアプリ自体が
+//!   実在しないため実装対象が無い。将来Webアプリとしてブラウザ経由で
+//!   使う構成であれば、既存の`auto-update.js`(`version.json`の
+//!   `buildId`をポーリングし変化時に`location.reload()`)が新バージョン
+//!   検出→案内表示の役割を既に担っており、iPhoneのSafari等でも
+//!   同様に動作する(Webアプリ配布ならApp Store審査の制約を受けない)。
+//!   ネイティブiOSアプリの新規開発は本タスクのスコープ外。
+//!
+//! これに伴い、旧来「Windows限定」だった`check_and_apply_update`冒頭の
+//! ガードを「Windows または Linux」へ変更し(Android/iOS/macOSは
+//! 引き続き対象外)、Linux向けの`fetch/apply`ロジックを追加した。
+//! **正直な開示・未検証事項**: この開発機はWindowsのため、Linux版の
+//! 「新バージョン検出→実際にダウンロード→自己置換→再起動」という
+//! 一連の流れの実機検証は、コンパイル成功・単体テスト(バージョン
+//! 比較・アセット名判定ロジック)の確認までにとどまり、実際のLinux
+//! 環境での最初から最後までのE2E検証は次回Linux実機で行う必要がある。
+//!
 //! ## 正直な開示(最重要)
 //!
 //! - **現時点でGitHub Releaseが1件も存在しない**(2026-08-11確認、
@@ -112,6 +162,17 @@ fn windows_installer_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
     })
 }
 
+/// Linux向けリリースtarball(`.github/workflows/release.yml`の
+/// `build-unix-installer`ジョブが生成する`open-english-linux-
+/// x86_64.tar.gz`のような命名)を探す。macOS向け(`macos`を含む)は
+/// 明示的に除外する。
+fn linux_tarball_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
+    release.assets.iter().find(|a| {
+        let name = a.name.to_lowercase();
+        name.ends_with(".tar.gz") && name.contains("linux")
+    })
+}
+
 /// 実行ファイルと同じディレクトリの`unins000.exe`(Inno Setup既定の
 /// アンインストーラー名)を探す。無ければ`None`(初回インストール直後の
 /// 開発ビルド等、正常なケース)。
@@ -126,7 +187,7 @@ fn existing_uninstaller() -> Option<PathBuf> {
 /// 行うバッチスクリプトを生成し、デタッチ起動した上でこのプロセス自身を
 /// 終了する(ファイルロック解放のため)。呼び出し元には戻らない
 /// (`std::process::exit`)。
-async fn apply_update(installer_path: &std::path::Path) -> anyhow::Result<()> {
+async fn apply_update_windows(installer_path: &std::path::Path) -> anyhow::Result<()> {
     let script_path = std::env::temp_dir().join("open-english-self-update.bat");
     let uninstaller = existing_uninstaller();
     let mut script = String::from("@echo off\r\nping 127.0.0.1 -n 3 > nul\r\n");
@@ -144,6 +205,73 @@ async fn apply_update(installer_path: &std::path::Path) -> anyhow::Result<()> {
 
     tracing_log_if_available("open-english self-update: launched uninstall+reinstall script, exiting to release file locks");
     std::process::exit(0);
+}
+
+/// Linux版: ダウンロードした`open-english-linux-*.tar.gz`を展開し、
+/// 中身(バイナリ+静的アセット一式、`install.sh`が配置するのと同じ
+/// フラット構成)を現在の実行ファイルと同じディレクトリへ上書き
+/// コピーする。Windowsと異なり、実行中の自分自身の実行ファイルを
+/// 上書き(`rename`/コピー)してもLinuxのファイルシステムの仕組み上
+/// 問題ない(既に実行中のプロセスは古いinodeを掴んだまま動作を続け
+/// られる)ため、専用のアンインストーラーは不要。展開・コピー後、
+/// 新しいバイナリを別プロセスとして起動してから、このプロセス自身は
+/// 終了する(呼び出し元には戻らない、`std::process::exit`)。
+async fn apply_update_linux(tarball_path: &std::path::Path) -> anyhow::Result<()> {
+    let exe = std::env::current_exe()?;
+    let install_dir = exe.parent().ok_or_else(|| anyhow::anyhow!("could not resolve install directory"))?.to_path_buf();
+
+    let extract_dir = std::env::temp_dir().join("open-english-self-update-extract");
+    let _ = std::fs::remove_dir_all(&extract_dir);
+    std::fs::create_dir_all(&extract_dir)?;
+
+    let status = tokio::process::Command::new("tar")
+        .args(["xzf", &tarball_path.to_string_lossy(), "-C"])
+        .arg(&extract_dir)
+        .status()
+        .await?;
+    if !status.success() {
+        anyhow::bail!("tar extraction failed with status {status}");
+    }
+
+    // tar.gzは`open-english-<os_label>/`という単一のトップディレクトリを
+    // 含む構成(release.ymlの`PKG`変数参照)。その中身をinstall_dirへ
+    // 上書きコピーする。
+    let mut entries = std::fs::read_dir(&extract_dir)?;
+    let top_dir = entries
+        .find_map(|e| e.ok())
+        .map(|e| e.path())
+        .ok_or_else(|| anyhow::anyhow!("extracted tarball is empty"))?;
+
+    copy_dir_recursive(&top_dir, &install_dir)?;
+
+    let new_exe = install_dir.join("open-english-server");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mut perms = std::fs::metadata(&new_exe)?.permissions();
+        perms.set_mode(0o755);
+        std::fs::set_permissions(&new_exe, perms)?;
+    }
+
+    tokio::process::Command::new(&new_exe).current_dir(&install_dir).spawn()?;
+
+    tracing_log_if_available("open-english self-update: replaced binary and launched new version, exiting");
+    std::process::exit(0);
+}
+
+fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(dst)?;
+    for entry in std::fs::read_dir(src)? {
+        let entry = entry?;
+        let ty = entry.file_type()?;
+        let dst_path = dst.join(entry.file_name());
+        if ty.is_dir() {
+            copy_dir_recursive(&entry.path(), &dst_path)?;
+        } else {
+            std::fs::copy(entry.path(), &dst_path)?;
+        }
+    }
+    Ok(())
 }
 
 fn tracing_log_if_available(msg: &str) {
@@ -167,8 +295,14 @@ pub async fn check_and_apply_update() {
     // Android上ではこの機構全体を無効化する。Android版のアプリ更新は
     // 別途Kotlin側(`MainActivity.checkForAppUpdate`)がGitHub
     // Releasesページへのリンク表示のみを行う設計に委ねる。
-    if !cfg!(target_os = "windows") {
-        tracing_log_if_available("open-english self-update: skipped (this update mechanism is Windows-only)");
+    // 2026-08-19変更: Windows専用ガードをWindows/Linuxへ拡張(モジュール
+    // doc冒頭の2026-08-19追記参照)。Android/iOS/macOSは引き続き対象外
+    // (Android/iOSはそもそもこのネイティブサーバーバイナリの自己更新
+    // 機構が原理的に使えない別プラットフォーム、macOSは今回未対応)。
+    if !cfg!(target_os = "windows") && !cfg!(target_os = "linux") {
+        tracing_log_if_available(
+            "open-english self-update: skipped (this update mechanism supports Windows and Linux only)",
+        );
         return;
     }
 
@@ -196,9 +330,12 @@ pub async fn check_and_apply_update() {
         return;
     }
 
-    let Some(asset) = windows_installer_asset(&release) else {
+    let is_windows = cfg!(target_os = "windows");
+    let asset = if is_windows { windows_installer_asset(&release) } else { linux_tarball_asset(&release) };
+    let Some(asset) = asset else {
+        let platform = if is_windows { "Windows installer" } else { "Linux tarball" };
         tracing_log_if_available(&format!(
-            "open-english self-update: newer release {} found but no Windows installer asset attached — skipping",
+            "open-english self-update: newer release {} found but no {platform} asset attached — skipping",
             release.tag_name
         ));
         return;
@@ -212,7 +349,8 @@ pub async fn check_and_apply_update() {
     let dest = std::env::temp_dir().join(&asset.name);
     match download_to(&asset.browser_download_url, &dest).await {
         Ok(()) => {
-            if let Err(e) = apply_update(&dest).await {
+            let result = if is_windows { apply_update_windows(&dest).await } else { apply_update_linux(&dest).await };
+            if let Err(e) = result {
                 tracing_log_if_available(&format!("open-english self-update: failed to launch update ({e})"));
             }
         }
