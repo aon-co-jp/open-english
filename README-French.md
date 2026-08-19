@@ -171,11 +171,32 @@ binaire macOS précompilé pour `aruaru-llm` (open-english lui-même
 fournit un tar.gz macOS, mais `aruaru-llm` ne propose que Linux/Windows)
 — sur macOS, il faudra compiler `aruaru-llm` depuis les sources.
 
-Sous Windows, après l'installation, la fonction de mise à jour
-automatique intégrée (`server/src/self_update.rs`) vérifie les GitHub
-Releases au démarrage et, si une version plus récente existe,
-désinstalle automatiquement l'ancienne et installe la nouvelle — sans
-aucune action de l'utilisateur.
+Sous Windows/Linux/macOS, après l'installation, la fonction de mise à
+jour automatique intégrée (`server/src/self_update.rs`, étendue à
+Linux puis à macOS le 2026-08-19) vérifie les GitHub Releases au
+démarrage et, si une version plus récente existe, effectue la mise à
+jour automatiquement (Windows : désinstallation→installation ;
+Linux/macOS : le binaire en cours d'exécution se remplace lui-même sur
+place) — sans aucune action de l'utilisateur. Avant d'appliquer une
+mise à jour, le binaire actuel est sauvegardé ; une fois la nouvelle
+version démarrée, une vérification de santé sur le nouveau point de
+terminaison `/healthz` doit réussir dans un court délai, sinon
+l'application revient automatiquement (rétrograde) à la version
+précédente sauvegardée. **Divulgation honnête** : Android/iPhone/iPad
+sont exclus de ce mécanisme de mise à jour/retour automatique (l'OS
+n'autorise pas l'installation silencieuse d'APK) — les notifications de
+mise à jour y restent une installation manuelle par l'utilisateur (et
+il n'existe pas non plus de chemin de rétrogradation).
+
+Une nouvelle page d'entrée, `facebook.html`, a également été ajoutée
+pour les utilisateurs dont le forfait mobile ne permet d'accéder qu'à
+Facebook — divulgation honnête : il ne s'agit pas d'un partenariat
+officiel "Free Basics" avec Meta, seulement d'une page normale
+accessible depuis le navigateur intégré de Facebook, qui pointe vers
+les installateurs existants.
+
+*(Note de traduction automatique : ce paragraphe a été traduit par
+l'agent IA lui-même, sans relecture par un locuteur natif.)*
 
 ## Comment lancer l'application
 

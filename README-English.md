@@ -251,10 +251,24 @@ directly if you want a specific pinned version). There is no prebuilt macOS bina
 `aruaru-llm` yet (open-english itself ships a macOS tar.gz, but `aruaru-llm` only ships
 Linux/Windows) — on macOS you'll need to build `aruaru-llm` from source.
 
-On Windows, after installation the app's built-in auto-update feature
-(`server/src/self_update.rs`) checks GitHub Releases at startup and, if a newer version
-exists, automatically uninstalls the old one and installs the new one — no user action
-required.
+On Windows/Linux/macOS, after installation the app's built-in auto-update feature
+(`server/src/self_update.rs`, extended to Linux on 2026-08-19 and to macOS the same day)
+checks GitHub Releases at startup and, if a newer version exists, automatically updates
+(Windows: uninstall→install; Linux/macOS: the running binary replaces itself in place) —
+no user action required. Before applying an update, the current binary is backed up; after
+the new version starts, a health check against the new `/healthz` endpoint must succeed
+within a short grace period, or the app automatically rolls back (downgrades) to the
+backed-up previous version. **Honest disclosure**: Android/iPhone/iPad are excluded from
+this auto-update/auto-rollback mechanism, since the OS does not allow fully silent APK
+install — update notifications still require the user to tap through the install
+manually (and there is no downgrade path there either).
+
+*(Machine-translation note: this paragraph and the note below were translated by the AI
+agent itself, without native-speaker proofreading.)*
+
+There is also a new entry page, `facebook.html`, for users whose mobile plan only allows
+access to Facebook — see the 2026-08-19 banner above for details and its honest
+disclosure about the limits of this approach.
 
 ## How to run
 

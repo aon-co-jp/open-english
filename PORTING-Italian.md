@@ -41,11 +41,11 @@ progetto, nel caso vengano portati in un altro progetto:
     ricerca per sottostringa invece di corrispondenza esatta; per
     argomenti pericolosi (es. alpinismo) allegare sempre un avviso di
     sicurezza.
-11. **Auto-aggiornamento tramite GitHub Releases (solo Windows)**: deve
-    essere implementato lato nativo (non nel JS del browser); il
-    proprio .exe in esecuzione non può essere eliminato su Windows —
-    avviare prima uno script batch distaccato, poi terminare il
-    proprio processo.
+11. **Auto-aggiornamento tramite GitHub Releases (Windows/Linux/macOS,
+    vedi anche il punto 14 per il rollback)**: deve essere implementato
+    lato nativo (non nel JS del browser); il proprio .exe in esecuzione
+    non può essere eliminato su Windows — avviare prima uno script
+    batch distaccato, poi terminare il proprio processo.
 12. **Le classi CSS dei modali richiedono `max-height`/`overflow-y`**:
     ogni classe contenitore di modale deve definire la scorribilità,
     altrimenti i contenuti lunghi non sono raggiungibili su mobile.
@@ -53,6 +53,32 @@ progetto, nel caso vengano portati in un altro progetto:
     sovrascrivibili a runtime tramite variabile d'ambiente; proteggere
     sempre la logica di auto-aggiornamento specifica di Windows con
     `cfg!(target_os = "windows")`.
+14. **Auto-aggiornamento multipiattaforma con rollback guidato da
+    health-check**: generalizzare `apply_update_linux` in
+    `apply_update_unix` (Linux e macOS condividono la sostituzione del
+    binario in esecuzione); salvare il binario attuale prima di
+    applicare un aggiornamento; dopo l'avvio della nuova versione,
+    interrogare un nuovo endpoint `/healthz` entro un breve periodo e
+    ripristinare il salvataggio in caso di fallimento. Android/iOS
+    restano esplicitamente fuori dall'ambito (limite della piattaforma,
+    non una dimenticanza).
+15. **Promozione + installazione automatica di RSync**: se `rsync`
+    manca, mostrare un messaggio bilingue invitante ("Let's install
+    RSync!") invece di un errore secco, poi tentare un'installazione
+    automatica tramite una catena di gestori di pacchetti in base al
+    SO (winget→choco su Windows, apt-get→dnf→pacman su Linux, brew su
+    macOS, pkg su Termux/Android), proseguendo direttamente con il
+    backup in caso di successo.
+16. **Pagina d'ingresso dedicata per un canale di accesso limitato**
+    (es. `facebook.html` per utenti limitati all'accesso da Facebook):
+    una semplice pagina statica che riutilizza i link di download già
+    presenti nel README, con una divulgazione onesta ed esplicita che
+    non si ottiene un accesso gratuito ufficiale di tipo "zero-rated"
+    — solo un punto d'ingresso alternativo.
+
+*(Nota sulla traduzione automatica: le voci da 14 a 16 sono state
+tradotte dall'agente IA stesso, senza revisione da parte di un
+madrelingua.)*
 
 **Avvertenza importante**: questo progetto è un prototipo di Fase 0 —
 qualità delle risposte AI (basata su GPT-2), naturalezza della sintesi

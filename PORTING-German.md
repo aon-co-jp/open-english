@@ -41,7 +41,8 @@ diesem Projekt, falls sie in ein anderes Projekt portiert werden:
     Teilstring-Suche statt exakter Übereinstimmung; bei gefährlichen
     Themen (z. B. Bergsteigen) immer einen Sicherheitshinweis
     beifügen.
-11. **Automatisches Update via GitHub Releases (nur Windows)**: muss
+11. **Automatisches Update via GitHub Releases (Windows/Linux/macOS,
+    siehe Punkt 14 für Rollback)**: muss
     zwingend nativ (nicht im Browser-JS) implementiert werden; die
     eigene laufende .exe kann unter Windows nicht gelöscht werden —
     erst eine losgelöste Batch-Datei starten, dann den eigenen
@@ -53,6 +54,33 @@ diesem Projekt, falls sie in ein anderes Projekt portiert werden:
     Umgebungsvariable überschreibbar machen; Windows-spezifische
     Auto-Update-Logik unbedingt mit `cfg!(target_os = "windows")`
     absichern.
+
+14. **Plattformübergreifendes Auto-Update mit Health-Check-gestütztem
+    Rollback**: `apply_update_linux` zu `apply_update_unix`
+    verallgemeinern (Linux und macOS teilen sich das Ersetzen der
+    laufenden Binärdatei); die aktuelle Binärdatei vor dem Update
+    sichern; nach dem Start der neuen Version einen neuen
+    `/healthz`-Endpunkt innerhalb kurzer Frist prüfen und bei
+    Fehlschlag die Sicherung wiederherstellen. Android/iOS bleiben
+    ausdrücklich außerhalb des Umfangs (Plattformbeschränkung, kein
+    Versäumnis).
+15. **Werbung + automatische Installation von RSync**: fehlt `rsync`,
+    eine einladende zweisprachige Meldung ("Let's install RSync!")
+    statt eines trockenen Fehlers anzeigen, dann eine automatische
+    Installation über eine Paketmanager-Kette je nach OS versuchen
+    (winget→choco unter Windows, apt-get→dnf→pacman unter Linux, brew
+    unter macOS, pkg unter Termux/Android) und bei Erfolg direkt das
+    Backup anschließen.
+16. **Dedizierte Einstiegsseite für einen eingeschränkten Zugangskanal**
+    (z. B. `facebook.html` für Nutzer mit reinem Facebook-Zugang): eine
+    einfache statische Seite, die die bereits im README vorhandenen
+    Download-Links wiederverwendet, mit expliziter ehrlicher
+    Offenlegung, dass kein offizieller kostenloser "Zero-Rating"-Zugang
+    erreicht wird — nur ein alternativer Einstiegspunkt.
+
+*(Hinweis zur maschinellen Übersetzung: Die Einträge 14–16 wurden vom
+KI-Agenten selbst übersetzt, ohne Korrekturlesen durch einen
+Muttersprachler.)*
 
 **Wichtiger Vorbehalt**: Dieses Projekt ist ein Phase-0-Prototyp — KI-
 Antwortqualität (GPT-2-basiert), Natürlichkeit der Sprachsynthese und

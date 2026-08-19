@@ -157,10 +157,29 @@ direkt, wenn du eine bestimmte, fest angegebene Version möchtest). Für
 Linux/Windows) — unter macOS muss `aruaru-llm` aus dem Quellcode gebaut
 werden.
 
-Unter Windows prüft die eingebaute Auto-Update-Funktion
-(`server/src/self_update.rs`) nach der Installation beim Start die
-GitHub Releases und deinstalliert und installiert automatisch die neue
-Version, falls eine neuere verfügbar ist — ohne Zutun des Benutzers.
+Unter Windows/Linux/macOS prüft die eingebaute Auto-Update-Funktion
+(`server/src/self_update.rs`, seit 2026-08-19 auf Linux und macOS
+erweitert) nach der Installation beim Start die GitHub Releases und
+aktualisiert automatisch, falls eine neuere Version verfügbar ist
+(Windows: Deinstallation→Neuinstallation; Linux/macOS: die laufende
+Binärdatei ersetzt sich selbst) — ohne Zutun des Benutzers. Vor jedem
+Update wird die aktuelle Binärdatei gesichert; erreicht die neue
+Version den neuen `/healthz`-Endpunkt nicht innerhalb einer kurzen
+Frist, wird automatisch auf die gesicherte Version zurückgerollt.
+**Ehrlicher Hinweis**: Android/iPhone/iPad sind von diesem Auto-Update/
+Rollback-Mechanismus ausgenommen (das Betriebssystem erlaubt keine
+stille APK-Installation) — dort bleibt die manuelle Installation durch
+den Nutzer nötig, ein Rollback-Pfad existiert dort nicht.
+
+Außerdem wurde `facebook.html` als neue Einstiegsseite hinzugefügt, für
+Nutzer, deren Mobilfunktarif nur Facebook-Zugriff erlaubt — ehrlicher
+Hinweis: es handelt sich nicht um eine offizielle "Free Basics"-
+Partnerschaft mit Meta, sondern lediglich um eine normale Seite, die
+über den in Facebook integrierten Browser erreichbar ist und auf die
+bestehenden Installationsprogramme verweist.
+
+*(Hinweis zur maschinellen Übersetzung: Dieser Absatz wurde vom
+KI-Agenten selbst übersetzt, ohne Prüfung durch einen Muttersprachler.)*
 
 ## Ausführung
 

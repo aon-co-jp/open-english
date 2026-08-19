@@ -164,11 +164,31 @@ stesso distribuisce un tar.gz per macOS, ma `aruaru-llm` solo per
 Linux/Windows) — su macOS occorre compilare `aruaru-llm` dal codice
 sorgente.
 
-Su Windows, dopo l'installazione, la funzione di aggiornamento
-automatico integrata (`server/src/self_update.rs`) controlla le GitHub
-Releases all'avvio e, se esiste una versione più recente, disinstalla
-automaticamente quella vecchia e installa quella nuova — senza alcuna
-azione da parte dell'utente.
+Su Windows/Linux/macOS, dopo l'installazione, la funzione di
+aggiornamento automatico integrata (`server/src/self_update.rs`,
+estesa a Linux e macOS il 2026-08-19) controlla le GitHub Releases
+all'avvio e, se esiste una versione più recente, si aggiorna
+automaticamente (Windows: disinstallazione→installazione; Linux/macOS:
+il binario in esecuzione si sostituisce da solo) — senza alcuna azione
+da parte dell'utente. Prima di applicare un aggiornamento, il binario
+attuale viene salvato; dopo l'avvio della nuova versione, un controllo
+di salute sul nuovo endpoint `/healthz` deve avere successo entro un
+breve periodo, altrimenti l'app torna automaticamente (downgrade) alla
+versione precedente salvata. **Divulgazione onesta**: Android/iPhone/
+iPad sono esclusi da questo meccanismo di aggiornamento/rollback
+automatico (il sistema operativo non consente un'installazione APK
+completamente silenziosa) — le notifiche di aggiornamento richiedono
+ancora un'installazione manuale da parte dell'utente (e non esiste
+nemmeno un percorso di downgrade).
+
+È stata inoltre aggiunta una nuova pagina di ingresso, `facebook.html`,
+per gli utenti il cui piano mobile consente l'accesso solo a Facebook —
+divulgazione onesta: non si tratta di una partnership ufficiale "Free
+Basics" con Meta, ma solo di una normale pagina raggiungibile dal
+browser integrato di Facebook che rimanda agli installer esistenti.
+
+*(Nota sulla traduzione automatica: questo paragrafo è stato tradotto
+dall'agente IA stesso, senza revisione da parte di un madrelingua.)*
 
 ## Come avviare l'app
 
