@@ -6,6 +6,29 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-19)**: Facebookしかアクセスできないスマホ
+> 契約の利用者向けに、Facebookページ/Messengerで共有するリンク先
+> `facebook.html`を新設しました。**正直な開示**: Facebookの
+> 「Free Basics」等のゼロレーティングプログラムへの正式な提携・
+> 登録は本プロジェクト単独ではできないため、「Facebook経由で完全
+> 無料アクセス」自体は実現できていません——`facebook.html`は
+> Facebookアプリ内蔵ブラウザから開けるリンク先として機能し、
+> そこから既存のインストーラー(Windows/Linux/macOS/Android)への
+> ダウンロード導線を案内するにとどまります。アプリ本体は変わらず
+> 利用者端末上のローカルサーバー(`server/`)で動作します。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-19 HANDOFF参照。
+>
+> *English*: Added `facebook.html`, an entry page meant to be shared as
+> a link on a Facebook Page or in Messenger, for users whose mobile
+> plan only allows Facebook access. Honest disclosure: true Facebook
+> "Free Basics"-style zero-rated free access is not achievable without
+> an official partnership with Meta, which this project does not have
+> — `facebook.html` works as a normal page reachable from Facebook's
+> in-app browser and points to the existing installers (Windows/Linux/
+> macOS/Android); the app itself still runs on a local server on your
+> own device (`server/`). See the 2026-08-19 HANDOFF entry in
+> [CLAUDE.md](CLAUDE.md).
+
 > 📌 **最新の更新(2026-08-11〜12、v0.6.0)**: Android/タブレットが
 > PC/Linuxサーバー不要で単体動作するアプリになりました——AI応答
 > エンジン(`aruaru-llm`)自体もAPKへ実際に同梱し、実機で両プロセスの

@@ -6,6 +6,22 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-19)**: Added `facebook.html`, an entry
+> page meant to be shared as a link on a Facebook Page or in Messenger,
+> for users whose mobile plan only allows Facebook access. Honest
+> disclosure: true Facebook "Free Basics"-style zero-rated free access
+> is not achievable without an official partnership with Meta, which
+> this project does not have — `facebook.html` works as a normal page
+> reachable from Facebook's in-app browser and points to the existing
+> installers (Windows/Linux/macOS/Android); the app itself still runs
+> on a local server on your own device (`server/`). See the 2026-08-19
+> HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: Facebookしかアクセスできないスマホ契約の利用者向けに、
+> Facebookページ/Messengerで共有するリンク先`facebook.html`を新設
+> しました。Facebookとの正式提携が無いため「完全無料アクセス」自体は
+> 実現できておらず、既存インストーラーへの導線を案内するのみです。
+
 > 📌 **Latest update (2026-08-11–12, v0.6.0)**: Android/tablet now runs
 > fully standalone — no PC or Linux server required. The AI response
 > engine (`aruaru-llm`) itself is now bundled into the APK; on-device

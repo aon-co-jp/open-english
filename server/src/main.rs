@@ -27,6 +27,7 @@ use db::Db;
 const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/", "index.html", "text/html; charset=utf-8"),
     ("/index.html", "index.html", "text/html; charset=utf-8"),
+    ("/facebook.html", "facebook.html", "text/html; charset=utf-8"),
     ("/style.css", "style.css", "text/css; charset=utf-8"),
     ("/app.js", "app.js", "application/javascript; charset=utf-8"),
     ("/auto-update.js", "auto-update.js", "application/javascript; charset=utf-8"),
