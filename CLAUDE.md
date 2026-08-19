@@ -47,6 +47,59 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-19(続き8) 1日の利用回数制限に到達した際の日英併記メッセージを
+  実装(ユーザー指示「検索や質問などで1日の利用回数制限を超えた場合に、
+  有料版切替の案内+他プロバイダの無料枠案内を日英併記で表示して」への
+  対応)**:
+  1. **事前調査結果**: `app.js`・`server/src/main.rs`・`db.rs`のいずれにも
+     「1日100回まで」という自前の利用回数カウンタは実装されていなかった
+     (`index.html`内の「1日100件まで無料」という記述はGoogle Custom
+     Search JSON API自体の無料枠説明であり、open-english自身の制限では
+     ない、という正直な事実確認)。そのためまず`app.js`側に
+     `localStorage`ベースの簡易日次カウンタ(`DAILY_USAGE_LIMIT_KEY =
+     "openEnglish.dailyUsage"`、上限`DAILY_USAGE_LIMIT = 100`、日付が
+     変わると自動リセット)を新規実装した。**正直な開示**: これは
+     クライアント側のみのカウンタであり`localStorage`消去や別端末利用で
+     回避可能——サーバー側での強制ではなく、利用者への通知目的の
+     簡易的な仕組み。
+  2. **`isDailyLimitExceeded()`/`recordDailyUsage()`**: チャット送信
+     フォーム(`formEl`の`submit`ハンドラ)冒頭でチェックし、上限到達時は
+     `askTrainer`等のAPI呼び出しを一切行わずに`dailyLimitExceededMessage()`
+     の結果を`appendMessage("system", ...)`で表示するのみに留める
+     (通常モード・メイドカフェ研修モードの両方に適用)。
+  3. **`dailyLimitExceededMessage()`**: 要望1(「本日の無料利用枠を
+     超えました。有料版に切り替えますか？」/ "You've exceeded today's
+     free usage limit. Would you like to switch to a paid plan?"、実際の
+     決済・アップグレード導線は実装していない旨も併記)+要望2(他社
+     無料枠の案内)を日英併記で構築。要望2は既存の
+     `provider-free-tiers.json`を`fetch`して動的に組み立てる設計
+     (ハードコードなし、既存の無料枠バナーとの一貫性を維持)。
+  4. **テスト用フック**: `window.OPEN_ENGLISH_DAILY_LIMIT_OVERRIDE`
+     (既定`null`)で上限を一時的に下げられるようにし、実機検証を
+     容易にした(本番運用では未設定のまま`DAILY_USAGE_LIMIT`が使われる)。
+  5. **実機検証**: 他エージェントの並行作業で元々起動していた
+     `open-english-server.exe`(ポート4601)がこのセッション中に停止して
+     いたため、既存バイナリを`OPEN_ENGLISH_SERVER_BIND=127.0.0.1:4699`で
+     別ポート起動し(他エージェントの作業に干渉しないよう配慮)、Claude
+     Browserで実際に(a) `OPEN_ENGLISH_DAILY_LIMIT_OVERRIDE=1`+
+     使用済みカウント`1`を`localStorage`へ設定した状態でチャット送信→
+     `.msg.system`として日英併記の上限到達メッセージ(有料版切替の案内+
+     5プロバイダ全ての無料枠情報)が正しく表示されることを確認、
+     (b) カウントを`0`にリセットした状態では`isDailyLimitExceeded()`が
+     `false`を返し通常のチャット送信フロー(`askTrainer`呼び出し)へ
+     進むことを確認した。検証後、テスト用に起動したサーバー
+     プロセス(ポート4699)は`taskkill`で終了済み。
+  6. **変更範囲**: `app.js`のみ(106行追加、既存の`askTrainer`本体・
+     `provider-free-tiers.json`・`style.css`の`.msg`系クラスは変更
+     せず流用、他エージェントが同時に編集中だった`installer/windows/`・
+     `server/src/main.rs`・`fetch-aruaru-db.ps1`には一切触れていない)。
+  - 次にすべきこと: (1) サーバー側(`server/`)でも同種のレート制限を
+    課すか検討(現状はクライアント側のみで回避可能な簡易実装)、
+    (2) 「有料版に切り替えますか？」に対する実際の課金・アップグレード
+    導線の実装(今回は意図的にスコープ外、ユーザー確認の上で着手)、
+    (3) `DAILY_USAGE_LIMIT`(100)の値が実際の運用ニーズに合っているか
+    ユーザーへ確認。
+
 - **2026-08-19(続き7) Windows版のコマンド操作ゼロ化(aruaru-llm自動起動)+
   README-INSTALLED.txtの矛盾を解消(ユーザーがGitHub上で読んだ
   `README-INSTALLED.txt`「aruaru-llmは別途手動でダウンロード・起動が

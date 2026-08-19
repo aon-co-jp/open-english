@@ -6,6 +6,24 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **追記(2026-08-19、続き8)**: 1日の利用回数上限(既定100回、
+> クライアント側`localStorage`カウンタ)に到達した際、チャット上に
+> 「本日の無料利用枠を超えました。有料版に切り替えますか？」+他の
+> AIプロバイダ(Google検索/DeepSeek/ChatGPT/Gemini/Claude)の無料枠情報を
+> 日英併記で表示するようにしました(`provider-free-tiers.json`を動的に
+> 参照、ハードコードなし)。**正直な開示**: これは通知のみのクライアント側
+> 実装で、実際の課金・アップグレード処理は行いません。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-19(続き8)HANDOFF参照。
+>
+> *English*: When the daily usage counter (default 100, client-side
+> `localStorage`) is reached, the chat now shows a bilingual notice —
+> "You've exceeded today's free usage limit. Would you like to switch to
+> a paid plan?" plus the free-tier info for other AI providers (Google
+> Search/DeepSeek/ChatGPT/Gemini/Claude), read dynamically from
+> `provider-free-tiers.json`. Honest disclosure: this is a notice-only,
+> client-side implementation with no real billing/upgrade flow. See the
+> 2026-08-19 (continued 8) HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+
 > 📌 **最新の更新(2026-08-19)**: Facebookしかアクセスできないスマホ
 > 契約の利用者向けに、Facebookページ/Messengerで共有するリンク先
 > `facebook.html`を新設しました。**正直な開示**: Facebookの
