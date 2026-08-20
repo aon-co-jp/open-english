@@ -47,6 +47,91 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-20(続き5) NNAPI実計算・PC URL自動検出+実機Android(Moto G53y 5G)
+  での実検証(ユーザー指示「NNAPI実計算実装+PC URL自動検出+実機・NPU
+  搭載機での検証」への対応、うち実機検証について過去のHANDOFFで
+  繰り返し「実機無し」と記録していたが、この作業では実際に`adb devices`
+  でMotorola Moto G53y 5G(シリアル`ZY22J7RFND`、Snapdragon 480+)が
+  接続されていることを確認できたため実機検証を実施できた)**:
+  1. **NNAPI実計算(できなかった部分の正直な開示、最重要)**:
+     `.tflite`モデルをTensorFlow/Kerasで新規生成するには本来Python+
+     TensorFlowが必要だが、この開発機のPythonは`Python 3.14`
+     (32bit、`C:\...\Python314-32`)で`pip install tensorflow`を実際に
+     試したところ`ERROR: Could not find a version that satisfies the
+     requirement tensorflow (from versions: none)`——TensorFlowは
+     Python 3.14や32bit環境向けのwheelを提供しておらず、この環境では
+     `.tflite`モデルを新規生成できないことを実際に確認した(過去の
+     HANDOFF記載の「実機が無いためモデル検証できない」制約とは別の、
+     独立した制約であることが分かった——実機が使えるようになった今も
+     この制約は解消していない)。そのため**実際の計算オフロード
+     (内積・コサイン類似度そのものをNNAPI Delegate経由でNPU/GPUへ
+     渡す)は今回も実装できなかった**——引き続き`PhoneAccelWorker.kt`の
+     計算自体はCPU(Kotlin標準`FloatArray`)のまま。
+  2. **NNAPI検出について実機で新たに確認できたこと**: 上記の理由で
+     計算オフロード自体は実装できなかったが、既存の`NnApiDelegate()`
+     検出コード自体を、今回**初めて実機で実行して確認できた**。実際に
+     Moto G53y 5G上でアプリを起動し「▶️ スマホ計算を開始」ボタンを
+     タップしたところ、`phone_accel_status`のテキストが実際に
+     「NNAPI detected (NPU/GPU offload may be available on this
+     device) ... / このデバイスでNNAPIを検出しました...」に変わる
+     ことを`uiautomator dump`経由で確認した——**Snapdragon 480+
+     搭載のこの実機は実際にNNAPI検出に成功する**ことが実証された
+     (過去のHANDOFFでは検出コード自体が実機未検証のままだった)。
+     `ps -A`で`libopenenglishserver.so`・`libaruarullm.so`両プロセスも
+     継続して生存していること、`logcat`に`FATAL EXCEPTION`が出て
+     いないことも確認済み。
+  3. **PC URL自動検出(新規実装、サブネットスキャン方式を採用)**:
+     `MainActivity.kt`に`autoDetectPcUrl`/`scanSubnetForAruaruLlm`/
+     `probeHealthz`/`getLocalIpv4Address`を新設。UDPブロードキャスト
+     (PC側`aruaru-llm`にリスナー追加が必要)・NSD/mDNS(PC側アナウンス
+     実装が必要で実装コスト高)・サブネットスキャン(PC側変更不要、
+     実装最単純)の3方式を比較し、**PC側変更が一切不要**なサブネット
+     スキャン方式を採用した(`WifiManager`で自端末IPを取得→`/24`を
+     推定→254ホスト×既定ポート4600へ並列で`/healthz`を短タイムアウト
+     〈400ms〉プローブ)。自動検出に失敗した場合のフォールバックとして
+     既存の手動URL入力欄はそのまま残した。`AndroidManifest.xml`へ
+     `ACCESS_WIFI_STATE`(通常権限、実行時プロンプト不要)を追加。
+  4. **PC URL自動検出の実機検証結果(正直な開示)**: Moto G53y 5Gの
+     Wi-Fi IPは`192.168.0.214/24`(実機で`ip addr show wlan0`にて確認)。
+     実際に「🔍 同一Wi-Fi内のPCを自動検出」ボタンをタップし、スキャン
+     完了後`phone_accel_status`が「見つかりました: http://
+     127.0.0.1:4600 / Found: http://127.0.0.1:4600」になることを確認
+     した——ただしこれは**この実機自身が内蔵する`libaruarullm.so`
+     (端末内で自己完結して起動している既存の同梱コンポーネント)を
+     ループバック経由で検出したものであり、「別のPC」を同一LAN上で
+     発見できたことの証明ではない**(この開発環境にはこの実機の
+     `192.168.0.0/24`サブネット上へ到達可能な別PC/`aruaru-llm`
+     インスタンスが存在しないため、「別マシンを実際に発見できるか」
+     の検証はできていない)。とはいえ(a) 254ホストの並列スキャンが
+     実機上で例外なく完走しUIが正しく更新されること、(b)
+     `/healthz`への実プローブ自体は正しく機能し実際に到達可能な
+     ホスト〈127.0.0.1:4600〉を正しく見つけること、の2点は実機で
+     実証できている。
+  5. **ビルド検証**: `gradlew.bat :app:assembleDebug`が実際に
+     `BUILD SUCCESSFUL`(既存のkotlinx-coroutines`async`/
+     `coroutineScope`の使い方の初期実装ミス〈拡張関数の完全修飾呼び
+     出し〉をこの過程で発見・修正、importを追加して解決)。
+     `adb install -r`で実機へ実際にインストールし、上記2番・4番の
+     動作確認はいずれも実機上のUI操作(`input tap`)+
+     `uiautomator dump`+`logcat`で行った(型チェック・ビルド成功
+     だけで完了と報告しない方針の徹底)。
+  6. **正直な開示・引き続き未実装のまま残る部分**: (a) NNAPI経由の
+     実際の計算オフロード(上記1番、Python/TensorFlow環境が無いため
+     `.tflite`モデルを生成できないことが根本原因、実機の有無とは
+     独立した制約)、(b) 「別のPCを実際にLAN上で発見できるか」の
+     E2E検証(この開発環境に到達可能な別PCが存在しないため)、
+     (c) USB接続(`adb forward`)経由での`PhoneAccelWorker`のE2E
+     (今回はWi-Fi経由のみ検証、この実機とホストPCが同一Wi-Fiに
+     いる保証も無い——今回のテストは全て実機単体で完結する範囲
+     〈自己ループバック検出、NNAPI検出〉に限定される)。
+  - 次にすべきこと: (1) Python 3.14/32bitではなく64bit・TensorFlow
+    対応バージョンのPython環境を用意できれば、コサイン類似度用の
+    最小`.tflite`モデルを生成しNNAPI経由の実計算オフロードへ着手する、
+    (2) この実機と同一LAN上に実際のPC版`aruaru-llm`を起動して
+    「別マシンをサブネットスキャンで発見できるか」の一気通貫E2E検証を
+    行う、(3) `adb forward tcp:4600 tcp:4600`を使ったUSB経由経路の
+    実機検証。
+
 - **2026-08-20(続き4) 実インストーラー経由の一気通貫E2E検証を実施(前回の
   「ISCC.exeが無い」という制約は解消済みだったと判明)**: この開発機に
   `C:\Program Files (x86)\Inno Setup 6\ISCC.exe`が実際にインストール済み
