@@ -47,6 +47,71 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-20(続き4) 実インストーラー経由の一気通貫E2E検証を実施(前回の
+  「ISCC.exeが無い」という制約は解消済みだったと判明)**: この開発機に
+  `C:\Program Files (x86)\Inno Setup 6\ISCC.exe`が実際にインストール済み
+  であることを確認し、前回記録した「ISCC.exeが無くE2E検証できない」という
+  制約を解消して実施した。手順と結果は以下の通り(誇張なし、実際に確認
+  できた範囲のみ記載):
+  1. `cargo build --release`で`open-english-server.exe`をビルド(成功)。
+  2. `installer\windows\open-english.iss`を`ISCC.exe /DMyAppVersion=0.6.9`
+     で実際にコンパイルし、`installer\windows\dist\open-english-install.exe`
+     (実インストーラー、`unins000.exe`生成込み)を生成(成功)。
+  3. このインストーラーを`/VERYSILENT /SUPPRESSMSGBOXES /TASKS=`で実際に
+     サイレントインストール(`PrivilegesRequired=lowest`のため実際の
+     インストール先は`C:\Users\<user>\AppData\Local\Programs\open-english`
+     ——`{autopf}`は非管理者権限では自動的にこのユーザーローカルパスに
+     解決される)。`[Run]`セクションの`postinstall`(`skipifsilent`無し)
+     設定通り、サイレントインストール後も実際にサーバーが自動起動する
+     ことを確認。
+  4. 起動したサーバーの`/healthz`が実際に`200 {"ok":true}`を返すことを
+     確認。`POST /v1/db/history`で実際にテストメッセージ
+     (`E2E_TEST_MESSAGE_20260820_verify_data_survives_update`)を1件
+     書き込み、`GET /v1/db/history`で書き込まれたこと(id=1)を確認。
+  5. サーバープロセスを停止し、`self_update.rs`の`apply_update_windows`が
+     生成する実際のバッチスクリプトと**完全に同じ処理順序**
+     (バックアップ→`unins000.exe /VERYSILENT`実行→新インストーラー
+     `/VERYSILENT`実行→待機→`data\`無条件復元)を、実際の
+     `unins000.exe`と実際の`open-english-install.exe`を使って実行する
+     `.bat`を生成し、実際に実行した(GitHub Releaseは使わず、ローカルの
+     同一インストーラーを「新版」として使う現実的な代替——コード変更は
+     一切していない、実行順序のみ本物の`apply_update_windows`の実装を
+     忠実に再現)。
+  6. バッチスクリプト完了後、実際に`unins000.exe`によるアンインストール→
+     `open-english-install.exe`による再インストール→(既定タスクにより
+     `aruaru-llm`の追加取得も実行)→サーバー自動再起動、という一連の
+     流れが実際に完走したことを確認。**核心の確認結果**:
+     再起動後のサーバーへ`GET /v1/db/history`を実行したところ、手順4で
+     書き込んだテストメッセージ(id=1、内容
+     `E2E_TEST_MESSAGE_20260820_verify_data_survives_update`)が
+     **実際に失われず復元されていた**ことを確認した。これは
+     モックやPowerShell手動再現ではなく、本物のInno Setup生成
+     インストーラー・本物の`unins000.exe`・実際に生成されたバッチ
+     スクリプトのロジックを使った一気通貫の実機検証であり、修正が
+     実際に機能していることを実証した。
+  7. 検証後、サーバー停止→`unins000.exe`で実際にアンインストール→
+     (`aruaru-llm`サブフォルダ等の残留物を含め)インストール先ディレクトリ
+     `C:\Users\<user>\AppData\Local\Programs\open-english`を完全に削除、
+     一時バッチ・バックアップファイル(`%TEMP%\open-english-self-update-
+     backup`等)も削除し、この開発機をクリーンな状態に戻した。
+     `installer\windows\dist\`配下の生成物は`.gitignore`済みのビルド
+     成果物のため残置(実害なし)。
+  - **正直な開示・今回の検証の範囲外だったこと**: (a) 実際の
+    GitHub Releaseからのダウンロードは経由していない(ローカルに
+    用意した「新版」アセットで自己更新の後半ロジックのみを検証、
+    `fetch_latest_release`/`download_to`自体は既存の単体テスト・
+    404時の正直なスキップ確認までにとどまる、この制約は元々認識
+    されており本タスクのスコープ外)。(b) ヘルスチェック**失敗**時の
+    ロールバック分岐(バックアップからの復元→旧exe再起動)は今回
+    未検証(今回は正常系のみ、失敗系のE2E検証は次回の課題)。(c)
+    `downgrade_self_windows`(手動ダウングレードAPI)自体の実
+    インストーラー経由E2E検証も今回のスコープ外(前回セッションで
+    PowerShell手動再現のみ実施済み)。
+  - 次にすべきこと: (1) ヘルスチェック失敗時のロールバック分岐の実
+    インストーラー経由E2E検証、(2) `downgrade_self_windows`の実
+    インストーラー経由E2E検証、(3) 実際のGitHub Releaseタグをpushして
+    `fetch_latest_release`からの一気通貫(ダウンロードも含む)を検証。
+
 - **2026-08-20(続き3) 実害バグ修正: Windows自動アップデートで会話履歴DBが
   毎回消失していた重大バグを修正(別セッションの監査エージェント指摘、
   実コード確認の上で確定・修正)**:
