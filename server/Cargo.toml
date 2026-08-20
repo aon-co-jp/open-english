@@ -38,3 +38,15 @@ rust-json = { path = "../../RS-JSON" }
 bytes = "1.9"
 http-body-util = "0.1"
 hyper = { version = "1.10", features = ["full"] }
+# AIプログラミング支援バックエンド(2026-08-20新設、ユーザー指示
+# 「VPSへの自動読み書き・GitHubへの自動読み書き・ローカルドライブへの
+# 常駐エージェント読み書きをサーバー側で実装」への対応)向け。
+# VPS連携: 純RustのSSHクライアント(`russh`、非同期・tokio対応、
+# libssh2/OpenSSLへのCバインディング〈ssh2クレート〉と違いvcpkg等の
+# 追加ネイティブ依存が要らずクロスプラットフォームで扱いやすいため採用)。
+# 鍵ファイルの読み込みには`russh-keys`を使う。
+russh = "0.45"
+russh-keys = "0.45"
+async-trait = "0.1"
+# GitHubのContents API(Base64エンコードされたファイル内容)を扱うため。
+base64 = "0.22"

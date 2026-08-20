@@ -19,7 +19,10 @@ use std::sync::Arc;
 
 mod component_update;
 mod db;
+mod github_agent;
+mod local_agent;
 mod self_update;
+mod vps_agent;
 
 use db::Db;
 
@@ -460,6 +463,165 @@ async fn db_migrate_legacy(req: Request, db: Arc<Db>) -> Response {
     }
 }
 
+/// クエリ文字列から1個のパラメータを取り出す(RPoem/hyperにクエリ
+/// パーサが無いため、簡易な自前実装で足りる範囲〈`key=value`を`&`で
+/// 区切り、`%XX`パーセントエンコーディングをデコード〉に留めた、
+/// 2026-08-20新設)。
+fn query_param(req: &Request, key: &str) -> Option<String> {
+    let query = req.uri().query()?;
+    for pair in query.split('&') {
+        let mut it = pair.splitn(2, '=');
+        let k = it.next()?;
+        let v = it.next().unwrap_or("");
+        if k == key {
+            return Some(percent_decode(v));
+        }
+    }
+    None
+}
+
+fn percent_decode(s: &str) -> String {
+    let bytes = s.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'%' if i + 2 < bytes.len() => {
+                if let Ok(byte) = u8::from_str_radix(&s[i + 1..i + 3], 16) {
+                    out.push(byte);
+                    i += 3;
+                    continue;
+                }
+                out.push(bytes[i]);
+                i += 1;
+            }
+            b'+' => {
+                out.push(b' ');
+                i += 1;
+            }
+            b => {
+                out.push(b);
+                i += 1;
+            }
+        }
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
+// ============================================================
+// AIプログラミング支援バックエンド(2026-08-20新設)
+//
+// ユーザー指示「open-englishに、AIプログラミング支援のためのバックエンド
+// 機能として、VPSへの自動読み書き・GitHubへの自動読み書き・ローカル
+// ドライブへの自動読み書き(サーバー常駐エージェント式)を追加」への
+// 対応。セキュリティ設計の詳細は`vps_agent.rs`/`github_agent.rs`/
+// `local_agent.rs`各モジュールのdoc参照(鍵・トークンはブラウザへ
+// 送信しない、書き込み範囲は許可ディレクトリ/許可パスに限定、任意
+// コマンド実行APIは公開しない、という3原則はいずれのモジュールでも
+// 省略せず実装済み)。
+// ============================================================
+
+async fn agent_local_read(req: Request) -> Response {
+    let Some(path) = query_param(&req, "path") else {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": "missing 'path' query parameter"}));
+    };
+    match tokio::task::spawn_blocking(move || local_agent::read_file(&path)).await {
+        Ok(Ok(content)) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "content": content})),
+        Ok(Err(e)) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e.to_string()})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("task panicked: {e}")})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct LocalWriteRequest {
+    path: String,
+    content: String,
+}
+
+async fn agent_local_write(req: Request) -> Response {
+    let body: LocalWriteRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match tokio::task::spawn_blocking(move || local_agent::write_file(&body.path, &body.content)).await {
+        Ok(Ok(())) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Ok(Err(e)) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e.to_string()})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("task panicked: {e}")})),
+    }
+}
+
+async fn agent_vps_read(req: Request) -> Response {
+    let Some(path) = query_param(&req, "path") else {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": "missing 'path' query parameter"}));
+    };
+    match vps_agent::read_file(&path).await {
+        Ok(content) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "content": content})),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e.to_string()})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct VpsWriteRequest {
+    path: String,
+    content: String,
+}
+
+async fn agent_vps_write(req: Request) -> Response {
+    let body: VpsWriteRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match vps_agent::write_file(&body.path, &body.content).await {
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e.to_string()})),
+    }
+}
+
+/// GitHubトークンはヘッダ(`x-github-token`)経由で都度受け取る(クエリ
+/// 文字列やURLへは載せない——アクセスログ等への平文残留を避けるため)。
+async fn agent_github_read(req: Request) -> Response {
+    let token = req.headers().get("x-github-token").and_then(|v| v.to_str().ok()).map(str::to_string);
+    let Some(owner) = query_param(&req, "owner") else {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": "missing 'owner' query parameter"}));
+    };
+    let Some(repo) = query_param(&req, "repo") else {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": "missing 'repo' query parameter"}));
+    };
+    let Some(path) = query_param(&req, "path") else {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": "missing 'path' query parameter"}));
+    };
+    let branch = query_param(&req, "ref");
+    match github_agent::read_file(&owner, &repo, &path, branch.as_deref(), token.as_deref()).await {
+        Ok(f) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "content": f.content, "sha": f.sha})),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e.to_string()})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct GithubCommitRequest {
+    owner: String,
+    repo: String,
+    path: String,
+    content: String,
+    message: String,
+    #[serde(default)]
+    branch: Option<String>,
+    #[serde(default)]
+    sha: Option<String>,
+    token: String,
+}
+
+async fn agent_github_commit(req: Request) -> Response {
+    let body: GithubCommitRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match github_agent::commit_file(&body.owner, &body.repo, &body.path, &body.content, &body.message, body.branch.as_deref(), body.sha.as_deref(), &body.token).await {
+        Ok((commit_sha, html_url)) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "commit_sha": commit_sha, "html_url": html_url})),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e.to_string()})),
+    }
+}
+
 /// `GET /v1/updates/history`(2026-08-20新設): open-english本体+同梱
 /// コンポーネント(aruaru-llm・aruaru-db)それぞれの現在バージョン+
 /// 保持している旧バージョン一覧を返す。UI側の「🔄 Updates & Rollback」
@@ -607,6 +769,17 @@ async fn main() {
         );
         app = app.at("/v1/updates/history", get(handler_fn(move |_req, _p| async move { updates_history().await })));
         app = app.at("/v1/updates/downgrade", post(handler_fn(move |req, _p| async move { updates_downgrade(req).await })));
+    }
+
+    // AIプログラミング支援バックエンド(2026-08-20新設、上記
+    // "AIプログラミング支援バックエンド"セクションのdoc参照)。
+    {
+        app = app.at("/v1/agent/local/read", get(handler_fn(move |req, _p| async move { agent_local_read(req).await })));
+        app = app.at("/v1/agent/local/write", post(handler_fn(move |req, _p| async move { agent_local_write(req).await })));
+        app = app.at("/v1/agent/vps/read", get(handler_fn(move |req, _p| async move { agent_vps_read(req).await })));
+        app = app.at("/v1/agent/vps/write", post(handler_fn(move |req, _p| async move { agent_vps_write(req).await })));
+        app = app.at("/v1/agent/github/read", get(handler_fn(move |req, _p| async move { agent_github_read(req).await })));
+        app = app.at("/v1/agent/github/commit", post(handler_fn(move |req, _p| async move { agent_github_commit(req).await })));
     }
 
     // aruaru-llmの自動起動(2026-08-19新設、上記maybe_launch_aruaru_llmの
