@@ -1775,3 +1775,17 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
     `aruaru-llm`を起動して実機で動作確認(同一オリジン配信でのCORS回避
     含む)、(3) `open-directx`/`open-cuda`/`aruaru-llm`のブラウザ対応
     (WASM/WebGPU)調査、(4) `RPoem`との連携方法の検討。
+
+- **2026-08-20 「open-directx同梱すべきでは」指摘への調査結果**:
+  ユーザーより「aruaru-llmがopen-cuda経由でopen-directxを使うなら
+  ランタイムライブラリ方式である以上open-english配布物に間接的に
+  含まれているはずでは」との指摘があり、`aruaru-llm`/`open-cuda`側で
+  調査した(詳細は両リポジトリのCLAUDE.md 2026-08-20エントリ参照)。
+  結論のみ記す: 「`open-directx`」という名前は(1)`open-cuda`内蔵の
+  `opencuda-directx`クレートと(2)無関係な独立GitHubリポジトリ
+  `aon-co-jp/open-directx`の2つが同名で存在するだけで、両者に技術的
+  連携は無い。`aruaru-llm`が使うのは(1)のみで、しかも`hw-detect-directx`
+  optional featureは`.github/workflows/release.yml`のビルドコマンドで
+  有効化されていないため、現行の`open-english`配布バイナリには(1)すら
+  リンクされていない。(2)の独立リポジトリを本リポジトリへ同梱すべき
+  技術的根拠は無いと判断し、コード変更は行わなかった。
