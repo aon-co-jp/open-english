@@ -269,10 +269,34 @@ pub async fn downgrade_self(target_version: &str) -> anyhow::Result<()> {
 async fn downgrade_self_windows(exe: &Path, install_dir: &Path, history_dir: &Path) -> anyhow::Result<()> {
     let script_path = std::env::temp_dir().join("open-english-downgrade.bat");
     let exe_name = exe.file_name().and_then(|n| n.to_str()).unwrap_or("open-english-server.exe").to_string();
+    // **同種のデータ消失バグへの予防措置(2026-08-20、`apply_update_
+    // windows`側で発見した実害バグと同根)**: `history_dir`は過去の
+    // 更新時点の`{app}`丸ごとスナップショットであり、その中の`data\`は
+    // その時点の古い会話履歴DBのまま。ここで無条件にxcopyすると、
+    // ダウングレード後に現在の(より新しい)会話履歴DBが古いものへ
+    // 巻き戻ってしまう——本来ダウングレードしたいのはアプリ本体の
+    // バージョンであって会話履歴ではないため、xcopy前に現在の`data\`を
+    // 一時退避し、xcopy後に上書きして復元する(ダウングレード後も
+    // 会話履歴は現在のまま維持される)。
+    let data_stash = std::env::temp_dir().join("open-english-downgrade-data-stash");
     let mut script = String::from("@echo off\r\nping 127.0.0.1 -n 2 > nul\r\n");
     script += &format!("taskkill /IM \"{exe_name}\" /F >nul 2>nul\r\n");
     script += "ping 127.0.0.1 -n 2 > nul\r\n";
+    script += &format!("if exist \"{}\\data\" rd /S /Q \"{}\"\r\n", data_stash.display(), data_stash.display());
+    script += &format!(
+        "if exist \"{}\\data\" xcopy \"{}\\data\" \"{}\\data\" /E /Y /I >nul\r\n",
+        install_dir.display(),
+        install_dir.display(),
+        data_stash.display()
+    );
     script += &format!("xcopy \"{}\" \"{}\" /E /Y /I >nul\r\n", history_dir.display(), install_dir.display());
+    script += &format!(
+        "if exist \"{}\\data\" xcopy \"{}\\data\" \"{}\\data\" /E /Y /I >nul\r\n",
+        data_stash.display(),
+        data_stash.display(),
+        install_dir.display()
+    );
+    script += &format!("if exist \"{}\" rd /S /Q \"{}\"\r\n", data_stash.display(), data_stash.display());
     script += &format!("start \"\" \"{}\"\r\n", exe.display());
     script += &format!("del \"{}\"\r\n", script_path.display());
     std::fs::write(&script_path, script)?;
@@ -464,6 +488,29 @@ async fn apply_update_windows(installer_path: &std::path::Path, local_version_st
     script += &format!("  xcopy \"{}\" \"{}\" /E /Y /I >nul\r\n", backup_dir.display(), install_dir.display());
     script += &format!("  start \"\" \"{}\"\r\n", exe.display());
     script += ")\r\n";
+    // **重大バグ修正(2026-08-20)**: `[UninstallDelete]`
+    // (`installer/windows/open-english.iss`)は`{app}`ディレクトリ
+    // 全体を削除対象にしているため、上のアンインストール実行時に
+    // 会話履歴DB(`server/src/db.rs`の`db_path()`既定値、`{app}\data\
+    // open-english.sqlite3`)ごと消えてしまう——ヘルスチェック
+    // 「成功」時はこれまで何の復元も行っておらず、新規インストール後の
+    // `{app}\data\`が空のまま(=会話履歴が実際に消失する)という実害
+    // バグがあった(別セッションの監査で指摘・本セッションで実コード
+    // 確認の上、確定した)。ヘルスチェックの成功/失敗いずれの分岐でも、
+    // アンインストール前に退避しておいた`backup_dir\data`を
+    // `install_dir\data`へ無条件に復元することで解消する(失敗分岐は
+    // 既にディレクトリ全体をxcopy済みのため重複コピーになるだけで
+    // 無害、成功分岐では新規インストール後の空の`data\`を退避済みの
+    // 内容で上書きし、通常の手動アンインストール〈ユーザーが明示的に
+    // アンインストールを選んだ場合〉ではデータも削除される、という
+    // 意図された挙動自体は変更しない——あくまで自動更新の内部処理と
+    // して意図せずデータが消えるケースのみを防ぐ)。
+    script += &format!(
+        "if exist \"{}\\data\" xcopy \"{}\\data\" \"{}\\data\" /E /Y /I >nul\r\n",
+        backup_dir.display(),
+        backup_dir.display(),
+        install_dir.display()
+    );
     script += &format!("rd /S /Q \"{}\"\r\n", backup_dir.display());
     script += &format!("del \"{}\"\r\n", script_path.display());
     std::fs::write(&script_path, script)?;

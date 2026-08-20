@@ -1,5 +1,18 @@
 open-english をインストールしていただきありがとうございます。
 
+【重要・2026-08-20追記】会話履歴データについて:
+アンインストール(「アプリと機能」から手動でアンインストールした場合)
+を選ぶと、会話履歴・設定を保存している {app}\data\ フォルダも含めて
+インストール先フォルダ全体が削除されます(これは意図された仕様です)。
+一方、**自動アップデート機能**(起動時にGitHubの新バージョンを検出し、
+自動でアンインストール→再インストールする仕組み)については、以前は
+この{app}\data\フォルダが更新のたびに失われてしまう実害バグが
+ありましたが、2026-08-20の修正で更新前に自動退避→更新後に自動復元
+するようになり、通常の自動アップデートで会話履歴が失われることは
+無くなりました。会話履歴を確実に守りたい場合は、アプリ内の
+「💾 Data & Model Storage」パネルから随時バックアップを取ることを
+おすすめします。
+
 【2026-08-19更新】インストーラーの「aruaru-llmも一緒にインストール」
 オプション(既定でオン)を選んだ場合、コマンド操作は一切不要です。
 インストール中に aruaru-llm(AI応答エンジン)本体を自動でダウンロード
@@ -63,6 +76,19 @@ open-englishの英会話AI機能はaruaru-llmローカルサーバーへの接�
 ---
 
 Thank you for installing open-english.
+
+[Important, added 2026-08-20] About your conversation history:
+Uninstalling manually (via "Apps & features") deletes the entire
+install folder, including the {app}\data\ folder that holds your
+conversation history and settings — this is intended behavior. The
+**automatic update mechanism** (which detects a new GitHub release on
+startup and silently uninstalls + reinstalls), however, used to have a
+real bug where this same {app}\data\ folder was wiped on every
+automatic update. As of the 2026-08-20 fix, the data folder is now
+backed up before the update and restored afterward, so a routine
+automatic update will no longer lose your conversation history. If you
+want extra peace of mind, use the "💾 Data & Model Storage" panel in
+the app to back up your conversation history whenever you like.
 
 [Updated 2026-08-19] If you chose the installer's "Also install
 aruaru-llm" option (checked by default), no command-line steps are
