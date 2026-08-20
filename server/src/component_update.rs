@@ -312,6 +312,8 @@ async fn check_and_apply_one(exe_dir: &Path, component: &Component) -> anyhow::R
                     }
                 }
                 if healthy {
+                    // 手動ダウングレード用の複数世代履歴(2026-08-20新設)。
+                    let _ = crate::self_update::save_history_dir(exe_dir, component.dir_name, &local_version, &backup_dir);
                     write_component_version(&component_dir, &release.tag_name);
                     tracing_log_if_available(&format!(
                         "open-english component-update (aruaru-llm): updated to {} and passed health check",
@@ -354,6 +356,7 @@ async fn check_and_apply_one(exe_dir: &Path, component: &Component) -> anyhow::R
                         }
                     }
                     if healthy {
+                        let _ = crate::self_update::save_history_dir(exe_dir, component.dir_name, &local_version, &backup_dir);
                         write_component_version(&component_dir, &release.tag_name);
                         tracing_log_if_available(&format!(
                             "open-english component-update (aruaru-db): updated to {} and pgwire port {pg_port} is accepting connections",
@@ -373,6 +376,7 @@ async fn check_and_apply_one(exe_dir: &Path, component: &Component) -> anyhow::R
             // 留め、勝手に起動はしない(aruaru-dbはユーザーが手動起動する
             // 運用のため、`maybe_launch_aruaru_llm`のような自動起動は
             // 行わない設計方針をここでも踏襲)。
+            let _ = crate::self_update::save_history_dir(exe_dir, component.dir_name, &local_version, &backup_dir);
             write_component_version(&component_dir, &release.tag_name);
             tracing_log_if_available(&format!(
                 "open-english component-update (aruaru-db): files replaced with {} (was not running, so not auto-started)",
@@ -393,6 +397,72 @@ async fn check_and_apply_one(exe_dir: &Path, component: &Component) -> anyhow::R
 /// (`self_update.rs`)とは独立に、同梱コンポーネントごとの新版チェックを
 /// 順に行う。**正直な開示**: 現状は逐次実行(並行化していない)——
 /// コンポーネント数が2つと少なく、シンプルさを優先した。
+/// `GET /v1/updates/history`用: 全コンポーネントの現在バージョン+保持
+/// している旧バージョン一覧(2026-08-20新設、`self_update.rs`の
+/// `ComponentHistoryInfo`をそのまま再利用)。
+pub(crate) fn history_info_all() -> Vec<crate::self_update::ComponentHistoryInfo> {
+    let Ok(exe) = std::env::current_exe() else { return Vec::new() };
+    let Some(exe_dir) = exe.parent() else { return Vec::new() };
+    COMPONENTS
+        .iter()
+        .map(|c| {
+            let component_dir = exe_dir.join(c.dir_name);
+            let current =
+                if component_dir.exists() { local_component_version(&component_dir) } else { "not installed".to_string() };
+            let versions = crate::self_update::list_history_versions(exe_dir, c.dir_name);
+            crate::self_update::ComponentHistoryInfo { component: c.dir_name.to_string(), current_version: current, available_downgrades: versions }
+        })
+        .collect()
+}
+
+/// `POST /v1/updates/downgrade`用: 指定コンポーネントを保持している
+/// 履歴バージョンへ手動で戻す(2026-08-20新設、ユーザー指示「バージョン
+/// アップしたらBUGだった場合の為に、簡単にそのBUGのリポジトリだけ
+/// ダウングレード出来るように」への対応、主な新規実装対象)。
+/// **正直な開示**: 保持世代(既定3世代)を超えて古いバージョンや、この
+/// マシンで一度も自動更新が発生していないバージョンへは戻せない。
+pub async fn downgrade_component(name: &str, target_version: &str) -> anyhow::Result<()> {
+    let exe = std::env::current_exe()?;
+    let exe_dir = exe.parent().ok_or_else(|| anyhow::anyhow!("could not resolve install directory"))?.to_path_buf();
+    let component = COMPONENTS.iter().find(|c| c.dir_name == name).ok_or_else(|| anyhow::anyhow!("unknown component: {name}"))?;
+    let component_dir = exe_dir.join(component.dir_name);
+    let history_dir = crate::self_update::history_root(&exe_dir, component.dir_name).join(target_version);
+    if !history_dir.exists() {
+        anyhow::bail!(
+            "no retained backup for {} version {target_version} (only the last {} generations are kept, and only once \
+             at least one automatic update has happened on this machine)",
+            component.dir_name,
+            crate::self_update::MAX_HISTORY_GENERATIONS
+        );
+    }
+
+    let bin_name = binary_file_name(component.binary_stem);
+    let was_running = is_process_running(&bin_name).await;
+    if was_running {
+        tracing_log_if_available(&format!("open-english manual downgrade ({}): stopping running process ({bin_name}) before restoring", component.dir_name));
+        kill_process(&bin_name).await;
+        tokio::time::sleep(Duration::from_secs(2)).await;
+    }
+
+    let _ = std::fs::remove_dir_all(&component_dir);
+    copy_dir_recursive(&history_dir, &component_dir)?;
+    set_executable_permission(&component_dir.join(&bin_name))?;
+    write_component_version(&component_dir, target_version);
+
+    if was_running {
+        // 元々起動していた場合のみ再起動する(既存の自動更新ロジックと
+        // 同じ「元の起動状態を尊重する」方針、`aruaru-db`が起動していな
+        // かった場合に勝手に起動しないのと対称的な扱い)。
+        match tokio::process::Command::new(component_dir.join(&bin_name)).current_dir(&component_dir).spawn() {
+            Ok(_) => {}
+            Err(e) => tracing_log_if_available(&format!("open-english manual downgrade ({}): restored files but failed to restart process ({e})", component.dir_name)),
+        }
+    }
+
+    tracing_log_if_available(&format!("open-english manual downgrade ({}): switched to {target_version}", component.dir_name));
+    Ok(())
+}
+
 pub async fn check_and_apply_all() {
     // Android/iOSは`self_update.rs`と同じ理由(サイレント自己更新機構が
     // OS制約上そもそも成立しない)で対象外。

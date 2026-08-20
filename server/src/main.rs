@@ -460,6 +460,49 @@ async fn db_migrate_legacy(req: Request, db: Arc<Db>) -> Response {
     }
 }
 
+/// `GET /v1/updates/history`(2026-08-20新設): open-english本体+同梱
+/// コンポーネント(aruaru-llm・aruaru-db)それぞれの現在バージョン+
+/// 保持している旧バージョン一覧を返す。UI側の「🔄 Updates & Rollback」
+/// パネルがこれを基にダウングレード先の選択肢を表示する。
+async fn updates_history() -> Response {
+    let mut list = vec![self_update::self_history_info()];
+    list.extend(component_update::history_info_all());
+    rs_json_response(StatusCode::OK, &serde_json::json!({"components": list}))
+}
+
+#[derive(serde::Deserialize)]
+struct DowngradeRequest {
+    component: String,
+    version: String,
+}
+
+/// `POST /v1/updates/downgrade`(2026-08-20新設、ユーザー指示「バージョン
+/// アップしたらBUGだった場合の為に、簡単にそのBUGのリポジトリだけ
+/// ダウングレード出来るように」への対応、主な新規実装対象)。
+/// `component`は`"self"`(open-english本体)・`"aruaru-llm"`・
+/// `"aruaru-db"`のいずれか。**正直な開示**: `self`のダウングレードが
+/// 成功する場合、内部で`std::process::exit`によりこのプロセス自体が
+/// 終了する(既存の自己更新〈`self_update::check_and_apply_update`〉と
+/// 同じ設計)ため、成功時のHTTPレスポンス自体はクライアントへ届かない
+/// ことがある——UI側は数秒待ってから`/healthz`への再接続を試みる想定。
+async fn updates_downgrade(req: Request) -> Response {
+    let body: DowngradeRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    if body.component == "self" || body.component == "open-english" {
+        match self_update::downgrade_self(&body.version).await {
+            Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "note": "restart in progress"})),
+            Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e.to_string()})),
+        }
+    } else {
+        match component_update::downgrade_component(&body.component, &body.version).await {
+            Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true})),
+            Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e.to_string()})),
+        }
+    }
+}
+
 #[tokio::main]
 async fn main() {
     let root = repo_root();
@@ -562,6 +605,8 @@ async fn main() {
                 async move { db_install_rsync(req, db).await }
             })),
         );
+        app = app.at("/v1/updates/history", get(handler_fn(move |_req, _p| async move { updates_history().await })));
+        app = app.at("/v1/updates/downgrade", post(handler_fn(move |req, _p| async move { updates_downgrade(req).await })));
     }
 
     // aruaru-llmの自動起動(2026-08-19新設、上記maybe_launch_aruaru_llmの
@@ -586,6 +631,25 @@ async fn main() {
     // (`self_update::check_and_apply_update`)とは独立のタスクとして
     // バックグラウンド実行する。
     tokio::spawn(component_update::check_and_apply_all());
+
+    // 定期的な自動アップデートチェック(2026-08-20新設、ユーザー指示
+    // 「メンテナンスのタイミングで自動バージョンアップの自動アップデート
+    // 機能も確実に」への対応)。従来は起動時のみのチェックだったため、
+    // 長時間起動しっぱなしのユーザーには新バージョンがいつまでも
+    // 反映されない可能性があった。GitHub REST APIの未認証レート制限
+    // (1時間あたり60リクエスト)に配慮し、過度に頻繁にはせず6時間間隔
+    // とした(本体+aruaru-llm+aruaru-dbで1回あたり最大3リクエスト、
+    // 24時間でも12リクエスト程度に収まる現実的な値)。
+    tokio::spawn(async {
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(6 * 60 * 60));
+        interval.tick().await; // 1回目のtickは即時発火するため消費するだけ(起動時チェックは上で既に実施済み)
+        loop {
+            interval.tick().await;
+            println!("open-english periodic maintenance: running scheduled update check (every 6h)");
+            self_update::check_and_apply_update().await;
+            component_update::check_and_apply_all().await;
+        }
+    });
 
     let addr = bind_addr();
     println!("open-english static server listening on http://{addr}/");

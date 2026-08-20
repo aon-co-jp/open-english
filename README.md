@@ -6,6 +6,30 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-20)**: 定期的な自動アップデートチェック
+> (起動時に加え6時間ごと)+手動ダウングレード機能を追加しました。
+> 新バージョンに切り替えた後で不具合に気づいた場合、`GET /v1/updates/
+> history`(現在バージョン+保持している旧バージョン一覧)・
+> `POST /v1/updates/downgrade`(open-english本体・aruaru-llm・
+> aruaru-dbのいずれかを指定バージョンへ戻す)で、そのコンポーネント
+> だけを個別に元へ戻せます。UIは「💾 Data & Model Storage」パネル内
+> 「🔄 Updates & Rollback」節。**正直な開示**: 保持する世代数は
+> ディスク容量への配慮から既定3世代——それより古いバージョンや、
+> このマシンで一度も自動更新が発生していないバージョンへは戻せません。
+> 詳細・実機検証結果は[CLAUDE.md](CLAUDE.md)の2026-08-20 HANDOFF参照。
+>
+> *English*: Added periodic automatic update checks (every 6 hours, in
+> addition to the startup check) and a manual downgrade feature. If a
+> new version turns out to be buggy after a while, `GET /v1/updates/
+> history` (current + retained previous versions) and `POST /v1/updates/
+> downgrade` (roll back open-english itself, aruaru-llm, or aruaru-db
+> individually to a specific version) let you revert just that one
+> component. UI: the "🔄 Updates & Rollback" section inside the "💾 Data
+> & Model Storage" panel. Honest disclosure: only the last 3 generations
+> are retained by default (disk-space consideration) — you cannot roll
+> back further, or to a version that was never actually applied on this
+> machine. See the 2026-08-20 HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+
 > 📌 **追記(2026-08-19、続き8)**: 1日の利用回数上限(既定100回、
 > クライアント側`localStorage`カウンタ)に到達した際、チャット上に
 > 「本日の無料利用枠を超えました。有料版に切り替えますか？」+他の

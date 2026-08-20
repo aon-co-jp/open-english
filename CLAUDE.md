@@ -47,6 +47,117 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-20(続き2) 定期自動アップデートチェック+手動ダウングレード
+  機能を実装(ユーザー指示「インストール後は…自動バージョンアップの
+  自動アップデート機能も確実に」+「バージョンアップしたらBUGだった
+  場合の為に、簡単にそのBUGのリポジトリだけダウングレード出来るように」
+  への対応、うち後者が今回の主な新規実装対象)**:
+  1. **既存インストーラーの再確認結果**: `installer/windows/open-
+     english.iss`は既にaruaru-llm(既定同梱)・aruaru-db/open-easy-web/
+     open-web-server(いずれも任意タスク、既定オフ)の同梱に対応済み
+     (過去のHANDOFF記載通り)——今回の調査で不足は見つからず、追加
+     実装は行っていない。
+  2. **定期自動チェック**(`server/src/main.rs`): 従来は起動時
+     (`tokio::spawn`1回のみ)にしか`self_update::check_and_apply_
+     update`/`component_update::check_and_apply_all`を呼んでいな
+     かったため、長時間起動しっぱなしの利用者には新バージョンが
+     いつまでも反映されない可能性があった。`tokio::time::interval`で
+     6時間ごとに同じ2関数を再度呼ぶバックグラウンドタスクを追加。
+     GitHub REST APIの未認証レート制限(1時間60リクエスト)に配慮し、
+     過度に頻繁にはしていない(本体+aruaru-llm+aruaru-dbで1回最大
+     3リクエスト、24時間でも12リクエスト程度)。
+  3. **世代保持**(`server/src/self_update.rs`新設`save_history_dir`/
+     `save_history_file`/`list_history_versions`/`history_root`/
+     `MAX_HISTORY_GENERATIONS`定数): 従来、更新前の退避
+     (`backup_dir`/`backup_path`)は直近1世代のみでヘルスチェック
+     失敗時の自動ロールバックにしか使われず、更新成功後は削除されて
+     いた。`{exe_dir}/.update-history/{component}/{version}/`という
+     世代ディレクトリへコピー保存する形に拡張し、既定で直近
+     **3世代**のみを残す(ディスク容量への配慮、`prune_history`が
+     `parse_version`比較で古い順に削除)。バージョン不明
+     (`"0.0.0"`)は履歴として無意味なため保存しない。`self_update.rs`
+     (open-english本体)・`component_update.rs`(aruaru-llm/aruaru-db)
+     の両方に同じ仕組みを適用。
+  4. **手動ダウングレードAPI**(`server/src/main.rs`新設):
+     `GET /v1/updates/history`(本体+各コンポーネントの現在バージョン+
+     保持している旧バージョン一覧、`{"components": [...]}`)・
+     `POST /v1/updates/downgrade`(`{"component": "self"|"aruaru-llm"|
+     "aruaru-db", "version": "..."}`、指定バージョンの履歴が実在すれば
+     復元)。本体(`self`)のダウングレードは既存の自己更新と同じ設計
+     (Windowsはデタッチしたバッチスクリプトへkill→履歴で上書き→
+     再起動を委ねてプロセス終了、Unix系は履歴バイナリで直接上書きして
+     新プロセスを起動後に自身終了)を再利用した新設
+     `downgrade_self`/`downgrade_self_windows`/`downgrade_self_unix`。
+     コンポーネント(`aruaru-llm`/`aruaru-db`)は新設`component_update::
+     downgrade_component`(起動中なら停止→履歴で上書き→バージョン
+     マーカー更新→元々起動していた場合のみ再起動、既存の自動更新と
+     対称的な「元の起動状態を尊重する」設計)。**正直な開示**: 保持
+     世代を超えて古いバージョン、またはこのマシンで一度も自動更新が
+     発生していないバージョンへは戻せない(保持していないものは
+     戻しようがないという当然の制約、エラーメッセージにも明記)。
+  5. **UI**(`index.html`/`app.js`/`style.css`): 既存の「💾 Data &
+     Model Storage」パネル内に「🔄 Updates & Rollback / アップデート・
+     ロールバック」節を新設(新規モーダルは作らず既存パネルへ追記、
+     過大な設計を避けた)。コンポーネントごとの現在バージョン+
+     保持している旧バージョンのボタン一覧を表示し、ボタン押下で
+     `window.confirm`確認後に`/v1/updates/downgrade`を呼ぶ。誇張しない
+     表現として「保持している世代にしか戻せない」旨を`.setup-honest`
+     に明記し、本体ダウングレード時はページが一時的に切断される旨も
+     案内した。
+  6. **実機検証(型チェック・ビルド成功だけで完了と報告しない方針の
+     徹底)**: `cargo build --release`成功、`cargo test --release`
+     11件全green(新規テストは追加していない——既存のバージョン比較・
+     アセット判定テストの範囲で十分とし、統合的な動作は下記の実HTTP
+     検証で確認する方針)。一時ディレクトリへ疑似的な複数世代の
+     コンポーネントバックアップ(`aruaru-llm`の`.update-history/
+     aruaru-llm/v0.2.0/`・`v0.2.1/`、ダミーのバイナリ内容)を用意して
+     実際にサーバーを起動し、(a) `GET /v1/updates/history`が本体
+     (`current_version: "0.6.9"`、履歴なし)・`aruaru-llm`
+     (`current_version: "v0.2.2"`、`available_downgrades: ["v0.2.1",
+     "v0.2.0"]`)・`aruaru-db`(未インストール)を正しく返すこと、
+     (b) `POST /v1/updates/downgrade`で`aruaru-llm`を`v0.2.1`へ実際に
+     戻し、`.component-version`・バイナリの中身が両方とも期待通り
+     `v0.2.1`側の内容に置き換わることを確認、(c) 存在しないバージョン・
+     存在しないコンポーネント名を指定した場合に`400 Bad Request`+
+     正直なエラーメッセージが返ることを確認した。さらにClaude
+     Browserで実際に「💾 Data & Model Storage」パネルを開き、
+     「🔄 Updates & Rollback」節に取得した実データ(本体/aruaru-llm/
+     aruaru-db 3行)が描画されること、`⬅ v0.2.9`ボタンを実際にクリック
+     して`window.confirm`→`fetch`→「Done: aruaru-llm is now v0.2.9.」
+     という完了メッセージが表示されるまでの一連のUIフローを確認した。
+     検証後、テスト用の一時ディレクトリ・プロセスはいずれも削除・終了
+     済み(実際の`aon-co-jp/open-english`のGitHub最新リリースは
+     `v0.6.8`でローカル`version.json`の`0.6.9`より古いため、この検証
+     過程で意図せず実インストーラーが起動するリスクが無いことも事前に
+     確認した上で実施)。
+  7. **未検証・制約(正直な開示)**: (a) open-english本体(`self`)の
+     ダウングレードは、Windows側バッチスクリプト経路・Unix系の直接
+     上書き経路のいずれも、コードレビューと`GET /v1/updates/history`
+     での表示確認(本体は`version.json`が無い開発ビルドでは履歴が
+     常に空になる、というスキップ動作の確認)にとどまり、**実際に
+     本体の複数世代の履歴が存在する状態からのダウングレード実行までは
+     実機検証していない**(この開発機には`version.json`付きの正規
+     インストール済み配布物が無いため)——次回、実際にインストーラー
+     経由でインストールし、複数回のバージョンアップを経た状態で
+     ダウングレードを実行するE2E検証が必要。(b) `aruaru-db`側の
+     ダウングレード(`was_running`分岐)は`aruaru-llm`と同型のロジック
+     だが、pgwireの簡易ヘルスチェック相当の確認はダウングレード時には
+     行っていない(ファイル差し替え+再起動のみ、既存の自動更新側の
+     制約〈`component_update.rs`モジュールdoc参照〉と同水準の割り切り)
+     ——今回は実機で`aruaru-db`自体のダウングレードは検証していない
+     (`aruaru-llm`側のみ実HTTPで確認)。(c) 6時間間隔の定期チェック
+     ループ自体は、実際に6時間待ってタイマー発火を確認することは
+     現実的でないため、コードレビューレベルの確認にとどまる
+     (`tokio::time::interval`の標準的な使い方であり、起動直後の1回目の
+     `tick()`を消費してから待つ構造も定石通り)。
+  - 次にすべきこと: (1) 上記7番(a)の実機E2E検証(正規インストール
+    済み環境で複数世代の本体アップデートを経てからのダウングレード)、
+    (2) `aruaru-db`自体のダウングレードの実機検証、(3) 6時間間隔が
+    実際の運用ニーズに合っているか(短すぎる/長すぎる)ユーザーへ
+    確認、(4) UIの「🔄 Updates & Rollback」節を、本体ダウングレード時の
+    再接続導線(現状はステータステキストで案内するのみ、自動的な
+    再読み込みポーリングは無い)まで強化するかの検討。
+
 - **2026-08-19(続き15) open-cuda/open-directx/open-easy-web/open-web-serverの
   同梱要否を調査・判断(ユーザー指示「open-cuda/open-directxもopen-easy-web
   もopen-web-serverもopen-englishの同梱に含めて」への対応)**:

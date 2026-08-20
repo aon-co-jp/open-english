@@ -134,7 +134,7 @@
 //!   するため、ユーザー操作なしで新バージョンが起動し直す。
 
 use std::net::SocketAddr;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use serde::Deserialize;
@@ -147,6 +147,159 @@ const GITHUB_REPO: &str = "aon-co-jp/open-english";
 /// 2026-08-19追記: `component_update.rs`(同梱コンポーネントの自動更新)
 /// からも同じ値を再利用する(`pub(crate)`化)。
 pub(crate) const HEALTH_CHECK_SECS: u64 = 12;
+
+/// 手動ダウングレード機能(2026-08-20新設)。ユーザー指示「バージョン
+/// アップしたらBUGだった場合の為に、簡単にそのBUGのリポジトリだけ
+/// ダウングレード出来るように」への対応として、更新前に退避した旧
+/// バージョンを直近1世代だけでなく複数世代保持する。**ディスク容量への
+/// 配慮**: 無制限に残すと配布物のサイズが際限なく増えるため、既定で
+/// 直近3世代のみを残し、それより古いものは自動的に削除する(過大な
+/// 設計を避けるユーザー指示に沿った現実的な既定値)。
+pub(crate) const MAX_HISTORY_GENERATIONS: usize = 3;
+
+/// コンポーネントごとの現在バージョン+保持している旧バージョン一覧
+/// (`GET /v1/updates/history`のレスポンス要素、`main.rs`参照)。
+#[derive(Debug, serde::Serialize)]
+pub(crate) struct ComponentHistoryInfo {
+    pub(crate) component: String,
+    pub(crate) current_version: String,
+    /// 新しい順。`downgrade`APIへそのまま渡せる文字列。
+    pub(crate) available_downgrades: Vec<String>,
+}
+
+/// `{exe_dir}/.update-history/{component}/`。ここへ世代ごとに
+/// `{version}/`サブディレクトリとして退避先を保持する。
+pub(crate) fn history_root(exe_dir: &Path, component: &str) -> PathBuf {
+    exe_dir.join(".update-history").join(component)
+}
+
+/// 退避しておいたディレクトリ(`source_dir`)を、`{version}`世代として
+/// 履歴へコピー保存し、直近`MAX_HISTORY_GENERATIONS`世代のみ残す
+/// (ディスク容量への配慮、モジュールdoc参照)。バージョン不明
+/// (`"0.0.0"`、移行前の未マーカー状態)は履歴として無意味なため保存
+/// しない。
+pub(crate) fn save_history_dir(exe_dir: &Path, component: &str, version: &str, source_dir: &Path) -> std::io::Result<()> {
+    if version == "0.0.0" || version.is_empty() {
+        return Ok(());
+    }
+    let root = history_root(exe_dir, component);
+    let dest = root.join(version);
+    let _ = std::fs::remove_dir_all(&dest);
+    copy_dir_recursive(source_dir, &dest)?;
+    prune_history(&root)
+}
+
+/// `save_history_dir`のファイル単体版(Unix系の自己更新で使う、
+/// 退避対象がバイナリ1個のみのため)。`file_name`で履歴ディレクトリ内の
+/// 保存名を指定する。
+pub(crate) fn save_history_file(exe_dir: &Path, component: &str, version: &str, source_file: &Path, file_name: &str) -> std::io::Result<()> {
+    if version == "0.0.0" || version.is_empty() {
+        return Ok(());
+    }
+    let root = history_root(exe_dir, component);
+    let dest_dir = root.join(version);
+    std::fs::create_dir_all(&dest_dir)?;
+    std::fs::copy(source_file, dest_dir.join(file_name))?;
+    prune_history(&root)
+}
+
+/// バージョン文字列(ディレクトリ名)を`parse_version`で比較し、古い順に
+/// `MAX_HISTORY_GENERATIONS`を超えた分を削除する。
+fn prune_history(root: &Path) -> std::io::Result<()> {
+    let Ok(entries) = std::fs::read_dir(root) else { return Ok(()) };
+    let mut versions: Vec<String> =
+        entries.filter_map(|e| e.ok()).filter(|e| e.path().is_dir()).filter_map(|e| e.file_name().into_string().ok()).collect();
+    versions.sort_by_key(|v| parse_version(v));
+    while versions.len() > MAX_HISTORY_GENERATIONS {
+        let oldest = versions.remove(0);
+        let _ = std::fs::remove_dir_all(root.join(oldest));
+    }
+    Ok(())
+}
+
+/// 保持している履歴バージョンを新しい順で返す(`downgrade`APIの選択肢
+/// 一覧に使う)。
+pub(crate) fn list_history_versions(exe_dir: &Path, component: &str) -> Vec<String> {
+    let root = history_root(exe_dir, component);
+    let Ok(entries) = std::fs::read_dir(&root) else { return Vec::new() };
+    let mut versions: Vec<String> =
+        entries.filter_map(|e| e.ok()).filter(|e| e.path().is_dir()).filter_map(|e| e.file_name().into_string().ok()).collect();
+    versions.sort_by_key(|v| parse_version(v));
+    versions.reverse();
+    versions
+}
+
+/// open-english本体の現在バージョン+保持している旧バージョン一覧
+/// (`GET /v1/updates/history`)。
+pub(crate) fn self_history_info() -> ComponentHistoryInfo {
+    let current = local_version().unwrap_or_else(|| "unknown (not an installed copy)".to_string());
+    let exe_dir = std::env::current_exe().ok().and_then(|e| e.parent().map(|p| p.to_path_buf()));
+    let versions = exe_dir.map(|d| list_history_versions(&d, "self")).unwrap_or_default();
+    ComponentHistoryInfo { component: "open-english (self)".to_string(), current_version: current, available_downgrades: versions }
+}
+
+/// open-english本体を、保持している履歴バージョンへ手動で戻す
+/// (`POST /v1/updates/downgrade`、2026-08-20新設)。**正直な開示**:
+/// 履歴に無いバージョン(保持世代を超えて古い、またはこのマシンで一度も
+/// 自動更新が発生していない)は戻せない——保持していないものは戻し
+/// ようがないという当然の制約であり、エラーメッセージにその旨を含める。
+pub async fn downgrade_self(target_version: &str) -> anyhow::Result<()> {
+    let exe = std::env::current_exe()?;
+    let exe_dir = exe.parent().ok_or_else(|| anyhow::anyhow!("could not resolve install directory"))?.to_path_buf();
+    let history_dir = history_root(&exe_dir, "self").join(target_version);
+    if !history_dir.exists() {
+        anyhow::bail!(
+            "no retained backup for version {target_version} (only the last {MAX_HISTORY_GENERATIONS} generations are kept, and only \
+             once at least one automatic update has happened on this machine)"
+        );
+    }
+
+    if cfg!(target_os = "windows") {
+        downgrade_self_windows(&exe, &exe_dir, &history_dir).await
+    } else {
+        downgrade_self_unix(&exe, &exe_dir, &history_dir).await
+    }
+}
+
+/// Windows版: 実行中の自分自身を上書きできないため(`apply_update_
+/// windows`と同じ制約)、デタッチしたバッチスクリプトへ「kill→履歴
+/// ディレクトリの内容で上書き→再起動」を委ね、このプロセス自身は
+/// ファイルロック解放のため終了する。**呼び出し元には戻らない**
+/// (`std::process::exit`、既存の`apply_update_windows`と同じ設計)。
+async fn downgrade_self_windows(exe: &Path, install_dir: &Path, history_dir: &Path) -> anyhow::Result<()> {
+    let script_path = std::env::temp_dir().join("open-english-downgrade.bat");
+    let exe_name = exe.file_name().and_then(|n| n.to_str()).unwrap_or("open-english-server.exe").to_string();
+    let mut script = String::from("@echo off\r\nping 127.0.0.1 -n 2 > nul\r\n");
+    script += &format!("taskkill /IM \"{exe_name}\" /F >nul 2>nul\r\n");
+    script += "ping 127.0.0.1 -n 2 > nul\r\n";
+    script += &format!("xcopy \"{}\" \"{}\" /E /Y /I >nul\r\n", history_dir.display(), install_dir.display());
+    script += &format!("start \"\" \"{}\"\r\n", exe.display());
+    script += &format!("del \"{}\"\r\n", script_path.display());
+    std::fs::write(&script_path, script)?;
+
+    tokio::process::Command::new("cmd").args(["/C", "start", "", script_path.to_string_lossy().as_ref()]).spawn()?;
+
+    tracing_log_if_available("open-english manual downgrade: launched restore script (kill -> restore history version -> restart), exiting to release file locks");
+    std::process::exit(0);
+}
+
+/// Unix系(Linux/macOS): 実行中の自分自身のバイナリを直接上書きできる
+/// (`apply_update_unix`と同じ理屈)。履歴に保存しておいたバイナリで
+/// 現在の実行ファイルを置き換え、新プロセスを起動してから自身は終了
+/// する。
+async fn downgrade_self_unix(exe: &Path, install_dir: &Path, history_dir: &Path) -> anyhow::Result<()> {
+    let restored_bin = history_dir.join("open-english-server");
+    if !restored_bin.exists() {
+        anyhow::bail!("retained backup for this version is missing the server binary");
+    }
+    let new_exe = install_dir.join("open-english-server");
+    std::fs::copy(&restored_bin, &new_exe)?;
+    set_executable_permission(&new_exe)?;
+    tokio::process::Command::new(&new_exe).current_dir(install_dir).spawn()?;
+    let _ = exe; // silence unused warning on some cfg paths
+    tracing_log_if_available("open-english manual downgrade: restored previous binary and restarted, exiting old process");
+    std::process::exit(0);
+}
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct ReleaseAsset {
@@ -188,7 +341,7 @@ pub(crate) fn is_newer(remote: &str, local: &str) -> bool {
 /// 配布物としての目印である`version.json`が無い=「インストーラー
 /// 経由でインストールされたコピーではない」と判断し、`None`を返して
 /// 呼び出し元でアップデート処理自体をスキップするよう変更。
-fn local_version() -> Option<String> {
+pub(crate) fn local_version() -> Option<String> {
     let exe = std::env::current_exe().ok()?;
     let dir = exe.parent()?;
     let path = dir.join("version.json");
@@ -261,7 +414,7 @@ fn existing_uninstaller() -> Option<PathBuf> {
 /// 行うバッチスクリプトを生成し、デタッチ起動した上でこのプロセス自身を
 /// 終了する(ファイルロック解放のため)。呼び出し元には戻らない
 /// (`std::process::exit`)。
-async fn apply_update_windows(installer_path: &std::path::Path) -> anyhow::Result<()> {
+async fn apply_update_windows(installer_path: &std::path::Path, local_version_str: &str) -> anyhow::Result<()> {
     let exe = std::env::current_exe()?;
     let install_dir = exe.parent().ok_or_else(|| anyhow::anyhow!("could not resolve install directory"))?.to_path_buf();
 
@@ -272,6 +425,15 @@ async fn apply_update_windows(installer_path: &std::path::Path) -> anyhow::Resul
     let backup_dir = std::env::temp_dir().join("open-english-self-update-backup");
     let _ = std::fs::remove_dir_all(&backup_dir);
     copy_dir_recursive(&install_dir, &backup_dir)?;
+
+    // 手動ダウングレード用の複数世代履歴(2026-08-20新設、モジュールdoc
+    // 「手動ダウングレード機能」節参照)。この時点の`backup_dir`は
+    // まだ旧バージョンそのものなので、ここでコピー保存しておく
+    // (更新が後で失敗しロールバックされた場合も、履歴に「実質的に
+    // 現在と同じバージョン」が1件残るだけで実害は無い——このプロセス
+    // 自身はこの後すぐ終了しバッチスクリプトに委ねる設計上、成功/失敗を
+    // 待ってから判断することができないための割り切り)。
+    let _ = save_history_dir(&install_dir, "self", local_version_str, &backup_dir);
 
     let script_path = std::env::temp_dir().join("open-english-self-update.bat");
     let uninstaller = existing_uninstaller();
@@ -336,12 +498,16 @@ async fn apply_update_windows(installer_path: &std::path::Path) -> anyhow::Resul
 /// 継続する(旧プロセスを一度も止めていないため、単に何もしなかった
 /// ことにするだけで復旧が完了する——ここが「シンプルに」というユーザー
 /// 指示に沿える設計上の利点)。
-async fn apply_update_unix(tarball_path: &std::path::Path) -> anyhow::Result<()> {
+async fn apply_update_unix(tarball_path: &std::path::Path, local_version_str: &str) -> anyhow::Result<()> {
     let exe = std::env::current_exe()?;
     let install_dir = exe.parent().ok_or_else(|| anyhow::anyhow!("could not resolve install directory"))?.to_path_buf();
 
     let backup_path = install_dir.join("open-english-server.bak");
     std::fs::copy(&exe, &backup_path)?;
+
+    // 手動ダウングレード用の複数世代履歴(2026-08-20新設、Windows版と
+    // 同じ考え方、モジュールdoc参照)。
+    let _ = save_history_file(&install_dir, "self", local_version_str, &backup_path, "open-english-server");
 
     let extract_dir = std::env::temp_dir().join("open-english-self-update-extract");
     let _ = std::fs::remove_dir_all(&extract_dir);
@@ -531,7 +697,7 @@ pub async fn check_and_apply_update() {
     let dest = std::env::temp_dir().join(&asset.name);
     match download_to(&asset.browser_download_url, &dest).await {
         Ok(()) => {
-            let result = if is_windows { apply_update_windows(&dest).await } else { apply_update_unix(&dest).await };
+            let result = if is_windows { apply_update_windows(&dest, &local).await } else { apply_update_unix(&dest, &local).await };
             if let Err(e) = result {
                 tracing_log_if_available(&format!("open-english self-update: failed to launch update ({e})"));
             }
