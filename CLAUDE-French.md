@@ -56,6 +56,33 @@ majeur par rapport à la conception actuelle de la Phase 0 (serveur
 résident local + connexion localhost), cela ne sera abordé qu'après
 l'achèvement du MVP, avec un périmètre dédié.
 
+## Autres mises à jour (2026-08-19 à 2026-08-20)
+
+Depuis lors ont notamment été ajoutés : un message affiché à
+l'atteinte de la limite d'utilisation quotidienne, renvoyant vers les
+offres payantes et les quotas gratuits d'autres fournisseurs ; un
+nouveau panneau « Data & Model Storage » avec interface de
+sauvegarde/restauration ; une bannière incitant à mobiliser les
+smartphones inutilisés (`PhoneAccelWorker` avec détection NNAPI) ;
+une sauvegarde rsync combinée pour aruaru-db/PostgreSQL ; une page de
+feuille de route provisoire pour les portages consoles
+(PlayStation/Switch/Wii/Wii U, en attente de l'accord des
+constructeurs) ; les mises à jour automatiques étendues à tous les
+composants embarqués (aruaru-llm/aruaru-db) avec vérification
+périodique toutes les 6 heures et rétrogradation manuelle par
+composant ; un correctif faisant démarrer aruaru-llm automatiquement
+sous Windows (plus aucune étape manuelle) ; une bannière d'information
+sur les quotas gratuits des fournisseurs IA/recherche (incluant
+Claude/Anthropic) ; un correctif critique empêchant la perte de la
+base de données de conversation lors d'une mise à jour/rétrogradation
+automatique Windows (vérifié de bout en bout via un véritable
+installateur) ; ainsi que de nouvelles fonctionnalités Android
+(détection automatique de l'URL du PC par balayage de sous-réseau,
+vérifiée sur un appareil Snapdragon réel avec détection NNAPI
+réussie, le déchargement de calcul NNAPI proprement dit restant non
+implémenté). Détails dans les entrées HANDOFF du 2026-08-19 et du
+2026-08-20 de [CLAUDE.md](CLAUDE.md).
+
 ## Mises à jour récentes liées à l'installation (2026-08-19)
 
 Installateur Windows unifié `open-english-install.exe` ; la mise à jour

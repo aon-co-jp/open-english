@@ -53,6 +53,31 @@ cambiamento architetturale rispetto all'attuale design di Fase 0
 (server residente locale + connessione localhost), verrà affrontato
 solo dopo il completamento dell'MVP, con un ambito dedicato.
 
+## Altri aggiornamenti (2026-08-19 - 2026-08-20)
+
+Da allora sono stati aggiunti, tra l'altro: un avviso al
+raggiungimento del limite di utilizzo giornaliero, con indicazioni sui
+piani a pagamento e sui livelli gratuiti di altri provider; un nuovo
+pannello "Data & Model Storage" con interfaccia di backup/ripristino;
+un banner per mobilitare gli smartphone inutilizzati
+(`PhoneAccelWorker` con rilevamento NNAPI); un backup rsync combinato
+per aruaru-db/PostgreSQL; una pagina roadmap segnaposto per i port
+console (PlayStation/Switch/Wii/Wii U, in attesa dell'autorizzazione
+dei produttori); gli aggiornamenti automatici estesi a tutti i
+componenti inclusi (aruaru-llm/aruaru-db) con controllo periodico
+ogni 6 ore e downgrade manuale per singolo componente; una correzione
+che avvia automaticamente aruaru-llm su Windows (nessun passaggio
+manuale residuo); un banner informativo sui livelli gratuiti dei
+provider IA/ricerca (incluso Claude/Anthropic); una correzione
+critica che previene la perdita del database delle conversazioni
+durante l'aggiornamento/downgrade automatico su Windows (verificata
+end-to-end tramite un installer reale); e nuove funzionalità Android
+(rilevamento automatico dell'URL del PC tramite scansione di
+sottorete, verificato su un dispositivo Snapdragon reale con
+rilevamento NNAPI riuscito, mentre l'effettivo offload di calcolo
+NNAPI non è ancora implementato). Dettagli nelle voci HANDOFF del
+2026-08-19 e del 2026-08-20 in [CLAUDE.md](CLAUDE.md).
+
 ## Aggiornamenti recenti relativi all'installazione (2026-08-19)
 
 Installer Windows unificato `open-english-install.exe`; l'aggiornamento

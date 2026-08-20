@@ -54,6 +54,31 @@ Phase-0-Design (lokaler residenter Server + localhost-Verbindung)
 bedeutet, wird dies erst nach Abschluss des MVP und mit eigenem
 Scope in Angriff genommen.
 
+## Weitere Updates (2026-08-19 bis 2026-08-20)
+
+Seither kamen u. a. hinzu: ein Hinweis bei Erreichen des täglichen
+Nutzungslimits mit Hinweisen auf kostenpflichtige Pläne und die
+kostenlosen Kontingente anderer Anbieter; ein neues Panel „Data &
+Model Storage" mit Backup-/Wiederherstellungs-UI; ein Banner zur
+Mobilisierung ungenutzter Smartphones (`PhoneAccelWorker` mit
+NNAPI-Erkennung); eine kombinierte rsync-Sicherung für aruaru-db/
+PostgreSQL; eine Roadmap-Platzhalterseite für Konsolen-Ports
+(PlayStation/Switch/Wii/Wii U, abhängig von der Zustimmung der
+Plattformhalter); automatische Updates, erweitert auf alle
+mitgelieferten Komponenten (aruaru-llm/aruaru-db) mit
+6-Stunden-Intervall-Prüfung und manuellem Downgrade pro Komponente;
+ein Fix, der aruaru-llm unter Windows automatisch startet (kein
+manueller Schritt mehr nötig); ein Info-Banner zu kostenlosen
+Kontingenten von KI-/Suchanbietern (inkl. Claude/Anthropic); ein
+kritischer Fix, der den Verlust der Gesprächsdatenbank bei
+Windows-Auto-Update/Downgrade verhindert (End-to-End über einen
+echten Installer verifiziert); sowie neue Android-Funktionen
+(Subnetz-Scan zur automatischen PC-URL-Erkennung, auf einem echten
+Snapdragon-Gerät mit erfolgreicher NNAPI-Erkennung verifiziert,
+wobei die tatsächliche NNAPI-Rechenauslagerung noch nicht
+implementiert ist). Details in den HANDOFF-Einträgen vom 2026-08-19
+und 2026-08-20 in [CLAUDE.md](CLAUDE.md).
+
 ## Neueste installationsbezogene Updates (2026-08-19)
 
 Vereinheitlichter Windows-Installer `open-english-install.exe`; das
