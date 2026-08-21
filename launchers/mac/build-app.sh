@@ -2,9 +2,17 @@
 # open-english.app (macOSのDock/Launchpadから起動できるアプリバンドル)を
 # 作成する。**このスクリプトはmacOS上で実行する必要がある**
 # (iconutil/sipsがmacOS専用コマンドのため、Windows/Linux上の開発環境では
-# 実行できない — 正直な開示)。open-english自体はサーバー不要の静的
-# HTML/JSアプリのため、バンドルの実体は既定のブラウザで index.html を
-# 開くだけの薄いシェルランチャー。
+# 実行できない — 正直な開示)。
+#
+# 【2026-08-21修正】バンドルの実体は従来「既定のブラウザでindex.htmlを
+# 直接開くだけの薄いシェルランチャー」だったが、これは2026-08-10の
+# server/(Rust)crate新設より前の古い前提のまま更新されていなかった
+# (linux/windows版ランチャーと同根の記述ミス)。ビルド済みサーバー
+# バイナリ(`cd server && cargo build --release`、またはinstaller/unix/
+# install.shの配置先)が見つかればそれを起動しHTTP経由のURLを開くように
+# 修正し、見つからない場合のみ従来通りindex.htmlを直接開く(file://は
+# 一部ブラウザでfetch()がブロックされauto-update.js等が動かない旨を
+# 起動時に正直に表示する)。
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -54,7 +62,26 @@ EOF
 
 cat > "$CONTENTS/MacOS/launch.sh" <<EOF
 #!/usr/bin/env bash
-open "$INDEX_HTML"
+# ビルド済みサーバーバイナリがあれば起動してHTTP経由で開く(フル機能)。
+# 無ければfile://で直接index.htmlを開く(degraded fallback、正直に警告)。
+SERVER_BIN=""
+for candidate in \\
+    "$REPO_ROOT/server/target/release/open-english-server" \\
+    "$REPO_ROOT/open-english-server"
+do
+    if [ -x "\$candidate" ]; then
+        SERVER_BIN="\$candidate"
+        break
+    fi
+done
+if [ -n "\$SERVER_BIN" ]; then
+    "\$SERVER_BIN" &
+    sleep 1
+    open "http://127.0.0.1:4601/"
+else
+    osascript -e 'display notification "No server binary found - opening index.html directly (file://). Some features like auto-update may not work. Build the server first: cd server && cargo build --release" with title "open-english"' >/dev/null 2>&1 || true
+    open "$INDEX_HTML"
+fi
 EOF
 chmod +x "$CONTENTS/MacOS/launch.sh"
 
