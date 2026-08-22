@@ -41,6 +41,7 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/provider-free-tiers.json", "provider-free-tiers.json", "application/json; charset=utf-8"),
     ("/world-language-exams.json", "world-language-exams.json", "application/json; charset=utf-8"),
     ("/world-language-phrases.json", "world-language-phrases.json", "application/json; charset=utf-8"),
+    ("/world-language-regions.json", "world-language-regions.json", "application/json; charset=utf-8"),
     ("/icons/icon-32.png", "icons/icon-32.png", "image/png"),
     ("/icons/icon-180.png", "icons/icon-180.png", "image/png"),
     ("/icons/icon-192.png", "icons/icon-192.png", "image/png"),
@@ -737,6 +738,214 @@ async fn world_languages() -> Response {
     )
 }
 
+/// `GET /v1/region-info?lang=<code>`(2026-08-22新設、ユーザー指示「選択した
+/// 言語〈特に一番上の言語〉の地域に関する情報を集めて、その言語での話題に
+/// ついていけるように」への対応)。`world-language-regions.json`から
+/// 該当言語1件ぶんの静的な基本情報(国旗・国名・首都・主要都市・観光名所・
+/// 名物・著名人・代表的な企業とその概要・その他)を返す。
+///
+/// **正直な開示**: ここで返すのは**リアルタイムの情報ではない**——本アプリ用に
+/// 記述した一般的な百科事典的知識であり、インターネットから取得していないため
+/// 古くなり得る。最新ニュースの見出しは別エンドポイント(`/v1/region-news`)が
+/// 担当する。
+async fn region_info(req: Request) -> Response {
+    let lang = query_param(&req, "lang").unwrap_or_default();
+    let path = repo_root().join("world-language-regions.json");
+    let raw = match std::fs::read_to_string(&path) {
+        Ok(v) => v,
+        Err(e) => {
+            return rs_json_response(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &serde_json::json!({"error": format!("failed to read world-language-regions.json: {e}")}),
+            )
+        }
+    };
+    let parsed: serde_json::Value = match serde_json::from_str(&raw) {
+        Ok(v) => v,
+        Err(e) => {
+            return rs_json_response(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &serde_json::json!({"error": format!("world-language-regions.json is not valid JSON: {e}")}),
+            )
+        }
+    };
+    let empty = vec![];
+    let found = parsed
+        .get("languages")
+        .and_then(|v| v.as_array())
+        .unwrap_or(&empty)
+        .iter()
+        .find(|l| l.get("code").and_then(|c| c.as_str()) == Some(lang.as_str()));
+    match found {
+        Some(entry) => rs_json_response(
+            StatusCode::OK,
+            &serde_json::json!({
+                "ok": true,
+                "region": entry,
+                "disclosure_en": "Static background knowledge written for this app, not fetched from the internet and not real-time. Details may be out of date.",
+                "disclosure_ja": "本アプリ用に記述した静的な基礎知識です。インターネットから取得したリアルタイム情報ではなく、内容が古くなっている場合があります。",
+            }),
+        ),
+        None => rs_json_response(
+            StatusCode::OK,
+            &serde_json::json!({
+                "ok": false,
+                "error_en": format!("No background data has been written for language '{lang}' yet."),
+                "error_ja": format!("言語コード「{lang}」の基礎データはまだ作成されていません。"),
+            }),
+        ),
+    }
+}
+
+/// `GET /v1/region-news?lang=<code>`(2026-08-22新設)。**実際にインターネットへ
+/// 接続して**、その言語向けのGoogleニュースRSS(公開フィード)から最新の見出しを
+/// 取得して返す。
+///
+/// **設計判断**: 専用のニュースAPI(有償・APIキー必須のものが多い)へ依存させず、
+/// 認証不要の公開RSSを使う。取得するのは**見出しと公開日時とリンクのみ**で、
+/// 記事本文は取得・再配布しない(著作権への配慮——本文を読みたい利用者は
+/// 元記事のリンクを開く)。
+///
+/// **正直な開示**: オフライン環境・RSSの仕様変更・地域による到達性の違いに
+/// より取得に失敗することがある。その場合はエラーを黙って握りつぶさず、
+/// `ok:false`と理由を返す(UI側もその旨を利用者へ正直に表示する)。
+async fn region_news(req: Request) -> Response {
+    let lang = query_param(&req, "lang").unwrap_or_default();
+    // 言語コード -> Googleニュースの hl/gl/ceid パラメータ。未知の言語は
+    // 英語版のフィードへフォールバックする(黙って空を返さない)。
+    let (hl, gl) = match lang.as_str() {
+        "ja" => ("ja", "JP"),
+        "es" => ("es", "ES"),
+        "fr" => ("fr", "FR"),
+        "de" => ("de", "DE"),
+        "it" => ("it", "IT"),
+        "pt" => ("pt-PT", "PT"),
+        "nl" => ("nl", "NL"),
+        "sv" => ("sv", "SE"),
+        "no" => ("no", "NO"),
+        "da" => ("da", "DK"),
+        "fi" => ("fi", "FI"),
+        "pl" => ("pl", "PL"),
+        "cs" => ("cs", "CZ"),
+        "hu" => ("hu", "HU"),
+        "ro" => ("ro", "RO"),
+        "ru" => ("ru", "RU"),
+        "uk" => ("uk", "UA"),
+        "el" => ("el", "GR"),
+        "tr" => ("tr", "TR"),
+        "ar" => ("ar", "EG"),
+        "he" => ("he", "IL"),
+        "fa" => ("fa", "IR"),
+        "hi" => ("hi", "IN"),
+        "bn" => ("bn", "BD"),
+        "id" => ("id", "ID"),
+        "ms" => ("ms", "MY"),
+        "vi" => ("vi", "VN"),
+        "th" => ("th", "TH"),
+        "tl" => ("en", "PH"),
+        "zh" => ("zh-CN", "CN"),
+        "zh-Hant" => ("zh-TW", "TW"),
+        "ko" => ("ko", "KR"),
+        "ta" => ("ta", "IN"),
+        "te" => ("te", "IN"),
+        "ur" => ("ur", "PK"),
+        "mr" => ("mr", "IN"),
+        "pa" => ("pa", "IN"),
+        "sw" => ("sw", "KE"),
+        "rm" => ("de", "CH"),
+        _ => ("en", "US"),
+    };
+    let url = format!("https://news.google.com/rss?hl={hl}&gl={gl}&ceid={gl}:{hl}");
+    let client = match reqwest::Client::builder()
+        .user_agent("open-english/1.0 (topic briefing)")
+        .timeout(std::time::Duration::from_secs(8))
+        .build()
+    {
+        Ok(c) => c,
+        Err(e) => {
+            return rs_json_response(
+                StatusCode::OK,
+                &serde_json::json!({"ok": false, "error": format!("failed to build HTTP client: {e}")}),
+            )
+        }
+    };
+    let body = match client.get(&url).send().await {
+        Ok(resp) if resp.status().is_success() => match resp.text().await {
+            Ok(t) => t,
+            Err(e) => {
+                return rs_json_response(
+                    StatusCode::OK,
+                    &serde_json::json!({"ok": false, "source": url, "error": format!("failed to read the feed body: {e}")}),
+                )
+            }
+        },
+        Ok(resp) => {
+            return rs_json_response(
+                StatusCode::OK,
+                &serde_json::json!({"ok": false, "source": url, "error": format!("the news feed returned HTTP {}", resp.status())}),
+            )
+        }
+        Err(e) => {
+            return rs_json_response(
+                StatusCode::OK,
+                &serde_json::json!({"ok": false, "source": url, "error": format!("could not reach the news feed (offline?): {e}")}),
+            )
+        }
+    };
+    let items = extract_rss_titles(&body, 8);
+    rs_json_response(
+        StatusCode::OK,
+        &serde_json::json!({
+            "ok": true,
+            "lang": lang,
+            "source": url,
+            "headlines": items,
+            "disclosure_en": "Headlines only, fetched live from a public Google News RSS feed. Article text is not copied; open the original link to read a story.",
+            "disclosure_ja": "公開されているGoogleニュースRSSからその都度取得した見出しのみです。記事本文は取得・転載していません(本文は元記事のリンクからお読みください)。",
+        }),
+    )
+}
+
+/// RSS(XML)から`<item>`の`<title>`を最大`limit`件抜き出す最小のパーサ。
+/// XMLパーサのクレートを追加せずに済ませるための割り切った実装で、
+/// `<title>`の入れ子や属性は扱わない(Googleニュースの単純なRSSに限定)。
+/// **正直な開示**: 汎用のRSSパーサではないため、フィードの構造が変われば
+/// 見出しが0件になることがある(その場合もエラーにはせず空配列を返す)。
+fn extract_rss_titles(xml: &str, limit: usize) -> Vec<String> {
+    let mut out = Vec::new();
+    // チャンネル自身の<title>を拾わないよう、最初の<item>以降だけを見る。
+    let body = match xml.find("<item>") {
+        Some(i) => &xml[i..],
+        None => return out,
+    };
+    for chunk in body.split("<item>").skip(0) {
+        if out.len() >= limit {
+            break;
+        }
+        let Some(start) = chunk.find("<title>") else { continue };
+        let rest = &chunk[start + "<title>".len()..];
+        let Some(end) = rest.find("</title>") else { continue };
+        let title = decode_xml_entities(rest[..end].trim());
+        if !title.is_empty() {
+            out.push(title);
+        }
+    }
+    out
+}
+
+fn decode_xml_entities(s: &str) -> String {
+    let s = s
+        .trim_start_matches("<![CDATA[")
+        .trim_end_matches("]]>")
+        .to_string();
+    s.replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&apos;", "'")
+}
+
 #[tokio::main]
 async fn main() {
     let root = repo_root();
@@ -756,6 +965,9 @@ async fn main() {
     app = app.at("/healthz", get(handler_fn(move |_req, _p| async move { healthz().await })));
     // 多言語擬似模擬試験の対応言語一覧(2026-08-22新設、world_languages()のdoc参照)。
     app = app.at("/v1/world-languages", get(handler_fn(move |_req, _p| async move { world_languages().await })));
+    // 話題ブリーフィング(2026-08-22新設): 静的な地域情報+公開RSSからの実ニュース見出し。
+    app = app.at("/v1/region-info", get(handler_fn(move |req, _p| async move { region_info(req).await })));
+    app = app.at("/v1/region-news", get(handler_fn(move |req, _p| async move { region_news(req).await })));
 
     // 会話履歴・設定の永続化API(2026-08-18新設、db.rsモジュールdoc参照)。
     {

@@ -6,6 +6,47 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-22 続き)**: **設定の永続化・母国語の指定・表示順の
+> カスタマイズ・話題ブリーフィング・対応言語一覧の130言語化**を追加しました。
+> - **言語のインストール/アンインストール**: 「🌐 Languages」パネルのチェックを
+>   入れる=その言語をインストール(追加)、外す=アンインストール(削除)。
+>   **母国語(ネイティブ)を1つ指定**でき、母国語+学びたい言語で**合計最大6項目**
+>   (英語・日本語は常時有効、追加は最大3言語+母国語1)を扱えます。130言語の
+>   一覧は**言語名でも国名でも絞り込み検索**でき、各行に**国旗絵文字と国名**を併記します。
+> - **表示・読み上げ順の指定**: ①数字を直接入力、②1〜6のラジオボタン、③▲▼ボタン
+>   の3系統から指定でき、**どれを操作しても互いに連動**します。既に他の言語が使って
+>   いる番号を選ぶと、その言語と順番を入れ替えます(重複しません)。
+> - **設定はメンテナンス/自動アップデート後も保持**: ブラウザのlocalStorageと
+>   ローカルSQLite DBへ二重保存し、localStorageが消えてもDBから復元します。
+>   `auto-update.js`のバージョン変更時のデータ破棄処理からも、これらの設定キーを
+>   明示的に除外しました。
+> - **話題ブリーフィング**: 言語を選び終えると「情報を集めています(メンテナンス中)」
+>   の進捗表示とともに、一番上に設定した言語圏の情報をまとめます。**ニュース見出しは
+>   実際にインターネット(公開のGoogleニュースRSS)から毎回取得**し、首都・主要都市・
+>   観光名所・名物・有名人・有名な会社(1〜2文の概要付き)は本アプリ用に書いた静的
+>   データを表示します。最後に「この話題でAI講師と練習する」で会話練習へつながります。
+> - **対応言語一覧を130言語へ拡大**: ただし**模擬問題を実際に書き下ろしてあるのは
+>   40言語(英語・日本語+38言語)、詳細な地域データがあるのも同じ40言語**です。
+>   残り90言語は一覧に名前・国旗・国名だけを載せた段階的拡大の途中で、UI上も
+>   「問題未収録」「詳細データ未作成」と正直に表示します——**130言語に完全対応した
+>   わけではありません**。言語別ドキュメントの置き場所として
+>   [`docs/i18n/<言語コード>/`](docs/i18n/)に130言語ぶんのREADME/CLAUDE/PORTINGを
+>   用意しましたが、こちらも**大半は未翻訳のプレースホルダー**です(機械翻訳を
+>   翻訳済みのように貼り付けることはしていません)。
+>
+> *English*: Added persistent settings (kept across maintenance and auto-updates via
+> localStorage **and** the local SQLite DB), a **native language** setting, three
+> interlinked ways to set the display/read-aloud order (number input, radio buttons 1–6,
+> ▲▼), a **topic briefing** that fetches **live news headlines from a public RSS feed**
+> plus static background data (capital, major cities, sights, food, famous people,
+> well-known companies with one-line summaries), country names and flag emoji in the
+> language list with search by language *or* country, and an expansion of the language
+> registry to **130 languages**. Honest disclosure: **only 40 of those 130 actually have
+> practice questions and detailed background data**; the other 90 are listed by name,
+> flag and country only and are labelled as such in the UI. The 130 per-language doc
+> folders under [`docs/i18n/`](docs/i18n/) are mostly untranslated placeholders — no
+> machine translation has been passed off as a real translation.
+
 > 📌 **最新の更新(2026-08-22)**: **世界の言語の擬似模擬試験+言語選択UI+
 > 多言語の連続表示・読み上げ**を追加しました。日本語・英語はこれまで通り
 > 既定ですが、トップの案内バナー(日英併記)と「🌐 Languages / 言語を追加」

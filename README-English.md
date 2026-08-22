@@ -6,6 +6,43 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-22, continued)**: Added **persistent settings, a native
+> language setting, customisable display order, a topic briefing, and a 130-language
+> registry**.
+> - **Install / uninstall languages**: in the "🌐 Languages" panel, ticking a box
+>   installs (adds) a language and unticking uninstalls (removes) it. You can also pick
+>   **one native language**; together with the languages you are learning you can have
+>   **up to 6 entries** (English and Japanese are always on, plus up to 3 more and your
+>   native language). The 130-language list can be **filtered by language name or by
+>   country**, and each row shows a **flag emoji and country name**.
+> - **Ordering**: set the display and read-aloud order in three interlinked ways —
+>   (1) type a number, (2) pick a radio button 1–6, (3) use ▲ / ▼. Changing one updates
+>   the others. Picking a number another language already uses swaps the two, so numbers
+>   never collide.
+> - **Settings survive maintenance and automatic updates**: they are written to both
+>   browser localStorage and the local SQLite database, and restored from the database if
+>   localStorage is cleared. `auto-update.js` now explicitly preserves these keys when it
+>   purges old-version data.
+> - **Topic briefing**: after you choose your languages, a progress display ("gathering
+>   information / maintenance in progress") collects background about the region of your
+>   top-ranked language. **News headlines are genuinely fetched from the internet** (a
+>   public Google News RSS feed, headlines only — never article text). Capital, major
+>   cities, sights, food, famous people and well-known companies (with one-line summaries)
+>   come from static data written for this app. A button then hands the topics to the AI
+>   tutor for conversation practice.
+> - **Language registry expanded to 130** — but **only 40 of them (English, Japanese and
+>   38 more) actually have practice questions and detailed background data**. The other 90
+>   are listed with name, flag and country only, and the UI says so plainly. This is a
+>   staged rollout, **not full support for 130 languages**. The 130 per-language doc
+>   folders in [`docs/i18n/`](docs/i18n/) are mostly untranslated placeholders; no machine
+>   translation has been pasted in and presented as a finished translation.
+>
+> *日本語*: 設定の永続化(localStorage+ローカルSQLite)、母国語の指定、表示順の
+> 3系統連動指定(数字入力・ラジオボタン・▲▼)、公開RSSからの実ニュース取得を含む
+> 話題ブリーフィング、国旗・国名付きの言語一覧と国名検索、対応言語一覧の130言語化を
+> 追加しました。ただし実際に問題・地域データがあるのは40言語のみで、残り90言語は
+> 名前のみの段階的拡大です。詳細は[CLAUDE.md](CLAUDE.md)の2026-08-22 HANDOFF参照。
+
 > 📌 **Latest update (2026-08-22)**: Added **world-language practice
 > exams, a language-selection UI, and sequential multilingual display &
 > read-aloud**. English and Japanese remain the defaults, but a
