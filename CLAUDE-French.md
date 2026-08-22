@@ -106,3 +106,33 @@ Autres langues : [日本語 (original, avec l'historique complet des HANDOFF)](C
 [Deutsch](CLAUDE-German.md) · [Italiano](CLAUDE-Italian.md) ·
 [Русский](CLAUDE-Russian.md) · [Українська](CLAUDE-Ukrainian.md) ·
 [עברית](CLAUDE-Hebrew.md) · [فارسی](CLAUDE-Persian.md)
+
+## Mise à jour 2026-08-22 : examens pour langues du monde, sélection des langues, lecture multilingue
+
+Avant l'implémentation, le code a été vérifié : **il n'existait aucune
+liste de langues de traduction ni table i18n** (`learn-target` ne
+proposait que l'anglais et le japonais). La liste a donc été définie par
+cette fonctionnalité — **38 langues** (17 européennes dont le romanche
+suisse, le russe, 4 du Moyen-Orient, 7 d'Asie du Sud, 8 d'Asie de l'Est
+et du Sud-Est, 1 africaine), plus l'anglais et le japonais toujours actifs.
+
+- Nouvelles données : `world-language-exams.json` (questions originales à
+  choix multiples avec niveaux de style CECR, 3 à 6 par langue) et
+  `world-language-phrases.json` (5 phrases de base × 40 langues).
+- Nouvelle API : `GET /v1/world-languages` ne renvoie que le résumé, sans
+  les énoncés. Aucun nouvel endpoint n'a été créé pour l'enregistrement
+  en base : `POST /v1/db/history` suffit.
+- Interface : bannière bilingue, panneau « 🌐 Languages » avec cases à
+  cocher, « Tout sélectionner » et « Tout désélectionner sauf EN et JA »,
+  choix de **2 à 5 langues** (limite imposée par l'interface), affichage
+  et lecture séquentiels rejouables à volonté (tout ou une seule langue),
+  copie, téléchargement .txt et enregistrement dans SQLite.
+- Après la correction, les questions manquées mènent à la conversation
+  avec le tuteur de la langue (réutilisation d'`examPrepMissedQuestions`).
+
+**Divulgation honnête** : questions originales, sans lien avec des
+certifications officielles ; seulement 3 à 6 questions par langue ;
+aucune relecture par des locuteurs natifs ; la lecture réelle dans les 38
+langues n'a pas été vérifiée avec de vraies voix (uniquement via un stub
+d'observation). Détails dans le HANDOFF du 2026-08-22 de
+[CLAUDE.md](CLAUDE.md).

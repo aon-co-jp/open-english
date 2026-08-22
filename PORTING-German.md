@@ -93,3 +93,19 @@ Weitere Sprachen: [日本語 (Original, vollständige Details)](PORTING.md) ·
 [Italiano](PORTING-Italian.md) · [Français](PORTING-French.md) ·
 [Русский](PORTING-Russian.md) · [Українська](PORTING-Ukrainian.md) ·
 [עברית](PORTING-Hebrew.md) · [فارسی](PORTING-Persian.md)
+
+## Muster: mehrsprachige Original-Prüfungen + Sprachauswahl + Vorlesen (2026-08-22)
+
+1. Datenschicht in zwei Dateien trennen: Prüfungsaufgaben und Phrasen für
+   das Vorlesen haben unterschiedliche Zwecke.
+2. Übersichts-API ohne Aufgabentexte anbieten (`GET /v1/world-languages`),
+   die vollständige JSON-Datei erst beim tatsächlichen Test laden.
+3. Bestehende Prüfungs-UI nicht umbauen: nur eine `<optgroup>` mit Werten
+   `world:<code>` ergänzen und Bewertung/Weiterleitung wiederverwenden.
+4. Ober- und Untergrenze der Sprachauswahl in den Checkboxen erzwingen;
+   bei erreichter Grenze **nur nicht angehakte** Boxen deaktivieren.
+5. Vorhandene TTS wiederverwenden, nur eine Zuordnung Sprachcode → BCP-47
+   ergänzen; ehrlich offenlegen, dass ohne installierte Stimme nur Text
+   erscheint.
+6. Texte in `readonly`-`<textarea>` ausgeben (kopierbar); zum Speichern
+   den bestehenden Persistenz-Endpunkt nutzen statt neuer Tabellen.

@@ -97,3 +97,21 @@ Autres langues : [日本語 (original, détails complets)](PORTING.md) ·
 [Deutsch](PORTING-German.md) · [Italiano](PORTING-Italian.md) ·
 [Русский](PORTING-Russian.md) · [Українська](PORTING-Ukrainian.md) ·
 [עברית](PORTING-Hebrew.md) · [فارسی](PORTING-Persian.md)
+
+## Modèle : examens originaux multilingues + sélection des langues + lecture (2026-08-22)
+
+1. Séparer les données en deux fichiers : les questions d'examen et les
+   phrases lues n'ont pas le même usage.
+2. Exposer une API de résumé sans les énoncés (`GET /v1/world-languages`)
+   et ne charger le JSON complet qu'au lancement du test.
+3. Ne pas réécrire l'interface d'examen : ajouter seulement un
+   `<optgroup>` avec des valeurs `world:<code>` et réutiliser la
+   correction ainsi que le passage au tuteur.
+4. Imposer le minimum et le maximum de langues au niveau des cases à
+   cocher ; à la limite atteinte, ne désactiver que les cases **non
+   cochées**.
+5. Réutiliser la synthèse vocale existante en n'ajoutant que la table
+   code → BCP-47 ; indiquer honnêtement qu'en l'absence de voix installée
+   le texte est seulement affiché.
+6. Afficher les textes dans des `<textarea>` `readonly` (copiables) et
+   enregistrer via l'endpoint de persistance existant, sans nouvelle table.

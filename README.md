@@ -6,6 +6,40 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-22)**: **世界の言語の擬似模擬試験+言語選択UI+
+> 多言語の連続表示・読み上げ**を追加しました。日本語・英語はこれまで通り
+> 既定ですが、トップの案内バナー(日英併記)と「🌐 Languages / 言語を追加」
+> パネルから、**38言語**(ヨーロッパ・中東・アジア・インド・アフリカ)の
+> オリジナル模擬試験を有効化できます。既存の英検/TOEIC/TOEFL/JLPTと同じ
+> 「採点→間違えた問題を持ってAI講師との会話練習へ」という導線が、
+> 選んだ言語のトレーナーにもそのままつながります。あわせて、選択した
+> **2〜5か国語**(英語・日本語を含む)で同じフレーズを順番に画面表示+
+> 音声読み上げし、何度でも再生し直せる機能、表示文のコピー&ペースト・
+> テキストファイル保存・ローカルSQLite DBへの保存を追加しました。
+> **正直な開示**: 収録問題は本アプリ用に書き下ろしたオリジナル問題で、
+> 実在の資格試験(DELE・DELF・Goethe-Zertifikat・HSK・TOPIK等)の過去問
+> ではなく、それらの試験とは一切無関係・公認も受けていません。レベル
+> 表記(A1〜C2)はCEFR風の大まかな目安に過ぎず、収録数も言語ごとに
+> 不均一(3〜6問)です。読み上げはブラウザ内蔵のWeb Speech APIを使う
+> ため、その言語の音声がOSに無い環境では表示のみになります。
+> 詳細は[CLAUDE.md](CLAUDE.md)の2026-08-22 HANDOFF参照。
+>
+> *English*: Added **world-language practice exams, a language-selection
+> UI, and sequential multilingual display & read-aloud**. English and
+> Japanese remain the defaults, but a bilingual banner and the
+> "🌐 Languages" panel let you enable original practice sets for **38
+> languages** (Europe, Middle East, Asia, India, Africa). Scoring flows
+> into conversation practice with the tutor for that language, exactly
+> like the existing Eiken/TOEIC/TOEFL/JLPT flow. You can also select
+> **2–5 languages** (including English and Japanese) and have the same
+> phrase displayed and read aloud in order, replayable as often as you
+> like, with copy/paste, .txt download, and save-to-SQLite. Honest
+> disclosure: these are original questions written for this app — not
+> past questions from, and not affiliated with or endorsed by, any real
+> certification exam. CEFR-style levels are loose approximations, item
+> counts are uneven (3–6 per language), and read-aloud depends on the
+> voices your browser/OS provides.
+
 > 📌 **最新の更新(2026-08-20)**: 定期的な自動アップデートチェック
 > (起動時に加え6時間ごと)+手動ダウングレード機能を追加しました。
 > 新バージョンに切り替えた後で不具合に気づいた場合、`GET /v1/updates/

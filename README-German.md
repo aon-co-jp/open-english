@@ -1,5 +1,67 @@
 # open-english
 
+> 📌 **Neuestes Update (2026-08-22)**: **Übungsprüfungen für Weltsprachen,
+> eine Sprachauswahl-Oberfläche sowie sequentielle mehrsprachige Anzeige
+> und Vorlesefunktion** hinzugefügt. Englisch und Japanisch bleiben die
+> Standardsprachen, doch über ein zweisprachiges Banner und das Panel
+> "🌐 Languages" lassen sich Original-Übungssätze für **38 Sprachen**
+> (Europa, Naher Osten, Asien, Indien, Afrika) aktivieren. Nach der
+> Auswertung führen die falsch beantworteten Aufgaben – genau wie beim
+> bestehenden Eiken/TOEIC/TOEFL/JLPT-Ablauf – direkt ins Gespräch mit
+> dem Tutor der jeweiligen Sprache. Zusätzlich lassen sich **2–5
+> Sprachen** (inkl. Englisch und Japanisch) wählen, um denselben Satz
+> nacheinander anzuzeigen und vorzulesen – beliebig oft wiederholbar,
+> mit Kopieren/Einfügen, .txt-Download und Speichern in der lokalen
+> SQLite-Datenbank. Ehrliche Offenlegung: Es handelt sich um eigens für
+> diese App verfasste Originalaufgaben – keine früheren Prüfungsfragen
+> und ohne jede Verbindung zu realen Sprachzertifikaten (DELE, DELF,
+> Goethe-Zertifikat, HSK, TOPIK …). Die CEFR-artigen Stufen (A1–C2) sind
+> nur grobe Anhaltspunkte, die Aufgabenzahl ist ungleich verteilt (3–6
+> pro Sprache), und das Vorlesen nutzt die Web Speech API des Browsers –
+> ohne installierte Stimme wird der Text nur angezeigt. Details im
+> HANDOFF-Eintrag vom 2026-08-22 in [CLAUDE.md](CLAUDE.md).
+
+> 📌 **Neuestes Update (2026-08-20)**: Periodische automatische
+> Update-Prüfung hinzugefügt (alle 6 Stunden, zusätzlich zur Prüfung
+> beim Start) sowie eine manuelle Downgrade-Funktion. Erweist sich eine
+> neue Version als fehlerhaft, lassen sich über `GET /v1/updates/
+> history` (aktuelle + aufbewahrte frühere Versionen) und
+> `POST /v1/updates/downgrade` (open-english selbst, aruaru-llm oder
+> aruaru-db einzeln auf eine bestimmte Version zurücksetzen) einzelne
+> Komponenten gezielt zurückrollen. UI: Abschnitt "🔄 Updates &
+> Rollback" im Panel "💾 Data & Model Storage". Ehrliche Offenlegung:
+> standardmäßig werden nur die letzten 3 Generationen aufbewahrt
+> (Speicherplatz-Rücksicht) — ein Rollback über diese hinaus, oder auf
+> eine nie tatsächlich angewendete Version, ist nicht möglich. Details
+> im HANDOFF-Eintrag vom 2026-08-20 in [CLAUDE.md](CLAUDE.md).
+
+> 📌 **Update (2026-08-19, Fortsetzung 8)**: Wird das tägliche
+> Nutzungslimit erreicht (standardmäßig 100, clientseitiger
+> `localStorage`-Zähler), zeigt der Chat jetzt einen zweisprachigen
+> Hinweis — "Möchten Sie zu einem kostenpflichtigen Plan wechseln?" —
+> sowie Informationen zu den kostenlosen Kontingenten anderer
+> KI-Anbieter (Google Search/DeepSeek/ChatGPT/Gemini/Claude), dynamisch
+> aus `provider-free-tiers.json` gelesen. Ehrliche Offenlegung: Dies ist
+> eine reine Hinweisfunktion clientseitig, ohne echten Abrechnungs-/
+> Upgrade-Ablauf.
+
+> 📌 **Update (2026-08-19)**: `facebook.html` hinzugefügt, eine
+> Einstiegsseite zum Teilen als Link auf einer Facebook-Seite oder in
+> Messenger, für Nutzer, deren Mobilfunktarif nur Facebook-Zugang
+> erlaubt. Ehrliche Offenlegung: echter kostenloser Zero-Rating-Zugang
+> im Stil von Facebooks "Free Basics" ist ohne offizielle Partnerschaft
+> mit Meta nicht erreichbar — `facebook.html` funktioniert als normale,
+> über Facebooks eingebauten Browser erreichbare Seite und verweist auf
+> die bestehenden Installer (Windows/Linux/macOS/Android); die App
+> selbst läuft weiterhin auf einem lokalen Server auf dem eigenen Gerät
+> (`server/`).
+
+> 📌 **Update (2026-08-19)**: Claude (Anthropic) als kostenpflichtige
+> Option zum Info-Banner für kostenlose Kontingente von KI-/
+> Suchanbietern hinzugefügt (ehrlich vermerkt: kein dauerhaftes
+> kostenloses Kontingent, allenfalls ein kleines Guthaben bei der
+> Anmeldung).
+
 > 📌 **Neuestes Update (2026-08-18)**: Eine echte lokale Datenbank für
 > Chatverlauf/Einstellungen hinzugefügt (SQLite + optionaler
 > selbstheilender `aruaru-db`/PostgreSQL-Spiegel), plus APIs für

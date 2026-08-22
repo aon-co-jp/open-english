@@ -1,5 +1,26 @@
 # open-english
 
+> 📌 **Ultimo aggiornamento (2026-08-22)**: aggiunti **esami di pratica
+> per le lingue del mondo, un'interfaccia di selezione delle lingue e la
+> visualizzazione e lettura ad alta voce sequenziale multilingue**.
+> Inglese e giapponese restano le lingue predefinite, ma tramite un
+> banner bilingue e il pannello "🌐 Languages" è possibile attivare set
+> di esercizi originali per **38 lingue** (Europa, Medio Oriente, Asia,
+> India, Africa). Dopo la correzione, le domande sbagliate portano alla
+> conversazione con il tutor di quella lingua, esattamente come nel
+> flusso Eiken/TOEIC/TOEFL/JLPT già esistente. Si possono inoltre
+> selezionare **da 2 a 5 lingue** (inglese e giapponese inclusi) per
+> vedere e ascoltare la stessa frase in sequenza, riascoltabile quante
+> volte si vuole, con copia/incolla, download .txt e salvataggio nel
+> database SQLite locale. Dichiarazione onesta: sono domande originali
+> scritte per questa app, non prove d'esame reali e senza alcun legame
+> con certificazioni ufficiali (DELE, DELF, Goethe-Zertifikat, HSK,
+> TOPIK…). I livelli in stile CEFR (A1–C2) sono solo indicativi, il
+> numero di domande è disomogeneo (3–6 per lingua) e la lettura usa la
+> Web Speech API del browser: senza una voce installata il testo viene
+> solo visualizzato. Dettagli nel HANDOFF del 2026-08-22 in
+> [CLAUDE.md](CLAUDE.md).
+
 > 📌 **Ultimo aggiornamento (2026-08-18)**: Aggiunto un vero database
 > locale per cronologia chat/impostazioni (SQLite + specchio opzionale
 > auto-riparante `aruaru-db`/PostgreSQL), oltre alle API per la scelta

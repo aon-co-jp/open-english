@@ -1,5 +1,27 @@
 # open-english
 
+> 📌 **Dernière mise à jour (2026-08-22)** : ajout d'**examens
+> d'entraînement pour les langues du monde, d'une interface de sélection
+> des langues et d'un affichage/lecture à voix haute multilingue
+> séquentiel**. L'anglais et le japonais restent les langues par défaut,
+> mais une bannière bilingue et le panneau « 🌐 Languages » permettent
+> d'activer des séries d'exercices originaux pour **38 langues**
+> (Europe, Moyen-Orient, Asie, Inde, Afrique). Après la correction, les
+> questions manquées mènent à une conversation avec le tuteur de la
+> langue choisie, exactement comme le parcours Eiken/TOEIC/TOEFL/JLPT
+> existant. On peut aussi choisir **2 à 5 langues** (anglais et japonais
+> compris) pour afficher et écouter la même phrase l'une après l'autre,
+> autant de fois que souhaité, avec copier-coller, téléchargement .txt
+> et enregistrement dans la base SQLite locale. Divulgation honnête :
+> ce sont des questions originales écrites pour cette application, et
+> non d'anciens sujets d'examens ; elles n'ont aucun lien avec les
+> certifications réelles (DELE, DELF, Goethe-Zertifikat, HSK, TOPIK…).
+> Les niveaux de style CECR (A1–C2) ne sont qu'indicatifs, le nombre de
+> questions est inégal (3 à 6 par langue) et la lecture repose sur la
+> Web Speech API du navigateur : sans voix installée, le texte est
+> seulement affiché. Détails dans l'entrée HANDOFF du 2026-08-22 de
+> [CLAUDE.md](CLAUDE.md).
+
 > 📌 **Dernière mise à jour (2026-08-18)**: Ajout d'une véritable base de
 > données locale pour l'historique des conversations/paramètres (SQLite
 > + miroir optionnel auto-réparateur `aruaru-db`/PostgreSQL), ainsi que

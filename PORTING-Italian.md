@@ -91,3 +91,20 @@ Altre lingue: [日本語 (originale, dettagli completi)](PORTING.md) ·
 [Deutsch](PORTING-German.md) · [Français](PORTING-French.md) ·
 [Русский](PORTING-Russian.md) · [Українська](PORTING-Ukrainian.md) ·
 [עברית](PORTING-Hebrew.md) · [فارسی](PORTING-Persian.md)
+
+## Schema: esami originali multilingue + selezione lingue + lettura (2026-08-22)
+
+1. Separare i dati in due file: domande d'esame e frasi per la lettura
+   hanno scopi diversi.
+2. Esporre un'API di riepilogo senza i testi delle domande
+   (`GET /v1/world-languages`) e caricare il JSON completo solo all'avvio
+   del test.
+3. Non riscrivere l'interfaccia d'esame esistente: aggiungere solo un
+   `<optgroup>` con valori `world:<code>` e riusare correzione e
+   proseguimento verso il tutor.
+4. Imporre minimo e massimo di lingue nelle caselle di spunta;
+   disabilitare **solo quelle non spuntate** al raggiungimento del limite.
+5. Riusare il TTS esistente aggiungendo solo la mappa codice → BCP-47;
+   dichiarare che senza voce installata il testo è solo visualizzato.
+6. Mostrare i testi in `<textarea>` `readonly` (copiabili) e salvare
+   usando l'endpoint di persistenza già esistente, senza nuove tabelle.

@@ -102,3 +102,35 @@ Weitere Sprachen: [日本語 (Original, mit vollständigem HANDOFF-Verlauf)](CLA
 [Italiano](CLAUDE-Italian.md) · [Français](CLAUDE-French.md) ·
 [Русский](CLAUDE-Russian.md) · [Українська](CLAUDE-Ukrainian.md) ·
 [עברית](CLAUDE-Hebrew.md) · [فارسی](CLAUDE-Persian.md)
+
+## Update 2026-08-22: Weltsprachen-Übungsprüfungen, Sprachauswahl, mehrsprachige Wiedergabe
+
+Vor der Umsetzung wurde der Code geprüft: **es existierte bisher keine
+Liste unterstützter Übersetzungssprachen und keine i18n-Tabelle**
+(`learn-target` kannte nur Englisch/Japanisch). Die Sprachliste wurde
+daher mit dieser Funktion neu definiert — **38 Sprachen** (17 europäische
+inkl. Rätoromanisch/Schweiz, Russisch, 4 nahöstliche, 7 südasiatische,
+8 ost-/südostasiatische, 1 afrikanische) plus Englisch und Japanisch als
+stets aktive Standardsprachen.
+
+- Neue Daten: `world-language-exams.json` (Original-Multiple-Choice-Aufgaben
+  mit CEFR-artigen Stufen, 3–6 pro Sprache) und `world-language-phrases.json`
+  (5 Basissätze × 40 Sprachen).
+- Neue API: `GET /v1/world-languages` liefert nur die Übersicht (ohne
+  Aufgabentexte). Für die DB-Speicherung wurde **kein** neuer Endpunkt
+  angelegt — der bestehende `POST /v1/db/history` genügt.
+- UI: zweisprachiges Banner, Panel "🌐 Languages" mit Checkboxen,
+  "Alle auswählen" und "Alle außer EN & JA abwählen", Auswahl von
+  **2–5 Sprachen** (Grenze in der UI erzwungen), sequentielle Anzeige +
+  Vorlesen mit beliebiger Wiederholung (gesamt oder pro Sprache),
+  Kopieren, .txt-Download und Speichern in SQLite.
+- Nach der Auswertung führen die falschen Aufgaben in das Gespräch mit
+  dem Tutor der jeweiligen Sprache (bestehende `examPrepMissedQuestions`-
+  Logik wiederverwendet).
+
+**Ehrliche Offenlegung**: Originalaufgaben, keine echten Prüfungsfragen
+und ohne Bezug zu offiziellen Zertifikaten; nur 3–6 Aufgaben pro Sprache;
+keine muttersprachliche Prüfung der Texte; das tatsächliche Vorlesen in
+allen 38 Sprachen wurde mangels installierter Stimmen nicht real
+verifiziert (nur mit einem Beobachtungs-Stub). Details siehe HANDOFF vom
+2026-08-22 in [CLAUDE.md](CLAUDE.md).

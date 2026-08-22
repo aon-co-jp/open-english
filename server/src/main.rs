@@ -39,6 +39,8 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/manifest.json", "manifest.json", "application/manifest+json; charset=utf-8"),
     ("/exam-prep-questions.json", "exam-prep-questions.json", "application/json; charset=utf-8"),
     ("/provider-free-tiers.json", "provider-free-tiers.json", "application/json; charset=utf-8"),
+    ("/world-language-exams.json", "world-language-exams.json", "application/json; charset=utf-8"),
+    ("/world-language-phrases.json", "world-language-phrases.json", "application/json; charset=utf-8"),
     ("/icons/icon-32.png", "icons/icon-32.png", "image/png"),
     ("/icons/icon-180.png", "icons/icon-180.png", "image/png"),
     ("/icons/icon-192.png", "icons/icon-192.png", "image/png"),
@@ -665,6 +667,76 @@ async fn updates_downgrade(req: Request) -> Response {
     }
 }
 
+/// `GET /v1/world-languages`(2026-08-22新設、ユーザー指示「世界中の言語
+/// でも擬似模擬試験を受けられるように」への対応)。`world-language-exams.json`
+/// を読み、**問題本文を含まない**言語一覧のサマリ(言語コード・現地語表記・
+/// 英語名・日本語名・RTLか・収録問題数・収録レベル)だけを返す。
+///
+/// **設計意図**: フロントエンドの「追加する言語を選ぶ」UI(メンテナンス
+/// 中の言語追加パネル)は一覧だけあれば描画でき、全問題(数十KB)を毎回
+/// 転送する必要が無い。実際の出題時のみ`/world-language-exams.json`
+/// (静的配信)を取得する二段構えにしている。
+///
+/// **正直な開示**: 収録問題はこのアプリ用に書き下ろしたオリジナル問題で、
+/// 実在の資格試験(DELE・DELF・Goethe-Zertifikat・HSK・TOPIK等)の
+/// 過去問ではなく、それらの試験とは一切無関係。言語ごとの収録数は不均一
+/// (3〜6問)で、レベル表記もCEFR風の目安に過ぎない。この不均一さは
+/// レスポンスの`question_count`にそのまま出るため、UI側で正直に表示できる。
+async fn world_languages() -> Response {
+    let path = repo_root().join("world-language-exams.json");
+    let raw = match std::fs::read_to_string(&path) {
+        Ok(v) => v,
+        Err(e) => {
+            return rs_json_response(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &serde_json::json!({"error": format!("failed to read world-language-exams.json: {e}")}),
+            )
+        }
+    };
+    let parsed: serde_json::Value = match serde_json::from_str(&raw) {
+        Ok(v) => v,
+        Err(e) => {
+            return rs_json_response(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                &serde_json::json!({"error": format!("world-language-exams.json is not valid JSON: {e}")}),
+            )
+        }
+    };
+    let empty = vec![];
+    let langs = parsed.get("languages").and_then(|v| v.as_array()).unwrap_or(&empty);
+    let summary: Vec<serde_json::Value> = langs
+        .iter()
+        .map(|lang| {
+            let questions = lang.get("questions").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+            let mut levels: Vec<String> = questions
+                .iter()
+                .filter_map(|q| q.get("level").and_then(|v| v.as_str()).map(|s| s.to_string()))
+                .collect();
+            levels.sort();
+            levels.dedup();
+            serde_json::json!({
+                "code": lang.get("code").cloned().unwrap_or(serde_json::Value::Null),
+                "endonym": lang.get("endonym").cloned().unwrap_or(serde_json::Value::Null),
+                "en": lang.get("en").cloned().unwrap_or(serde_json::Value::Null),
+                "ja": lang.get("ja").cloned().unwrap_or(serde_json::Value::Null),
+                "rtl": lang.get("rtl").cloned().unwrap_or(serde_json::Value::Bool(false)),
+                "authored": lang.get("authored").cloned().unwrap_or(serde_json::Value::Bool(false)),
+                "question_count": questions.len(),
+                "levels": levels,
+            })
+        })
+        .collect();
+    rs_json_response(
+        StatusCode::OK,
+        &serde_json::json!({
+            "count": summary.len(),
+            "disclosure_en": "Original practice questions written for this app. Not past questions from, and not affiliated with, any official language certification exam. Levels are loose CEFR-style approximations only.",
+            "disclosure_ja": "本アプリ用に書き下ろしたオリジナル練習問題です。実在の語学資格試験の過去問ではなく、いかなる公式試験とも無関係です。レベル表記はCEFR風の大まかな目安に過ぎません。",
+            "languages": summary,
+        }),
+    )
+}
+
 #[tokio::main]
 async fn main() {
     let root = repo_root();
@@ -682,6 +754,8 @@ async fn main() {
         app = app.at(url_path, get(static_file_handler(file_path, content_type)));
     }
     app = app.at("/healthz", get(handler_fn(move |_req, _p| async move { healthz().await })));
+    // 多言語擬似模擬試験の対応言語一覧(2026-08-22新設、world_languages()のdoc参照)。
+    app = app.at("/v1/world-languages", get(handler_fn(move |_req, _p| async move { world_languages().await })));
 
     // 会話履歴・設定の永続化API(2026-08-18新設、db.rsモジュールdoc参照)。
     {

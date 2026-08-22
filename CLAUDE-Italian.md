@@ -99,3 +99,32 @@ Altre lingue: [日本語 (originale, con la cronologia completa degli HANDOFF)](
 [Deutsch](CLAUDE-German.md) · [Français](CLAUDE-French.md) ·
 [Русский](CLAUDE-Russian.md) · [Українська](CLAUDE-Ukrainian.md) ·
 [עברית](CLAUDE-Hebrew.md) · [فارسی](CLAUDE-Persian.md)
+
+## Aggiornamento 2026-08-22: esami per lingue del mondo, selezione lingue, lettura multilingue
+
+Prima di implementare è stato verificato il codice: **non esisteva alcun
+elenco di lingue di traduzione né tabella i18n** (`learn-target` aveva
+solo inglese/giapponese). L'elenco è quindi stato definito ex novo con
+questa funzione — **38 lingue** (17 europee incluso il romancio svizzero,
+russo, 4 mediorientali, 7 sud-asiatiche, 8 est/sud-est asiatiche, 1
+africana) più inglese e giapponese sempre attivi.
+
+- Nuovi dati: `world-language-exams.json` (domande originali a scelta
+  multipla con livelli in stile CEFR, 3–6 per lingua) e
+  `world-language-phrases.json` (5 frasi base × 40 lingue).
+- Nuova API: `GET /v1/world-languages` restituisce solo il riepilogo,
+  senza i testi delle domande. Per il salvataggio in database **non** è
+  stato creato alcun endpoint nuovo: basta `POST /v1/db/history`.
+- UI: banner bilingue, pannello "🌐 Languages" con caselle di spunta,
+  "Seleziona tutto" e "Deseleziona tutto tranne EN e JA", scelta di
+  **2–5 lingue** (limite imposto dall'interfaccia), visualizzazione e
+  lettura sequenziale ripetibile quante volte si vuole (tutte o una sola
+  lingua), copia, download .txt e salvataggio in SQLite.
+- Dopo la correzione le domande sbagliate portano alla conversazione con
+  il tutor di quella lingua (riuso di `examPrepMissedQuestions`).
+
+**Dichiarazione onesta**: domande originali, non prove reali e senza
+legami con certificazioni ufficiali; solo 3–6 domande per lingua; nessuna
+revisione da parte di madrelingua; la lettura effettiva nelle 38 lingue
+non è stata verificata su voci reali (solo con uno stub di osservazione).
+Dettagli nel HANDOFF del 2026-08-22 in [CLAUDE.md](CLAUDE.md).

@@ -6,6 +6,77 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-22)**: Added **world-language practice
+> exams, a language-selection UI, and sequential multilingual display &
+> read-aloud**. English and Japanese remain the defaults, but a
+> bilingual banner and the "🌐 Languages" panel let you enable original
+> practice sets for **38 languages** (Europe, Middle East, Asia, India,
+> Africa). After scoring, the missed items flow into conversation
+> practice with the tutor for that language, exactly like the existing
+> Eiken/TOEIC/TOEFL/JLPT flow. You can also select **2–5 languages**
+> (including English and Japanese) and have the same phrase displayed
+> and read aloud in order, replayable as often as you like (all at once
+> or one language at a time), with copy/paste, .txt download, and
+> save-to-local-SQLite. Honest disclosure: these are original questions
+> written for this app — not past questions from, and not affiliated
+> with or endorsed by, any real certification exam (DELE, DELF,
+> Goethe-Zertifikat, HSK, TOPIK, ...). CEFR-style levels (A1–C2) are
+> loose approximations only, item counts are uneven (3–6 per language),
+> and read-aloud uses the browser's built-in Web Speech API, so a
+> language with no installed voice is displayed but not spoken. See the
+> 2026-08-22 HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: 世界38言語のオリジナル擬似模擬試験・言語選択UI(2〜5か国語)・
+> 多言語の連続表示/読み上げ(何度でも再生可)・コピー&ペースト/ファイル
+> 保存/DB保存を追加しました。実在の資格試験の過去問ではなく、それらとは
+> 無関係なオリジナル問題です。詳細は[CLAUDE.md](CLAUDE.md)参照。
+
+> 📌 **Latest update (2026-08-20)**: Added periodic automatic update
+> checks (every 6 hours, in addition to the startup check) and a
+> manual downgrade feature. If a new version turns out to be buggy
+> after a while, `GET /v1/updates/history` (current + retained
+> previous versions) and `POST /v1/updates/downgrade` (roll back
+> open-english itself, aruaru-llm, or aruaru-db individually to a
+> specific version) let you revert just that one component. UI: the
+> "🔄 Updates & Rollback" section inside the "💾 Data & Model Storage"
+> panel. Honest disclosure: only the last 3 generations are retained
+> by default (disk-space consideration) — you cannot roll back
+> further, or to a version that was never actually applied on this
+> machine. See the 2026-08-20 HANDOFF entry in [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: 定期的な自動アップデートチェック(起動時に加え6時間ごと)+
+> 手動ダウングレード機能を追加しました。`GET /v1/updates/history`・
+> `POST /v1/updates/downgrade`で、open-english本体・aruaru-llm・
+> aruaru-dbのいずれかを個別に旧バージョンへ戻せます。保持世代は
+> 既定3世代までです。詳細は[CLAUDE.md](CLAUDE.md)の2026-08-20 HANDOFF
+> 参照。
+
+> 📌 **Update (2026-08-19, continued 8)**: When the daily usage
+> counter (default 100, client-side `localStorage`) is reached, the
+> chat now shows a bilingual notice — "You've exceeded today's free
+> usage limit. Would you like to switch to a paid plan?" — plus the
+> free-tier info for other AI providers (Google Search/DeepSeek/
+> ChatGPT/Gemini/Claude), read dynamically from
+> `provider-free-tiers.json`. Honest disclosure: this is a
+> notice-only, client-side implementation with no real billing/
+> upgrade flow. See the 2026-08-19 (continued 8) HANDOFF entry in
+> [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: 1日の利用回数上限(既定100回)に到達した際、チャット上に
+> 「有料版に切り替えますか？」+他のAIプロバイダの無料枠情報を日英併記
+> で表示するようにしました。実際の課金処理は行いません。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-19(続き8)HANDOFF参照。
+
+> 📌 **Update (2026-08-19)**: Added Claude (Anthropic) to the
+> AI/search free-tier banner as a paid-by-default option (honestly
+> noted as having no ongoing free tier, only a small signup credit if
+> any). See the 2026-08-19 (continued 5) HANDOFF entry in
+> [CLAUDE.md](CLAUDE.md).
+>
+> *日本語*: 上部のAI/検索無料枠バナーに、有料前提のClaude(Anthropic)
+> を選択肢として追加しました。詳細は[CLAUDE.md](CLAUDE.md)の
+> 2026-08-19(続き5)HANDOFF参照。
+
 > 📌 **Latest update (2026-08-19)**: Added `facebook.html`, an entry
 > page meant to be shared as a link on a Facebook Page or in Messenger,
 > for users whose mobile plan only allows Facebook access. Honest
