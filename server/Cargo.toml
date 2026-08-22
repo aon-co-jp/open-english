@@ -35,6 +35,10 @@ tokio-postgres = "0.7"
 # 過度に狭い解釈だったため撤回し、この新規HTTPエンドポイントでは実際に
 # RS-JSONの厳密モード(`parse_strict`と同じRFC 8259検証)を経由させる。
 rust-json = { path = "../../RS-JSON" }
+# CPU命令セット(AVX2/AVX-512/PCLMULQDQ/AES-NI等)のランタイム検出。
+# aon-co-jpエコシステム共通のライブラリクレート(2026-08-22導入)。
+# /v1/cpu-runtime エンドポイントと起動ログで使用する。
+open-cpu = { path = "../../open-cpu" }
 bytes = "1.9"
 http-body-util = "0.1"
 hyper = { version = "1.10", features = ["full"] }

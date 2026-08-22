@@ -196,6 +196,46 @@ async fn healthz() -> Response {
     rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true}))
 }
 
+/// 実行基盤(CPU)の情報を返すエンドポイント(2026-08-22新設)。
+///
+/// `aruaru-llm`側に追加した実行基盤バッジ機能と同様に、このサーバーが
+/// どのCPU命令セットを使える環境で動いているかをフロントエンドから
+/// 確認できるようにする。検出はエコシステム共通ライブラリ
+/// [`open_cpu`](https://github.com/aon-co-jp/open-cpu)へ委譲しており、
+/// 内部で`OnceLock`キャッシュ済みのため毎リクエストのコストはほぼゼロ。
+///
+/// 【正直な開示】現時点では「検出結果を返すだけ」で、open-englishの
+/// 処理そのものをこれらの命令で高速化しているわけではない。将来
+/// 音声処理・行列演算等を最適化する際の判断材料として先に公開する。
+async fn cpu_runtime() -> Response {
+    let c = open_cpu::detect();
+    rs_json_response(
+        StatusCode::OK,
+        &serde_json::json!({
+            "open_cpu_version": open_cpu::VERSION,
+            "summary": c.summary(),
+            "gf_impl": format!("{:?}", open_cpu::selected_impl()),
+            "features": {
+                "sse2": c.sse2,
+                "ssse3": c.ssse3,
+                "popcnt": c.popcnt,
+                "aes": c.aes,
+                "pclmulqdq": c.pclmulqdq,
+                "bmi1": c.bmi1,
+                "bmi2": c.bmi2,
+                "fma": c.fma,
+                "sha": c.sha,
+                "avx2": c.avx2,
+                "avx512f": c.avx512f,
+                "avx512bw": c.avx512bw,
+                "avx512vl": c.avx512vl,
+                "avx_vnni": c.avx_vnni,
+                "avx512vnni": c.avx512vnni
+            }
+        }),
+    )
+}
+
 fn rs_json_response(status: StatusCode, value: &impl serde::Serialize) -> Response {
     let body = rust_json::to_vec_strict(value).unwrap_or_else(|_| b"{}".to_vec());
     hyper::Response::builder()
@@ -963,6 +1003,8 @@ async fn main() {
         app = app.at(url_path, get(static_file_handler(file_path, content_type)));
     }
     app = app.at("/healthz", get(handler_fn(move |_req, _p| async move { healthz().await })));
+    // 実行基盤(CPU命令セット)情報(2026-08-22新設、cpu_runtime()のdoc参照)。
+    app = app.at("/v1/cpu-runtime", get(handler_fn(move |_req, _p| async move { cpu_runtime().await })));
     // 多言語擬似模擬試験の対応言語一覧(2026-08-22新設、world_languages()のdoc参照)。
     app = app.at("/v1/world-languages", get(handler_fn(move |_req, _p| async move { world_languages().await })));
     // 話題ブリーフィング(2026-08-22新設): 静的な地域情報+公開RSSからの実ニュース見出し。
@@ -1111,6 +1153,9 @@ async fn main() {
     });
 
     let addr = bind_addr();
+    // 実行基盤(CPU命令セット)を起動時に1行ログへ出す。どのSIMD経路が
+    // 選ばれたかを実機で後から確認できるようにするため(open-cpu導入、2026-08-22)。
+    println!("{}", open_cpu::runtime_summary());
     println!("open-english static server listening on http://{addr}/");
     println!("serving files from {}", root.display());
 
