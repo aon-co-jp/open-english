@@ -47,6 +47,93 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-22(続き2) aruaru-llm連携の実用性改善(実行基盤の可視化・
+  タイムアウト・待機表示・エラー文言)+`open-cuda`/`open-directx`との
+  実際の連携状況をコードで裏取り(ユーザー指示「aruaru-llm・open-cuda・
+  open-directxとの連携性・使いやすさ・実用性・完成度を向上」への対応)**:
+  1. **まずコードで裏取りした事実(推測で「連携済み」と書かないこと)**:
+     - `open-english` → `aruaru-llm`: **実連携している**。`app.js`が
+       `POST /v1/generate`(検索補強時は`/v1/generate-with-search`)・
+       `/healthz`・`/v1/geo/*`・`/v1/news/latest`・`/v1/referrals/check`を
+       実際に叩いている(生成の呼び出し口は`askTrainer`の1箇所のみ)。
+     - `aruaru-llm` → `open-cuda`: **実連携している**。`aruaru-llm/
+       Cargo.toml`が`opencuda-core`・`opencuda-cpu`・`opencuda-blas`・
+       `open-cuda-bert`・`open-cuda-llm`をpath依存で持ち、生成は
+       `opencuda_core::GpuDevice`抽象の上で動く。ただし**既定ビルドの
+       デバイスプールは`opencuda_cpu::CpuDevice`1台のみ=GPU高速化は
+       効いていない**(`real-vulkan` featureは既定オフ、有効化して
+       `VulkanDevice::new`に成功した場合のみGPUがプールへ追加される)。
+     - `aruaru-llm` → `open-directx`: **連携していない**。2026-08-20の
+       調査結論(このファイル末尾のエントリ)の通りで、今回あらためて
+       `Cargo.toml`を確認しても`opencuda-directx`は`hw-detect-directx`
+       optional feature(既定オフ、GPU**検出**専用で演算には使わない)
+       配下にあるのみ。独立リポジトリ`aon-co-jp/open-directx`とは無関係。
+       **嘘の連携を作らず、実現可能な軽量統合(実行基盤の可視化)に
+       とどめた**。
+  2. **`aruaru-llm`側に`GET /v1/runtime`を新設**(別リポジトリで別コミット):
+     デバイスプールが実際に保持している`GpuDevice::info()`(名前・ベンダ・
+     compute units・SPIR-V対応可否)、ビルド時に有効なGPU feature一覧、
+     `engine`識別子、アクティブモデルのディレクトリ、英日併記のサマリを
+     返す。**このエンドポイント自体は高速化を一切しない**(何が使われて
+     いるかを報告するだけ)ことをレスポンスの`disclosure`にも明記した。
+  3. **`open-english`側の改善**(`app.js`/`index.html`/`style.css`):
+     - **実行基盤バッジ**(`#runtime-badge`): 接続時に`/v1/runtime`を取得し
+       「compute: CPU · distilgpt2-greedy-decode-v0-open-cuda-llm-cpu」の
+       ように表示。ツールチップにデバイス名・有効feature・開示文を出す。
+       誇張はせず、CPUのみならCPUと表示する。応答の`engine`が変われば
+       (モデルのホットスワップ時)バッジも追従する。
+     - **タイムアウトの導入**: 従来`fetch`に上限が無く、aruaru-llmが重い
+       モデルのロード中などに無応答になると「送信したのに永久に何も
+       起きない」状態だった。`fetchWithTimeout`を新設し、生成60秒
+       (検索補強時90秒)・ヘルスチェック4秒・補助API(地理/ニュース/
+       紹介判定)8秒の上限を設けた。補助APIにも上限が要るのは、これらが
+       `askTrainer`内で`await`されており、ここが詰まると生成が終わって
+       いても返信が出てこないため。
+     - **待機表示**: 送信直後に経過秒数付きの「…thinking / 考え中… (N.Ns)」
+       プレースホルダーを出し、応答が来たら同じ要素の中身を差し替える。
+       **正直な開示**: 体感の改善であって生成自体は速くならない。また
+       `aruaru-llm`の`/v1/generate`は生成完了後に一括でJSONを返す設計で
+       トークン単位のストリーミングAPIが存在しないため、**逐次
+       ストリーミング表示は実装できなかった**(実装するなら
+       aruaru-llm側にSSE等の追加が必要)。
+     - **エラー文言の作り分け**: タイムアウト/接続不可/HTTPエラーを
+       区別し、それぞれ「次に何をすればよいか」まで英日併記で出す
+       (HTTPエラー時はレスポンス本文の`error`フィールドも表示)。
+  4. **実施した開発→TEST→修正のサイクル(4回)と、TESTで実際に見つけた
+     バグ**:
+     - 1回目: `/v1/runtime`実装→実サーバー(distilgpt2)で`curl`確認→
+       ブラウザでバッジ表示確認。生成1往復が実測4.9〜9.1秒であることも
+       この時点で計測。
+     - 2回目: 応答時間をステータス欄へ出したが、**5秒間隔のヘルス
+       チェックが即座に上書きして消してしまう**バグを実機で発見。
+       `latencySuffix()`を新設し、ヘルスチェック側でも直近の実測値を
+       維持するよう修正。
+     - 3回目: aruaru-llmを実際に停止→送信し、接続不可時の英日メッセージ
+       とバッジのunknown化を確認。`fetchWithTimeout`のabortが
+       `isTimeout`を正しく立てることも実測(到達不能IPで検証)。
+       ここで**タブがバックグラウンドだと`setInterval`が間引かれ、
+       aruaru-llm復帰後も「unreachable」表示が張り付く**ことを実機で
+       発見し、`visibilitychange`/`focus`での即時再チェックを追加。
+     - 4回目: 補助API(地理/ニュース/紹介判定)にもタイムアウトを適用し、
+       「就職・転職・観光」を含む文で`POST /v1/referrals/check`が
+       実際に200で返り紹介文が付くこと(非回帰)を実ブラウザで確認。
+  5. **実機検証の範囲(誇張しないこと)**: 実際に`aruaru-llm`
+     (distilgpt2、CPU 32スレッド)と`open-english-server`(:4601)を起動し、
+     Claude Browserで英語・日本語・複数話題の4パターンを送信して確認した。
+     `GET /v1/runtime`は実HTTPで`gpu_in_use:false`・
+     `devices:[OpenCUDA CPU Device (rayon, 32 threads)]`を返す。
+     **未検証**: (a) `--features real-vulkan`でビルドした場合にバッジが
+     GPU表示になること(この環境ではVulkan有効ビルドを用意していない)、
+     (b) 60秒タイムアウトの実発火(実測9秒程度で返るため人工的にしか
+     再現できず、abort機構自体は到達不能IP+短い上限で検証した)。
+     なお検証中、起動に使った既存バイナリが古く
+     `/v1/world-languages`等が404になる既知の事象があったが、これは
+     今回の変更とは無関係(サーバー再ビルドで解消する)。
+  - 次にすべきこと: (1) `aruaru-llm`側にSSE等のトークンストリーミングを
+    追加し、open-english側で逐次表示へ発展させる、(2) `real-vulkan`
+    有効ビルドでのバッジGPU表示の実機確認、(3) バッジから「より小さい
+    モデルへ切り替え」(`POST /v1/download-smaller`)へ直接繋ぐ導線の検討。
+
 - **2026-08-22(続き) 設定の永続化・母国語指定・表示順の3系統連動指定・
   言語のインストール/アンインストール表現・話題ブリーフィング(実ニュース取得)・
   対応言語一覧の130言語化(ユーザーからの追加要望5件への対応、同日の
