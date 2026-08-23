@@ -338,3 +338,40 @@ Altre lingue: [日本語](README.md) · [English](README-English.md) ·
 [Deutsch](README-German.md) · [Français](README-French.md) ·
 [Русский](README-Russian.md) · [Українська](README-Ukrainian.md) ·
 [עברית](README-Hebrew.md) · [فارسی](README-Persian.md)
+
+---
+
+## 🎓 Corso di ripetizioni: salvare lo storico di apprendimento (consigliato prima di iniziare)
+
+**Prima di usare il corso di ripetizioni consigliamo di configurare un
+database per lo storico**: **aruaru-db** oppure un **normale server
+PostgreSQL**. Verranno registrati le classi e le materie studiate, gli
+esercizi risolti e i risultati dei test, così da poter rivedere in seguito il
+proprio percorso. Senza database i punteggi restano solo nel file SQLite
+locale incorporato (si perde reinstallando o cambiando dispositivo) e le
+scelte di classe/materia solo nel localStorage del browser.
+
+Entrambi si configurano allo stesso modo: `OPEN_ENGLISH_DATABASE_URL` con una
+stringa di connessione PostgreSQL (aruaru-db parla lo stesso protocollo).
+**Avvertenze oneste**: la connessione è senza TLS, quindi i servizi
+PostgreSQL gestiti che richiedono SSL non funzionano ancora, e un PostgreSQL
+puro non è stato provato end-to-end nel nostro ambiente.
+
+- **Configurazione doppia (DUAL) — aruaru-db + PostgreSQL**: due database che
+  si copiano a vicenda proteggono dal guasto di uno dei due. **Stato reale**:
+  open-english scrive su SQLite più *un solo* database; **la scrittura
+  simultanea su due database non è ancora implementata**. Oggi il DUAL si
+  ottiene con `DUAL_DATABASE_URL` di aruaru-db
+  (open-english → aruaru-db → PostgreSQL).
+- **Backup con rsync**: il database *può essere aggiunto* a un backup rsync
+  verso un disco esterno, un altro PC o un server dal pannello
+  “💾 Data & Model Storage” (non è automatico). **Constatazione onesta**: in
+  `open-easy-web` non abbiamo trovato alcun meccanismo rsync; ciò che esiste
+  davvero è la funzione rsync integrata in open-english.
+- **Google Drive**: con [rclone](https://rclone.org/drive/) si può
+  sincronizzare la cartella di backup:
+  `rclone sync /path/to/backup gdrive:open-english-backup`. **Nulla viene
+  sincronizzato automaticamente**: la configurazione è a vostra cura.
+- **Hosting condiviso / VPS**: qualsiasi host raggiungibile via SSH (piani con
+  SSH come Lolipop o Sakura Internet, VPS come ConoHa) funziona con rsync:
+  `rsync -avz /path/to/backup user@your-vps-host:/backup/open-english/`.

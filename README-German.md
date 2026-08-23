@@ -375,3 +375,43 @@ Weitere Sprachen: [日本語](README.md) · [English](README-English.md) ·
 [Italiano](README-Italian.md) · [Français](README-French.md) ·
 [Русский](README-Russian.md) · [Українська](README-Ukrainian.md) ·
 [עברית](README-Hebrew.md) · [فارسی](README-Persian.md)
+
+---
+
+## 🎓 Nachhilfekurs: Lernverlauf speichern (Empfehlung vor dem Start)
+
+**Vor der Nutzung des Nachhilfekurses empfehlen wir, eine Datenbank für den
+Lernverlauf einzurichten** — entweder **aruaru-db** oder ein **normaler
+PostgreSQL-Server**. Dann wird festgehalten, welche Klassenstufen und Fächer
+Sie gelernt haben, welche Aufgaben Sie gelöst haben und wie die Tests
+ausgingen, sodass Sie später auf Ihren Lernweg zurückblicken können.
+Ohne Datenbank landen die Ergebnisse nur in der eingebauten lokalen
+SQLite-Datei (geht bei Neuinstallation oder Gerätewechsel verloren), und die
+Klassen-/Fachauswahl nur im localStorage des Browsers.
+
+Beides funktioniert über dieselbe Einstellung: `OPEN_ENGLISH_DATABASE_URL`
+mit einer PostgreSQL-Verbindungszeichenfolge (aruaru-db spricht dasselbe
+PostgreSQL-Wire-Protokoll). **Ehrliche Einschränkungen**: Die Verbindung
+läuft ohne TLS, verwaltete PostgreSQL-Dienste mit SSL-Pflicht funktionieren
+also noch nicht, und ein reiner PostgreSQL-Server wurde bei uns noch nicht
+End-to-End getestet.
+
+- **Doppelte (DUAL) Einrichtung — aruaru-db + PostgreSQL**: Zwei Datenbanken,
+  die einander spiegeln, schützen vor dem Ausfall einer Seite. **Stand der
+  Umsetzung, ehrlich**: open-english selbst schreibt in SQLite plus *eine*
+  Datenbank; **gleichzeitiges Schreiben in zwei Datenbanken ist noch nicht
+  implementiert**. Heute erreicht man DUAL über `DUAL_DATABASE_URL` von
+  aruaru-db (open-english → aruaru-db → PostgreSQL).
+- **Sicherung per rsync**: Die Lernverlaufs-Datenbank *kann* im Panel
+  „💾 Data & Model Storage“ per rsync auf eine externe Platte, einen anderen
+  PC oder einen Server kopiert werden (nicht automatisch). **Ehrlicher
+  Befund**: In `open-easy-web` haben wir keinen rsync-Mechanismus gefunden —
+  nutzbar ist die eingebaute rsync-Sicherung von open-english.
+- **Google Drive**: Mit [rclone](https://rclone.org/drive/) lässt sich der
+  Sicherungsordner zu Google Drive synchronisieren:
+  `rclone sync /path/to/backup gdrive:open-english-backup`. Es wird **nichts
+  automatisch** synchronisiert; Sie richten das selbst ein.
+- **Webhosting / VPS**: Alles, was per SSH erreichbar ist (Hosting-Tarife mit
+  SSH wie Lolipop oder Sakura Internet, VPS wie ConoHa), geht direkt mit
+  rsync: `rsync -avz /path/to/backup user@your-vps-host:/backup/open-english/`.
+  Ziel und SSH-Schlüssel richten Sie selbst ein.

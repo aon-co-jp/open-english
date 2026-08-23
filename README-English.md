@@ -6,6 +6,32 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-23, cont. 6): a much bigger tutor course**:
+> - **13 grades, from preschool/kindergarten up to high school 3**, with new
+>   original preschool questions (words, numbers, shapes & colours — 14 in all).
+>   **No age gating**: a high-schooler or an adult can pick the preschool level
+>   from the very start.
+> - **Catch-up redesigned around grades, with no fixed limit.** Miss a question
+>   and you first work through the easier versions available **within the same
+>   grade**; when those run out you move to the same subject **one grade lower**
+>   (grades with no questions are skipped). **No fixed step count exists in the
+>   code** — it keeps going as long as prepared material exists, with
+>   **preschool as the floor**, where it stops, shows the answer, and hands you
+>   to the trainer. "🍼 Much easier" jumps straight to the lowest grade.
+> - **"🔁 Change grade"** lets you switch grade at any time, mid-practice.
+> - **A grade with no questions still works** — the course falls back to the
+>   nearest lower grade that has them and says honestly which grade the question
+>   came from.
+> - **Guidance to set up a learning-history database first** (aruaru-db **or a
+>   standard PostgreSQL**), plus dual-database, rsync backup, Google Drive and
+>   shared-hosting/VPS sync notes. **Honest disclosure**: writing to two
+>   databases at once is not implemented (dual is only possible via aruaru-db's
+>   own `DUAL_DATABASE_URL`), connections are made without TLS, and Drive/VPS
+>   sync is something you set up yourself — nothing syncs automatically. We
+>   looked for the rsync mechanism in `open-easy-web` and **found none**; the
+>   built-in rsync backup is what actually exists. These notes are translated
+>   into the eight other README languages.
+
 > 📌 **Latest update (2026-08-23, cont. 5): three puzzles, and a new
 > grade-by-grade tutor course**:
 > - **Three puzzles instead of one.** Alongside the "four 9s" puzzle there are

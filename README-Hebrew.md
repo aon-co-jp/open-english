@@ -272,3 +272,34 @@ Releases](https://github.com/aon-co-jp/open-english/releases) ישירות).
 [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
 [Français](README-French.md) · [Русский](README-Russian.md) ·
 [Українська](README-Ukrainian.md) · [فارسی](README-Persian.md)
+
+---
+
+## 🎓 קורס שיעורים פרטיים: שמירת היסטוריית הלמידה (מומלץ לפני ההתחלה)
+
+**לפני השימוש בקורס מומלץ להגדיר מסד נתונים להיסטוריית הלמידה** — **aruaru-db**
+או שרת **PostgreSQL רגיל**. כך יישמרו הכיתות והמקצועות שלמדתם, התרגילים שפתרתם
+ותוצאות המבחנים, ותוכלו לחזור ולראות את ההתקדמות שלכם. ללא מסד נתונים התוצאות
+נשמרות רק בקובץ SQLite המקומי המובנה (אובד בהתקנה מחדש או במעבר למכשיר אחר),
+ובחירת הכיתה והמקצועות נשמרת רק ב-localStorage של הדפדפן.
+
+שתי האפשרויות מוגדרות באותה דרך: `OPEN_ENGLISH_DATABASE_URL` עם מחרוזת חיבור
+של PostgreSQL (aruaru-db מדבר את אותו פרוטוקול). **הסתייגויות כנות**: החיבור
+נעשה ללא TLS, ולכן שירותי PostgreSQL מנוהלים המחייבים SSL עדיין לא יעבדו,
+ושרת PostgreSQL רגיל לא נבדק אצלנו מקצה לקצה.
+
+- **תצורה כפולה (DUAL) — aruaru-db + PostgreSQL**: שני מסדי נתונים המשקפים זה
+  את זה מגנים מפני תקלה בצד אחד. **המצב בפועל**: open-english כותב ל-SQLite
+  ולמסד נתונים *אחד* בלבד; **כתיבה בו-זמנית לשני מסדי נתונים עדיין לא
+  מיושמת**. כיום משיגים DUAL באמצעות `DUAL_DATABASE_URL` של aruaru-db
+  (open-english ← aruaru-db ← PostgreSQL).
+- **גיבוי ב-rsync**: אפשר *להוסיף* את מסד הנתונים לגיבוי לכונן חיצוני, למחשב
+  אחר או לשרת מתוך החלונית „💾 Data & Model Storage” (אין גיבוי אוטומטי).
+  **ממצא כן**: לא מצאנו מנגנון rsync ב-`open-easy-web`; מה שקיים בפועל הוא
+  הגיבוי המובנה של open-english.
+- **Google Drive**: בעזרת [rclone](https://rclone.org/drive/) אפשר לסנכרן את
+  תיקיית הגיבוי: `rclone sync /path/to/backup gdrive:open-english-backup`.
+  **שום דבר לא מסונכרן אוטומטית** — ההגדרה באחריותכם.
+- **אחסון שיתופי / VPS**: כל שרת שנגיש ב-SSH (חבילות עם SSH כמו Lolipop או
+  Sakura Internet, ו-VPS כמו ConoHa) עובד עם rsync:
+  `rsync -avz /path/to/backup user@your-vps-host:/backup/open-english/`.
