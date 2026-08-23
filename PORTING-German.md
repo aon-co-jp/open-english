@@ -130,3 +130,10 @@ Weitere Sprachen: [日本語 (Original, vollständige Details)](PORTING.md) ·
    und Verkaufen" neben Barcodes und Online-Bezahldiensten wie Amazon).
 5. Weggelassene Behauptungen samt Grund dokumentieren — im Antworttext und
    als Kommentar im Code ("vor dem Ändern lesen").
+6. Die nötigen Vorbehalte müssen **keine steifen Distanzierungsformeln**
+   sein: eine leichte, warme Formulierung ("eher als nette Trivia denn als
+   harter Beweis") ist völlig in Ordnung, solange Lesende klar erkennen,
+   dass nichts bewiesen wird. Maßstab ist "wird etwas als Tatsache
+   behauptet?", **nicht der Tonfall**. Die Abmilderung darf aber nie in
+   Formulierungen kippen, die wie eine Behauptung klingen ("die
+   Prophezeiung hat sich erfüllt", "das passiert gerade wirklich").

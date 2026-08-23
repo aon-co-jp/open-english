@@ -1,5 +1,19 @@
 # open-english
 
+> 📌 **Neuestes Update (2026-08-23, nur Formulierung)**: Drei Stellen der
+> Festtext-Antwort zu "666 / Zeichen des Tieres" wurden **sprachlich
+> überarbeitet** — das Wortspiel "666 = WWW", die Barcode-Legende und der
+> Nebensatz zu Offenbarung 13,16-17 neben Barcodes und Amazon. Die steifen
+> Distanzierungsformeln ("keinesfalls als Behauptung, eine Prophezeiung habe
+> sich erfüllt") wurden durch einen leichteren, freundlicheren Ton ersetzt:
+> **"eher als nette Trivia denn als harter Beweis"**. **Inhaltlich ändert
+> sich nichts**: Nichts wird als erfüllte Prophezeiung behauptet, die
+> Barcode-Geschichte bleibt ausdrücklich eine **technisch haltlose
+> Großstadtlegende** (Snopes: FALSCH; Guard Bars sind 3 statt 7 Module
+> breit), und die Python-Schlange bleibt ausdrücklich **reiner Zufall**.
+> Geändert wurde allein der Stil — Ziel war Lesbarkeit und Charme, keine
+> Aufweichung der Ehrlichkeit.
+
 > 📌 **Neuestes Update (2026-08-23)**: Zwei **regelbasierte, von Hand
 > geschriebene Festtext-Antworten** (zweisprachig JA/EN, ohne KI-Inferenz)
 > wurden ergänzt.

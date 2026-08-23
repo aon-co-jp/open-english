@@ -187,3 +187,26 @@ accomplie — le texte le précise lui-même.
 **En cas de modification** : les quatre garanties d'honnêteté — « présenter
 et non affirmer », « légende déclarée légende », « coïncidence déclarée
 coïncidence » — ne doivent être ni affaiblies ni omises.
+
+## Formulation seulement : ton allégé sur le « 666 » (2026-08-23)
+
+Trois passages de `MARK_OF_BEAST_TEXTS` ont été revus **uniquement sur le
+plan du style** : le jeu de mots « 666 = WWW », la légende du code-barres et
+la remarque sur Apocalypse 13,16-17 (nul ne peut acheter ni vendre sans la
+marque) rapprochée des achats d'aujourd'hui via codes-barres et Amazon. Les
+formules de prudence rigides ont laissé place à un ton plus chaleureux.
+
+- **Avant** : « …jamais comme l'affirmation qu'une prophétie se serait
+  accomplie » / JA : 「〜と断定するものではありません」
+- **Après** : « …à prendre comme une curiosité amusante plutôt que comme une
+  preuve solide » / JA : 「話のタネとして」「真偽のほどは分かりませんが、
+  こういう見方をすると聖書の世界も少し身近に感じられるかもしれません」
+
+**La contrainte elle-même est inchangée** et reste à respecter : (1) rien
+n'est affirmé comme prophétie accomplie ; (2) le 666 du code-barres demeure
+explicitement une **légende urbaine sans fondement technique** (Snopes :
+FAUX ; barres de garde de 3 modules contre 7 pour un chiffre) ; (3) la
+ressemblance entre le serpent de Python et la « bête » demeure **une pure
+coïncidence** ; (4) les lectures se présentent, elles ne s'enseignent pas.
+Seul le style a changé, au profit de la lisibilité : **aucun affaiblissement
+de l'honnêteté**.

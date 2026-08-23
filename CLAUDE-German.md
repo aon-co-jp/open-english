@@ -188,3 +188,25 @@ eine Prophezeiung habe sich erfüllt — der Text sagt das ausdrücklich selbst.
 **Beim Ändern beachten**: Die vier Ehrlichkeitsgarantien — "Vorstellung
 statt Behauptung", "Legende ausdrücklich als Legende", "Zufall ausdrücklich
 als Zufall" — dürfen weder abgeschwächt noch weggelassen werden.
+
+## Nur Formulierung: leichterer Ton bei "666" (2026-08-23)
+
+Drei Stellen von `MARK_OF_BEAST_TEXTS` wurden **rein sprachlich**
+überarbeitet: das Wortspiel "666 = WWW", die Barcode-Legende und der
+Nebensatz zu Offenbarung 13,16-17 (niemand kann ohne das Zeichen kaufen
+oder verkaufen) neben dem heutigen Einkaufen per Barcode und Amazon. Die
+steifen Distanzierungsformeln wurden durch einen wärmeren Ton ersetzt.
+
+- **Vorher**: "… keinesfalls als Behauptung, eine Prophezeiung habe sich
+  erfüllt" / JA: 「〜と断定するものではありません」
+- **Nachher**: "… eher als nette Trivia denn als harter Beweis" / JA:
+  「話のタネとして」「真偽のほどは分かりませんが、こういう見方をすると
+  聖書の世界も少し身近に感じられるかもしれません」
+
+**Die Auflagen selbst sind unverändert** und weiterhin einzuhalten:
+(1) nichts wird als erfüllte Prophezeiung behauptet; (2) das Barcode-666
+bleibt ausdrücklich eine **technisch haltlose Großstadtlegende** (Snopes:
+FALSCH; Guard Bars 3 Module statt 7 pro Ziffer); (3) die Ähnlichkeit von
+Python-Schlange und "Tier" bleibt **reiner Zufall**; (4) Deutungen werden
+nur vorgestellt, nicht gelehrt. Geändert wurde allein der Stil zugunsten
+von Lesbarkeit — **keine Aufweichung der Ehrlichkeit**.

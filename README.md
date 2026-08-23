@@ -6,6 +6,29 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-23 続き3): 666応答の言い回しを柔らかく調整
+> (機能・制約は変更なし)**: 下記の666応答のうち「WWW=666」「バーコードの
+> 都市伝説」「黙示録13:16-17と現代の買い物の符合」の3点について、
+> **表現だけ**を軽妙で親しみやすいトーンへ書き直しました。従来の
+> 「〜と断定するものではありません」「not as a claim that any prophecy has
+> been fulfilled」といった硬い否定表現を、「話のタネとして」「真偽のほどは
+> 分かりませんが、こういう見方をすると聖書の世界も少し身近に感じられる
+> かもしれません」/ "take this as a fun bit of trivia rather than solid
+> proof" のような言い回しへ置き換えています。
+> **重要: 断定しないという制約自体は一切弱めていません**——古代の預言が
+> 現代のAmazon・POSレジに対応しているという趣旨を事実として主張しないこと、
+> バーコード666は技術的根拠のない都市伝説であると明記すること、Pythonの
+> ヘビとの符合は偶然と明記すること、はいずれも従来どおり維持しています。
+> 変えたのは文章の魅力・読みやすさだけです。
+>
+> *English*: The 666 answer was **reworded, not rescoped**. The WWW wordplay,
+> the barcode legend, and the Revelation 13:16-17 aside now read in a lighter,
+> friendlier voice ("take this as a fun bit of trivia rather than solid
+> proof") instead of stiff disclaimers. **Every honesty guarantee is intact**:
+> nothing is asserted as fulfilled prophecy, the barcode 666 is still stated
+> plainly as an urban legend with no technical basis, and the Python
+> coincidence is still labelled a coincidence.
+
 > 📌 **最新の更新(2026-08-23 続き)**: **「666は悪魔・獣の印なのか」という
 > 質問に、軽妙な豆知識として日英併記で答える**ようにしました。「666」
 > 「獣の数字」「悪魔の数字」「mark of the beast」等を検出すると、AI推論を

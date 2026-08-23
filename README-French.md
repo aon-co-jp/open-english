@@ -1,5 +1,20 @@
 # open-english
 
+> 📌 **Dernière mise à jour (2026-08-23, formulation seulement)** : trois
+> passages de la réponse à texte fixe sur « 666 / la marque de la bête » ont
+> été **retravaillés sur le plan du style** — le jeu de mots « 666 = WWW »,
+> la légende du code-barres et la remarque sur Apocalypse 13,16-17 rapprochée
+> des achats modernes via codes-barres et Amazon. Les formules de prudence
+> rigides (« jamais comme l'affirmation qu'une prophétie se serait
+> accomplie ») ont cédé la place à un ton plus léger et chaleureux : **« à
+> prendre comme une curiosité amusante plutôt que comme une preuve
+> solide »**. **La contrainte, elle, est inchangée** : rien n'est affirmé
+> comme prophétie accomplie, le 666 du code-barres reste explicitement une
+> **légende urbaine sans fondement technique** (Snopes : FAUX ; les barres de
+> garde font 3 modules contre 7 pour un chiffre), et le serpent de Python
+> reste **une pure coïncidence**. Seul le style a changé — l'objectif était
+> la lisibilité et le charme, pas moins d'honnêteté.
+
 > 📌 **Dernière mise à jour (2026-08-23)** : ajout de deux **réponses à
 > texte fixe, écrites à la main et déclenchées par des règles** (bilingues
 > JA/EN, sans inférence IA).

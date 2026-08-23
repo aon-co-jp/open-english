@@ -138,3 +138,11 @@ Autres langues : [日本語 (original, détails complets)](PORTING.md) ·
    paiements en ligne comme Amazon).
 5. Documenter ce qui a été écarté et pourquoi — dans la réponse et dans un
    commentaire de code (« à lire avant toute modification »).
+6. Les précautions nécessaires **n'ont pas à être des clauses de
+   non-responsabilité guindées** : une formulation légère et chaleureuse
+   (« à prendre comme une curiosité amusante plutôt que comme une preuve
+   solide ») convient parfaitement, tant que le lecteur comprend clairement
+   que rien n'est démontré. Le critère est « affirme-t-on quelque chose
+   comme un fait ? », **et non le ton**. Mais l'allègement ne doit jamais
+   glisser vers des tournures qui se lisent comme une affirmation (« la
+   prophétie s'est accomplie », « c'est en train de se produire »).

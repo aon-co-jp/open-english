@@ -129,3 +129,10 @@ Altre lingue: [日本語 (originale, dettagli completi)](PORTING.md) ·
    a codici a barre e pagamenti online come Amazon).
 5. Documentare ciò che è stato escluso e perché — nel testo di risposta e
    in un commento nel codice ("leggere prima di modificare").
+6. Le cautele necessarie **non devono essere formule rigide da disclaimer**:
+   un tono leggero e cordiale ("da prendere come una curiosità più che come
+   una prova solida") va benissimo, purché al lettore risulti chiaro che
+   non si sta dimostrando nulla. Il criterio è "si sta affermando qualcosa
+   come un fatto?", **non il tono**. L'alleggerimento però non deve mai
+   scivolare in formulazioni che suonano come un'affermazione ("la profezia
+   si è avverata", "sta accadendo davvero").

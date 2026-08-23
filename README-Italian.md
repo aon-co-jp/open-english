@@ -1,5 +1,19 @@
 # open-english
 
+> 📌 **Ultimo aggiornamento (2026-08-23, solo formulazione)**: tre punti
+> della risposta a testo fisso su "666 / marchio della bestia" sono stati
+> **riscritti sul piano stilistico** — il gioco di parole "666 = WWW", la
+> leggenda del codice a barre e la nota su Apocalisse 13,16-17 accostata agli
+> acquisti moderni fra codici a barre e Amazon. Le formule di cautela
+> rigide ("mai come l'affermazione che una profezia si sia avverata") sono
+> state sostituite da un tono più leggero e cordiale: **"da prendere come
+> una curiosità più che come una prova solida"**. **Il vincolo resta
+> identico**: nulla è affermato come profezia avverata, il 666 nei codici a
+> barre resta esplicitamente una **leggenda metropolitana senza fondamento
+> tecnico** (Snopes: FALSA; le barre di guardia sono larghe 3 moduli invece
+> di 7), e il serpente di Python resta **pura coincidenza**. È cambiato solo
+> lo stile — l'obiettivo era leggibilità e garbo, non meno onestà.
+
 > 📌 **Ultimo aggiornamento (2026-08-23)**: aggiunte due **risposte a testo
 > fisso, scritte a mano e basate su regole** (bilingui JA/EN, senza
 > inferenza AI).

@@ -177,3 +177,25 @@ esplicitamente.
 **Nel modificare**: le quattro garanzie di onestà — "presentare, non affermare",
 "leggenda dichiarata leggenda", "coincidenza dichiarata coincidenza" — non
 vanno indebolite né omesse.
+
+## Solo formulazione: tono più leggero sul "666" (2026-08-23)
+
+Tre punti di `MARK_OF_BEAST_TEXTS` sono stati rivisti **solo sul piano
+stilistico**: il gioco di parole "666 = WWW", la leggenda del codice a barre
+e la nota su Apocalisse 13,16-17 (senza il marchio non si compra né si
+vende) accostata agli acquisti odierni fra codici a barre e Amazon. Le
+formule di cautela rigide sono state sostituite da un tono più cordiale.
+
+- **Prima**: "…mai come l'affermazione che una profezia si sia avverata" /
+  JA: 「〜と断定するものではありません」
+- **Dopo**: "…da prendere come una curiosità più che come una prova solida" /
+  JA: 「話のタネとして」「真偽のほどは分かりませんが、こういう見方をすると
+  聖書の世界も少し身近に感じられるかもしれません」
+
+**Il vincolo in sé è invariato** e va mantenuto: (1) nulla è affermato come
+profezia avverata; (2) il 666 nei codici a barre resta esplicitamente una
+**leggenda metropolitana priva di fondamento tecnico** (Snopes: FALSA; barre
+di guardia da 3 moduli contro i 7 di una cifra); (3) la somiglianza fra il
+serpente di Python e la "bestia" resta **pura coincidenza**; (4) le letture
+si presentano, non si insegnano. È cambiato solo lo stile, per leggibilità:
+**nessun indebolimento dell'onestà**.
