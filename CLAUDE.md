@@ -47,6 +47,96 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-24 DUAL DB同時書き込みを実装(実PostgreSQL 2台で実機検証済み)+
+  rsync案内をeasy-web.tokyo/rsyncへのリンクへ変更**(ユーザー指示
+  「aruaru-dbとPostgreSQLの両方へ同時に書き込む機能を実装」+「案内文を
+  『まだ未実装』から『実装済み、設定方法は◯◯』へ更新」への対応。2026-08-23
+  エントリ7-(d)に「未実装」として記録されていたDB課題のうち、**「2つのDBへの
+  同時書き込み」を解消**した):
+  1. **`server/src/db.rs`の変更**: `Db.postgres_url: Option<String>`を
+     `Db.mirrors: Vec<MirrorTarget>`へ置き換え。環境変数は
+     `OPEN_ENGLISH_DATABASE_URL`(1つ目、aruaru-dbを想定)に加えて
+     **`OPEN_ENGLISH_DATABASE_URL_SECONDARY`(2つ目、標準PostgreSQLを想定)**を
+     新設。0個=SQLiteのみ / 1個=従来どおりの単一ミラー / 2個=DUAL同時書き込み、
+     の3状態を取る。**どちらの変数にどちらのDBを割り当てても動作は同じ**
+     (どちらも普通のPostgreSQLクライアントとして接続するため)。
+  2. **独立エラーハンドリング**: 新設`Db::mirror_message_to_all()`が各ミラー先を
+     **別々の`tokio::spawn`タスク**として起動し、結果を`(label, Result)`として
+     個別に収集する。片方が接続不能・SQLエラーでも、もう片方の書き込みは
+     そのまま完了する。失敗した側だけが`eprintln!`でログに記録され、
+     **HTTPリクエスト自体は成功のまま**(SQLiteが常に正の情報源、という
+     既存方針は変えていない)。`mirror_message_to_postgres`は`Result<(), String>`を
+     返すよう変更(従来は失敗を内部で握りつぶしていた)。
+  3. **`server/src/main.rs`**: `GET /v1/db/info`へ`dual_mirror`(bool)・
+     `mirror_targets`(表示名の配列)を追加。**接続文字列自体は返さない**
+     ——パスワードを含み得るため、API応答・ログへは表示名(`primary (aruaru-db)`
+     等)のみを出す意図的な設計。起動ログも「DUAL simultaneous write to [...]」/
+     「single target [...] (set OPEN_ENGLISH_DATABASE_URL_SECONDARY for DUAL)」/
+     「disabled (SQLite only)」の3値表示へ。
+  4. **`pg_dump`+rsyncバックアップもDUAL対応**: `backup_postgres_via_pg_dump`が
+     ミラー先2つを別々のダンプファイルへ書き出してそれぞれrsyncする
+     (ヘルパ`dump_and_rsync_one`を新設)。1つでも失敗すればエラーを返すが、
+     その時点までに成功したものはメッセージへ併記する(黙って握り潰さない)。
+  5. **実機検証(実PostgreSQL 2台、モックではない)**: この開発機のWSL2に
+     **PostgreSQL 18.4が実在した**ため、`oe_primary`・`oe_secondary`の2つの
+     データベースとロール`oetest`を実際に作成して検証した。
+     (a) **DUAL同時書き込みの実証**: 両方の環境変数を設定してサーバーを起動し、
+     `POST /v1/db/history`を1回実行 → `psql`で確認したところ、
+     **両方のDBの`open_english_messages`テーブルに同一の行
+     (`DUAL_WRITE_VERIFY_20260824`)が実際に入っていた**(テーブルの
+     `CREATE TABLE IF NOT EXISTS`も両側で自動実行された)。
+     (b) **独立エラーハンドリングの実証**: secondaryだけを存在しないDB名
+     (`NO_SUCH_DB`)に向けて再実行 → **HTTPレスポンスは`ok=true`のまま**、
+     stderrには`DB mirror write to secondary (PostgreSQL) failed (other
+     targets unaffected): connect failed: db error`の**1行だけ**が出力され、
+     **primary側には行が正しく追加されていた**(id=2、`HALF_FAILURE_TEST_20260824`)。
+     片方の失敗が他方に波及しないことを実データで確認できた。
+     (c) `cargo build`成功・`cargo test` **18件全green**(回帰なし)。
+     (d) 実ブラウザで「💾 Data & Model Storage」パネルを開き、
+     `Cloud DB mirror: DUAL — writing to both simultaneously [primary
+     (aruaru-db), secondary (PostgreSQL)]`と日英併記で表示されることを確認。
+     - **接続のハマりどころ(次回のためのメモ)**: WSL2のPostgreSQLへWindows側
+       から接続するには、(i) `listen_addresses = '*'`と`pg_hba.conf`への
+       `host all all 0.0.0.0/0 scram-sha-256`追加(PostgreSQL 18の既定は
+       scram-sha-256なので`md5`と書くと認証に失敗する)、(ii) **WSLを起動
+       させ続けること**——WSLは最後のプロセスが終わると自動シャットダウンし、
+       その瞬間にポート転送も切れる(検証中に実際にこれで接続不能になり、
+       原因究明に時間を要した)。なお**この2つの設定変更は検証後に元へ
+       戻してある**(0.0.0.0への公開を残さないため)。
+  6. **正直な開示・未実装のまま残る部分**: (a) **自己修復(リペア)は
+     未実装**——実装したのは「書き込み時に両方へ送る」ところまでで、片方が
+     ダウンしていた期間に取りこぼした行を復旧後に追いつかせる仕組みは無い
+     (復旧には`pg_dump`+rsyncバックアップからのリストアが必要)。この点は
+     UIの案内文にも日英で明記した。(b) **TLS非対応(`NoTls`)のまま**
+     ——SSL必須のマネージドPostgreSQLへは引き続き繋がらない。(c) 実際の
+     `aruaru-db`(pgwire実装)インスタンスでの検証は**していない**——検証は
+     いずれも**標準のPostgreSQL 18.4を2台**使って行った(`aruaru-db`も
+     pgwire互換なので同じ接続コードで動くはずだが、それは推測であり
+     実測ではない)。(d) `backup_postgres_via_pg_dump`のDUAL対応部分は
+     コンパイル確認のみで、**`pg_dump`を使った実バックアップのE2Eは未検証**
+     (この開発機のPATHに`pg_dump`が無いため)。
+  7. **案内文の更新(`index.html`、日英併記)**: (a) DUAL構成の節を
+     「未実装(今後の課題)」→「**実装済み**、設定方法は環境変数2つ」へ全面
+     書き換えし、独立エラーハンドリング・`GET /v1/db/info`での確認方法・
+     上記6-(a)(b)の但し書きを明記。(b) **「open-easy-webにrsync機構は
+     見つからなかった」という旧記述を削除**——代わりに、新設した
+     `https://easy-web.tokyo/rsync`(rsyncの使い方ガイド)へのリンクへ変更した。
+     (c) 重複していたGoogleドライブ(rclone)・レンタルサーバー/VPSの詳細手順は
+     ガイドページへ集約し、open-english側は要約+リンクに整理。
+     **リンク文言には「これはrsyncの使い方ガイドであって、open-easy-webに
+     rsync同期機構が実装されているという意味ではない」という打ち消しを
+     日英とも明記してある——この表現を弱めないこと。**
+  8. **`app.js`**: `/v1/db/info`の表示を「無効 / 1か所のみ / DUAL(2か所同時)」の
+     3値へ拡張。`dual_mirror`を返さない古いサーバーへ繋いだ場合は従来の2値
+     表示へフォールバックする。`android/.../webroot/`へも`index.html`/`app.js`/
+     `style.css`を同期コピー済み(既存運用に従った)。
+  - 次にすべきこと: (1) 実際の`aruaru-db`インスタンスを起動しての
+    DUAL接続検証(今回は標準PostgreSQL 2台での検証にとどまる)、(2)
+    `pg_dump`が存在する環境での`/v1/db/rsync-backup-all`のDUAL対応E2E検証、
+    (3) 自己修復(片方が復旧した際の取りこぼし補完)を実装するかの検討、
+    (4) TLS対応(`tokio-postgres-rustls`等)——これができるとマネージド
+    PostgreSQLが使えるようになり、DUAL構成の実用性が大きく上がる。
+
 - **2026-08-23 (続き6) 家庭教師コース: 学年を保育園児〜高3へ拡大、
   落ちこぼれ防止を「学年連動・回数無制限」方式へ再設計、いつでも学年変更、
   学習履歴DBの推奨案内一式**(ユーザーからの連続した仕様変更指示に対応。

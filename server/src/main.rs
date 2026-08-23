@@ -357,6 +357,14 @@ async fn db_info(db: Arc<Db>) -> Response {
             "db_path": db.path().display().to_string(),
             "db_file_size_bytes": db.file_size_bytes(),
             "postgres_mirror_configured": db.has_postgres_mirror(),
+            // 2026-08-24 DUAL同時書き込み対応で追加。`dual_mirror`が
+            // trueなら`OPEN_ENGLISH_DATABASE_URL`と
+            // `OPEN_ENGLISH_DATABASE_URL_SECONDARY`の両方が設定済みで、
+            // 会話履歴が2つのDBへ同時に書き込まれる状態。
+            // `mirror_targets`は表示名のみ(接続文字列はパスワードを
+            // 含み得るため返さない)。
+            "dual_mirror": db.is_dual_mirror(),
+            "mirror_targets": db.mirror_labels(),
             "used_disk_bytes": serde_json::Value::Null,
             "total_disk_bytes": serde_json::Value::Null,
         }),
@@ -1031,9 +1039,15 @@ async fn main() {
     let db_path = db::db_path(&root);
     let db = Arc::new(Db::open(db_path).expect("failed to open local SQLite DB (data/open-english.sqlite3)"));
     println!(
-        "conversation DB: {} (aruaru-db/PostgreSQL mirror: {})",
+        "conversation DB: {} (mirror: {})",
         db.path().display(),
-        if db.has_postgres_mirror() { "enabled via OPEN_ENGLISH_DATABASE_URL" } else { "disabled (SQLite only)" }
+        if db.is_dual_mirror() {
+            format!("DUAL simultaneous write to [{}]", db.mirror_labels().join(", "))
+        } else if db.has_postgres_mirror() {
+            format!("single target [{}] (set OPEN_ENGLISH_DATABASE_URL_SECONDARY for DUAL)", db.mirror_labels().join(", "))
+        } else {
+            "disabled (SQLite only)".to_string()
+        }
     );
 
     let mut app = Route::new();

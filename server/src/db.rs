@@ -47,6 +47,37 @@
 //! 引き続き動作し続ける(既存の「サービスを止めない」方針、書き込み
 //! 失敗はログに警告を出すのみでリクエスト自体は失敗させない)。
 //!
+//! ## DUAL同時書き込みの実装(2026-08-24追加)
+//!
+//! ユーザー指示「aruaru-dbとPostgreSQLの両方へ同時に書き込む機能を
+//! 実装」への対応。上記2026-08-18時点の「このリポジトリ側でDUAL DB
+//! ロジックを実装したわけではない」という記述は**この増分で更新される**
+//! ——`open-english-server`自身が複数のミラー先へ同時書き込みできる
+//! ようになった。
+//!
+//! - `OPEN_ENGLISH_DATABASE_URL` … 主ミラー先(従来からの互換名、
+//!   `aruaru-db`を想定)。
+//! - `OPEN_ENGLISH_DATABASE_URL_SECONDARY` … 副ミラー先(新設、
+//!   標準PostgreSQLを想定)。
+//!
+//! 両方設定 → 両方へ同時書き込み(DUAL)。片方だけ → そちらのみ。
+//! どちらも未設定 → SQLiteのみ(従来通り)。どちらを`aruaru-db`に
+//! 割り当てても動作は同じ(どちらも普通のPostgreSQLクライアントとして
+//! 接続するため)。
+//!
+//! **独立エラーハンドリング**: `Db::mirror_message_to_all`が各ミラー先
+//! ごとに`tokio::spawn`で別タスクを起動し、それぞれの結果を個別に
+//! 収集する。片方が接続不能・SQLエラーでも、もう片方の書き込みには
+//! 一切影響しない(失敗した側だけが`eprintln!`でログに記録される)。
+//! SQLiteが常に正の情報源であり、ミラーの失敗でHTTPリクエストが
+//! 失敗することはない、という既存方針は変えていない。
+//!
+//! **正直な開示**: 自己修復(片側が欠落した行を他方から補完し直す
+//! リペア処理)は**実装していない**。実装したのは「書き込み時に両方へ
+//! 送る」ところまでで、片方がダウンしていた期間に取りこぼした行を
+//! 復旧後に追いつかせる仕組みは無い(復旧には既存の`pg_dump`+`rsync`
+//! バックアップからのリストアが必要)。
+//!
 //! ## aruaru-db(PostgreSQL)側の同時rsyncバックアップ(2026-08-19追加)
 //!
 //! ユーザー指示「RSyncで、open-englishのaruaru-dbとpostgresqlを他の
@@ -105,35 +136,67 @@ pub struct Db {
     /// `Mutex`化(ユーザー指示「DATA保存先は、既存の保存先でもそれ以外
     /// でも選択可能にして」への対応、`relocate`メソッド参照)。
     path: Mutex<PathBuf>,
-    /// `OPEN_ENGLISH_DATABASE_URL`が設定されていれば`Some`
-    /// (aruaru-db/PostgreSQLへの追加ミラー先URL、接続自体はリクエスト
-    /// ごとに行う——常時接続を維持する複雑さを避けた簡易実装)。
-    postgres_url: Option<String>,
+    /// 設定されているPostgreSQLワイヤプロトコル互換のミラー先一覧
+    /// (**2026-08-24のDUAL同時書き込み対応で`Option<String>`から
+    /// `Vec<MirrorTarget>`へ変更**)。0個(未設定)・1個(従来通りの
+    /// 単一ミラー)・2個(DUAL構成: aruaru-dbと標準PostgreSQLの両方へ
+    /// 同時書き込み)のいずれも取り得る。接続自体はリクエストごとに
+    /// 行う——常時接続を維持する複雑さを避けた簡易実装(従来通り)。
+    mirrors: Vec<MirrorTarget>,
 }
 
-/// `OPEN_ENGLISH_DATABASE_URL`環境変数を読む(aruaru-db/PostgreSQLの
-/// 接続文字列、例: `host=127.0.0.1 user=aruaru dbname=open_english`)。
-fn postgres_url_from_env() -> Option<String> {
-    std::env::var("OPEN_ENGLISH_DATABASE_URL").ok().filter(|s| !s.trim().is_empty())
+/// DUAL同時書き込みのミラー先1件(2026-08-24新設)。`label`は
+/// ログ・API応答で「どちら側が失敗したか」を人間に伝えるためだけの
+/// 表示名で、接続の挙動には一切影響しない。
+#[derive(Debug, Clone)]
+pub struct MirrorTarget {
+    pub label: String,
+    pub url: String,
 }
 
-/// aruaru-db/PostgreSQLへメッセージ1件をベストエフォートでミラーする。
-/// 接続・書き込み失敗は警告ログのみ(呼び出し元の成否には影響しない
-/// ——SQLite側が常に正の情報源であり続ける設計)。
-async fn mirror_message_to_postgres(url: &str, role: &str, content: &str) {
-    let (client, connection) = match tokio_postgres::connect(url, tokio_postgres::NoTls).await {
-        Ok(v) => v,
-        Err(e) => {
-            eprintln!("open-english: aruaru-db mirror connect failed (continuing with SQLite only): {e}");
-            return;
+/// ミラー先の環境変数を読む(2026-08-24、DUAL同時書き込み対応で
+/// 複数返すよう変更)。
+///
+/// - `OPEN_ENGLISH_DATABASE_URL` … 主ミラー先(従来からの互換名。
+///   `aruaru-db`を想定しているが、実体は普通のPostgreSQL接続文字列
+///   なので標準PostgreSQLを指定しても同じように動く)。
+/// - `OPEN_ENGLISH_DATABASE_URL_SECONDARY` … 副ミラー先(新設。
+///   標準PostgreSQLを想定)。
+///
+/// 両方設定されていれば**両方へ独立して同時に書き込む**(DUAL構成)。
+/// 片方だけならそちらのみ。どちらも未設定ならSQLiteのみ。
+/// 接続文字列の例: `host=127.0.0.1 user=aruaru dbname=open_english`。
+fn mirrors_from_env() -> Vec<MirrorTarget> {
+    let mut out = Vec::new();
+    for (var, label) in [
+        ("OPEN_ENGLISH_DATABASE_URL", "primary (aruaru-db)"),
+        ("OPEN_ENGLISH_DATABASE_URL_SECONDARY", "secondary (PostgreSQL)"),
+    ] {
+        if let Some(url) = std::env::var(var).ok().filter(|s| !s.trim().is_empty()) {
+            out.push(MirrorTarget { label: label.to_string(), url });
         }
-    };
+    }
+    out
+}
+
+/// ミラー先1つへメッセージ1件を書き込む(2026-08-24、DUAL同時書き込み
+/// 対応で`Result`を返すよう変更——呼び出し側が「どちらが成功し、
+/// どちらが失敗したか」を個別に判定・ログできるようにするため)。
+///
+/// **独立エラーハンドリングの要点**: この関数は自分の接続だけを扱い、
+/// 他方のミラー先の成否を一切参照しない。`add_message`は各ミラー先に
+/// 対してこの関数を**別々のタスクとして**起動するため、片方が接続
+/// 不能・タイムアウト・SQLエラーになっても、もう片方の書き込みは
+/// そのまま完了する(SQLite側が常に正の情報源であり続ける設計は従来
+/// 通りで、どちらのミラーが失敗してもHTTPリクエスト自体は成功する)。
+pub async fn mirror_message_to_postgres(url: &str, role: &str, content: &str) -> Result<(), String> {
+    let (client, connection) = tokio_postgres::connect(url, tokio_postgres::NoTls).await.map_err(|e| format!("connect failed: {e}"))?;
     tokio::spawn(async move {
         if let Err(e) = connection.await {
-            eprintln!("open-english: aruaru-db mirror connection error: {e}");
+            eprintln!("open-english: mirror connection error: {e}");
         }
     });
-    if let Err(e) = client
+    client
         .execute(
             "CREATE TABLE IF NOT EXISTS open_english_messages (
                 id BIGSERIAL PRIMARY KEY,
@@ -144,13 +207,12 @@ async fn mirror_message_to_postgres(url: &str, role: &str, content: &str) {
             &[],
         )
         .await
-    {
-        eprintln!("open-english: aruaru-db mirror schema migration failed: {e}");
-        return;
-    }
-    if let Err(e) = client.execute("INSERT INTO open_english_messages (role, content) VALUES ($1, $2)", &[&role, &content]).await {
-        eprintln!("open-english: aruaru-db mirror insert failed: {e}");
-    }
+        .map_err(|e| format!("schema migration failed: {e}"))?;
+    client
+        .execute("INSERT INTO open_english_messages (role, content) VALUES ($1, $2)", &[&role, &content])
+        .await
+        .map_err(|e| format!("insert failed: {e}"))?;
+    Ok(())
 }
 
 /// DBファイルの保存先。`OPEN_ENGLISH_DB_PATH`環境変数が最優先(将来の
@@ -188,11 +250,62 @@ impl Db {
             ",
         )
         .context("failed to run schema migration")?;
-        Ok(Self { conn: Mutex::new(conn), path: Mutex::new(path), postgres_url: postgres_url_from_env() })
+        Ok(Self { conn: Mutex::new(conn), path: Mutex::new(path), mirrors: mirrors_from_env() })
     }
 
     pub fn has_postgres_mirror(&self) -> bool {
-        self.postgres_url.is_some()
+        !self.mirrors.is_empty()
+    }
+
+    /// DUAL構成(2つ以上のミラー先が設定され、実際に同時書き込みが
+    /// 行われる状態)かどうか(2026-08-24新設)。
+    pub fn is_dual_mirror(&self) -> bool {
+        self.mirrors.len() >= 2
+    }
+
+    /// 設定済みミラー先の表示名一覧(URL自体はパスワードを含み得るため
+    /// 返さない——API応答・ログへ接続文字列を漏らさないための意図的な
+    /// 設計)。
+    pub fn mirror_labels(&self) -> Vec<String> {
+        self.mirrors.iter().map(|m| m.label.clone()).collect()
+    }
+
+    /// 設定済みミラー先すべてへ、1件のメッセージを**同時かつ独立に**
+    /// 書き込む(2026-08-24新設のDUAL同時書き込み本体)。各ミラー先を
+    /// 別タスクで起動して`join`するため、片方の失敗・遅延が他方を
+    /// 妨げない。戻り値は`(label, 結果)`の一覧で、呼び出し側が
+    /// 部分失敗をそのまま報告できる。
+    pub async fn mirror_message_to_all(mirrors: Vec<MirrorTarget>, role: String, content: String) -> Vec<(String, Result<(), String>)> {
+        let handles: Vec<_> = mirrors
+            .into_iter()
+            .map(|m| {
+                let (role, content) = (role.clone(), content.clone());
+                tokio::spawn(async move {
+                    let result = mirror_message_to_postgres(&m.url, &role, &content).await;
+                    (m.label, result)
+                })
+            })
+            .collect();
+        let mut out = Vec::new();
+        for h in handles {
+            match h.await {
+                Ok((label, result)) => {
+                    if let Err(e) = &result {
+                        // 片側の失敗はここで記録するのみ——他方の書き込み
+                        // にも、HTTPリクエストの成否にも影響させない。
+                        eprintln!("open-english: DB mirror write to {label} failed (other targets unaffected): {e}");
+                    }
+                    out.push((label, result));
+                }
+                Err(e) => out.push(("unknown".to_string(), Err(format!("mirror task panicked: {e}")))),
+            }
+        }
+        out
+    }
+
+    /// ミラー先設定の複製(非同期タスクへ渡す用)。
+    pub fn mirrors(&self) -> Vec<MirrorTarget> {
+        self.mirrors.clone()
     }
 
     pub fn path(&self) -> PathBuf {
@@ -264,11 +377,37 @@ impl Db {
     /// 存在する前提)を経由する。`OPEN_ENGLISH_DATABASE_URL`未設定
     /// (ミラー無効)の場合は`None`を返す——呼び出し側(`main.rs`)が
     /// 「対象なし」として扱う。
+    ///
+    /// **2026-08-24 DUAL対応**: ミラー先が2つ設定されている場合は
+    /// 両方を別々のダンプファイルとして書き出し、それぞれ`rsync`する。
+    /// 1つでも失敗すればその内容をエラーとして返す(成功したものは
+    /// メッセージ中に併記し、黙って握り潰さない)。
     pub fn backup_postgres_via_pg_dump(&self, destination: &str) -> Option<Result<String, RsyncError>> {
-        let url = self.postgres_url.clone()?;
-        Some((|| {
-            let dump_path = std::env::temp_dir().join(format!("open-english-aruaru-db-dump-{}.sql", std::process::id()));
-            let dump_output = std::process::Command::new("pg_dump").arg(&url).arg("-f").arg(&dump_path).output().map_err(|e| {
+        if self.mirrors.is_empty() {
+            return None;
+        }
+        let mut successes = Vec::new();
+        for (index, mirror) in self.mirrors.iter().enumerate() {
+            match self.dump_and_rsync_one(&mirror.url, index, destination) {
+                Ok(msg) => successes.push(format!("{}: {msg}", mirror.label)),
+                Err(RsyncError::NotInstalled) => return Some(Err(RsyncError::NotInstalled)),
+                Err(RsyncError::Other(e)) => {
+                    return Some(Err(RsyncError::Other(format!(
+                        "{} failed: {e}{}",
+                        mirror.label,
+                        if successes.is_empty() { String::new() } else { format!(" (succeeded before this: {})", successes.join("; ")) }
+                    ))))
+                }
+            }
+        }
+        Some(Ok(successes.join("; ")))
+    }
+
+    /// ミラー先1つ分の`pg_dump` + `rsync`(上記から呼ばれるヘルパ)。
+    fn dump_and_rsync_one(&self, url: &str, index: usize, destination: &str) -> Result<String, RsyncError> {
+        {
+            let dump_path = std::env::temp_dir().join(format!("open-english-db-dump-{}-{index}.sql", std::process::id()));
+            let dump_output = std::process::Command::new("pg_dump").arg(url).arg("-f").arg(&dump_path).output().map_err(|e| {
                 if e.kind() == std::io::ErrorKind::NotFound {
                     RsyncError::NotInstalled
                 } else {
@@ -291,11 +430,11 @@ impl Db {
             })?;
             std::fs::remove_file(&dump_path).ok(); // 一時ダンプファイルは複製後に削除(失敗しても致命的ではないため無視)。
             if rsync_output.status.success() {
-                Ok(format!("pg_dump + rsync backup of aruaru-db/PostgreSQL mirror to {destination} succeeded"))
+                Ok(format!("pg_dump + rsync to {destination} succeeded"))
             } else {
                 Err(RsyncError::Other(format!("rsync exited with {}: {}", rsync_output.status, String::from_utf8_lossy(&rsync_output.stderr))))
             }
-        })())
+        }
     }
 
     /// `rsync`が実際にPATH上で実行可能か(バージョン問い合わせのみ、
@@ -361,9 +500,9 @@ impl Db {
         Ok((messages.len(), settings.len()))
     }
 
-    /// SQLiteへ同期的に保存し、`OPEN_ENGLISH_DATABASE_URL`が設定されて
-    /// いればaruaru-db/PostgreSQLへも非同期でベストエフォートミラー
-    /// する(呼び出し元のエラーには影響しない、上記モジュールdoc参照)。
+    /// SQLiteへ同期的に保存し、設定されているミラー先(1つでも2つでも)
+    /// **すべてへ同時かつ独立に**非同期でベストエフォートミラーする
+    /// (呼び出し元のエラーには影響しない、上記モジュールdoc参照)。
     pub fn add_message(&self, role: &str, content: &str) -> Result<()> {
         let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs();
         self.conn
@@ -371,10 +510,13 @@ impl Db {
             .unwrap()
             .execute("INSERT INTO messages (role, content, created_at_unix) VALUES (?1, ?2, ?3)", rusqlite::params![role, content, now as i64])
             .context("failed to insert message")?;
-        if let Some(url) = self.postgres_url.clone() {
+        let mirrors = self.mirrors.clone();
+        if !mirrors.is_empty() {
             let role = role.to_string();
             let content = content.to_string();
-            tokio::spawn(async move { mirror_message_to_postgres(&url, &role, &content).await });
+            tokio::spawn(async move {
+                Self::mirror_message_to_all(mirrors, role, content).await;
+            });
         }
         Ok(())
     }
