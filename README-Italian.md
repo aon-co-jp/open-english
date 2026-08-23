@@ -31,6 +31,13 @@
 > di Python è un serpente ma il nome viene dalla serie comica "Monty
 > Python's Flying Circus" — la somiglianza con la "bestia" è **dichiarata
 > pura coincidenza e gioco di parole**, senza alcun legame reale.
+> **Aggiunta del 2026-08-23**: un'ulteriore nota ricorda che Apocalisse
+> 13,16-17 contiene davvero un passo secondo cui nessuno senza il marchio può
+> comprare o vendere, e che **alcune persone vi notano un parallelo
+> interessante** con il fatto che fare acquisti oggi dipende sempre più da
+> codici a barre e pagamenti online come Amazon — **proposto solo come una
+> coincidenza che alcuni trovano curiosa, mai come l'affermazione che una
+> profezia si sia avverata**.
 > Dettagli negli HANDOFF del 2026-08-23 in [CLAUDE.md](CLAUDE.md).
 
 > 📌 **Ultimo aggiornamento (2026-08-22)**: aggiunti **esami di pratica

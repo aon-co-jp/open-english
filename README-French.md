@@ -33,6 +33,13 @@
 > nom vient de la série comique « Monty Python's Flying Circus » — la
 > ressemblance avec la « bête » est **déclarée pure coïncidence et jeu de
 > mots**, sans aucun lien réel.
+> **Ajout du 2026-08-23** : une autre remarque signale qu'Apocalypse
+> 13,16-17 contient bien un passage disant que nul ne peut acheter ni vendre
+> sans la marque, et que **certaines personnes y voient un parallèle
+> intéressant** avec le fait que les achats modernes reposent de plus en plus
+> sur les codes-barres et les paiements en ligne comme Amazon — **présenté
+> strictement comme une coïncidence que certains trouvent frappante, jamais
+> comme l'affirmation qu'une prophétie se serait accomplie**.
 > Détails dans les HANDOFF du 2026-08-23 de [CLAUDE.md](CLAUDE.md).
 
 > 📌 **Dernière mise à jour (2026-08-22)** : ajout d'**examens

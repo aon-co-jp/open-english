@@ -35,6 +35,13 @@
 > Schlange zeigt, der Name aber von der Comedy-Serie "Monty Python's
 > Flying Circus" stammt — die Ähnlichkeit zum "Tier" ist **ausdrücklich
 > reiner Zufall und Wortspiel** ohne jede inhaltliche Verbindung.
+> **Ergänzung 2026-08-23**: Ein weiterer Nebensatz weist darauf hin, dass
+> Offenbarung 13,16-17 tatsächlich eine Stelle enthält, wonach niemand ohne
+> das Zeichen kaufen oder verkaufen kann, und dass **manche Leute darin eine
+> interessante Parallele sehen** zu der Tatsache, dass modernes Einkaufen
+> immer stärker auf Barcodes und Online-Bezahldienste wie Amazon angewiesen
+> ist — **ausdrücklich nur als Zufall, den manche bemerkenswert finden, und
+> keinesfalls als Behauptung, eine Prophezeiung habe sich erfüllt**.
 > Details in den HANDOFF-Einträgen vom 2026-08-23 in [CLAUDE.md](CLAUDE.md).
 
 > 📌 **Neuestes Update (2026-08-22)**: **Übungsprüfungen für Weltsprachen,

@@ -174,6 +174,16 @@ Conclusion positive (le web et les scanners rendent les achats commodes
 **sans marque corporelle**) et note sur Python (logo serpent, nom venu de
 Monty Python) **déclarée pure coïncidence**.
 
-**En cas de modification** : les trois garanties d'honnêteté — « présenter
+**Ajout du 2026-08-23 (parallèle intéressant — présenter, non affirmer)** :
+Apocalypse 13,16-17 contient bien un passage disant que nul ne peut acheter
+ni vendre sans la marque (l'existence de ce verset peut être citée comme un
+fait). Une phrase ajoutée signale que **certaines personnes y voient un
+parallèle intéressant** avec le fait que les achats modernes reposent de plus
+en plus sur les codes-barres et les paiements en ligne comme Amazon.
+**Contrainte impérative** : présenter cela uniquement comme une possibilité
+(« certains le disent »), **jamais** affirmer qu'une prophétie se serait
+accomplie — le texte le précise lui-même.
+
+**En cas de modification** : les quatre garanties d'honnêteté — « présenter
 et non affirmer », « légende déclarée légende », « coïncidence déclarée
 coïncidence » — ne doivent être ni affaiblies ni omises.

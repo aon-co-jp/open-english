@@ -36,6 +36,12 @@
 > Python logo is a snake but the name comes from the comedy series "Monty
 > Python's Flying Circus" — the resemblance to the "beast" is **stated
 > explicitly to be pure coincidence and wordplay**, with no real connection.
+> **Added 2026-08-23**: one further aside notes that Revelation 13:16-17
+> really does contain a passage saying no one without the mark can buy or
+> sell, and that **some people note an interesting parallel** between this and
+> how modern shopping increasingly relies on barcodes and online payment
+> systems like Amazon — **offered strictly as a coincidence some find
+> striking, never as a claim that any prophecy has been fulfilled**.
 > See the 2026-08-23 HANDOFF entries in [CLAUDE.md](CLAUDE.md).
 
 > 📌 **Latest update (2026-08-22, continued)**: Added **persistent settings, a native

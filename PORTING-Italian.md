@@ -122,6 +122,10 @@ Altre lingue: [日本語 (originale, dettagli completi)](PORTING.md) ·
 4. Scrivere le garanzie di onestà dentro il testo stesso: le tesi si
    **presentano**, le leggende metropolitane si **dichiarano tali** (se
    possibile con la spiegazione tecnica, come per le barre di guardia), le
-   coincidenze si **dichiarano coincidenze**.
+   coincidenze si **dichiarano coincidenze**; i "paralleli interessanti"
+   tra testi antichi e situazione odierna si **presentano solo come
+   possibilità** ("c'è chi lo dice") e mai come profezia avverata (esempio:
+   Apocalisse 13,16-17 "senza il marchio non si compra né si vende" accostato
+   a codici a barre e pagamenti online come Amazon).
 5. Documentare ciò che è stato escluso e perché — nel testo di risposta e
    in un commento nel codice ("leggere prima di modificare").

@@ -175,6 +175,16 @@ Einkaufen bequem, **ohne Zeichen am Körper**), und die Python-Fußnote
 (Schlangenlogo, Name von Monty Python) wird **ausdrücklich als reiner
 Zufall und Wortspiel** gekennzeichnet.
 
-**Beim Ändern beachten**: Die drei Ehrlichkeitsgarantien — "Vorstellung
+**Ergänzung 2026-08-23 (interessante Parallele — vorstellen, nicht
+behaupten)**: Offenbarung 13,16-17 enthält tatsächlich eine Stelle, wonach
+niemand ohne das Zeichen kaufen oder verkaufen kann (die Existenz dieser
+Bibelstelle darf als Tatsache genannt werden). Hinzugefügt wurde ein Satz,
+dass **manche Leute darin eine interessante Parallele sehen** zu der
+Tatsache, dass modernes Einkaufen immer stärker auf Barcodes und
+Online-Bezahldienste wie Amazon angewiesen ist. **Zwingende Einschränkung**:
+nur als Möglichkeit vorstellen ("manche sagen das"), **niemals** behaupten,
+eine Prophezeiung habe sich erfüllt — der Text sagt das ausdrücklich selbst.
+
+**Beim Ändern beachten**: Die vier Ehrlichkeitsgarantien — "Vorstellung
 statt Behauptung", "Legende ausdrücklich als Legende", "Zufall ausdrücklich
 als Zufall" — dürfen weder abgeschwächt noch weggelassen werden.

@@ -31,6 +31,13 @@
 > (c) (5)の「ヘビ=獣」との符合は**単なる偶然の一致・言葉遊びであると
 > 明記**し、意味のある繋がりがあるかのようには書いていません。
 > (d) 全体として特定の宗教的解釈への賛否は表明していません。
+> **(e) 2026-08-23 追記**: 黙示録13章16〜17節に「刻印を持たない者は
+> 売り買いができない」という趣旨の記述が実際にあること(この聖句の存在
+> 自体は事実)と、現代ではバーコードやオンライン決済(Amazonなど)なしに
+> 買い物が難しくなっていることを重ね合わせて語られることがある、という
+> 「面白い符合」を1文追加しました。**これも断定ではなく「そう語られる
+> ことがある」という可能性の紹介にとどめており、「預言が成就した」
+> という趣旨の断定的な表現は使っていません**(本文中にもその旨を明記)。
 > 詳細は[CLAUDE.md](CLAUDE.md)の2026-08-23(続き2)HANDOFF参照。
 >
 > *English*: The tutor now answers **"is 666 the mark of the beast?"** with a
@@ -46,7 +53,12 @@
 > scanners made shopping convenient without anyone needing a mark on their
 > body, and closes with the Python-logo footnote — noting **explicitly that
 > the snake/beast resemblance is pure coincidence and wordplay** with no
-> meaningful connection.
+> meaningful connection. **Added 2026-08-23**: one more aside noting that
+> Revelation 13:16-17 really does contain a passage saying no one without the
+> mark can buy or sell, and that **some people note an interesting parallel**
+> between this and how modern shopping increasingly relies on barcodes and
+> online payment systems like Amazon — **offered strictly as a coincidence
+> some find striking, never as a claim that a prophecy has been fulfilled**.
 
 > 📌 **最新の更新(2026-08-23)**: **イスラム教・イラン(ペルシャ)・アラブの
 > 歴史についての質問に、中立的・事実ベースの解説を日英併記で返す**ように

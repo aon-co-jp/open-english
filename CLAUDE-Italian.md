@@ -164,6 +164,16 @@ occulto, nessun fondamento tecnico**. Chiusura positiva (web e scanner
 rendono comoda la spesa **senza marchi sul corpo**) e nota su Python (logo
 a serpente, nome da Monty Python) **dichiarata pura coincidenza**.
 
-**Nel modificare**: le tre garanzie di onestà — "presentare, non affermare",
+**Aggiunta del 2026-08-23 (parallelo interessante — presentare, non
+affermare)**: Apocalisse 13,16-17 contiene davvero un passo secondo cui
+nessuno senza il marchio può comprare o vendere (l'esistenza del versetto può
+essere citata come fatto). È stata aggiunta una frase secondo cui **alcune
+persone vi notano un parallelo interessante** con il fatto che fare acquisti
+oggi dipende sempre più da codici a barre e pagamenti online come Amazon.
+**Vincolo tassativo**: presentarlo solo come possibilità ("c'è chi lo dice"),
+**mai** affermare che una profezia si sia avverata — il testo lo dichiara
+esplicitamente.
+
+**Nel modificare**: le quattro garanzie di onestà — "presentare, non affermare",
 "leggenda dichiarata leggenda", "coincidenza dichiarata coincidenza" — non
 vanno indebolite né omesse.

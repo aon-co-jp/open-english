@@ -123,6 +123,10 @@ Weitere Sprachen: [日本語 (Original, vollständige Details)](PORTING.md) ·
 4. Die Ehrlichkeitsgarantien direkt in den Text schreiben: Thesen nur
    **vorstellen**, Großstadtlegenden **als solche kennzeichnen** (nach
    Möglichkeit mit technischer Auflösung, wie bei den Guard Bars des
-   Barcodes), Zufälle **als Zufall benennen**.
+   Barcodes), Zufälle **als Zufall benennen**; "interessante Parallelen"
+   zwischen alten Texten und heutigen Verhältnissen **nur als Möglichkeit
+   vorstellen** ("manche sagen das") und nie als erfüllte Prophezeiung
+   behaupten (Beispiel: Offenbarung 13,16-17 "ohne das Zeichen kein Kaufen
+   und Verkaufen" neben Barcodes und Online-Bezahldiensten wie Amazon).
 5. Weggelassene Behauptungen samt Grund dokumentieren — im Antworttext und
    als Kommentar im Code ("vor dem Ändern lesen").

@@ -130,6 +130,11 @@ Autres langues : [日本語 (original, détails complets)](PORTING.md) ·
 4. Écrire les garanties d'honnêteté dans le texte lui-même : on
    **présente** les thèses, on **déclare** les légendes urbaines comme
    telles (avec l'explication technique quand c'est possible, comme pour
-   les barres de garde), on **nomme** les coïncidences comme coïncidences.
+   les barres de garde), on **nomme** les coïncidences comme coïncidences ;
+   les « parallèles intéressants » entre textes anciens et situation actuelle
+   sont **présentés seulement comme une possibilité** (« certains le disent »)
+   et jamais comme une prophétie accomplie (exemple : Apocalypse 13,16-17
+   « sans la marque, ni acheter ni vendre » rapproché des codes-barres et des
+   paiements en ligne comme Amazon).
 5. Documenter ce qui a été écarté et pourquoi — dans la réponse et dans un
    commentaire de code (« à lire avant toute modification »).
