@@ -199,3 +199,38 @@ di guardia da 3 moduli contro i 7 di una cifra); (3) la somiglianza fra il
 serpente di Python e la "bestia" resta **pura coincidenza**; (4) le letture
 si presentano, non si insegnano. È cambiato solo lo stile, per leggibilità:
 **nessun indebolimento dell'onestà**.
+
+## Funzione quiz: indovinello originale dell'autore (2026-08-23, seguito 4)
+
+A richieste come "proponimi un problema" / "give me a quiz" l'app
+risponde con un indovinello originale dell'autore **Masahiro Ishizuka
+(石塚正浩)**: `9 ◯ 9 ◯ 9 ◯ 9 = 10` — al posto di ogni cerchio va uno fra
+`+`, `-`, `×`, `÷` (ripetizioni ammesse) e le parentesi ( ) possono
+cambiare l'ordine; soluzione `(9 × 9 + 9) ÷ 9 = 10`. Nel testo va detto
+**esplicitamente** che non è un gioco di parole né un tranello ma
+**pura aritmetica delle quattro operazioni**, verificabile con una
+calcolatrice o un pallottoliere. Si riporta anche l'episodio: la persona
+più giovane che l'ha risolto era un bambino di **prima elementare**.
+
+Elementi (in `app.js`): `isQuizRequest()`, `isQuizAnswerRequest()`,
+`QUIZ_TEXTS`, `quizQuestionText()`, `quizAnswerText()`,
+`quizPreferredLangCode()` e il flag di stato `quizAwaitingAnswer`. Lo
+scambio è in **due fasi**: prima solo il problema, poi — dopo "non lo so"
+/ "dimmi la risposta" — la soluzione; il flag conserva lo stato
+intermedio.
+
+**Perché non passa dall'AI**: come le altre risposte a testo fisso
+(autore, storia religiosa, 666), questa funziona **senza inferenza AI**,
+con semplici diramazioni basate su regole. Un GPT-2 grezzo, messo a fare
+calcoli, produce risultati **sbagliati** ma formulati in modo
+convincente: inaccettabile per un problema con un'unica soluzione
+verificabile. Il conteggio giornaliero di utilizzo non viene consumato.
+
+**Multilingua e limite deliberato**: per impostazione predefinita il testo
+è bilingue JA + EN; se la lingua di studio o la lingua madre è es/fr/de/
+zh/ko, la relativa traduzione viene messa in testa. Le traduzioni
+esistono solo per queste **sette lingue** (ja/en/es/fr/de/zh/ko). Le 130
+lingue supportate **non** sono state riempite con traduzione automatica
+per simulare una copertura totale; le lingue non incluse ricevono il testo
+bilingue predefinito. Questo limite va mantenuto e dichiarato anche in
+caso di modifiche.

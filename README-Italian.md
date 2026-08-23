@@ -1,5 +1,32 @@
 # open-english
 
+> 📌 **Ultimo aggiornamento (2026-08-23, seguito 4)**: **funzione quiz con
+> un indovinello originale dell'autore**. Se si scrive "proponimi un
+> problema", "fammi un quiz" o "give me a quiz", l'app propone un
+> problema originale di **Masahiro Ishizuka (石塚正浩)**, autore di questa
+> applicazione: usando **quattro cifre 9** — `9 ◯ 9 ◯ 9 ◯ 9 = 10` — al
+> posto di ogni ◯ va messo uno fra i segni `+`, `-`, `×`, `÷` (lo stesso
+> segno può ripetersi); se serve, le parentesi ( ) possono cambiare
+> l'ordine delle operazioni. Il risultato deve fare **esattamente 10**.
+> La soluzione è `(9 × 9 + 9) ÷ 9 = 10` (9×9=81, 81+9=90, 90÷9=10). Non è
+> un gioco di parole né un tranello: sono **solo le quattro operazioni**,
+> verificabili con una calcolatrice o con un pallottoliere. Curiosità: la
+> persona più giovane che finora l'ha risolto era un bambino di **prima
+> elementare**. Lo scambio avviene in **due fasi** — prima compare solo il
+> testo del problema, e la soluzione appare soltanto quando si scrive
+> "non lo so" oppure "dimmi la risposta".
+> **Multilingua e il suo limite dichiarato**: per impostazione predefinita
+> il testo è bilingue giapponese + inglese; chi ha scelto es/fr/de/zh/ko
+> come lingua di studio o lingua madre riceve la traduzione in testa. Le
+> traduzioni esistono **solo per queste sette lingue** (ja/en/es/fr/de/zh/
+> ko): le 130 lingue supportate **non** sono state riempite con traduzione
+> automatica per far sembrare che ci sia una copertura totale, e chi usa
+> un'altra lingua riceve il testo bilingue predefinito. Come già per le
+> risposte su "chi ha creato l'app", sulla storia religiosa e sul "666",
+> anche questa è una **risposta a testo fisso basata su regole, senza
+> inferenza AI** — un GPT-2 grezzo produrrebbe calcoli sbagliati dall'aria
+> convincente. Il **conteggio giornaliero di utilizzo non viene consumato**.
+
 > 📌 **Ultimo aggiornamento (2026-08-23, solo formulazione)**: tre punti
 > della risposta a testo fisso su "666 / marchio della bestia" sono stati
 > **riscritti sul piano stilistico** — il gioco di parole "666 = WWW", la

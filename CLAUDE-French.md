@@ -210,3 +210,48 @@ ressemblance entre le serpent de Python et la « bête » demeure **une pure
 coïncidence** ; (4) les lectures se présentent, elles ne s'enseignent pas.
 Seul le style a changé, au profit de la lisibilité : **aucun affaiblissement
 de l'honnêteté**.
+
+## Quiz original de l'auteur : « quatre 9 pour faire 10 » (2026-08-23, suite 4)
+
+Lorsque l'utilisateur demande « donne-moi un problème », « pose-moi une
+question », "give me a quiz", l'application propose un **problème original de
+son auteur, Masahiro Ishizuka (石塚正浩)** : utiliser quatre fois le chiffre 9
+dans `9 ◯ 9 ◯ 9 ◯ 9 = 10`, en remplaçant chaque ◯ par `+`, `-`, `×` ou `÷`
+(un même signe peut servir plusieurs fois) et en ajoutant si besoin des
+parenthèses ( ) pour changer les priorités, afin d'obtenir exactement 10.
+Solution : `(9 × 9 + 9) ÷ 9 = 10` (9×9=81, 81+9=90, 90÷9=10).
+
+- **À ne jamais retirer de l'énoncé** : ce n'est **ni une devinette ni un
+  piège** — de l'arithmétique pure, vérifiable à la calculatrice ou au
+  boulier. Sans cette phrase, l'utilisateur part sur de fausses pistes
+  (« coucher le 9 sur le côté », etc.). L'anecdote « le plus jeune à avoir
+  trouvé était un enfant de CP » vient de l'auteur : **ne rien y broder**.
+- **Pourquoi ne pas laisser l'IA générer** : un GPT-2 brut produit des
+  calculs faux présentés avec aplomb. Énoncé comme solution restent donc des
+  **textes fixes**, dans la même logique de branchement à base de règles que
+  les réponses « qui a créé cette application », « histoire des religions » et
+  « 666 ». Aucun appel à `aruaru-llm`, et le quota d'utilisation quotidien
+  n'est pas consommé.
+- **Implémentation** : `isQuizRequest()`, `isQuizAnswerRequest()`, table
+  `QUIZ_TEXTS`, `quizQuestionText()`, `quizAnswerText()`,
+  `quizPreferredLangCode()` dans `app.js`.
+- **Échange en deux temps** : un seul indicateur de portée module,
+  `quizAwaitingAnswer`, tient l'état (pas de machine à états) — d'abord
+  **l'énoncé seul**, puis la solution quand l'utilisateur répond « je ne sais
+  pas » / « donne-moi la réponse ». Le test d'attente de réponse est placé
+  **avant** `isQuizRequest` dans le gestionnaire d'envoi ;
+  `isQuizAnswerRequest()` contient des tournures très courantes mais n'est
+  consulté que si `quizAwaitingAnswer === true`, si bien que la pratique
+  ordinaire de la conversation n'est jamais détournée.
+- **Multilingue et limite assumée** : par défaut japonais + anglais. Si la
+  langue choisie (langue à apprendre, sinon langue maternelle) figure dans
+  `QUIZ_TEXTS`, sa traduction est placée en tête. Seules **7 langues** sont
+  traduites (ja / en / es / fr / de / zh / ko). Les 130 langues du registre
+  **n'ont volontairement pas été remplies par traduction automatique** pour
+  faire croire à une couverture complète : les autres utilisateurs reçoivent
+  l'énoncé bilingue japonais-anglais par défaut. Ajouter une langue revient à
+  ajouter une clé de code de langue à `QUIZ_TEXTS` (les codes dérivés comme
+  `zh-Hant` réutilisent la traduction du code de base `zh`).
+- Prochaine étape possible : si l'auteur propose d'autres problèmes,
+  transformer `QUIZ_TEXTS` en tableau de problèmes (aujourd'hui un seul, et
+  « un autre problème » renvoie le même).

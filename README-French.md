@@ -1,5 +1,27 @@
 # open-english
 
+> 📌 **Dernière mise à jour (2026-08-23, suite)** : un **quiz original de
+> l'auteur de l'application, Masahiro Ishizuka (石塚正浩)**. Si vous demandez
+> « pose-moi un problème », « donne-moi un quiz » ou "give me a quiz",
+> l'application propose ceci : utiliser quatre fois le chiffre 9 dans
+> `9 ◯ 9 ◯ 9 ◯ 9 = 10`, en mettant dans chaque ◯ l'un des signes `+`, `-`,
+> `×`, `÷` (un même signe peut resservir) et, si besoin, des parenthèses ( )
+> pour changer les priorités, de façon à obtenir exactement 10. **Ce n'est ni
+> une devinette ni un piège** : de l'arithmétique pure, que l'on peut
+> vérifier à la calculatrice ou au boulier. Le plus jeune à l'avoir résolu
+> était un enfant de première année d'école primaire. L'échange se fait **en
+> deux temps** : d'abord l'énoncé seul, puis la solution
+> (`(9 × 9 + 9) ÷ 9 = 10`) lorsque vous répondez « je ne sais pas » ou
+> « donne-moi la réponse ». **Langues** : par défaut japonais + anglais ; si
+> vous avez choisi l'espagnol, le français, l'allemand, le chinois ou le
+> coréen comme langue étudiée ou langue maternelle, la traduction
+> correspondante est placée en tête. **Nous ne prétendons pas couvrir les 130
+> langues** : seules ces 7 langues sont traduites, les autres reçoivent
+> l'énoncé bilingue japonais-anglais. Comme pour les réponses « qui a créé
+> cette application » ou « 666 », il s'agit d'un **texte fixe, sans passer
+> par l'IA** (un GPT-2 brut donne des calculs faux à l'air convaincant), et
+> cela ne consomme pas votre quota d'utilisation quotidien.
+
 > 📌 **Dernière mise à jour (2026-08-23, formulation seulement)** : trois
 > passages de la réponse à texte fixe sur « 666 / la marque de la bête » ont
 > été **retravaillés sur le plan du style** — le jeu de mots « 666 = WWW »,

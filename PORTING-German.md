@@ -137,3 +137,30 @@ Weitere Sprachen: [日本語 (Original, vollständige Details)](PORTING.md) ·
    behauptet?", **nicht der Tonfall**. Die Abmilderung darf aber nie in
    Formulierungen kippen, die wie eine Behauptung klingen ("die
    Prophezeiung hat sich erfüllt", "das passiert gerade wirklich").
+
+## Muster: Festtext-Quiz mit zweistufiger Antwort (2026-08-23)
+
+1. Dasselbe Dreigespann wie oben (Prüffunktion + Texttabelle + Aufbau-
+   funktion), hier `isQuizRequest()` / `QUIZ_TEXTS` / `quizQuestionText()`
+   und `quizAnswerText()`. Das Rätsel selbst ist Festtext, weil ein
+   Sprachmodell beim Rechnen überzeugend klingende Falschergebnisse
+   liefert — bei einer Aufgabe mit genau einer nachprüfbaren Lösung ist
+   das nicht hinnehmbar.
+2. **Zweistufigkeit ohne Zustandsmaschine**: Ein einziges Flag im
+   Modulscope (`quizAwaitingAnswer`) genügt — erst die Aufgabe, dann nach
+   "Ich weiß es nicht" / "Sag mir die Lösung" die Antwort. Kein
+   Dialogzustandsautomat, kein Session-Objekt.
+3. Die Prüfung auf "wartet auf Antwort" gehört **vor** die Prüfung auf
+   eine neue Quiz-Anfrage, sonst gewinnt "noch eine Aufgabe" gegen die
+   erwartete Antwort. Sehr allgemeine Wörter ("weiß nicht") sind
+   unbedenklich, solange sie **nur** bei gesetztem Flag ausgewertet werden
+   — sonst kapern sie das normale Gespräch.
+4. **Sprachabdeckung ehrlich halten**: Standard ist die zweisprachige
+   Ausgabe; für die tatsächlich übersetzten Sprachen (hier ja/en/es/fr/de/
+   zh/ko) wird die Übersetzung vorangestellt, alle übrigen bekommen den
+   Standard. Die Sprachliste **nicht** maschinell auffüllen, um eine
+   Vollabdeckung vorzutäuschen — Erweitern heißt: einen echten Eintrag
+   mit Sprachcode als Schlüssel in die Tabelle legen.
+5. Beim Portieren von Rätseln: die Lösung selbst nachrechnen und im Text
+   festhalten, dass es sich um eine **echte, nachprüfbare Aufgabe** und
+   nicht um ein Fangrätsel handelt — sonst suchen Lesende am falschen Ende.

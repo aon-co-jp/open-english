@@ -136,3 +136,30 @@ Altre lingue: [日本語 (originale, dettagli completi)](PORTING.md) ·
    come un fatto?", **non il tono**. L'alleggerimento però non deve mai
    scivolare in formulazioni che suonano come un'affermazione ("la profezia
    si è avverata", "sta accadendo davvero").
+
+## Schema: quiz a testo fisso con risposta in due fasi (2026-08-23)
+
+1. Stessa triade dello schema precedente (rilevamento + tabella di testi +
+   funzione di composizione), qui `isQuizRequest()` / `QUIZ_TEXTS` /
+   `quizQuestionText()` e `quizAnswerText()`. L'indovinello è a testo
+   fisso perché un modello linguistico, messo a calcolare, produce
+   risultati sbagliati dall'aria convincente: inaccettabile per un
+   problema con un'unica soluzione verificabile.
+2. **Due fasi senza macchina a stati**: basta un singolo flag a livello di
+   modulo (`quizAwaitingAnswer`) — prima il problema, poi, dopo "non lo so"
+   / "dimmi la risposta", la soluzione. Niente automa di dialogo, niente
+   oggetto di sessione.
+3. Il controllo "sta aspettando la risposta" va messo **prima** di quello
+   su una nuova richiesta di quiz, altrimenti "dammene un altro" prevale
+   sulla risposta attesa. Parole molto generiche ("non lo so") sono
+   innocue purché vengano valutate **solo** quando il flag è attivo:
+   diversamente dirottano la conversazione normale.
+4. **Tenere onesta la copertura linguistica**: il testo predefinito è
+   bilingue; per le lingue realmente tradotte (qui ja/en/es/fr/de/zh/ko) si
+   antepone la traduzione, tutte le altre ricevono il predefinito. Non
+   riempire l'elenco con traduzione automatica per simulare una copertura
+   totale — ampliare significa aggiungere una voce vera alla tabella, con
+   il codice lingua come chiave.
+5. Nel portare indovinelli: rifare i calcoli della soluzione e dichiarare
+   nel testo che si tratta di un **problema autentico e verificabile**, non
+   di un tranello, altrimenti il lettore cerca dalla parte sbagliata.

@@ -1,5 +1,33 @@
 # open-english
 
+> 📌 **Neuestes Update (2026-08-23, Fortsetzung 4)**: **Quizfunktion mit
+> einem Original-Rätsel des Autors**. Wer "Stell mir eine Aufgabe",
+> "Gib mir ein Quiz" oder "give me a quiz" schreibt, bekommt ein
+> Original-Rätsel von **Masahiro Ishizuka (石塚正浩)**, dem Autor dieser
+> App: Setze zwischen **vier Neunen** — `9 ◯ 9 ◯ 9 ◯ 9 = 10` — jeweils
+> eines der Zeichen `+`, `-`, `×`, `÷` ein (dasselbe Zeichen darf
+> mehrfach vorkommen); bei Bedarf dürfen Klammern ( ) die Reihenfolge
+> ändern. Ergebnis soll **genau 10** sein. Die Lösung lautet
+> `(9 × 9 + 9) ÷ 9 = 10` (9×9=81, 81+9=90, 90÷9=10). Das ist
+> **kein Scherz- oder Fangrätsel**, sondern **reine Grundrechenarithmetik**,
+> die sich mit Taschenrechner oder Abakus nachrechnen lässt. Übrigens: die
+> bisher jüngste Person, die es richtig gelöst hat, war ein Kind in der
+> **ersten Klasse der Grundschule**. Der Ablauf ist **zweistufig** —
+> zuerst erscheint nur die Aufgabe, und erst wenn man "Ich weiß es nicht"
+> oder "Sag mir die Lösung" schreibt, wird die Antwort gezeigt.
+> **Mehrsprachigkeit und ihre ehrliche Grenze**: Standard ist die
+> zweisprachige Ausgabe Japanisch + Englisch; wer als Lernsprache oder
+> Muttersprache es/fr/de/zh/ko gewählt hat, bekommt die Übersetzung
+> vorangestellt. Übersetzungen gibt es **nur für diese sieben Sprachen**
+> (ja/en/es/fr/de/zh/ko) — die 130 unterstützten Sprachen wurden
+> **bewusst nicht** maschinell aufgefüllt, um "alle Sprachen unterstützt"
+> vorzutäuschen; wer eine andere Sprache nutzt, erhält die japanisch-
+> englische Standardausgabe. Wie schon die Antworten zu "Wer hat das
+> gemacht?", zur Religionsgeschichte und zu "666" ist auch dies ein
+> **regelbasierter Festtext ohne KI-Inferenz** — ein blankes GPT-2 würde
+> beim Rechnen überzeugend klingende, aber falsche Ergebnisse liefern.
+> Das **Tageskontingent wird dafür nicht verbraucht**.
+
 > 📌 **Neuestes Update (2026-08-23, nur Formulierung)**: Drei Stellen der
 > Festtext-Antwort zu "666 / Zeichen des Tieres" wurden **sprachlich
 > überarbeitet** — das Wortspiel "666 = WWW", die Barcode-Legende und der

@@ -146,3 +146,30 @@ Autres langues : [日本語 (original, détails complets)](PORTING.md) ·
    comme un fait ? », **et non le ton**. Mais l'allègement ne doit jamais
    glisser vers des tournures qui se lisent comme une affirmation (« la
    prophétie s'est accomplie », « c'est en train de se produire »).
+
+## Motif : réponse à texte fixe en deux temps avec un seul indicateur d'état (2026-08-23)
+
+Le quiz original de l'auteur (quatre 9 pour faire 10, solution
+`(9 × 9 + 9) ÷ 9 = 10`) ajoute deux enseignements réutilisables au motif de
+réponses à texte fixe déclenchées par des règles décrit plus haut.
+
+1. **Pour tout ce qui doit être exact — arithmétique, énoncés, corrigés —
+   utiliser un texte fixe, jamais une génération de modèle.** Un GPT-2 brut
+   produit des calculs faux d'apparence convaincante ; les fonctions
+   `isQuizRequest()` / `quizQuestionText()` / `quizAnswerText()` court-circuitent
+   le chemin IA et ne consomment pas le quota quotidien.
+2. **Un échange en deux temps ne demande pas de machine à états** : un seul
+   booléen de portée module (`quizAwaitingAnswer`) suffit — d'abord l'énoncé,
+   puis la solution une fois que l'utilisateur dit « je ne sais pas ». Placer
+   le test d'attente de réponse **avant** celui de la demande de quiz, et ne
+   consulter le détecteur aux tournures trop générales (« je ne sais pas »)
+   **que** lorsque l'indicateur est vrai : la conversation ordinaire n'est
+   ainsi jamais détournée.
+3. **Assumer la couverture linguistique réelle** : table de traductions
+   indexée par code de langue, la langue choisie par l'utilisateur en tête et
+   un repli bilingue par défaut. Ne pas remplir toutes les langues par
+   traduction automatique pour paraître universel — ici 7 langues traduites
+   sur 130 au registre, ce qui est indiqué honnêtement.
+4. **Ne pas retirer les phrases qui évitent les fausses pistes** : préciser
+   que le problème est de l'arithmétique pure et non une devinette est
+   fonctionnel, pas décoratif.

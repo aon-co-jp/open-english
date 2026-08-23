@@ -6,6 +6,38 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-23 続き4): 作者オリジナルのクイズを出題できる
+> ようにしました**: 「何か問題を出して」「クイズ出して」「問題ください」
+> 等と話しかけると、本アプリの作者・**石塚正浩さんのオリジナル問題**を
+> 出題します。問題は「数字の9を4つ使い、`9 ◯ 9 ◯ 9 ◯ 9 = 10`の◯に
+> `+` `-` `×` `÷` のいずれかを入れて(同じ記号を何度使ってもよく、必要
+> なら括弧()で優先順位を変えてもよい)、結果を10にする」というもの。
+> **トンチやひっかけではなく、電卓やそろばんでも解ける純粋な四則演算**
+> です。これまでで最年少の正解者は小学一年生の子だったそうです。
+> やり取りは**2段階**で、まず問題文だけをお見せし、「わからない」
+> 「答えを教えて」と送っていただくと解答をお見せします。
+> 出題は**既定で日本語と英語の併記**、加えて学習言語または母国語として
+> スペイン語・フランス語・ドイツ語・中国語・韓国語を選んでいる場合は
+> その言語の訳文を先頭に添えます。**正直な但し書き**: 訳文を用意して
+> いるのはこの7言語のみで、対応130言語すべてを機械翻訳で埋めて
+> 「全言語対応」に見せることはしていません(未収録の言語をお使いの方に
+> は既定の日英併記で出題します)。なお出題・解答とも**AI推論を通さない
+> 固定文**です——素のGPT-2に算数を生成させると計算の合わない答えを
+> もっともらしく出してしまうため、意図的にそうしています。
+>
+> *English*: Ask for "a quiz" / 「問題を出して」 and the app now poses an
+> **original puzzle by its creator, Masahiro Ishizuka**: using four 9s, fill
+> `9 ◯ 9 ◯ 9 ◯ 9 = 10` with `+ - × ÷` (repeats allowed, parentheses
+> allowed) so the result is exactly 10. It is **not a trick question** —
+> pure arithmetic, checkable on a calculator or an abacus. The youngest
+> solver so far was a first-grader. The exchange is **two-stage**: the
+> question first, the answer only when you say you don't know. Output is
+> **Japanese + English by default**, with es/fr/de/zh/ko added when that is
+> your selected language. Honest caveat: only those 7 languages are
+> translated — the other supported languages fall back to the ja+en default,
+> and both question and answer are **hand-written fixed text, never AI
+> generated** (a bare GPT-2 confidently gets arithmetic wrong).
+
 > 📌 **最新の更新(2026-08-23 続き3): 666応答の言い回しを柔らかく調整
 > (機能・制約は変更なし)**: 下記の666応答のうち「WWW=666」「バーコードの
 > 都市伝説」「黙示録13:16-17と現代の買い物の符合」の3点について、

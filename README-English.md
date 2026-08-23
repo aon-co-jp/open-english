@@ -6,6 +6,29 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-23, cont. 4): the app can now pose an original
+> puzzle from its creator**: say "give me a quiz", "give me a problem" or
+> 「問題を出して」 and you get an **original puzzle by Masahiro Ishizuka**,
+> the creator of this app. Using four 9s, fill each circle in
+> `9 ◯ 9 ◯ 9 ◯ 9 = 10` with `+`, `-`, `×` or `÷` — the same symbol may be
+> reused, and parentheses `( )` may be added to change the order of
+> operations — so that the result is exactly 10. **It is not a trick
+> question or a play on words**: it is pure arithmetic, and you can check it
+> on a calculator or an abacus. The youngest person to have solved it so far
+> was a first-grader in elementary school. The exchange is **two-stage** —
+> you get the question first, and the answer only once you say "I don't
+> know" or "tell me the answer". Output is **Japanese + English by default**;
+> if your selected learning language (or native language) is Spanish,
+> French, German, Chinese or Korean, that translation is placed first.
+> **Honest caveat**: only those 7 languages (ja/en/es/fr/de/zh/ko) are
+> translated — we have deliberately *not* machine-translated all 130
+> supported languages to look "fully localised", so speakers of the other
+> languages get the default Japanese + English version. Both the question
+> and the answer are **hand-written fixed text that never passes through AI
+> inference**, for the same reason as the answers below: a bare GPT-2 will
+> confidently produce arithmetic that does not add up. It does not consume
+> your daily usage quota.
+
 > 📌 **Latest update (2026-08-23)**: Added two **rule-based, hand-written
 > fixed-text answers** (bilingual JA/EN, no AI inference).
 > **(1) Islam, Iran/Persia and the Arab world**: questions about history and

@@ -210,3 +210,38 @@ FALSCH; Guard Bars 3 Module statt 7 pro Ziffer); (3) die Ähnlichkeit von
 Python-Schlange und "Tier" bleibt **reiner Zufall**; (4) Deutungen werden
 nur vorgestellt, nicht gelehrt. Geändert wurde allein der Stil zugunsten
 von Lesbarkeit — **keine Aufweichung der Ehrlichkeit**.
+
+## Quizfunktion: Original-Rätsel des Autors (2026-08-23, Fortsetzung 4)
+
+Auf Anfragen wie "Stell mir eine Aufgabe" / "give me a quiz" antwortet die
+App mit einem Original-Rätsel des Autors **Masahiro Ishizuka (石塚正浩)**:
+`9 ◯ 9 ◯ 9 ◯ 9 = 10` — in die Kreise kommt je eines der Zeichen `+`, `-`,
+`×`, `÷` (Wiederholung erlaubt), Klammern ( ) dürfen die Reihenfolge
+ändern; Lösung `(9 × 9 + 9) ÷ 9 = 10`. Im Text ist **ausdrücklich**
+festzuhalten, dass es sich **nicht um ein Scherz- oder Fangrätsel**
+handelt, sondern um **reine Grundrechenarithmetik**, nachprüfbar mit
+Taschenrechner oder Abakus. Dazu die Episode, dass die bisher jüngste
+richtige Lösung von einem Kind der **ersten Grundschulklasse** kam.
+
+Bausteine (in `app.js`): `isQuizRequest()`, `isQuizAnswerRequest()`,
+`QUIZ_TEXTS`, `quizQuestionText()`, `quizAnswerText()`,
+`quizPreferredLangCode()` sowie die Zustandsvariable `quizAwaitingAnswer`.
+Der Ablauf ist **zweistufig**: zuerst nur die Aufgabe, dann — nach "Ich
+weiß es nicht" / "Sag mir die Lösung" — die Antwort; der Flag merkt sich
+den Zwischenzustand.
+
+**Warum kein KI-Pfad**: Wie bei den übrigen Festtext-Antworten (Autor,
+Religionsgeschichte, 666) läuft dies **ohne KI-Inferenz** über
+regelbasierte Verzweigungen. Ein blankes GPT-2 erzeugt beim Rechnen
+überzeugend formulierte, aber **falsche** Ergebnisse — bei einer Aufgabe
+mit genau einer nachprüfbaren Lösung ist das inakzeptabel. Das
+Tageskontingent wird nicht verbraucht.
+
+**Mehrsprachigkeit und ihre bewusste Grenze**: Standard ist die
+zweisprachige Ausgabe JA + EN; bei Lern- oder Muttersprache es/fr/de/zh/ko
+wird die jeweilige Übersetzung vorangestellt. Übersetzungen existieren nur
+für diese **sieben Sprachen** (ja/en/es/fr/de/zh/ko). Die 130 unterstützten
+Sprachen wurden **absichtlich nicht** maschinell aufgefüllt, um "alle
+Sprachen unterstützt" vorzutäuschen; nicht erfasste Sprachen erhalten die
+japanisch-englische Standardausgabe. Diese Grenze ist beim Ändern
+beizubehalten und offenzulegen.
