@@ -6,6 +6,50 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-23 続き5): クイズを3問に増やし、「学年別・
+> 家庭教師コース」を新設しました**:
+> - **クイズが3問に**: 従来の「9を4つで10を作る」に加え、**カタツムリの
+>   井戸**(深さ10mの井戸、昼に3m登り夜に2m滑り落ちる。答えは**8日目**、
+>   図解つき)と**ニワトリの卵**(1羽半が1個半を1日半で産むなら、1羽が
+>   1個産むのは何日?答えは**1日**)を追加し、依頼のたびにランダムで
+>   1問出題します。**正直な但し書き**: 追加した2問の訳文は**日本語と
+>   英語のみ**です(既存の1問目のes/fr/de/zh/ko訳は維持)。
+> - **🎓 学生向け家庭教師コース**: 画面上部のボタンから、**小1〜高3の
+>   12学年**を選び、その学年の教科(国語・算数/数学・理科・社会・英語等)を
+>   個別に、または「全教科をインストール」でまとめて導入できます。
+>   出題は**毎回ランダムに1問**、選択肢の並びも毎回シャッフルします。
+> - **落ちこぼれ防止**: まちがえた問題に「もう少し易しい類題」が用意されて
+>   いれば、採点後にそのまま挑戦できます(人手で書いた静的なペア。
+>   AI生成ではなく、2段階以上易しくする多段階化は未実装)。
+> - **図解**: 井戸・円の面積・直方体・分数・数直線・直角三角形・放物線など、
+>   図があると分かりやすい問題にインラインSVGの図解を付けました
+>   (**全問には付いていません**——不要な問題には付けていません)。
+> - **正直な但し書き**: 問題はすべて本アプリ用の**オリジナル**で、教科書・
+>   問題集・入試問題の転載は一切ありません。また**問題を用意できているのは
+>   小1・小3・小6・中1・中3・高1の6学年 ×(国語・算数/数学・英語)の
+>   一部だけ**で、それ以外の学年・教科を選ぶと「**現在この学年・教科の
+>   問題は準備中です**」と正直に表示します。採点結果はローカルDBへ保存し、
+>   `OPEN_ENGLISH_DATABASE_URL`が設定されていればaruaru-dbへもミラーされ
+>   ます(既存の`/v1/db/history`の仕組みをそのまま利用)。快適にお使い
+>   いただくため、**Google検索**と**aruaru-db**の併用を推奨する案内も
+>   コース画面に表示しています。
+>
+> *English*: The built-in puzzle set is now **three puzzles** (four 9s, the
+> snail in the well — answer: **day 8**, with a diagram — and the hen and the
+> egg — answer: **one day**), asked at random; the two new ones are
+> **Japanese + English only**. A new **🎓 student tutor course** asks which of
+> the **12 grades** (elementary 1 – high school 3) you are in, lets you install
+> subjects individually or all at once, and then asks **one randomly chosen
+> question at a time**. If you miss a question that has an **easier version**,
+> you can try that next (hand-written pairs, not AI-generated; only one step
+> easier). **Inline SVG diagrams** are attached to the questions where a
+> picture helps — not to every question. **Honest caveat**: every question is
+> **original** to this app (nothing copied from textbooks or real exams), and
+> only **6 grades × a few subjects** have questions so far; anything else
+> honestly says "not ready yet". Scores are stored via the existing
+> `/v1/db/history` endpoint (local SQLite, mirrored to aruaru-db when
+> `OPEN_ENGLISH_DATABASE_URL` is set).
+
 > 📌 **最新の更新(2026-08-23 続き4): 作者オリジナルのクイズを出題できる
 > ようにしました**: 「何か問題を出して」「クイズ出して」「問題ください」
 > 等と話しかけると、本アプリの作者・**石塚正浩さんのオリジナル問題**を

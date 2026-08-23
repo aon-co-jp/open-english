@@ -6,6 +6,38 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-23, cont. 5): three puzzles, and a new
+> grade-by-grade tutor course**:
+> - **Three puzzles instead of one.** Alongside the "four 9s" puzzle there are
+>   now **the snail in the well** (a 10 m well; the snail climbs 3 m by day and
+>   slides back 2 m at night — the answer is **day 8**, and the question comes
+>   with a diagram) and **the hen and the egg** (if one and a half hens lay one
+>   and a half eggs in one and a half days, how long does one hen take to lay
+>   one egg? — **one day**). One of the three is chosen at random each time.
+>   **Honest caveat**: the two new puzzles are translated into **Japanese and
+>   English only**; the original puzzle keeps its es/fr/de/zh/ko translations.
+> - **🎓 Student tutor course.** A new button asks **which of the 12 grades**
+>   (elementary 1 through high school 3) you are in, then lets you install that
+>   grade's subjects one by one or with a single "install all subjects" button.
+>   Practice asks **one randomly chosen question at a time**, with the answer
+>   choices shuffled every time.
+> - **Catch-up support.** When you miss a question that has an **easier
+>   version**, you can go straight on to that easier version. These are
+>   hand-written static pairs, not AI-generated, and only one step easier
+>   (no multi-step ladder yet).
+> - **Diagrams.** Inline SVG figures are attached where a picture helps (the
+>   well, circle area, a rectangular prism, fractions, a number line, a right
+>   triangle, a parabola vertex) — **not to every question**.
+> - **Honest caveat.** Every question is **original** to this app; nothing is
+>   copied from textbooks, workbooks or real entrance exams. Only **6 grades
+>   (elementary 1/3/6, junior high 1/3, high school 1) × a few subjects
+>   (Japanese, maths, English)** have questions so far — any other combination
+>   honestly reports "**not ready yet**" instead of pretending to be covered.
+>   Scores are saved through the existing `/v1/db/history` endpoint (local
+>   SQLite, mirrored to aruaru-db when `OPEN_ENGLISH_DATABASE_URL` is set), and
+>   the course screen recommends setting up **Google Search** and **aruaru-db**
+>   for the best experience.
+
 > 📌 **Latest update (2026-08-23, cont. 4): the app can now pose an original
 > puzzle from its creator**: say "give me a quiz", "give me a problem" or
 > 「問題を出して」 and you get an **original puzzle by Masahiro Ishizuka**,
