@@ -47,6 +47,34 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-23 (続き6) 実行基盤バッジを「階層的アクセラレーション」表示へ拡張**:
+  `aruaru-llm`側`GET /v1/runtime`に新設された`acceleration`フィールド
+  (CUDA → Vulkan → DirectX 12 → CPU SIMD の各段の`compiled_in`/`active`と、
+  実際に有効な最上位の段`tier`)を読み、バッジ本文を
+  「compute: GPU (DirectX 12, GEMM) + CPU SIMD · <engine>」のように表示する。
+  ツールチップには4段すべての状態(`ACTIVE` / `compiled in, not active` /
+  `not compiled in`)と理由文、検出されたCPU SIMD(例`avx2+fma3+sse2`)を
+  並べる。古い`aruaru-llm`(このフィールドを返さない)へは従来のGPU/CPU
+  2値表示へフォールバックする。
+  - **こちら側で推測・粉飾はしない**: `aruaru-llm`が「実際に有効」と
+    報告した段だけを表示する。特にCUDAは`open-cuda`にネイティブ経路が
+    存在しない(スタブ)ため、NVIDIA GPU搭載機でも常に非アクティブと
+    表示される。
+  - **実機検証**: `aruaru-llm`を`--features real-dx12`でビルドして起動し、
+    実ブラウザからバッジを更新して
+    `compute: GPU (DirectX 12, GEMM) + CPU SIMD · distilgpt2-greedy-decode-v0-open-cuda-llm-directx-gemm`
+    と表示されること、ツールチップに4段の状態が正しく並ぶことを確認した。
+  - **正直な開示(重要)**: DirectX段は「動く」が「速い」わけではない。
+    `aruaru-llm`側の実測では、この開発機(NVIDIA GT 730 + Ryzen 9 3950X)で
+    DirectX経路を有効にすると`/v1/generate`が0.88秒→4.3秒と**約4.8倍
+    遅くなった**。バッジはあくまで「今どこで計算しているか」を正直に
+    報告するだけで、速度を主張するものではない。詳細は
+    `aruaru-llm/CLAUDE.md`の同日エントリ参照。
+  - `android/app/src/main/assets/webroot/app.js`(WebView用ミラー)へも同期済み。
+  - 次にすべきこと: Intel/AMD統合GPU搭載機での実測結果が出た段階で、
+    バッジのツールチップに「この構成では速いのか遅いのか」を添えるかを検討する
+    (現状は実測が1機種しか無いため書いていない)。
+
 - **2026-08-23 (続き5) クイズを3問へ拡張+「学年別・家庭教師コース」を新設
   (落ちこぼれ防止の易しい類題・ランダム出題・インラインSVG図解・
   Google検索/aruaru-db併用の推奨表示を含む)**:
