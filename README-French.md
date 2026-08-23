@@ -1,5 +1,40 @@
 # open-english
 
+> 📌 **Dernière mise à jour (2026-08-23)** : ajout de deux **réponses à
+> texte fixe, écrites à la main et déclenchées par des règles** (bilingues
+> JA/EN, sans inférence IA).
+> **(1) Islam, Iran/Perse et monde arabe** : les questions sur l'histoire
+> et les racines reçoivent une synthèse neutre et factuelle — les
+> communautés chrétiennes de l'Arabie préislamique (Najran, Ghassanides),
+> la formation du Coran que la recherche décrit comme une **tradition
+> autonome et distincte**, la différence entre civilisations iranienne et
+> arabe, et l'influence zoroastrienne, présentée expressément comme une
+> **« thèse défendue par certains chercheurs »** et non comme un fait
+> établi. Deux affirmations que l'on souhaitait au départ inclure (le Coran
+> issu d'une traduction de la Bible ; un frère de Mahomet comme traducteur)
+> ont été **délibérément écartées faute de sources**. Le texte se termine
+> sur l'idée que les barrières linguistiques nourrissent les malentendus et
+> que **la traduction automatique et le dialogue multilingue peuvent
+> favoriser la compréhension mutuelle et la paix**.
+> **(2) « 666 est-il la marque de la bête ? »** : une réponse légère, sous
+> forme d'anecdote. Elle cite le passage de l'Apocalypse de façon neutre,
+> présente le jeu de mots moderne **« 666 = WWW »** (guématrie hébraïque :
+> la lettre vav vaut 6) **explicitement comme une lecture de certains et
+> non comme une doctrine**, signale l'histoire du « 666 caché dans les
+> codes-barres » **explicitement comme une légende urbaine** et en explique
+> la technique réelle : les barres plus longues aux extrémités et au centre
+> sont les **barres de garde** (repères de début, de fin et de séparation
+> pour le scanner) ; elles *ressemblent* seulement au chiffre 6 mais
+> utilisent un autre encodage (3 modules au lieu de 7) — Snopes juge
+> l'affirmation FAUSSE : **aucun sens occulte, aucun fondement technique**.
+> Vient ensuite une conclusion positive : le web et les scanners ont rendu
+> les achats commodes **sans que personne ait besoin d'une marque sur le
+> corps** ; enfin la note que le logo de Python est un serpent mais que son
+> nom vient de la série comique « Monty Python's Flying Circus » — la
+> ressemblance avec la « bête » est **déclarée pure coïncidence et jeu de
+> mots**, sans aucun lien réel.
+> Détails dans les HANDOFF du 2026-08-23 de [CLAUDE.md](CLAUDE.md).
+
 > 📌 **Dernière mise à jour (2026-08-22)** : ajout d'**examens
 > d'entraînement pour les langues du monde, d'une interface de sélection
 > des langues et d'un affichage/lecture à voix haute multilingue

@@ -134,3 +134,47 @@ keine muttersprachliche Prüfung der Texte; das tatsächliche Vorlesen in
 allen 38 Sprachen wurde mangels installierter Stimmen nicht real
 verifiziert (nur mit einem Beobachtungs-Stub). Details siehe HANDOFF vom
 2026-08-22 in [CLAUDE.md](CLAUDE.md).
+
+## Regelbasierte Festtext-Antworten zu sensiblen Themen (2026-08-23)
+
+Bei Themen, bei denen falsche Angaben besonders schaden, antwortet die App
+**ohne KI-Inferenz** mit von Hand geschriebenem Text. Drei Fälle folgen
+demselben Muster: `isCreatorQuestion()` (Vorstellung des Autors),
+`isReligionHistoryQuestion()` / `RELIGION_HISTORY_TEXTS` (Islam, Iran,
+arabische Welt) und `isMarkOfBeastQuestion()` / `MARK_OF_BEAST_TEXTS`
+(666 und das Zeichen des Tieres). Grund: ein blankes GPT-2 erfindet
+Inhalte, und gerade bei Religionsgeschichte ist der Schaden hoch. Das
+Tageskontingent wird nicht verbraucht; die Texte liegen in einer Tabelle
+mit Sprachcode als Schlüssel (derzeit nur `ja` und `en`).
+
+**Neutrale Religionsgeschichte**: beschrieben werden die religiöse Vielfalt
+des vorislamischen Arabiens, die Entstehung des Korans als in der Forschung
+**eigenständige Überlieferung** (nach islamischer Lehre Offenbarung an
+Mohammed), der Unterschied zwischen iranischer und arabischer Kultur sowie
+der zoroastrische Einfluss — Letzteres ausdrücklich nur als These einiger
+Forschender. Zwei ursprünglich gewünschte Behauptungen (Koran aus einer
+Bibelübersetzung; ein Bruder Mohammeds als Übersetzer) wurden **mangels
+Quellenbelegen nach mehrfacher Rücksprache weggelassen**; der Text legt
+offen, *warum* sie nicht behauptet werden. Eine Anmerkung zu den Grenzen
+vormoderner Übersetzungsarbeit bezieht sich **ausschließlich** auf die
+historisch belegten arabischen Bibelübersetzungen und darf **nie** mit der
+Entstehung des Korans verknüpft werden. Am Ende steht die Botschaft, dass
+Übersetzung und mehrsprachiger Austausch zu Verständigung und Frieden
+beitragen können.
+
+**666 / Zeichen des Tieres**: die Offenbarungsstelle wird neutral genannt,
+ohne eine "richtige" Deutung zu behaupten. Das Wortspiel **"666 = WWW"**
+(Gematrie, Waw = 6) wird **nur als Lesart einiger Leute seit den 1990ern**
+vorgestellt, nicht als Lehre. Die Geschichte vom versteckten 666 im Barcode
+wird **als Großstadtlegende gekennzeichnet** und technisch aufgelöst:
+**Guard Bars** markieren Start, Ende und Mitte für den Scanner, ähneln der
+Ziffer 6 nur optisch und sind eine andere Kodierung (3 statt 7 Module);
+Snopes bewertet die Behauptung als FALSCH — **keine okkulte Bedeutung, keine
+technische Grundlage**. Der Schluss ist positiv (Web und Scanner machen das
+Einkaufen bequem, **ohne Zeichen am Körper**), und die Python-Fußnote
+(Schlangenlogo, Name von Monty Python) wird **ausdrücklich als reiner
+Zufall und Wortspiel** gekennzeichnet.
+
+**Beim Ändern beachten**: Die drei Ehrlichkeitsgarantien — "Vorstellung
+statt Behauptung", "Legende ausdrücklich als Legende", "Zufall ausdrücklich
+als Zufall" — dürfen weder abgeschwächt noch weggelassen werden.

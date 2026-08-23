@@ -1,5 +1,42 @@
 # open-english
 
+> 📌 **Neuestes Update (2026-08-23)**: Zwei **regelbasierte, von Hand
+> geschriebene Festtext-Antworten** (zweisprachig JA/EN, ohne KI-Inferenz)
+> wurden ergänzt.
+> **(1) Islam, Iran/Persien und die arabische Welt**: Fragen nach
+> Geschichte und Wurzeln werden mit einer neutralen, faktenbasierten
+> Zusammenfassung beantwortet — vorislamische christliche Gemeinden auf
+> der Arabischen Halbinsel (Nadschran, Ghassaniden), die Entstehung des
+> Korans, die in der Forschung als **eigenständige, unabhängige
+> Überlieferung** beschrieben wird, der Unterschied zwischen iranischer
+> und arabischer Kultur sowie der zoroastrische Einfluss — letzterer
+> ausdrücklich nur als **"von einigen Forschenden vertretene These"**,
+> nicht als gesicherte Tatsache. Zwei Behauptungen, die ursprünglich
+> aufgenommen werden sollten (der Koran sei aus einer Bibelübersetzung
+> entstanden; ein Bruder Mohammeds sei der Übersetzer gewesen), wurden
+> nach Prüfung **mangels Quellenbelegen bewusst weggelassen**. Den
+> Abschluss bildet die Botschaft, dass Sprachbarrieren Missverständnisse
+> begünstigen und **maschinelle Übersetzung und mehrsprachiger Austausch
+> zu Verständigung und Frieden beitragen können**.
+> **(2) "Ist 666 das Zeichen des Tieres?"**: eine leichte, zweisprachige
+> Trivia-Antwort. Sie nennt die Offenbarungsstelle neutral, stellt das
+> moderne Wortspiel **"666 = WWW"** (hebräische Gematrie: der Buchstabe
+> Waw = 6) **ausdrücklich als Lesart einiger Leute und nicht als Lehre**
+> vor, kennzeichnet die Geschichte vom "versteckten 666 im Barcode"
+> **ausdrücklich als Großstadtlegende** und erklärt die tatsächliche
+> Technik: die längeren Striche an den Rändern und in der Mitte sind
+> **Guard Bars** (Start-, End- und Trennmarken für den Scanner); sie
+> *sehen* der Ziffer 6 nur ähnlich, sind aber eine andere Kodierung
+> (3 statt 7 Module) — Faktenchecker wie Snopes bewerten die Behauptung
+> als FALSCH, es gibt **weder okkulte Bedeutung noch technische
+> Grundlage**. Danach der positive Schluss, dass Web und Barcode-Scanner
+> das Einkaufen bequem gemacht haben, **ohne dass jemand ein Zeichen am
+> Körper braucht**, und zuletzt die Fußnote, dass das Python-Logo eine
+> Schlange zeigt, der Name aber von der Comedy-Serie "Monty Python's
+> Flying Circus" stammt — die Ähnlichkeit zum "Tier" ist **ausdrücklich
+> reiner Zufall und Wortspiel** ohne jede inhaltliche Verbindung.
+> Details in den HANDOFF-Einträgen vom 2026-08-23 in [CLAUDE.md](CLAUDE.md).
+
 > 📌 **Neuestes Update (2026-08-22)**: **Übungsprüfungen für Weltsprachen,
 > eine Sprachauswahl-Oberfläche sowie sequentielle mehrsprachige Anzeige
 > und Vorlesefunktion** hinzugefügt. Englisch und Japanisch bleiben die

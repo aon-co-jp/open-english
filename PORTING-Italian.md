@@ -108,3 +108,20 @@ Altre lingue: [日本語 (originale, dettagli completi)](PORTING.md) ·
    dichiarare che senza voce installata il testo è solo visualizzato.
 6. Mostrare i testi in `<textarea>` `readonly` (copiabili) e salvare
    usando l'endpoint di persistenza già esistente, senza nuove tabelle.
+
+## Schema: risposte a testo fisso basate su regole per temi delicati (2026-08-23)
+
+1. Tre elementi: funzione di rilevamento per parole chiave + tabella di
+   testi con codice lingua come chiave + funzione che compone la risposta
+   bilingue. Va inserita nell'handler di invio **prima** del percorso AI.
+2. Combinare parola-tema E parola-intento, così un "Iran" occasionale non
+   dirotta la conversazione normale. Per l'inglese mettere il confine di
+   parola `\b` **solo all'inizio**, altrimenti sfugge "Zoroastrianism"
+   (bug realmente incontrato).
+3. Valutare prima i temi più specifici (666 prima della storia religiosa).
+4. Scrivere le garanzie di onestà dentro il testo stesso: le tesi si
+   **presentano**, le leggende metropolitane si **dichiarano tali** (se
+   possibile con la spiegazione tecnica, come per le barre di guardia), le
+   coincidenze si **dichiarano coincidenze**.
+5. Documentare ciò che è stato escluso e perché — nel testo di risposta e
+   in un commento nel codice ("leggere prima di modificare").

@@ -6,6 +6,38 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-23)**: Added two **rule-based, hand-written
+> fixed-text answers** (bilingual JA/EN, no AI inference).
+> **(1) Islam, Iran/Persia and the Arab world**: questions about history and
+> roots get a neutral, fact-based summary — the Christian communities of
+> pre-Islamic Arabia (Najran, the Ghassanids), the formation of the Qur'an
+> which scholarship describes as **its own distinct, independent tradition**,
+> the difference between Iranian and Arab civilisations, and the Zoroastrian
+> influence, the last of these presented explicitly only as **"a hypothesis
+> some scholars argue"** rather than settled fact. Two claims that were
+> originally to be included (that the Qur'an came out of a Bible translation;
+> that a brother of Muhammad was the translator) were **deliberately left out
+> for lack of support in the surviving sources**. It closes with the thought
+> that language barriers feed misunderstanding, and that **machine
+> translation and multilingual conversation may help build mutual
+> understanding and peace**.
+> **(2) "Is 666 the mark of the beast?"**: a light piece of bilingual trivia.
+> It states the Revelation passage neutrally, introduces the modern
+> **"666 = WWW"** wordplay (Hebrew gematria: the letter vav is worth 6)
+> **explicitly as a reading some people enjoy, not as doctrine**, flags the
+> "hidden 666 in barcodes" story **explicitly as an urban legend** and
+> explains the actual engineering: the longer bars at each end and in the
+> middle are **guard bars** marking start, end and midpoint for the scanner;
+> they merely *look* like the digit 6 but use a different encoding (3 modules
+> rather than 7) — fact-checkers such as Snopes rate the claim FALSE, so there
+> is **no occult meaning and no technical basis**. It then lands somewhere
+> cheerful: the Web and barcode scanners made shopping convenient **without
+> anyone needing a mark on their body**. A closing footnote notes that the
+> Python logo is a snake but the name comes from the comedy series "Monty
+> Python's Flying Circus" — the resemblance to the "beast" is **stated
+> explicitly to be pure coincidence and wordplay**, with no real connection.
+> See the 2026-08-23 HANDOFF entries in [CLAUDE.md](CLAUDE.md).
+
 > 📌 **Latest update (2026-08-22, continued)**: Added **persistent settings, a native
 > language setting, customisable display order, a topic briefing, and a 130-language
 > registry**.

@@ -1,5 +1,38 @@
 # open-english
 
+> 📌 **Ultimo aggiornamento (2026-08-23)**: aggiunte due **risposte a testo
+> fisso, scritte a mano e basate su regole** (bilingui JA/EN, senza
+> inferenza AI).
+> **(1) Islam, Iran/Persia e mondo arabo**: alle domande su storia e radici
+> si risponde con una sintesi neutrale e basata sui fatti — le comunità
+> cristiane dell'Arabia preislamica (Najran, Ghassanidi), la formazione del
+> Corano che gli studi descrivono come **tradizione autonoma e distinta**,
+> la differenza fra civiltà iranica e araba e l'influenza zoroastriana,
+> quest'ultima presentata espressamente solo come **"tesi sostenuta da
+> alcuni studiosi"** e non come fatto acquisito. Due affermazioni che si
+> voleva includere (il Corano nato da una traduzione della Bibbia; un
+> fratello di Maometto come traduttore) sono state **deliberatamente
+> escluse per mancanza di riscontri nelle fonti**. Chiude il messaggio che
+> le barriere linguistiche alimentano i malintesi e che **traduzione
+> automatica e dialogo multilingue possono favorire comprensione e pace**.
+> **(2) "666 è il marchio della bestia?"**: una risposta leggera in forma
+> di curiosità. Cita il passo dell'Apocalisse in modo neutrale, presenta il
+> gioco di parole moderno **"666 = WWW"** (ghematria ebraica: la lettera
+> vav vale 6) **esplicitamente come lettura di alcuni e non come dottrina**,
+> segnala la storia del "666 nascosto nei codici a barre" **esplicitamente
+> come leggenda metropolitana** e ne spiega la tecnica reale: le barre più
+> lunghe alle estremità e al centro sono le **barre di guardia** (marcatori
+> di inizio, fine e separazione per lo scanner); *somigliano* soltanto alla
+> cifra 6 ma usano una codifica diversa (3 moduli invece di 7) — i
+> fact-checker come Snopes valutano l'affermazione FALSA: **nessun
+> significato occulto e nessun fondamento tecnico**. Segue la chiusura
+> positiva: web e scanner hanno reso comodi acquisti e spesa **senza che
+> nessuno debba portare un marchio sul corpo**; infine la nota che il logo
+> di Python è un serpente ma il nome viene dalla serie comica "Monty
+> Python's Flying Circus" — la somiglianza con la "bestia" è **dichiarata
+> pura coincidenza e gioco di parole**, senza alcun legame reale.
+> Dettagli negli HANDOFF del 2026-08-23 in [CLAUDE.md](CLAUDE.md).
+
 > 📌 **Ultimo aggiornamento (2026-08-22)**: aggiunti **esami di pratica
 > per le lingue del mondo, un'interfaccia di selezione delle lingue e la
 > visualizzazione e lettura ad alta voce sequenziale multilingue**.

@@ -128,3 +128,42 @@ legami con certificazioni ufficiali; solo 3–6 domande per lingua; nessuna
 revisione da parte di madrelingua; la lettura effettiva nelle 38 lingue
 non è stata verificata su voci reali (solo con uno stub di osservazione).
 Dettagli nel HANDOFF del 2026-08-22 in [CLAUDE.md](CLAUDE.md).
+
+## Risposte a testo fisso basate su regole per temi delicati (2026-08-23)
+
+Sui temi in cui un errore fattuale fa più danno, l'app risponde **senza
+inferenza AI** con testo scritto a mano. Tre casi seguono lo stesso schema:
+`isCreatorQuestion()` (presentazione dell'autore),
+`isReligionHistoryQuestion()` / `RELIGION_HISTORY_TEXTS` (islam, Iran, mondo
+arabo) e `isMarkOfBeastQuestion()` / `MARK_OF_BEAST_TEXTS` (666 e marchio
+della bestia). Motivo: un GPT-2 puro inventa contenuti, e sulla storia
+religiosa il danno è alto. Non consumano il limite giornaliero e i testi
+stanno in una tabella con il codice lingua come chiave (oggi solo `ja`/`en`).
+
+**Storia religiosa neutrale**: diversità religiosa dell'Arabia preislamica,
+formazione del Corano descritta dagli studi come **tradizione autonoma**
+(per la dottrina islamica, rivelazione a Maometto), differenza fra civiltà
+iranica e araba, influenza zoroastriana presentata solo come tesi di alcuni
+studiosi. Due affermazioni inizialmente richieste (Corano da una traduzione
+biblica; un fratello di Maometto traduttore) sono state **escluse per
+assenza di riscontri**, dopo più scambi con l'utente; il testo dichiara
+*perché* non vengono affermate. La nota sui limiti della traduzione
+premoderna riguarda **solo** le traduzioni arabe della Bibbia storicamente
+attestate e non va **mai** collegata alla formazione del Corano. In chiusura
+il messaggio su traduzione, dialogo multilingue e pace.
+
+**666 / marchio della bestia**: il passo dell'Apocalisse è citato in modo
+neutrale, senza affermare un'interpretazione "giusta". Il gioco di parole
+**"666 = WWW"** (ghematria, vav = 6) è presentato **solo come lettura
+diffusa dagli anni '90**, non come dottrina. La storia del 666 nascosto nei
+codici a barre è **etichettata come leggenda metropolitana** e spiegata
+tecnicamente: le **barre di guardia** segnano inizio, fine e centro per lo
+scanner, somigliano alla cifra 6 solo otticamente e usano una codifica
+diversa (3 moduli contro 7); Snopes la valuta FALSA — **nessun significato
+occulto, nessun fondamento tecnico**. Chiusura positiva (web e scanner
+rendono comoda la spesa **senza marchi sul corpo**) e nota su Python (logo
+a serpente, nome da Monty Python) **dichiarata pura coincidenza**.
+
+**Nel modificare**: le tre garanzie di onestà — "presentare, non affermare",
+"leggenda dichiarata leggenda", "coincidenza dichiarata coincidenza" — non
+vanno indebolite né omesse.

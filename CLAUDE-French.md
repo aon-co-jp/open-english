@@ -136,3 +136,44 @@ aucune relecture par des locuteurs natifs ; la lecture réelle dans les 38
 langues n'a pas été vérifiée avec de vraies voix (uniquement via un stub
 d'observation). Détails dans le HANDOFF du 2026-08-22 de
 [CLAUDE.md](CLAUDE.md).
+
+## Réponses à texte fixe déclenchées par des règles (2026-08-23)
+
+Sur les sujets où une erreur factuelle fait le plus de dégâts, l'application
+répond **sans inférence IA**, avec un texte écrit à la main. Trois cas
+suivent le même schéma : `isCreatorQuestion()` (présentation de l'auteur),
+`isReligionHistoryQuestion()` / `RELIGION_HISTORY_TEXTS` (islam, Iran, monde
+arabe) et `isMarkOfBeastQuestion()` / `MARK_OF_BEAST_TEXTS` (666 et marque
+de la bête). Raison : un GPT-2 brut invente, et sur l'histoire religieuse le
+préjudice est élevé. Le quota quotidien n'est pas consommé ; les textes sont
+dans une table indexée par code langue (aujourd'hui `ja` et `en` seulement).
+
+**Histoire religieuse neutre** : diversité religieuse de l'Arabie
+préislamique, formation du Coran décrite par la recherche comme une
+**tradition autonome** (selon la doctrine islamique, révélation faite à
+Mahomet), différence entre civilisations iranienne et arabe, influence
+zoroastrienne présentée seulement comme la thèse de certains chercheurs.
+Deux affirmations initialement souhaitées (Coran issu d'une traduction
+biblique ; un frère de Mahomet traducteur) ont été **écartées faute de
+sources**, après plusieurs échanges ; le texte dit *pourquoi* elles ne sont
+pas avancées. La note sur les limites de la traduction prémoderne ne porte
+**que** sur les traductions arabes de la Bible historiquement attestées et
+ne doit **jamais** être reliée à la formation du Coran. En conclusion, le
+message sur la traduction, le dialogue multilingue et la paix.
+
+**666 / marque de la bête** : le passage de l'Apocalypse est cité
+neutralement, sans affirmer d'interprétation « correcte ». Le jeu de mots
+**« 666 = WWW »** (guématrie, vav = 6) est présenté **seulement comme une
+lecture répandue depuis les années 1990**, pas comme une doctrine.
+L'histoire du 666 caché dans les codes-barres est **qualifiée de légende
+urbaine** et expliquée techniquement : les **barres de garde** marquent le
+début, la fin et le milieu pour le scanner, ne ressemblent au chiffre 6 que
+visuellement et relèvent d'un autre encodage (3 modules contre 7) ; Snopes
+la juge FAUSSE — **aucun sens occulte, aucun fondement technique**.
+Conclusion positive (le web et les scanners rendent les achats commodes
+**sans marque corporelle**) et note sur Python (logo serpent, nom venu de
+Monty Python) **déclarée pure coïncidence**.
+
+**En cas de modification** : les trois garanties d'honnêteté — « présenter
+et non affirmer », « légende déclarée légende », « coïncidence déclarée
+coïncidence » — ne doivent être ni affaiblies ni omises.

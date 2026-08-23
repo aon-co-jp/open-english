@@ -115,3 +115,21 @@ Autres langues : [日本語 (original, détails complets)](PORTING.md) ·
    le texte est seulement affiché.
 6. Afficher les textes dans des `<textarea>` `readonly` (copiables) et
    enregistrer via l'endpoint de persistance existant, sans nouvelle table.
+
+## Motif : réponses à texte fixe déclenchées par des règles (2026-08-23)
+
+1. Trois briques : fonction de détection par mots-clés + table de textes
+   indexée par code langue + fonction qui compose la réponse bilingue.
+   À placer dans le gestionnaire d'envoi **avant** le chemin IA.
+2. Combiner mot-thème ET mot-intention, pour qu'un « Iran » lâché au
+   passage ne détourne pas la conversation ordinaire. En anglais, ne mettre
+   la limite de mot `\b` **qu'au début**, sinon « Zoroastrianism » échappe
+   à la détection (bug réellement rencontré).
+3. Tester d'abord les sujets les plus précis (666 avant l'histoire
+   religieuse).
+4. Écrire les garanties d'honnêteté dans le texte lui-même : on
+   **présente** les thèses, on **déclare** les légendes urbaines comme
+   telles (avec l'explication technique quand c'est possible, comme pour
+   les barres de garde), on **nomme** les coïncidences comme coïncidences.
+5. Documenter ce qui a été écarté et pourquoi — dans la réponse et dans un
+   commentaire de code (« à lire avant toute modification »).

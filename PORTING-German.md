@@ -109,3 +109,20 @@ Weitere Sprachen: [日本語 (Original, vollständige Details)](PORTING.md) ·
    erscheint.
 6. Texte in `readonly`-`<textarea>` ausgeben (kopierbar); zum Speichern
    den bestehenden Persistenz-Endpunkt nutzen statt neuer Tabellen.
+
+## Muster: regelbasierte Festtext-Antworten zu sensiblen Themen (2026-08-23)
+
+1. Drei Bausteine: Schlüsselwort-Prüffunktion + Texttabelle mit Sprachcode
+   als Schlüssel + Funktion, die daraus die zweisprachige Antwort baut.
+   Im Submit-Handler **vor** dem KI-Pfad einsetzen und dort zurückkehren.
+2. Themenwort UND Absichtswort verknüpfen, damit ein beiläufiges "Iran"
+   das normale Gespräch nicht kapert. Bei englischen Schlüsselwörtern die
+   Wortgrenze `\b` **nur am Wortanfang** setzen, sonst entgeht einem
+   "Zoroastrianism" (real aufgetretener Fehler).
+3. Konkretere Themen zuerst prüfen (666 vor Religionsgeschichte).
+4. Die Ehrlichkeitsgarantien direkt in den Text schreiben: Thesen nur
+   **vorstellen**, Großstadtlegenden **als solche kennzeichnen** (nach
+   Möglichkeit mit technischer Auflösung, wie bei den Guard Bars des
+   Barcodes), Zufälle **als Zufall benennen**.
+5. Weggelassene Behauptungen samt Grund dokumentieren — im Antworttext und
+   als Kommentar im Code ("vor dem Ändern lesen").
