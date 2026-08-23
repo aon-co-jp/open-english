@@ -6,6 +6,49 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **最新の更新(2026-08-23)**: **イスラム教・イラン(ペルシャ)・アラブの
+> 歴史についての質問に、中立的・事実ベースの解説を日英併記で返す**ように
+> しました。「イスラム教についてどう思いますか」「イランとアラブは違う文明
+> だと知っているが、深い歴史やルーツを聞かせてほしい」といった質問を検出
+> すると、AI推論を通さず、人手で書いた固定の解説を表示します。イスラム以前
+> のアラビア半島のキリスト教共同体(ナジュラーン、ガッサーン朝)、クルアーン
+> の成立が学術的には別個の独立した伝統として記述されること、イラン系文明と
+> アラブ系文明の系統の違い、ゾロアスター教の影響をめぐる学説などを扱います。
+> **正直な開示**: (1) これは固定文であってAIが生成した回答ではありません
+> ——素のGPT-2に宗教史を語らせると事実でない内容を作ってしまうためです。
+> (2) 作成時、ユーザーから「クルアーンは聖書の翻訳から成立した」
+> 「ムハンマドの兄弟が翻訳者だった」という説を含めたいという相談が
+> ありましたが、**現存する史料で裏付けが確認できなかったため、複数回の
+> 確認を経て両方とも事実としては含めないことで合意し、除外しました**。
+> (3) ゾロアスター教の影響については「一部の研究者が指摘している説」
+> という留保付きで紹介し、断定していません。(4) 外部動画等への自動リンク
+> 表示は行わず、「〜について調べてみてください」という中立的な案内に
+> とどめています。(5) 追加のやり取りを経て、**聖書のアラビア語訳という史実
+> 部分にのみ**「当時の翻訳は人の手によるもので、版ごとの揺れや誤差はあり得た
+> だろう」という前近代の翻訳作業一般についての注記を加えました。これは
+> **クルアーンの成立とは結びつけていません**(「翻訳ミスから生まれた」という
+> 含意は持たせない、という線引きをユーザーと明確に合意しています)。
+> (6) 末尾に「言語の壁は誤解の一因になり得る。自動翻訳が発展し世界中の人々が
+> 多言語で対話できるようになれば、相互理解が深まり平和に近づく助けになる
+> かもしれない」というメッセージを添えました。
+> 詳細は[CLAUDE.md](CLAUDE.md)の2026-08-23 HANDOFF参照。
+>
+> *English*: The tutor now answers questions about **Islam, Iran/Persia and
+> the Arab world** with a neutral, fact-based summary in both Japanese and
+> English. Honest disclosure: this is **hand-written fixed text, not an AI
+> generation** — a bare GPT-2 would invent things, and the harm of doing that
+> on religious history is high. Two claims the user originally wanted included
+> (that the Qur'an was assembled from a Bible translation, and that a brother
+> of Muhammad was the translator) **were deliberately excluded** after several
+> rounds of checking, because the surviving sources do not support them. The
+> Zoroastrian-influence hypothesis is presented as "some scholars argue this",
+> not as settled fact, and no external video links are shown. A note that
+> premodern translation was done by hand and inevitably carried some variation
+> is attached **only to the historical fact of Bible translation into Arabic**,
+> and is deliberately not connected to the origin of the Qur'an. The section
+> closes with a message that better machine translation and everyday
+> multilingual conversation may reduce misunderstanding between cultures.
+
 > 📌 **最新の更新(2026-08-22 続き2)**: **AI応答(aruaru-llm連携)の実用性を改善**しました。
 > - **実行基盤バッジ**: 画面下の接続状態の隣に「compute: CPU · <モデル名>」を表示します。
 >   これはaruaru-llmの`GET /v1/runtime`が実際に報告した内容(`open-cuda`のデバイス
