@@ -209,12 +209,46 @@ async fn healthz() -> Response {
 /// 音声処理・行列演算等を最適化する際の判断材料として先に公開する。
 async fn cpu_runtime() -> Response {
     let c = open_cpu::detect();
+    let (vendor, family) = open_cpu::vendor_family();
     rs_json_response(
         StatusCode::OK,
         &serde_json::json!({
             "open_cpu_version": open_cpu::VERSION,
             "summary": c.summary(),
             "gf_impl": format!("{:?}", open_cpu::selected_impl()),
+            // --- 2026-08-23 追加: 複数命令セットの「組み合わせ」情報 ---
+            // 単独フラグの羅列だけでは「AVX-512F と BW が両方揃っているか」
+            // のような実際のディスパッチ条件が分からないため、open-cpu が
+            // 判定した組み合わせプロファイルと各カーネルの選択実装を返す。
+            "isa_profile": c.isa_profile().name(),
+            "isa_profile_raw": c.isa_profile_raw().name(),
+            "float_impl": open_cpu::selected_float_impl().to_string(),
+            "bit_impl": open_cpu::bit_impl_summary(),
+            "avx512_opt_in": open_cpu::avx512_opt_in(),
+            "cpu_vendor": format!("{:?}", vendor),
+            "cpu_family": format!("{family:#x}"),
+            // BMI2 ビットが立っていても Zen〜Zen 2 では pext/pdep が
+            // マイクロコードで遅く、スカラーの方が速い(実測 7.1 倍差)。
+            "fast_bmi2": c.fast_bmi2(),
+            "detected_but_unused": c.detected_but_unused().to_names(),
+            "combination_examples": {
+                "avx2+fma3": c.supports_all(&[open_cpu::Feature::Avx2, open_cpu::Feature::Fma]),
+                "avx512f+bw+vl": c.supports_all(&[
+                    open_cpu::Feature::Avx512f,
+                    open_cpu::Feature::Avx512bw,
+                    open_cpu::Feature::Avx512vl
+                ]),
+                "avx512f+bw+vnni": c.supports_all(&[
+                    open_cpu::Feature::Avx512f,
+                    open_cpu::Feature::Avx512bw,
+                    open_cpu::Feature::Avx512vnni
+                ]),
+                "ssse3+pclmulqdq": c.supports_all(&[
+                    open_cpu::Feature::Ssse3,
+                    open_cpu::Feature::Pclmulqdq
+                ]),
+                "gfni+avx2": c.supports_all(&[open_cpu::Feature::Gfni, open_cpu::Feature::Avx2])
+            },
             "features": {
                 "sse2": c.sse2,
                 "ssse3": c.ssse3,
@@ -230,8 +264,13 @@ async fn cpu_runtime() -> Response {
                 "avx512bw": c.avx512bw,
                 "avx512vl": c.avx512vl,
                 "avx_vnni": c.avx_vnni,
-                "avx512vnni": c.avx512vnni
-            }
+                "avx512vnni": c.avx512vnni,
+                "gfni": c.gfni,
+                "vpclmulqdq": c.vpclmulqdq
+            },
+            // 誇張しないための明示。
+            "disclosure_ja": "このエンドポイントはCPU命令セットの検出結果を報告するだけで、open-english本体の処理(チャット応答・学習機能)はCPU集約的な演算を持たないため、現時点でSIMD高速化の適用先は無い。実際に高速化されているのは open-raid-z のGF(2^8)演算、open-cuda/aruaru-llm のCPU推論、open-cg-cad の断面積微分。",
+            "disclosure_en": "This endpoint only reports detected CPU features. open-english itself has no CPU-bound hot loop, so no SIMD path is applied here yet; the actual accelerated consumers are open-raid-z (GF(2^8)), open-cuda/aruaru-llm (CPU inference) and open-cg-cad."
         }),
     )
 }

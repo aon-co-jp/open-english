@@ -47,6 +47,39 @@ PC・タブレット・スマートフォンで動く英会話学習Webアプリ
 
 ## HANDOFF
 
+- **2026-08-23 `GET /v1/cpu-runtime` を「組み合わせ」情報付きへ拡張**:
+  従来は CPU 機能の bool を並べるだけだったが、実在の CPU は AVX2+FMA3、
+  AVX-512F+BW+VNNI のように **複数の命令セットを同時に搭載**するため、
+  単独フラグの羅列では実際のディスパッチ条件が読み取れなかった。
+  `open-cpu` 側に新設した組み合わせ判定 API を使い、以下を返すようにした。
+  - `isa_profile` / `isa_profile_raw`(組み合わせプロファイル)
+  - `float_impl` / `bit_impl`(各カーネルで選ばれた実装)
+  - `combination_examples`(`avx2+fma3` / `avx512f+bw+vl` /
+    `avx512f+bw+vnni` / `ssse3+pclmulqdq` / `gfni+avx2` の成立状況)
+  - `cpu_vendor` / `cpu_family` / `fast_bmi2`
+  - `detected_but_unused`(検出済みだが未活用の機能)
+  - `gfni` / `vpclmulqdq` の検出結果
+
+  **実機検証**: サーバーを実際に起動し `curl
+  http://127.0.0.1:4601/v1/cpu-runtime` でレスポンスを確認済み。
+  開発機(Ryzen 9 3950X / Zen 2)では `isa_profile: "avx2+fma3"`、
+  `fast_bmi2: false`、`detected_but_unused: "aes sha"`。
+
+- **⚠️ 正直な開示: open-english 本体は引き続き「表示専用」**。
+  今回、本体側で SIMD 高速化できる処理を探して `server/src` 全体を
+  調査したが、**CPU 集約的なホットループが存在しない**
+  (チャット応答は `aruaru-llm` への HTTP、学習機能は静的データの参照が
+  中心で、テキスト類似度計算のような重い処理も無い)。無理に机上の
+  空論で SIMD を入れることはせず、`/v1/cpu-runtime` のレスポンスに
+  `disclosure_ja` / `disclosure_en` フィールドを設けて
+  「ここは報告のみ、実際に高速化されているのは open-raid-z の GF(2^8)
+  演算・open-cuda/aruaru-llm の CPU 推論・open-cg-cad の断面積微分」と
+  明記した。
+  - 次にすべきこと: 将来 open-english 側でローカル音声処理(発音判定の
+    信号処理等)やオフライン推論を持つようになった時点が、初めて
+    `open-cpu` の演算 API を実際に使う機会になる。
+
+
 ### 2026-08-22 open-cpu の導入 + 「誰が作ったのか」への自己紹介応答機能
 
 **1. エコシステム共通ライブラリ `open-cpu` を導入**

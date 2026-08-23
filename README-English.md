@@ -414,3 +414,38 @@ disclosure about the limits of this approach.
    until after the MVP is complete and scoped as its own effort.
 9. Investigate whether Toshiba SBM or DeepSeek-family techniques have
    any genuine application here (not yet started).
+
+
+---
+
+## Update 2026-08-23 — `GET /v1/cpu-runtime` extended with ISA *combination* information
+
+Previously the endpoint returned a flat list of CPU feature booleans. Since
+real CPUs carry several instruction sets simultaneously (AVX2+FMA3,
+AVX-512F+BW+VNNI, …), a flat list does not reveal the actual dispatch
+conditions. Using the new combination API in `open-cpu`, the response now
+also includes:
+
+- `isa_profile` / `isa_profile_raw` — the satisfied combination tier
+- `float_impl` / `bit_impl` — the implementation chosen per kernel
+- `combination_examples` — whether `avx2+fma3`, `avx512f+bw+vl`,
+  `avx512f+bw+vnni`, `ssse3+pclmulqdq` and `gfni+avx2` hold
+- `cpu_vendor`, `cpu_family`, `fast_bmi2`
+- `detected_but_unused` — features detected but not exploited
+- `gfni` and `vpclmulqdq` detection
+
+Verified end-to-end by starting the server and running
+`curl http://127.0.0.1:4601/v1/cpu-runtime`. On the development machine
+(Ryzen 9 3950X, Zen 2): `isa_profile: "avx2+fma3"`, `fast_bmi2: false`,
+`detected_but_unused: "aes sha"`.
+
+### ⚠️ Honest disclosure: this remains display-only
+
+We searched `server/src` for anything worth SIMD-accelerating and found
+**no CPU-bound hot loop**: chat responses are HTTP calls to `aruaru-llm`,
+and the learning features are static-data lookups with no heavy text
+similarity computation. Rather than inventing a theoretical use, the
+response now carries `disclosure_ja` / `disclosure_en` fields stating that
+the genuinely accelerated consumers are `open-raid-z` (GF(2^8)),
+`open-cuda` / `aruaru-llm` (CPU inference) and `open-cg-cad`
+(cross-section derivative).
