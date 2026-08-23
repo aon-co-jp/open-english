@@ -21,10 +21,29 @@
 >   grade's subjects one by one or with a single "install all subjects" button.
 >   Practice asks **one randomly chosen question at a time**, with the answer
 >   choices shuffled every time.
-> - **Catch-up support.** When you miss a question that has an **easier
->   version**, you can go straight on to that easier version. These are
->   hand-written static pairs, not AI-generated, and only one step easier
->   (no multi-step ladder yet).
+> - **Catch-up support (up to five steps).** When you miss a question that has
+>   an **easier version**, you can go straight on to it, and each further miss
+>   steps down again — **up to five progressively easier steps**. Miss the last
+>   step and the app stops laddering, shows the correct answer, and points you
+>   to the trainer review instead. **Honest caveat**: the steps are hand-written
+>   static questions, not AI-generated, and how many steps exist differs per
+>   question — currently **2 questions have all 5 steps, 16 have 2, 33 have 1,
+>   and 20 have none (71 subject questions)**, plus 6 programming basics
+>   questions of which 3 have one step.
+> - **English from elementary grade 3.** Matching when foreign-language
+>   activities begin in the Japanese curriculum, grade 3 now has **English**
+>   (5 original beginner questions: greetings, colours, numbers, replies).
+>   Grades 1–2 still have Japanese and arithmetic.
+> - **Programming (new, with an honest caveat).** "Programming" is now offered
+>   from grade 3 up. It first shows the guidance that **open-english's own AI
+>   engine (aruaru-llm) is not strong enough on its own for programming
+>   tuition, so we recommend the paid version of Claude Code Desktop alongside
+>   it (available usage time depends on your plan)**. On top of that, open-english
+>   alone offers **two ready-to-run hand-written samples** (a rock-paper-scissors
+>   game and a self-introduction page) with step-by-step "try changing this"
+>   challenges, plus 6 HTML/CSS/JavaScript basics questions. **The AI does not
+>   generate games or websites from scratch** — everything here is fixed,
+>   hand-written material.
 > - **Diagrams.** Inline SVG figures are attached where a picture helps (the
 >   well, circle area, a rectangular prism, fractions, a number line, a right
 >   triangle, a parabola vertex) — **not to every question**.
