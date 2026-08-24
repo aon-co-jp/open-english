@@ -1,6 +1,31 @@
 ﻿# open-english
 
-> 📌 **Neuestes Update (2026-08-24, Fortsetzung 9): verbleibende world-lab-
+> 📌 **Update (2026-08-25, Fortsetzung 2): Massen-Pairing hinzugefügt.** Neue Funktion für Büros/große Filialen mit vielen PCs/Tablets/Handys — Gerätenamen zeilenweise einfügen und alle in einer Aktion pairen. Das Grundprinzip bleibt unverändert: erfordert weiterhin das korrekte Token und explizites Handeln, jeder Eintrag durchläuft dieselbe Validierung wie ein einzelnes Pairing. Details siehe CLAUDE.md.
+
+> 📌 **Update (2026-08-25, Fortsetzung): „wan"-Verbindungslabel hinzugefügt,
+> automatisches Port-Öffnen (UPnP) bewusst abgelehnt.** UPnP ist selbst ein
+> altbekannter Router-Angriffsvektor — der Server bleibt standardmäßig auf
+> 127.0.0.1 beschränkt; WAN-Exposition erfordert explizite manuelle
+> Konfiguration. Details siehe CLAUDE.md.
+
+> 📌 **Neuestes Update (2026-08-25): world-lab unterstützt jetzt
+> Gerätetyp/selbst gemeldete Hardware-Fähigkeit (CPU/GPU/NPU) +
+> Verknüpfungen zu verwandten Werkzeugen, automatisches Vorausfüllen des
+> Formulars (mit bewusst beibehaltener Sicherheitsgrenze), und ein
+> gefundener/behobener Test-Flake.** Beim Pairing kann jetzt ein
+> Gerätetyp (📱Telefon/📲Tablet/🖥PC/❓Sonstiges) und eine selbst gemeldete
+> Hardware-Fähigkeit angegeben werden — unverifiziert, echte
+> GPU/NPU-Dispatch an entfernte Geräte (z. B. ungenutzte Büro-PCs) bleibt
+> **nicht implementiert** (Entwurf im CLAUDE.md-Abschnitt „Zukunftsvision"
+> festgehalten, aber ohne dieselbe Sicherheitsstrenge wie die
+> WASM-Sandbox aus Phase 2 bewusst nicht gebaut). Microsoft/GitHub
+> Copilot wurden als reine Link-Einträge hinzugefügt (kein API-Zugriff).
+> Das Formular füllt sich beim Öffnen automatisch mit Vermutungen zu
+> Gerätetyp/GPU — **Pairing selbst erfordert weiterhin immer ein
+> explizites Token und einen Klick**, um die Anti-Relay-Grenze zu
+> wahren. Details siehe CLAUDE.md, Eintrag 2026-08-25.
+
+> 📌 **Update (2026-08-24, Fortsetzung 9): verbleibende world-lab-
 > Aufgaben angegangen — UI-Anbindung, Nebenläufigkeitsbegrenzung,
 > prozessübergreifende E2E-Tests, Ursachenforschung.** Neues Panel „🌐
 > world-lab" (Status, Geräte-Pairing, WASM-Aufgaben-Ausführung) live im

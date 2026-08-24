@@ -401,3 +401,26 @@ Ursache. Mehrgeräteverifikation blieb auf simulierte Geräte über echtes
 HTTP auf derselben Maschine beschränkt (kein zweites physisches Gerät
 verfügbar). Vollständige Details nur in der japanischen Version von
 CLAUDE.md.
+
+**Update (2026-08-25, Fortsetzung, Deutsch):** Gerätetyp/selbst gemeldete
+CPU/GPU/NPU-Fähigkeit zum Pairing hinzugefügt, Microsoft/GitHub Copilot
+als Link-Einträge ergänzt, Formular-Vorausfüllung (mit bewusst
+beibehaltener Sicherheitsgrenze — Pairing erfordert weiterhin immer ein
+Token), ein „wan"-Verbindungslabel hinzugefügt, aber **automatisches
+Öffnen von Ports (UPnP) bewusst abgelehnt** (UPnP ist selbst ein
+altbekannter Angriffsvektor für Router — der Server bleibt standardmäßig
+auf 127.0.0.1 beschränkt, WAN-Exposition erfordert explizite manuelle
+Konfiguration von `OPEN_ENGLISH_SERVER_BIND`). Außerdem zwei
+Test-Flakes (racende Umgebungsvariablen in parallelen Tests) in
+`local_agent.rs` und `vps_agent.rs` gefunden und behoben. Vollständige
+Details nur in der japanischen Version von CLAUDE.md.
+
+**Update (2026-08-25, Fortsetzung 2, Deutsch):** Massen-Pairing
+hinzugefügt (`POST /v1/world-lab/pair/bulk`) für Büros/große Filialen
+mit vielen PCs/Tablets/Handys — Gerätenamen zeilenweise einfügen, alle
+in einer Aktion pairen. Grundprinzip unverändert: erfordert weiterhin
+das korrekte Token, jeder Eintrag durchläuft dieselbe Validierung wie
+ein Einzel-Pairing; ein fehlgeschlagener Eintrag verwirft nicht die
+erfolgreichen anderen (Stapelgrößenlimit 100). Verifiziert mit 30
+simulierten Büro-PCs in einer Anfrage sowie live im Browser. Vollständige
+Details nur in der japanischen Version von CLAUDE.md.

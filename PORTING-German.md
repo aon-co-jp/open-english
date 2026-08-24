@@ -231,3 +231,11 @@ Ressourcenerschöpfung werden kann. (3) Ein Versionswechsel der Sandbox-
 Engine (wasmtime) garantiert nicht, dass ein gefundener Absturz behoben
 ist — erst nach echtem Reproduktionstest mit der neuen Version davon
 ausgehen. Details siehe PORTING.md (Abschnitt „world-lab", Japanisch).
+
+
+## world-lab: Massenoperationen (2026-08-25)
+
+Beim Hinzufügen von `bulk_pair()`: intern denselben einzelnen `pair()`-
+Aufruf wiederverwenden (keine separate, laxere Validierungslogik für den
+Massenfall). Teilerfolge zulassen statt alles abzubrechen, wenn ein
+Eintrag ungültig ist. Eine feste Obergrenze für die Stapelgröße setzen.

@@ -782,6 +782,15 @@ struct WorldLabPairRequest {
     token: String,
     device_name: String,
     connection: String,
+    /// "phone" | "tablet" | "pc" | "other"。未指定(空文字列)なら
+    /// `WorldLab::pair`側で"other"へフォールバックする(既存クライアント
+    /// との後方互換)。
+    #[serde(default)]
+    kind: String,
+    /// 自己申告のハードウェア種別("cpu"/"gpu"/"npu"の部分集合)。
+    /// 未指定なら空配列(=申告なし)として扱う。
+    #[serde(default)]
+    capabilities: Vec<String>,
 }
 
 async fn world_lab_pair(req: Request, wl: Arc<world_lab::WorldLab>) -> Response {
@@ -789,7 +798,7 @@ async fn world_lab_pair(req: Request, wl: Arc<world_lab::WorldLab>) -> Response 
         Ok(v) => v,
         Err(resp) => return resp,
     };
-    match wl.pair(&body.token, &body.device_name, &body.connection) {
+    match wl.pair(&body.token, &body.device_name, &body.connection, &body.kind, &body.capabilities) {
         Ok(device) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "device": device})),
         Err(e) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e})),
     }
@@ -814,6 +823,29 @@ async fn world_lab_unpair(req: Request, wl: Arc<world_lab::WorldLab>) -> Respons
     };
     match wl.unpair(&body.device_id) {
         Ok(removed) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "removed": removed})),
+        Err(e) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e})),
+    }
+}
+
+/// `POST /v1/world-lab/pair/bulk`(2026-08-25新設): 複数デバイスの
+/// 一括ペアリング(企業・オフィス等で大量のPC/タブレット/スマホを
+/// 一度に登録する用途、`world_lab.rs`の`bulk_pair`doc参照)。
+#[derive(serde::Deserialize)]
+struct WorldLabBulkPairRequest {
+    token: String,
+    devices: Vec<world_lab::BulkPairEntry>,
+}
+
+async fn world_lab_pair_bulk(req: Request, wl: Arc<world_lab::WorldLab>) -> Response {
+    let body: WorldLabBulkPairRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match wl.bulk_pair(&body.token, &body.devices) {
+        Ok(results) => {
+            let succeeded = results.iter().filter(|r| r.ok).count();
+            rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "succeeded": succeeded, "total": results.len(), "results": results}))
+        }
         Err(e) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e})),
     }
 }
@@ -1421,6 +1453,14 @@ async fn main() {
             post(handler_fn(move |req, _p| {
                 let wl = Arc::clone(&wl);
                 async move { world_lab_unpair(req, wl).await }
+            })),
+        );
+        let wl = Arc::clone(&world_lab);
+        app = app.at(
+            "/v1/world-lab/pair/bulk",
+            post(handler_fn(move |req, _p| {
+                let wl = Arc::clone(&wl);
+                async move { world_lab_pair_bulk(req, wl).await }
             })),
         );
 

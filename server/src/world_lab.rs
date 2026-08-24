@@ -49,10 +49,45 @@ use serde::Serialize;
 pub struct PairedDevice {
     pub device_id: String,
     pub device_name: String,
-    /// "usb" | "wifi" | "bluetooth" | "lan"(LANクロスケーブル直結を含む)
+    /// "usb" | "wifi" | "bluetooth" | "lan"(LANクロスケーブル直結を
+    /// 含む)| "wan"(インターネット越し、2026-08-25追加)。**"wan"に
+    /// ついての重要な注記**: これは自己申告の分類ラベルに過ぎず、
+    /// このサーバー自体をインターネットへ自動的に公開する機能は
+    /// 一切実装していない(ポートフォワーディング・UPnP・動的DNS等は
+    /// 意図的に実装しない——既定で外部非公開という方針の一部)。
+    /// また現在のペアリングAPIは平文HTTP(TLS無し)でトークンを
+    /// やり取りするため、"wan"を選んで実際にインターネット越しへ
+    /// 接続する場合、利用者自身の判断でTLS終端(リバースプロキシ等)を
+    /// 用意しない限りトークンが盗聴されるリスクがある——この注記は
+    /// `capabilities_disclosure_*`とは別に、下記`pair()`のエラー
+    /// メッセージ・UI双方で明示する。
     pub connection: String,
+    /// "phone" | "tablet" | "pc" | "other"(2026-08-24追加、ユーザー指示
+    /// 「複数のスマホ接続対応+複数のタブレット接続対応、複数のPC接続
+    /// 対応」への対応)。**この記帳機構自体は元々デバイス種別を区別せず
+    /// 任意台数を`HashMap`で保持できる設計だった**(新規実装は不要)ため、
+    /// 今回追加したのは「種別を自己申告させ、一覧で見分けやすくする」
+    /// という表示・分類上の改善であり、複数台の同時ペアリング自体は
+    /// 元から可能だった(下記テスト`pairs_many_devices_of_mixed_kinds`
+    /// で20台同時ペアリングを検証)。
+    pub kind: String,
+    /// このデバイスが利用可能だと**自己申告**するハードウェア種別
+    /// (`"cpu"` / `"gpu"` / `"npu"`の部分集合、2026-08-24追加)。
+    /// **正直な開示(重要)**: これはペアリングする側が申告する値を
+    /// そのまま記録するだけで、サーバー側で実際にそのハードウェアが
+    /// 存在する・利用可能であることを検証・計測してはいない
+    /// (ベンチマークもping的な実測もしていない)。実際のGPU/NPU越境
+    /// ディスパッチ(他デバイスのGPU/NPUで計算タスクを実行させること)
+    /// 自体も未実装——Phase 2のWASM計算タスクは常にCPU
+    /// (`wasmtime`のCPUバックエンド)で実行される。この一覧は
+    /// 「将来GPU/NPU対応タスクを実装する際にどのデバイスが候補になり
+    /// 得るかの参考情報」に留まる。
+    pub capabilities: Vec<String>,
     pub paired_at_unix: u64,
 }
+
+const ALLOWED_DEVICE_KINDS: &[&str] = &["phone", "tablet", "pc", "other"];
+const ALLOWED_CAPABILITIES: &[&str] = &["cpu", "gpu", "npu"];
 
 pub struct WorldLab {
     enabled: bool,
@@ -87,16 +122,45 @@ impl WorldLab {
         self.enabled && constant_time_eq(token.as_bytes(), self.pairing_token.as_bytes())
     }
 
+    /// テスト専用のコンストラクタ(2026-08-24追加)。`from_env()`は
+    /// プロセスグローバルな環境変数を読むため、並行実行される他の
+    /// テストと状態を共有してしまう(フレークの原因になる)。テストでは
+    /// こちらを使い、環境変数に一切触れずに「有効」なインスタンスを
+    /// 直接作る。
+    #[cfg(test)]
+    fn new_enabled_for_test(token: &str) -> Self {
+        Self { enabled: true, pairing_token: token.to_string(), devices: Mutex::new(HashMap::new()) }
+    }
+
     pub fn status(&self) -> serde_json::Value {
+        let devices = self.devices.lock().unwrap();
+        // 種別ごとの内訳(2026-08-24追加、ユーザー指示「複数のスマホ/
+        // タブレット/PC接続対応」の一覧性向上——利用者が一覧を開かずとも
+        // 「今どんな端末が何台繋がっているか」を状態パネルで一目で
+        // 把握できるようにする、使いやすさの改善)。
+        let mut by_kind: HashMap<&str, usize> = HashMap::new();
+        for d in devices.values() {
+            *by_kind.entry(d.kind.as_str()).or_insert(0) += 1;
+        }
         serde_json::json!({
             "enabled": self.enabled,
-            "paired_device_count": self.devices.lock().unwrap().len(),
+            "paired_device_count": devices.len(),
+            "paired_by_kind": {
+                "phone": by_kind.get("phone").copied().unwrap_or(0),
+                "tablet": by_kind.get("tablet").copied().unwrap_or(0),
+                "pc": by_kind.get("pc").copied().unwrap_or(0),
+                "other": by_kind.get("other").copied().unwrap_or(0),
+            },
             "disclosure_ja": "これはデバイス発見/ペアリングの記帳のみを行う実験的機能です。実際のタスク配布・計算の共有・通信の中継は実装していません。このサーバーには他者宛ての通信を転送するコード自体が存在しないため、ペアリング済みデバイスが増えても、あるいは接続方式が何であっても(USB/Wi-Fi/Bluetooth/LAN)、Winnyのような『踏み台』(第三者への攻撃・不正アクセスの中継点)として悪用することは構造上できません。",
             "disclosure_en": "This is an experimental device discovery/pairing bookkeeping feature only. Task dispatch, shared computation, and traffic relaying are not implemented. Because this server contains no code path that forwards traffic on behalf of anyone, it cannot be abused as a Winny-style relay/stepping-stone for attacking or gaining unauthorized access to third parties, regardless of how many devices are paired or which transport (USB/Wi-Fi/Bluetooth/LAN) they use.",
+            "capabilities_disclosure_ja": "各デバイスのCPU/GPU/NPU対応は接続側の自己申告であり、サーバー側では検証・計測していません。実際の計算タスク(WASMサンドボックス)は常にCPUで実行され、GPU/NPUへの越境ディスパッチは未実装です。",
+            "capabilities_disclosure_en": "Each device's CPU/GPU/NPU capability is self-reported by the pairing client and is not verified or measured by this server. Actual compute tasks (the WASM sandbox) always run on CPU — dispatching to a remote device's GPU/NPU is not implemented.",
+            "wan_disclosure_ja": "接続方式に「wan」を選ぶことはできますが、これは自己申告の分類ラベルに過ぎません。このサーバーは既定で127.0.0.1(このPC自身)にのみ待受し、外部からは一切到達できません——インターネットまたはLAN越しに公開したい場合は、利用者自身が`OPEN_ENGLISH_SERVER_BIND`環境変数を明示的に変更する必要があり、これが唯一の「手動設定」経路です。自動でのポート開放(UPnP等)は意図的に実装していません——UPnPによる自動ポート開放はそれ自体がルーターの既知の攻撃経路として長年問題視されており、踏み台化防止を掲げるworld-labへ組み込むのは本末転倒と判断しました。実際にインターネット越しへ公開する場合、現在のペアリングAPIは平文HTTP(TLS無し)のため、ご自身でTLS終端(リバースプロキシ等、既存のopen-web-server/open-easy-webが利用できます)を用意することを強く推奨します。",
+            "wan_disclosure_en": "You can label a device's connection as \"wan\", but that is only a self-reported classification. This server listens on 127.0.0.1 (this machine only) by default and is unreachable from outside — exposing it to a LAN or the internet requires the operator to explicitly change the OPEN_ENGLISH_SERVER_BIND environment variable, which is the one and only manual path to doing so. Automatic port opening (e.g. UPnP) is deliberately not implemented — UPnP-based auto port-forwarding is itself a long-standing, well-known router attack vector, and building it into a feature whose whole point is preventing relay/stepping-stone abuse would be self-defeating. If you do expose this over the real internet, the pairing API is still plain HTTP (no TLS) today, so setting up your own TLS termination (e.g. via open-web-server/open-easy-web) is strongly recommended.",
         })
     }
 
-    pub fn pair(&self, token: &str, device_name: &str, connection: &str) -> Result<PairedDevice, String> {
+    pub fn pair(&self, token: &str, device_name: &str, connection: &str, kind: &str, capabilities: &[String]) -> Result<PairedDevice, String> {
         if !self.enabled {
             return Err("world-lab is disabled on this server (set OPEN_ENGLISH_WORLD_LAB_ENABLED=1)".to_string());
         }
@@ -104,9 +168,29 @@ impl WorldLab {
             return Err("invalid pairing token".to_string());
         }
         let connection = match connection {
-            "usb" | "wifi" | "bluetooth" | "lan" => connection.to_string(),
-            other => return Err(format!("connection must be one of: usb, wifi, bluetooth, lan (got \"{other}\")")),
+            "usb" | "wifi" | "bluetooth" | "lan" | "wan" => connection.to_string(),
+            other => return Err(format!("connection must be one of: usb, wifi, bluetooth, lan, wan (got \"{other}\")")),
         };
+        // kind未指定(空文字列)は既存クライアント/既存テストとの後方互換
+        // のため"other"へフォールバックする(2026-08-24追加の必須項目に
+        // していない——古いUI/スクリプトが送ってきても失敗させない)。
+        let kind = if kind.is_empty() {
+            "other".to_string()
+        } else {
+            match kind {
+                k if ALLOWED_DEVICE_KINDS.contains(&k) => k.to_string(),
+                other => return Err(format!("kind must be one of: {} (got \"{other}\")", ALLOWED_DEVICE_KINDS.join(", "))),
+            }
+        };
+        let mut seen_caps = Vec::new();
+        for cap in capabilities {
+            if !ALLOWED_CAPABILITIES.contains(&cap.as_str()) {
+                return Err(format!("capabilities must be a subset of: {} (got \"{cap}\")", ALLOWED_CAPABILITIES.join(", ")));
+            }
+            if !seen_caps.contains(cap) {
+                seen_caps.push(cap.clone());
+            }
+        }
         let device_name = device_name.trim();
         if device_name.is_empty() || device_name.chars().count() > 100 {
             return Err("device_name must be 1-100 characters".to_string());
@@ -117,6 +201,8 @@ impl WorldLab {
             device_id: device_id.clone(),
             device_name: device_name.to_string(),
             connection,
+            kind,
+            capabilities: seen_caps,
             paired_at_unix: SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_secs(),
         };
         self.devices.lock().unwrap().insert(device_id, device.clone());
@@ -138,6 +224,63 @@ impl WorldLab {
         }
         Ok(self.devices.lock().unwrap().remove(device_id).is_some())
     }
+
+    /// **一括ペアリング(2026-08-25追加)**。ユーザー指示「企業やオフィス等
+    /// で大量にあるPC/タブレット/スマホに対して一斉に手動による許可・
+    /// 公開設定を可能に」への対応。**重要: これは1件ずつの
+    /// `pair()`呼び出しをまとめて処理する利便性機能であり、認証・
+    /// オプトインの原則は一切緩めていない**——依然として正しい
+    /// ペアリングトークンを持つ人が、対象デバイスのリストを明示的に
+    /// 用意して1回のボタン操作で送信する必要がある(自動発見・
+    /// 自動承認ではない)。1件ごとに`pair()`と全く同じ検証(kind/
+    /// capabilitiesのホワイトリスト等)を通すため、一括だからといって
+    /// 検証が緩くなることはない。件数上限(既定100件)を設け、
+    /// 極端に大きなリクエストで無制限に処理させない。
+    pub fn bulk_pair(&self, token: &str, requests: &[BulkPairEntry]) -> Result<Vec<BulkPairResult>, String> {
+        if !self.enabled {
+            return Err("world-lab is disabled on this server (set OPEN_ENGLISH_WORLD_LAB_ENABLED=1)".to_string());
+        }
+        const MAX_BULK_SIZE: usize = 100;
+        if requests.is_empty() {
+            return Err("devices list must not be empty".to_string());
+        }
+        if requests.len() > MAX_BULK_SIZE {
+            return Err(format!("too many devices in one bulk request ({} given, limit {MAX_BULK_SIZE})", requests.len()));
+        }
+        // 各エントリで`pair()`をそのまま呼ぶため、トークン検証も
+        // エントリ数だけ実行される(定数時間比較なのでNが増えても
+        // 個々の比較の安全性は変わらない)。1件ごとに独立した
+        // `pair()`と全く同じ検証を通ることが重要——一括だからといって
+        // 検証をバイパスする経路を作らない設計。
+        let results: Vec<BulkPairResult> = requests
+            .iter()
+            .map(|entry| match self.pair(token, &entry.device_name, &entry.connection, &entry.kind, &entry.capabilities) {
+                Ok(device) => BulkPairResult { device_name: entry.device_name.clone(), ok: true, device: Some(device), error: None },
+                Err(e) => BulkPairResult { device_name: entry.device_name.clone(), ok: false, device: None, error: Some(e) },
+            })
+            .collect();
+        Ok(results)
+    }
+}
+
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct BulkPairEntry {
+    pub device_name: String,
+    pub connection: String,
+    #[serde(default)]
+    pub kind: String,
+    #[serde(default)]
+    pub capabilities: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct BulkPairResult {
+    pub device_name: String,
+    pub ok: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub device: Option<PairedDevice>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
 }
 
 /// タイミング攻撃(トークン照合にかかる時間差からの推測)を避けるための
@@ -774,5 +917,126 @@ mod tests {
         // を起動しない。
         let err = engine.run_isolated(WAT_INCREMENT.as_bytes(), b"x").await.unwrap_err();
         assert!(err.contains("disabled"), "error should say compute execution is disabled, got: {err}");
+    }
+
+    /// **多台数の同時ペアリング検証(2026-08-24追加、ユーザー指示
+    /// 「複数のスマホ接続対応+複数のタブレット接続対応、複数のPC接続
+    /// 対応」への対応)**。この記帳機構は元々`HashMap`ベースで台数
+    /// 上限を設けていない設計だったため、新規実装というより既存設計の
+    /// 検証だが、スマホ10台・タブレット5台・PC5台=計20台を実際に
+    /// ペアリングし、一覧・種別内訳(`status()`の`paired_by_kind`)が
+    /// いずれも正しく反映されることを確認する。
+    #[test]
+    fn bulk_pair_registers_all_valid_entries() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let entries = vec![
+            BulkPairEntry { device_name: "office-pc-1".to_string(), connection: "lan".to_string(), kind: "pc".to_string(), capabilities: vec!["cpu".to_string()] },
+            BulkPairEntry { device_name: "office-pc-2".to_string(), connection: "lan".to_string(), kind: "pc".to_string(), capabilities: vec!["cpu".to_string(), "gpu".to_string()] },
+            BulkPairEntry { device_name: "meeting-tablet".to_string(), connection: "wifi".to_string(), kind: "tablet".to_string(), capabilities: vec![] },
+        ];
+        let results = wl.bulk_pair("test-token", &entries).unwrap();
+        assert_eq!(results.len(), 3);
+        assert!(results.iter().all(|r| r.ok));
+        assert_eq!(wl.list_devices().unwrap().len(), 3);
+    }
+
+    #[test]
+    fn bulk_pair_reports_per_entry_failures_without_aborting_the_batch() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let entries = vec![
+            BulkPairEntry { device_name: "good-pc".to_string(), connection: "lan".to_string(), kind: "pc".to_string(), capabilities: vec![] },
+            BulkPairEntry { device_name: "bad-kind".to_string(), connection: "lan".to_string(), kind: "toaster".to_string(), capabilities: vec![] },
+        ];
+        let results = wl.bulk_pair("test-token", &entries).unwrap();
+        assert_eq!(results.len(), 2);
+        assert!(results[0].ok && results[0].device.is_some());
+        assert!(!results[1].ok && results[1].error.is_some());
+        // 1件失敗しても、成功した分は実際に登録されている(全滅にしない)。
+        assert_eq!(wl.list_devices().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn bulk_pair_rejects_wrong_token_for_every_entry() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let entries = vec![BulkPairEntry { device_name: "x".to_string(), connection: "lan".to_string(), kind: "pc".to_string(), capabilities: vec![] }];
+        let results = wl.bulk_pair("wrong-token", &entries).unwrap();
+        assert!(!results[0].ok);
+        assert_eq!(wl.list_devices().unwrap().len(), 0);
+    }
+
+    #[test]
+    fn bulk_pair_rejects_empty_and_oversized_batches() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        assert!(wl.bulk_pair("test-token", &[]).is_err());
+        let too_many: Vec<BulkPairEntry> = (0..101)
+            .map(|i| BulkPairEntry { device_name: format!("d{i}"), connection: "lan".to_string(), kind: "pc".to_string(), capabilities: vec![] })
+            .collect();
+        let err = wl.bulk_pair("test-token", &too_many).unwrap_err();
+        assert!(err.contains("too many devices"), "got: {err}");
+    }
+
+    #[test]
+    fn pairs_many_devices_of_mixed_kinds() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        for i in 0..10 {
+            wl.pair("test-token", &format!("phone-{i}"), "wifi", "phone", &["cpu".to_string()]).unwrap();
+        }
+        for i in 0..5 {
+            wl.pair("test-token", &format!("tablet-{i}"), "bluetooth", "tablet", &["cpu".to_string(), "gpu".to_string()]).unwrap();
+        }
+        for i in 0..5 {
+            wl.pair("test-token", &format!("pc-{i}"), "lan", "pc", &["cpu".to_string(), "gpu".to_string(), "npu".to_string()]).unwrap();
+        }
+        let devices = wl.list_devices().unwrap();
+        assert_eq!(devices.len(), 20);
+        let status = wl.status();
+        assert_eq!(status["paired_device_count"], 20);
+        assert_eq!(status["paired_by_kind"]["phone"], 10);
+        assert_eq!(status["paired_by_kind"]["tablet"], 5);
+        assert_eq!(status["paired_by_kind"]["pc"], 5);
+        assert_eq!(status["paired_by_kind"]["other"], 0);
+    }
+
+    #[test]
+    fn accepts_wan_as_a_connection_label() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let device = wl.pair("test-token", "remote-office-pc", "wan", "pc", &["cpu".to_string()]).unwrap();
+        assert_eq!(device.connection, "wan");
+    }
+
+    #[test]
+    fn status_includes_wan_disclosure() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let status = wl.status();
+        assert!(status["wan_disclosure_en"].as_str().unwrap().contains("TLS"));
+        assert!(status["wan_disclosure_ja"].as_str().unwrap().contains("TLS"));
+    }
+
+    #[test]
+    fn rejects_unknown_device_kind() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let err = wl.pair("test-token", "mystery-box", "wifi", "toaster", &[]).unwrap_err();
+        assert!(err.contains("kind must be one of"), "got: {err}");
+    }
+
+    #[test]
+    fn rejects_unknown_capability() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let err = wl.pair("test-token", "dev1", "wifi", "pc", &["quantum".to_string()]).unwrap_err();
+        assert!(err.contains("capabilities must be a subset of"), "got: {err}");
+    }
+
+    #[test]
+    fn empty_kind_falls_back_to_other_for_backward_compatibility() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let device = wl.pair("test-token", "legacy-client", "usb", "", &[]).unwrap();
+        assert_eq!(device.kind, "other");
+    }
+
+    #[test]
+    fn deduplicates_repeated_capabilities() {
+        let wl = WorldLab::new_enabled_for_test("test-token");
+        let device = wl.pair("test-token", "dev1", "wifi", "pc", &["cpu".to_string(), "cpu".to_string(), "gpu".to_string()]).unwrap();
+        assert_eq!(device.capabilities, vec!["cpu".to_string(), "gpu".to_string()]);
     }
 }

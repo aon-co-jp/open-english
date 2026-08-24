@@ -187,14 +187,23 @@ pub async fn write_file(requested_path: &str, content: &str) -> Result<()> {
 mod tests {
     use super::*;
 
+    /// **2026-08-25修正**: `local_agent.rs`と同根のテストフレーク
+    /// (`CLAUDE.md`2026-08-25 HANDOFF参照)。この3件も同一プロセス内
+    /// グローバルな環境変数`OPEN_ENGLISH_VPS_ALLOWED_PATHS`を
+    /// 並行して書き換え合っており、実機で不安定な失敗を確認したため
+    /// 同じ`Mutex`直列化パターンで修正した。
+    static ENV_TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
     #[test]
     fn rejects_paths_outside_allowed_dirs_without_env() {
+        let _guard = ENV_TEST_LOCK.lock().unwrap();
         std::env::remove_var("OPEN_ENGLISH_VPS_ALLOWED_PATHS");
         assert!(validate_remote_path("/etc/passwd").is_err());
     }
 
     #[test]
     fn rejects_dotdot_traversal() {
+        let _guard = ENV_TEST_LOCK.lock().unwrap();
         unsafe {
             std::env::set_var("OPEN_ENGLISH_VPS_ALLOWED_PATHS", "/home/deploy/app");
         }
@@ -206,6 +215,7 @@ mod tests {
 
     #[test]
     fn accepts_paths_within_allowed_dir() {
+        let _guard = ENV_TEST_LOCK.lock().unwrap();
         unsafe {
             std::env::set_var("OPEN_ENGLISH_VPS_ALLOWED_PATHS", "/home/deploy/app");
         }

@@ -114,8 +114,23 @@ pub fn write_file(requested: &str, content: &str) -> Result<()> {
 mod tests {
     use super::*;
 
+    /// **2026-08-25修正: テストのフレーク(不安定な失敗)を発見・修正**。
+    /// この3件のテストはいずれもプロセス全体で1つしかない環境変数
+    /// `OPEN_ENGLISH_AGENT_ALLOWED_DIRS`を`set_var`/`remove_var`する。
+    /// 元のコメントは「単一スレッドのテストでは~が標準的な方法」と
+    /// 書いていたが、これは誤り——Rustの既定のテストランナーは
+    /// `#[test]`関数を**複数スレッドで並行実行する**ため、実際には
+    /// 単一スレッド前提が成り立たず、他のテストがこの環境変数を
+    /// 変更している最中に割り込まれてアサーションが失敗する
+    /// (`cargo test --release`をworld-lab関連の変更と合わせて実行した
+    /// 際に実機で再現・発見した)。テスト全体をこの`Mutex`でロックする
+    /// ことで、3件が互いに割り込まないよう直列化する(本番コード自体に
+    /// バグは無い——テストの分離が不十分だっただけ)。
+    static ENV_TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
     #[test]
     fn disabled_by_default_when_env_unset() {
+        let _guard = ENV_TEST_LOCK.lock().unwrap();
         std::env::remove_var("OPEN_ENGLISH_AGENT_ALLOWED_DIRS");
         assert!(validate_read_path("C:\\Windows\\win.ini").is_err() || allowed_dirs().is_empty());
         assert!(allowed_dirs().is_empty());
@@ -123,6 +138,7 @@ mod tests {
 
     #[test]
     fn rejects_paths_outside_allowed_dirs() {
+        let _guard = ENV_TEST_LOCK.lock().unwrap();
         let dir = std::env::temp_dir().join(format!("open-english-local-agent-test-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         std::fs::write(dir.join("ok.txt"), "hello").unwrap();
@@ -130,8 +146,8 @@ mod tests {
         std::fs::create_dir_all(&outside_dir).unwrap();
         std::fs::write(outside_dir.join("secret.txt"), "nope").unwrap();
 
-        // SAFETY (test-only): setting a process-wide env var in a single-threaded
-        // test is the standard way to exercise env-driven config in this codebase.
+        // SAFETY (test-only): `ENV_TEST_LOCK`が同一プロセス内の他のテスト
+        // との並行変更を防いでいるため、ここでの環境変数の変更は安全。
         unsafe {
             std::env::set_var("OPEN_ENGLISH_AGENT_ALLOWED_DIRS", dir.to_string_lossy().to_string());
         }
@@ -146,6 +162,7 @@ mod tests {
 
     #[test]
     fn write_then_read_round_trips_within_allowed_dir() {
+        let _guard = ENV_TEST_LOCK.lock().unwrap();
         let dir = std::env::temp_dir().join(format!("open-english-local-agent-test-write-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         unsafe {

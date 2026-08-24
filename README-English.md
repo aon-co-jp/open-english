@@ -7,7 +7,68 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-24, cont. 9): tackled world-lab's remaining
+> 📌 **Update (2026-08-25, cont. 2): added bulk pairing**:
+> - Added a "🏢 Bulk pairing" feature (`POST /v1/world-lab/pair/bulk`)
+>   for offices/large stores with many PCs/tablets/phones — paste
+>   newline-separated device names and pair them all in one action.
+> - **The core principle is unchanged**: it still requires someone with
+>   the correct pairing token to act explicitly, and each entry goes
+>   through the exact same validation as a normal pairing — this is not
+>   auto-discovery or auto-approval. One failed entry doesn't lose the
+>   others that succeeded (batch size capped at 100 by default).
+> - Verified over real HTTP by bulk-pairing 30 simulated office PCs in a
+>   single request.
+> - See the 2026-08-25 entry in [CLAUDE.md](CLAUDE.md).
+>
+> 📌 **Update (2026-08-25, cont.): added a "wan" connection label,
+> explicitly declined automatic port-opening (UPnP), and found/fixed two
+> more flaky tests**:
+> - Added `wan` (over the internet) as a connection label, but
+>   **deliberately did not implement automatic port forwarding
+>   (UPnP)** — UPnP-based auto port-opening is itself a long-standing,
+>   well-known router attack vector, and building it into a feature whose
+>   whole point is preventing relay/stepping-stone abuse would be
+>   self-defeating.
+> - The server listens on 127.0.0.1 (this machine only) by default and
+>   is unreachable from outside unless the operator explicitly changes
+>   `OPEN_ENGLISH_SERVER_BIND` — that already satisfies "reachable only
+>   via manual configuration." The status panel now recommends setting up
+>   your own TLS termination if you do expose it over WAN (the pairing
+>   API is still plain HTTP today).
+> - Found and fixed the same kind of test flake (env vars raced across
+>   parallel tests) in `vps_agent.rs`, following the one already fixed in
+>   `local_agent.rs`.
+> - See the 2026-08-25 entry in [CLAUDE.md](CLAUDE.md).
+>
+> 📌 **Latest update (2026-08-25): world-lab now supports device
+> kind/self-reported hardware capability (CPU/GPU/NPU) + related-tool
+> shortcuts, plus a form auto-fill (with an explicit security boundary
+> kept), and a test flake found & fixed**:
+> - **Multiple phones/tablets/PCs**: pairing now takes a device kind
+>   (📱phone/📲tablet/🖥PC/❓other) and self-reported hardware capability
+>   (CPU/GPU/NPU). The status panel shows a per-kind breakdown (e.g.
+>   "📱3 📲2 🖥1").
+> - **Honest disclosure**: capability is self-reported and unverified.
+>   Compute tasks still always run on CPU — dispatching to a remote
+>   device's GPU/NPU (e.g. idle office PCs) is **not implemented**; the
+>   design sketch (including a possible role for `open-cuda`/
+>   `open-directx`) is recorded in [CLAUDE.md](CLAUDE.md)'s "future
+>   vision" section, but building it without the same safety rigor as
+>   the Phase 2 WASM sandbox was deliberately avoided.
+> - **Microsoft/GitHub Copilot**: added as link-only entries to the AI
+>   Coding Assistant tool list (official site links, not an API
+>   integration) — reachable with one tap from the world-lab panel too.
+> - **Auto-fill, with a boundary kept on purpose**: opening the world-lab
+>   panel now pre-fills the device-kind guess and GPU checkbox from data
+>   already on screen — but pairing itself still always requires an
+>   explicit token entry and button click. No token-less auto-pairing was
+>   added; that stays central to the anti-relay design.
+> - **Found and fixed a flaky test**: three existing `local_agent.rs`
+>   tests raced on the same env var; serialized with a lock (production
+>   code had no bug).
+> - See the 2026-08-25 entry in [CLAUDE.md](CLAUDE.md).
+>
+> 📌 **Update (2026-08-24, cont. 9): tackled world-lab's remaining
 > scope — UI wiring, concurrency limiting, cross-process E2E, and root
 > cause tracking**:
 > - **UI**: added a "🌐 world-lab (experimental)" panel — status, pairing
