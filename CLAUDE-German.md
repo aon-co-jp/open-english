@@ -386,3 +386,18 @@ Kindprozess abstürzen, während der Hauptserver unbeeinflusst weiterlief,
 was per HTTP nachgewiesen wurde. Keine Weiterleitungsfunktion für
 fremden Datenverkehr wurde hinzugefügt. Vollständige Details nur in der
 japanischen Version von CLAUDE.md.
+
+**Update (Fortsetzung 9, 2026-08-24)**: verbleibende world-lab-Aufgaben
+angegangen. UI-Panel hinzugefügt und live getestet (Pairing, Geräteliste,
+WASM-Aufgabenausführung). Nebenläufigkeit/Warteschlange begrenzt
+(Semaphore + Zähler), um Ressourcenerschöpfung des Serverprozesses durch
+Anfrageflut zu verhindern. Bei einer erneuten Sicherheitsprüfung ein
+weiteres Loch gefunden: der Anfragetext wurde vollständig gelesen, bevor
+die Größenbegrenzung griff — jetzt im Stream begrenzt (mit echtem HTTP-
+Test einer 5-MB-Nutzlast bestätigt, die sofort mit 413 abgelehnt wird).
+Wasmtime-Versionswechsel (21→27) reproduzierte denselben Absturz,
+bestätigt Prozessisolation als notwendige Maßnahme unabhängig von der
+Ursache. Mehrgeräteverifikation blieb auf simulierte Geräte über echtes
+HTTP auf derselben Maschine beschränkt (kein zweites physisches Gerät
+verfügbar). Vollständige Details nur in der japanischen Version von
+CLAUDE.md.

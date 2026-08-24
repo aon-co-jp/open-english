@@ -832,9 +832,43 @@ struct WorldLabTaskRunRequest {
     input_base64: String,
 }
 
+/// リクエストボディを、指定バイト数を超えたら**ストリーム読み取りの
+/// 途中で**打ち切る形で読む(`http_body_util::Limited`を使用)。
+///
+/// **なぜ`read_rs_json_body`をそのまま使わなかったか(2026-08-24、
+/// セキュリティレビューで発見・修正)**: 既存の`read_rs_json_body`は
+/// `collect()`でボディを最後まで無制限に読み切ってからパースする設計
+/// (他の`/v1/db/*`・`/v1/agent/*`エンドポイントと共有のヘルパー)。
+/// 通常のJSON設定値程度のペイロードでは実害が薄いが、**「任意の計算
+/// タスク」を受け付けるworld-labのエンドポイントでは、悪意ある送信者が
+/// 巨大なBase64文字列(例: 数GB)を送りつけるだけで、`ComputeLimits`の
+/// サイズ上限チェック(Base64をデコードした**後**に行われる)へ到達する
+/// 前に、このプロセスのメモリを食い潰せてしまう**——「WASM実行は
+/// サンドボックス+サブプロセス隔離で守ったのに、その手前のHTTPボディ
+/// 読み取り自体がDoSの穴だった」となっては本末転倒なため、この
+/// エンドポイント専用にストリーム段階でのキャップを追加した。
+async fn read_capped_rs_json_body<T: serde::de::DeserializeOwned>(req: Request, max_bytes: usize) -> Result<T, Response> {
+    use http_body_util::{BodyExt, Limited};
+    let limited = Limited::new(req.into_body(), max_bytes);
+    let bytes = match limited.collect().await {
+        Ok(collected) => collected.to_bytes(),
+        Err(_) => {
+            return Err(rs_json_response(
+                StatusCode::PAYLOAD_TOO_LARGE,
+                &serde_json::json!({"error": format!("request body exceeds the {max_bytes}-byte limit for this endpoint")}),
+            ))
+        }
+    };
+    rust_json::from_slice_strict::<T>(&bytes)
+        .map_err(|e| rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": format!("invalid JSON body (Rust-JSON strict mode): {e}")})))
+}
+
 async fn world_lab_task_run(req: Request, wl: Arc<world_lab::WorldLab>, compute: Arc<world_lab::ComputeEngine>) -> Response {
     use base64::Engine as _;
-    let body: WorldLabTaskRunRequest = match read_rs_json_body(req).await {
+    // Base64は元データの約4/3倍に膨らむため、JSON側の余裕(フィールド名・
+    // 引用符等、4KiB見込み)を足した上限を、ボディ読み取りの時点で課す。
+    let max_body_bytes = (compute.limits.max_wasm_bytes + compute.limits.max_input_bytes) * 4 / 3 + 4096;
+    let body: WorldLabTaskRunRequest = match read_capped_rs_json_body(req, max_body_bytes).await {
         Ok(v) => v,
         Err(resp) => return resp,
     };

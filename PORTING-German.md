@@ -215,3 +215,19 @@ Bugs in der Ausführungs-Engine selbst; eine Prozessgrenze als
 zusätzliche, vom Laufzeitsystem unabhängige Verteidigungsschicht ist
 notwendig. Details siehe PORTING.md (Abschnitt „world-lab", Japanisch)
 und CLAUDE.md, Eintrag 2026-08-24 (Fortsetzung 8).
+
+
+## world-lab: weitere Erkenntnisse aus Phase 3 (2026-08-24)
+
+Bei der Umsetzung der UI-Anbindung, Nebenläufigkeitsbegrenzung und
+erneuten Sicherheitsprüfung: (1) gemeinsame JSON-Body-Lese-Hilfsfunktionen
+nicht ungeprüft für Endpunkte mit beliebig großen Eingaben wiederverwenden
+— eine dedizierte, mit `http_body_util::Limited` gestreamte Variante ist
+für „beliebige Berechnung"/„beliebige Datei" nötig, da die Größenprüfung
+sonst erst nach dem vollständigen Lesen (bzw. Base64-Dekodieren) greift.
+(2) Nebenläufigkeitsbegrenzung braucht neben dem `Semaphore` einen
+separaten Zähler für Wartende, da unbegrenztes Warten selbst zur
+Ressourcenerschöpfung werden kann. (3) Ein Versionswechsel der Sandbox-
+Engine (wasmtime) garantiert nicht, dass ein gefundener Absturz behoben
+ist — erst nach echtem Reproduktionstest mit der neuen Version davon
+ausgehen. Details siehe PORTING.md (Abschnitt „world-lab", Japanisch).

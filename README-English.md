@@ -7,7 +7,32 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-24, cont. 8): "world-lab" Phase 2 — WASM
+> 📌 **Latest update (2026-08-24, cont. 9): tackled world-lab's remaining
+> scope — UI wiring, concurrency limiting, cross-process E2E, and root
+> cause tracking**:
+> - **UI**: added a "🌐 world-lab (experimental)" panel — status, pairing
+>   a device, listing/unpairing devices, and an advanced .wasm-upload task
+>   runner, all exercised live in a browser.
+> - **Concurrency limiting/queueing**: added a `tokio::sync::Semaphore` cap
+>   on concurrent tasks and an `AtomicUsize` queue-length cap (excess
+>   requests are rejected immediately rather than queued forever) — a
+>   defense the per-task fuel/memory/timeout limits alone couldn't provide
+>   against flooding the host process itself.
+> - **Found and fixed another hole during a fresh security pass**: the
+>   endpoint was reading the request body to completion *before* checking
+>   size limits — for an "arbitrary compute" endpoint, that's a real DoS
+>   hole. Switched to a streaming, capped reader instead.
+> - **Root-cause tracking**: bumped wasmtime 21.0.2 → 27.0.0 and reproduced
+>   the identical crash, confirming it isn't version-specific but a more
+>   general compatibility issue on this platform — the process-isolation
+>   mitigation remains necessary and correct either way.
+> - **Multi-device verification (honest disclosure)**: this dev environment
+>   has no second physical device, so verification was limited to pairing
+>   simulated devices over real HTTP across all four connection types
+>   (USB/Wi-Fi/Bluetooth/LAN) — not literally separate physical machines.
+> - See the 2026-08-24 (cont. 9) entry in [CLAUDE.md](CLAUDE.md).
+>
+> 📌 **Update (2026-08-24, cont. 8): "world-lab" Phase 2 — WASM
 > sandboxed compute tasks, plus a critical crash found and fixed via
 > process isolation**:
 > - Added `POST /v1/world-lab/task/run`, letting idle CPU/GPU/NPU capacity

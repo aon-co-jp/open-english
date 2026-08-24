@@ -7,7 +7,7 @@ description = "open-englishの静的フロントエンド(index.html/style.css/a
 
 [dependencies]
 open-runo-poem-compat = { path = "../../RPoem/crates/open-runo-poem-compat" }
-tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "time"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "time", "sync"] }
 # 自動アップデート機能(2026-08-11追加、ユーザー指示「起動時の自動
 # メンテナンスで自動UPDATEの自動バージョンアップ機能も搭載して、
 # 自動でGithubから最新版を見つけて古いのは自動でアンインストールして

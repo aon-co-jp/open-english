@@ -39,7 +39,7 @@
 //! 今後も持たせるべきではない。
 
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::Serialize;
@@ -352,21 +352,51 @@ fn run_wasm_blocking(wasm: &[u8], input: &[u8], limits: &ComputeLimits) -> Resul
 pub struct ComputeEngine {
     pub enabled: bool,
     pub limits: ComputeLimits,
+    /// 同時実行数の上限(2026-08-24追加、ユーザー指示「同時実行数の
+    /// 上限・キューイング」への対応)。個々のタスクにfuel/メモリ/
+    /// タイムアウト上限を課しても、**大量のリクエストを同時に送りつけ
+    /// られれば、その分だけ子プロセスが並列に立ち上がり、このホスト
+    /// プロセス自体のCPU/メモリ/プロセステーブルを圧迫し得る**——
+    /// 個々のタスクの上限だけでは防げないリソース枯渇に対する追加の
+    /// 防御層。`tokio::sync::Semaphore`の許可証(permit)を先着順で
+    /// 配布し、上限に達している間は新規タスクを待機させる。
+    concurrency: Arc<tokio::sync::Semaphore>,
+    /// 現在待機(実行許可待ち)中のタスク数。`max_queue`を超えたら、
+    /// 待機させ続けるのではなく即座に拒否する(無制限キューイングも
+    /// それ自体がメモリ枯渇の一種であるため)。
+    queued: Arc<std::sync::atomic::AtomicUsize>,
+    max_queue: usize,
 }
 
 impl ComputeEngine {
     pub fn from_env() -> Self {
         let enabled = std::env::var("OPEN_ENGLISH_WORLD_LAB_COMPUTE_ENABLED").map(|v| v == "1").unwrap_or(false);
         let limits = ComputeLimits::from_env();
+        let max_concurrent = std::env::var("OPEN_ENGLISH_WORLD_LAB_MAX_CONCURRENT_TASKS")
+            .ok()
+            .and_then(|v| v.parse::<usize>().ok())
+            .filter(|n| *n > 0)
+            .unwrap_or(2);
+        let max_queue = std::env::var("OPEN_ENGLISH_WORLD_LAB_MAX_QUEUE")
+            .ok()
+            .and_then(|v| v.parse::<usize>().ok())
+            .filter(|n| *n > 0)
+            .unwrap_or(8);
         if enabled {
             println!(
-                "world-lab compute: ENABLED (experimental, WASM sandbox in an isolated worker process — empty Linker, no WASI, fuel={}, memory_limit={}B, timeout={}s)",
+                "world-lab compute: ENABLED (experimental, WASM sandbox in an isolated worker process — empty Linker, no WASI, fuel={}, memory_limit={}B, timeout={}s, max_concurrent={max_concurrent}, max_queue={max_queue})",
                 limits.fuel_limit, limits.memory_limit_bytes, limits.timeout_secs
             );
         } else {
             println!("world-lab compute: disabled (set OPEN_ENGLISH_WORLD_LAB_COMPUTE_ENABLED=1 in addition to OPEN_ENGLISH_WORLD_LAB_ENABLED=1 to enable)");
         }
-        Self { enabled, limits }
+        Self {
+            enabled,
+            limits,
+            concurrency: Arc::new(tokio::sync::Semaphore::new(max_concurrent)),
+            queued: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
+            max_queue,
+        }
     }
 
     /// **サブプロセス隔離での実行(2026-08-24追加、実機テストで発覚した
@@ -411,7 +441,32 @@ impl ComputeEngine {
         if input.len() > self.limits.max_input_bytes {
             return Err(format!("input too large ({} bytes, limit {})", input.len(), self.limits.max_input_bytes));
         }
-        run_in_worker_process(wasm, input, self.limits.timeout_secs).await
+
+        // 同時実行数の上限・キューイング(このstructのdoc参照)。
+        // 上限に達している間に並んで待つリクエストが多すぎる場合は、
+        // 無制限に待たせるのではなく即座に拒否する。
+        use std::sync::atomic::Ordering;
+        let queued_now = self.queued.fetch_add(1, Ordering::SeqCst) + 1;
+        if queued_now > self.max_queue {
+            self.queued.fetch_sub(1, Ordering::SeqCst);
+            return Err(format!(
+                "too many world-lab tasks are already queued ({} waiting, limit {}) — try again later",
+                queued_now - 1,
+                self.max_queue
+            ));
+        }
+        let permit = match self.concurrency.clone().acquire_owned().await {
+            Ok(p) => p,
+            Err(e) => {
+                self.queued.fetch_sub(1, Ordering::SeqCst);
+                return Err(format!("internal error acquiring concurrency slot: {e}"));
+            }
+        };
+        self.queued.fetch_sub(1, Ordering::SeqCst);
+
+        let result = run_in_worker_process(wasm, input, self.limits.timeout_secs).await;
+        drop(permit); // 明示——許可証は次に待っているタスクへ回る
+        result
     }
 }
 
@@ -649,6 +704,49 @@ mod tests {
     // `infinite_loop_is_stopped_by_fuel_limit`という単体テストは意図的に
     // 置いていない——上記`WAT_INFINITE_LOOP`のdoc参照。fuel上限自体は
     // `run_isolated`(サブプロセス隔離)経由の実HTTP検証で確認済み。
+
+    /// **根本原因調査の記録(2026-08-24、ユーザー指示「root cause
+    /// 追跡」への対応)**。このテストは`#[ignore]`により通常の
+    /// `cargo test`では実行されない(実行すればプロセスごとabortする
+    /// ため)——将来この問題が解消したか手動で再確認するためだけに
+    /// 残してある(`cargo test -- --ignored
+    /// world_lab::tests::repro_in_process_fuel_exhaustion_crash`)。
+    ///
+    /// **調査結果**: (1) Web検索で調べた限り、`STATUS_STACK_BUFFER_
+    /// OVERRUN`(/GSスタック保護チェック失敗)がlongjmp系の非標準的な
+    /// 制御移行と組み合わさって発生する事例は他のプロジェクト
+    /// (unicorn-engineエミュレータ)でも報告されており、Windows
+    /// Control Flow Guard(CFG)有効時に典型的に起きるパターンだと
+    /// 判明した。ただし本プロジェクトのビルドではCFGを有効化する
+    /// rustcフラグ(`-Z control-flow-guard`、nightly限定・既定無効)を
+    /// 一切指定していないため、CFGそのものが直接の原因である可能性は
+    /// 低いと判断した。(2) **`wasmtime`を21.0.2→27.0.0へ一時的に
+    /// 引き上げて同じ手順で再現実験を行ったところ、全く同じ
+    /// `STATUS_STACK_BUFFER_OVERRUN`が再現した**——つまり特定バージョン
+    /// の既知バグではなく、この開発環境(Windows、rustc 1.96、MSVC
+    /// ツールチェイン)での`wasmtime`のfuel枯渇トラップ配送
+    /// (`wasmtime_longjmp`によるSEHベースの非標準アンワインド)に
+    /// より一般的な相性問題があると考えられる。実験後、`wasmtime`は
+    /// 21.0.2へ戻した(バージョンアップによる恩恵が無く、既存の
+    /// 21.0.2での動作実績〈本ファイルの他のテスト・実HTTP検証〉を
+    /// 変える理由が無いため)。
+    ///
+    /// **正直な開示・追跡しきれなかった部分**: `wasmtime`本体の
+    /// ソースコードレベルでのデバッグ(Windows x64の unwind情報
+    /// 〈.pdataテーブル〉がJIT生成コードに対して正しく登録されているか
+    /// 等)までは行っていない——専用のデバッガ・`wasmtime`内部への
+    /// 深い調査が必要で、今回のセッションのスコープを超えると判断した。
+    /// **この根本原因が未解明のままでも、`ComputeEngine::run_isolated`
+    /// によるサブプロセス隔離という対策自体は有効であり続ける**
+    /// (`wasmtime`側のバグかどうかに関わらず、プロセス境界による
+    /// 被害局所化は独立して機能する設計のため)。
+    #[test]
+    #[ignore = "process-crashing repro — see doc comment; run manually with `cargo test -- --ignored` only"]
+    fn repro_in_process_fuel_exhaustion_crash() {
+        let mut limits = test_limits();
+        limits.fuel_limit = 1_000_000;
+        let _ = run_wasm_blocking(WAT_INFINITE_LOOP.as_bytes(), b"", &limits);
+    }
 
     #[test]
     fn rejects_wasm_module_larger_than_limit() {

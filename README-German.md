@@ -1,6 +1,23 @@
 ﻿# open-english
 
-> 📌 **Neuestes Update (2026-08-24, Fortsetzung 8): „world-lab" Phase 2 —
+> 📌 **Neuestes Update (2026-08-24, Fortsetzung 9): verbleibende world-lab-
+> Aufgaben angegangen — UI-Anbindung, Nebenläufigkeitsbegrenzung,
+> prozessübergreifende E2E-Tests, Ursachenforschung.** Neues Panel „🌐
+> world-lab" (Status, Geräte-Pairing, WASM-Aufgaben-Ausführung) live im
+> Browser getestet. Nebenläufigkeit und Warteschlangenlänge sind jetzt
+> begrenzt (`tokio::sync::Semaphore` + `AtomicUsize`), um zu verhindern,
+> dass eine Flut von Anfragen den Serverprozess selbst erschöpft. Bei einer
+> erneuten Sicherheitsprüfung wurde ein weiteres Loch gefunden und
+> behoben: der Anfragetext wurde vollständig gelesen, **bevor** die
+> Größenbegrenzung geprüft wurde — jetzt wird er im Stream begrenzt.
+> Ein Versionswechsel auf wasmtime 27.0.0 reproduzierte denselben Absturz,
+> was bestätigt, dass es sich nicht um einen versionsspezifischen Fehler
+> handelt (die Prozessisolation bleibt notwendig). Mehrgeräteverifikation
+> war auf simulierte Geräte über echtes HTTP (alle vier Verbindungsarten)
+> auf derselben Maschine beschränkt, da kein zweites physisches Gerät zur
+> Verfügung stand. Details siehe CLAUDE.md, Eintrag 2026-08-24 (Fortsetzung 9).
+
+> 📌 **Update (2026-08-24, Fortsetzung 8): „world-lab" Phase 2 —
 > WASM-Sandbox-Rechenaufgaben, plus ein kritischer Absturz gefunden und
 > per Prozessisolation behoben.** Ungenutzte Rechenkapazität (CPU/GPU/NPU)
 > alter Smartphones/Tablets/PCs kann jetzt experimentell und standardmäßig
