@@ -9,6 +9,16 @@
 > ricerca reale sul sistema duale tedesco di formazione professionale
 > (Berufsschule, qualifiche IHK, Ausbildung). Dettagli e fonti in CLAUDE.md.
 
+> 📌 **Ultimo aggiornamento (2026-08-24, seguito 6): citazioni/proverbi +
+> messaggio motivazionale + nuova materia "Communication & Questioning
+> Skills"**: ogni riquadro di orientamento professionale mostra ora una
+> citazione/proverbio bilingue (italiano/inglese, es. "Strike while the
+> iron is hot") e un messaggio motivazionale prudente (non una garanzia)
+> che esprime la speranza che chi impara possa trovare lavoro, cambiare
+> carriera e mantenersi ovunque vada. Una nuova materia (medie/superiori)
+> insegna espressioni inglesi reali per discussioni ipotetiche costruttive
+> e feedback costruttivo. Dettagli in CLAUDE.md.
+
 > 📌 **Ultimo aggiornamento (2026-08-24, seguito): auto-riparazione del DUAL DB
 > (ritentativi automatici della coda) + supporto TLS per la connessione
 > PostgreSQL + supporto al metodo HTTP HEAD**:

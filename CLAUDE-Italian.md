@@ -347,3 +347,13 @@ Dimensioni del font incoerenti tra testo giapponese ed etichette latine
 TLS del database corretto per riflettere il supporto TLS realmente
 implementato (`tokio-postgres-rustls`), con nota onesta che non è stato
 possibile testarlo per mancanza di cargo/psql/Docker su questa macchina.
+
+**Aggiornamento (seguito 6, 2026-08-24)**: aggiunte citazioni/proverbi
+bilingui (giapponese/inglese) a tutti e tre i riquadri di orientamento
+professionale esistenti, un messaggio motivazionale (espresso come
+speranza, non garanzia) che augura agli studenti di trovare lavoro e
+mantenersi ovunque, e una nuova materia "Communication & Questioning
+Skills" (medie/superiori) che insegna espressioni inglesi reali per
+discussioni ipotetiche costruttive, feedback costruttivo e l'importanza
+di essere "audaci ma delicati". Verificato dal vivo (server avviato,
+browser). Dettagli completi solo nella versione giapponese di CLAUDE.md.

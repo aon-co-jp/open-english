@@ -363,3 +363,14 @@ zur TLS-Unterstützung der Datenbank korrigiert, um die tatsächlich
 implementierte TLS-Unterstützung (`tokio-postgres-rustls`) widerzuspiegeln,
 mit ehrlichem Hinweis, dass dies mangels cargo/psql/Docker auf dieser
 Maschine nicht getestet werden konnte.
+
+**Update (Fortsetzung 6, 2026-08-24)**: Zweisprachige (Japanisch/Englisch)
+Zitate/Sprichwörter in allen drei bestehenden Karriereberatungsfeldern
+ergänzt, außerdem eine Motivationsbotschaft (als Hoffnung, nicht als
+Garantie formuliert) mit dem Wunsch, dass Lernende eine Anstellung finden
+und sich überall behaupten können, sowie ein neues Fach „Communication &
+Questioning Skills" (Mittel-/Oberstufe), das echte englische Redewendungen
+für konstruktive hypothetische Diskussionen, konstruktives Feedback und
+die Bedeutung von „mutig, aber taktvoll" vermittelt. Live getestet
+(Server gestartet, Browser). Vollständige Details nur in der japanischen
+Version von CLAUDE.md.

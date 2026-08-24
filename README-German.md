@@ -9,6 +9,17 @@
 > echten Recherche zum deutschen dualen Ausbildungssystem (Berufsschule,
 > IHK-Abschlüsse, Ausbildung). Details und Quellen siehe CLAUDE.md.
 
+> 📌 **Neuestes Update (2026-08-24, Fortsetzung 6): Zitate/Sprichwörter +
+> Motivationsbotschaft + neues Fach „Communication & Questioning
+> Skills"**: Jedes Karriereberatungsfeld zeigt nun ein zweisprachiges
+> Zitat/Sprichwort (Deutsch/Englisch, z. B. „Strike while the iron is
+> hot") sowie eine zurückhaltend formulierte Motivationsbotschaft (keine
+> Garantie), die die Hoffnung ausdrückt, dass Lernende eine Anstellung
+> finden, den Beruf wechseln und sich überall behaupten können. Ein neues
+> Fach (Mittel-/Oberstufe) vermittelt echte englische Redewendungen für
+> konstruktive hypothetische Diskussionen und konstruktives Feedback.
+> Details in CLAUDE.md.
+
 > 📌 **Neuestes Update (2026-08-24, Fortsetzung): Selbstheilung bei DUAL DB
 > (automatischer Outbox-Retry) + TLS-Unterstützung für die PostgreSQL-Verbindung
 > + HTTP-HEAD-Unterstützung**:

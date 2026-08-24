@@ -373,3 +373,14 @@ uniformisées. Texte obsolète sur le support TLS de la base de données
 corrigé pour refléter le support TLS réellement implémenté
 (`tokio-postgres-rustls`), avec mention honnête que ce n'a pas pu être
 testé faute de cargo/psql/Docker sur cette machine.
+
+**Mise à jour (suite 6, 2026-08-24)**: Ajout de citations/proverbes
+bilingues (japonais/anglais) dans les trois encarts de conseil de
+carrière existants, d'un message de motivation (formulé comme un espoir,
+non une garantie) exprimant le souhait que les apprenants deviennent
+employables et capables de gagner leur vie partout, et d'une nouvelle
+matière « Communication & Questioning Skills » (collège/lycée) qui
+enseigne de vraies expressions anglaises pour la discussion hypothétique
+constructive, le feedback constructif, et l'importance d'être « audacieux
+mais délicat ». Vérifié en conditions réelles (serveur lancé, navigateur).
+Détails complets uniquement dans la version japonaise de CLAUDE.md.

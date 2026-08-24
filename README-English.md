@@ -7,6 +7,22 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-24, cont. 6): Quotes/proverbs + motivation
+> message + a new "Communication & Questioning Skills" subject**:
+> - Every career-guidance box (tutor course and virtual school/vocational
+>   school alike) now also shows a bilingual (Japanese/English) quote or
+>   proverb (e.g. "Strike while the iron is hot.") plus a motivation
+>   message — hoping learners grow into people who "can get a job, change
+>   careers, make a living, and hold their own anywhere" — phrased as our
+>   own hope/goal rather than a guarantee.
+> - A new subject, "🗣 Communication & Questioning Skills" (junior high /
+>   high school), teaches real, usable English phrases for raising a vague
+>   or hypothetical idea constructively, pointing out a problem clearly
+>   before asking someone specific (or everyone) for their opinion, and
+>   why being "bold yet tactful" tends to work better than being too
+>   passive — all as multiple-choice questions.
+> - See the 2026-08-24 (cont. 6) entry in [CLAUDE.md](CLAUDE.md) for details.
+>
 > 📌 **Latest update (2026-08-24, cont. 2): "Career guidance" added to the
 > grade-based tutor course**:
 > - The practice-question screen now shows a 🧭 Career Guidance box for the

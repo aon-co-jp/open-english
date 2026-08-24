@@ -10,6 +10,17 @@
 > (Berufsschule, certifications IHK, Ausbildung). Voir CLAUDE.md pour les
 > détails et les sources.
 
+> 📌 **Dernière mise à jour (2026-08-24, suite 6) : citations/proverbes +
+> message de motivation + nouvelle matière « Communication & Questioning
+> Skills »** : chaque encart de conseil de carrière affiche désormais une
+> citation ou un proverbe bilingue (français/anglais, ex. « Strike while
+> the iron is hot ») et un message de motivation prudent (pas une
+> garantie) exprimant l'espoir que l'apprenant puisse trouver un emploi,
+> changer de carrière et gagner sa vie partout. Une nouvelle matière
+> (collège/lycée) enseigne de vraies expressions anglaises pour une
+> discussion hypothétique constructive et un retour constructif. Détails
+> dans CLAUDE.md.
+
 > 📌 **Dernière mise à jour (2026-08-24, suite) : auto-réparation de la
 > DUAL DB (file d'attente de nouvelles tentatives) + support TLS pour la
 > connexion PostgreSQL + support de la méthode HTTP HEAD** :
