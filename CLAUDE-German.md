@@ -374,3 +374,15 @@ für konstruktive hypothetische Diskussionen, konstruktives Feedback und
 die Bedeutung von „mutig, aber taktvoll" vermittelt. Live getestet
 (Server gestartet, Browser). Vollständige Details nur in der japanischen
 Version von CLAUDE.md.
+
+**Update (Fortsetzung 8, 2026-08-24)**: „world-lab" Phase 2 implementiert
+— geteilte Rechenleistung ungenutzter CPU/GPU/NPU über eine WASM-Sandbox
+(standardmäßig deaktiviert, ohne Bezahlung). Beim echten Testen wurde ein
+kritischer Fehler entdeckt: die Fuel-Grenze, die außer Kontrolle
+geratenen Gast-Code stoppen soll, brachte stattdessen den gesamten
+Serverprozess zum Absturz. Behoben durch Ausführung in einem isolierten
+Kindprozess — ein echter Angriffsversuch (Endlosschleife) ließ den
+Kindprozess abstürzen, während der Hauptserver unbeeinflusst weiterlief,
+was per HTTP nachgewiesen wurde. Keine Weiterleitungsfunktion für
+fremden Datenverkehr wurde hinzugefügt. Vollständige Details nur in der
+japanischen Version von CLAUDE.md.

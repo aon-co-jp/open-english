@@ -1,5 +1,23 @@
 ﻿# open-english
 
+> 📌 **Neuestes Update (2026-08-24, Fortsetzung 8): „world-lab" Phase 2 —
+> WASM-Sandbox-Rechenaufgaben, plus ein kritischer Absturz gefunden und
+> per Prozessisolation behoben.** Ungenutzte Rechenkapazität (CPU/GPU/NPU)
+> alter Smartphones/Tablets/PCs kann jetzt experimentell und standardmäßig
+> deaktiviert für beliebige Berechnungen in einer WASM-Sandbox geteilt
+> werden (`POST /v1/world-lab/task/run`), ohne Bezahlung — reine
+> gegenseitige Hilfe. **Beim echten Testen stellte sich heraus, dass die
+> Fuel-Grenze (Befehlszähler), die eigentlich außer Kontrolle geratenen
+> Gast-Code stoppen sollte, stattdessen den gesamten Serverprozess zum
+> Absturz bringen konnte** — der Sicherheitsmechanismus selbst war ein
+> Denial-of-Service-Loch mit nur einer Anfrage. Die WASM-Ausführung läuft
+> jetzt in einem **isolierten Kindprozess**; ein echter HTTP-Test bestätigt,
+> dass eine Endlosschleife diesen Kindprozess zum Absturz bringt, während
+> der Hauptserver überlebt und weiterhin korrekt bedient. Es wurde weiterhin
+> keine Weiterleitungsfunktion für fremden Datenverkehr implementiert
+> („niemals ein Relay" bleibt bestehen). Details siehe CLAUDE.md, Eintrag
+> vom 2026-08-24 (Fortsetzung 8).
+
 > 📌 **Update (2026-08-24, Fortsetzung 2): „Karriereorientierung" im
 > Nachhilfekurs nach Klassenstufe hinzugefügt.** Der Übungsbildschirm zeigt
 > jetzt pro Fach, welchen Branchen/Berufen dieser Lernstoff nützlich sein

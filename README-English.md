@@ -7,6 +7,26 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-24, cont. 8): "world-lab" Phase 2 — WASM
+> sandboxed compute tasks, plus a critical crash found and fixed via
+> process isolation**:
+> - Added `POST /v1/world-lab/task/run`, letting idle CPU/GPU/NPU capacity
+>   on spare devices run arbitrary compute inside a WASM sandbox. Disabled
+>   by default (two separate opt-in flags), with no reward/incentive —
+>   this is meant as mutual aid, not a paid marketplace.
+> - **While testing this for real, we found that the fuel (instruction
+>   count) limit meant to stop runaway guest code could instead crash the
+>   entire server process** — the safety mechanism itself was a one-request
+>   denial-of-service hole. We redesigned it on the spot to run WASM
+>   execution in an **isolated child process**, then proved over real HTTP
+>   that a submitted infinite loop does crash that child process while the
+>   main server survives and keeps serving other requests correctly right
+>   after.
+> - No traffic-relaying capability has been added — the "never a relay"
+>   design commitment is unchanged.
+> - See the 2026-08-24 (cont. 8) entry in [CLAUDE.md](CLAUDE.md) for the
+>   full write-up.
+>
 > 📌 **Latest update (2026-08-24, cont. 6): Quotes/proverbs + motivation
 > message + a new "Communication & Questioning Skills" subject**:
 > - Every career-guidance box (tutor course and virtual school/vocational

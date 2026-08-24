@@ -196,3 +196,22 @@ pro Frage), die unter jeder Frage im Nachhilfekurs Branchen/Berufe und
 mögliche fortgeschrittene Berufe anzeigt — stets vorsichtig formuliert.
 Details und Quellen zum deutschen dualen System siehe PORTING.md (§17,
 Japanisch).
+
+
+## world-lab: Geteilte Rechenleistung ungenutzter Geräte (2026-08-24)
+
+`server/src/world_lab.rs` implementiert Geräte-Pairing plus Ausführung
+beliebiger Rechenaufgaben in einer WASM-Sandbox, mit zwei getrennten,
+standardmäßig deaktivierten Opt-in-Flags. **Wichtigste Erkenntnis aus
+echten Tests**: die Fuel-Grenze (Befehlszähler) von wasmtime, die
+außer Kontrolle geratenen Gast-Code stoppen soll, brachte auf diesem
+Windows-Entwicklungsrechner stattdessen den gesamten Serverprozess zum
+Absturz (`/GS`-Stapelschutz-Konflikt mit SEH-basierter Trap-Behandlung).
+Die Lösung: WASM-Ausführung läuft jetzt in einem **isolierten
+Kindprozess** — stürzt dieser ab, bleibt der Hauptserver unberührt.
+**Beim Portieren dieses Musters unbedingt beibehalten**: Fuel-/
+Speichergrenzen allein garantieren keine Sicherheit vor unbekannten
+Bugs in der Ausführungs-Engine selbst; eine Prozessgrenze als
+zusätzliche, vom Laufzeitsystem unabhängige Verteidigungsschicht ist
+notwendig. Details siehe PORTING.md (Abschnitt „world-lab", Japanisch)
+und CLAUDE.md, Eintrag 2026-08-24 (Fortsetzung 8).

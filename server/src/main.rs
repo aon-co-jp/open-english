@@ -23,6 +23,7 @@ mod github_agent;
 mod local_agent;
 mod self_update;
 mod vps_agent;
+mod world_lab;
 
 use db::Db;
 
@@ -768,6 +769,100 @@ async fn agent_github_commit(req: Request) -> Response {
     }
 }
 
+/// world-lab(2026-08-24新設、`world_lab.rs`モジュールdoc参照):
+/// デバイス発見/ペアリングの最小スケルトンAPI。既定で無効
+/// (`OPEN_ENGLISH_WORLD_LAB_ENABLED=1`未設定時は全エンドポイントが
+/// 「無効です」を返す)。タスク配布・通信中継は一切実装していない。
+async fn world_lab_status(wl: Arc<world_lab::WorldLab>) -> Response {
+    rs_json_response(StatusCode::OK, &wl.status())
+}
+
+#[derive(serde::Deserialize)]
+struct WorldLabPairRequest {
+    token: String,
+    device_name: String,
+    connection: String,
+}
+
+async fn world_lab_pair(req: Request, wl: Arc<world_lab::WorldLab>) -> Response {
+    let body: WorldLabPairRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match wl.pair(&body.token, &body.device_name, &body.connection) {
+        Ok(device) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "device": device})),
+        Err(e) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e})),
+    }
+}
+
+async fn world_lab_devices(wl: Arc<world_lab::WorldLab>) -> Response {
+    match wl.list_devices() {
+        Ok(devices) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "devices": devices})),
+        Err(e) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct WorldLabUnpairRequest {
+    device_id: String,
+}
+
+async fn world_lab_unpair(req: Request, wl: Arc<world_lab::WorldLab>) -> Response {
+    let body: WorldLabUnpairRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match wl.unpair(&body.device_id) {
+        Ok(removed) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "removed": removed})),
+        Err(e) => rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": e})),
+    }
+}
+
+/// `POST /v1/world-lab/task/run`(2026-08-24新設、Phase 2):
+/// WASMサンドボックス内で計算タスクを実行する。既定で無効
+/// (`OPEN_ENGLISH_WORLD_LAB_COMPUTE_ENABLED=1`が必要、`world_lab.rs`
+/// モジュールdoc「Phase 2」節参照)。ペアリングトークンによる認証も
+/// 兼ねる(トークンが一致しなければ実行しない)。wasmtimeの実行自体は
+/// 同期(ブロッキング)APIのため`spawn_blocking`で包み、fuel計算の
+/// ズレに対する保険として`tokio::time::timeout`も併用する。
+#[derive(serde::Deserialize)]
+struct WorldLabTaskRunRequest {
+    token: String,
+    wasm_base64: String,
+    input_base64: String,
+}
+
+async fn world_lab_task_run(req: Request, wl: Arc<world_lab::WorldLab>, compute: Arc<world_lab::ComputeEngine>) -> Response {
+    use base64::Engine as _;
+    let body: WorldLabTaskRunRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    if !wl.token_matches(&body.token) {
+        return rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": "invalid pairing token"}));
+    }
+    let wasm = match base64::engine::general_purpose::STANDARD.decode(&body.wasm_base64) {
+        Ok(v) => v,
+        Err(e) => return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("wasm_base64 is not valid base64: {e}")})),
+    };
+    let input = match base64::engine::general_purpose::STANDARD.decode(&body.input_base64) {
+        Ok(v) => v,
+        Err(e) => return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("input_base64 is not valid base64: {e}")})),
+    };
+
+    // **サブプロセス隔離で実行**(`world_lab.rs`の`run_isolated`doc参照、
+    // 実機テストでこのプロセス内直接実行がクラッシュすることが判明した
+    // ための設計変更)。子プロセスのタイムアウトは`run_isolated`内部で
+    // 処理される。
+    match compute.run_isolated(&wasm, &input).await {
+        Ok((output, fuel_consumed)) => rs_json_response(
+            StatusCode::OK,
+            &serde_json::json!({"ok": true, "output_base64": base64::engine::general_purpose::STANDARD.encode(output), "fuel_consumed": fuel_consumed}),
+        ),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e})),
+    }
+}
+
 /// `GET /v1/updates/history`(2026-08-20新設): open-english本体+同梱
 /// コンポーネント(aruaru-llm・aruaru-db)それぞれの現在バージョン+
 /// 保持している旧バージョン一覧を返す。UI側の「🔄 Updates & Rollback」
@@ -1091,6 +1186,15 @@ fn decode_xml_entities(s: &str) -> String {
 
 #[tokio::main]
 async fn main() {
+    // world-lab計算タスクの隔離ワーカー(2026-08-24新設)。通常の起動処理
+    // (DBオープン・HTTPサーバー起動等)を一切せず、`world_lab.rs`
+    // モジュールdoc「サブプロセス隔離」節のプロトコルでWASMを1件実行して
+    // 即終了する。`run_worker_main`は`!`を返す(`std::process::exit`で
+    // 終了するため、これ以降のコードには絶対に到達しない)。
+    if std::env::args().nth(1).as_deref() == Some("--world-lab-worker") {
+        world_lab::run_worker_main();
+    }
+
     let root = repo_root();
     let db_path = db::db_path(&root);
     let db = Arc::new(Db::open(db_path).expect("failed to open local SQLite DB (data/open-english.sqlite3)"));
@@ -1247,6 +1351,59 @@ async fn main() {
         app = app.at("/v1/agent/vps/write", post(handler_fn(move |req, _p| async move { agent_vps_write(req).await })));
         app = app.at("/v1/agent/github/read", get(handler_fn(move |req, _p| async move { agent_github_read(req).await })));
         app = app.at("/v1/agent/github/commit", post(handler_fn(move |req, _p| async move { agent_github_commit(req).await })));
+    }
+
+    // world-lab(2026-08-24新設、`world_lab.rs`モジュールdoc参照)。
+    // 既定で無効(OPEN_ENGLISH_WORLD_LAB_ENABLED=1未設定時は全て「無効」を返す)。
+    {
+        let world_lab = Arc::new(world_lab::WorldLab::from_env());
+        let wl = Arc::clone(&world_lab);
+        app = app.at(
+            "/v1/world-lab/status",
+            get(handler_fn(move |_req, _p| {
+                let wl = Arc::clone(&wl);
+                async move { world_lab_status(wl).await }
+            })),
+        );
+        let wl = Arc::clone(&world_lab);
+        app = app.at(
+            "/v1/world-lab/pair",
+            post(handler_fn(move |req, _p| {
+                let wl = Arc::clone(&wl);
+                async move { world_lab_pair(req, wl).await }
+            })),
+        );
+        let wl = Arc::clone(&world_lab);
+        app = app.at(
+            "/v1/world-lab/devices",
+            get(handler_fn(move |_req, _p| {
+                let wl = Arc::clone(&wl);
+                async move { world_lab_devices(wl).await }
+            })),
+        );
+        let wl = Arc::clone(&world_lab);
+        app = app.at(
+            "/v1/world-lab/unpair",
+            post(handler_fn(move |req, _p| {
+                let wl = Arc::clone(&wl);
+                async move { world_lab_unpair(req, wl).await }
+            })),
+        );
+
+        // Phase 2(2026-08-24新設): WASMサンドボックスでの計算タスク実行。
+        // 二段階目のオプトイン(OPEN_ENGLISH_WORLD_LAB_COMPUTE_ENABLED=1)
+        // で保護——ペアリングだけ有効化しタスク実行は無効のまま、という
+        // 構成を選べる(`world_lab.rs`モジュールdoc「Phase 2」節参照)。
+        let compute_engine = Arc::new(world_lab::ComputeEngine::from_env());
+        let wl = Arc::clone(&world_lab);
+        app = app.at(
+            "/v1/world-lab/task/run",
+            post(handler_fn(move |req, _p| {
+                let wl = Arc::clone(&wl);
+                let compute_engine = Arc::clone(&compute_engine);
+                async move { world_lab_task_run(req, wl, compute_engine).await }
+            })),
+        );
     }
 
     // aruaru-llmの自動起動(2026-08-19新設、上記maybe_launch_aruaru_llmの
