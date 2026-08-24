@@ -187,3 +187,11 @@ corso di ripetizioni**, cambiando soltanto il pubblico.
 - Diritto d'autore: documentarsi sulle tendenze generali delle prove, ma scrivere da sé
   tutti i testi delle domande.
 
+
+## Guida alla carriera (2026-08-24)
+
+Aggiunta una tabella leggera `TUTOR_CAREER_GUIDANCE` (per materia, non
+per domanda) mostrata sotto ogni domanda del corso di ripetizioni, con
+settori/mestieri utili e possibili ruoli avanzati, sempre con linguaggio
+prudente. Dettagli e fonti sul sistema duale tedesco in PORTING.md (§17,
+giapponese).

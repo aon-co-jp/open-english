@@ -1,5 +1,64 @@
 ﻿# open-english
 
+> 📌 **Mise à jour (2026-08-24, suite 2) : « Conseils de carrière » ajoutés
+> au parcours de tutorat par niveau scolaire.** L'écran d'exercice affiche
+> désormais, pour chaque matière, les secteurs/métiers auxquels elle
+> pourrait être utile et les métiers avancés qu'on pourrait viser en
+> approfondissant — toujours formulé avec prudence (« pourrait aider »,
+> jamais de promesse d'emploi garanti). Conception inspirée d'une recherche
+> réelle sur le système dual allemand de formation professionnelle
+> (Berufsschule, certifications IHK, Ausbildung). Voir CLAUDE.md pour les
+> détails et les sources.
+
+> 📌 **Dernière mise à jour (2026-08-24, suite) : auto-réparation de la
+> DUAL DB (file d'attente de nouvelles tentatives) + support TLS pour la
+> connexion PostgreSQL + support de la méthode HTTP HEAD** :
+> - **Auto-réparation de la DUAL DB** : ce qui était jusqu'ici documenté
+>   comme « non implémenté » est désormais en place. Une écriture miroir
+>   qui échoue est mise en file d'attente dans une table SQLite locale
+>   `mirror_outbox` et réessayée automatiquement par une tâche de fond
+>   (toutes les 60 s par défaut). Chaque ligne est retentée jusqu'à 100 fois
+>   par défaut ; les lignes qui échouent toujours ne sont pas abandonnées
+>   silencieusement — elles sont marquées `give_up`, et les compteurs sont
+>   visibles via `GET /v1/db/info` (`mirror_outbox_pending`/
+>   `mirror_outbox_given_up`). **Limites honnêtes** : seules les écritures
+>   que ce processus a lui-même tentées et manquées sont couvertes — une
+>   ligne supprimée directement côté miroir, ou une modification passée par
+>   un autre chemin, ne peut pas être détectée. Les nouvelles tentatives
+>   sont de simples INSERT, donc un doublon rare (at-least-once) reste
+>   possible.
+> - **Support TLS** : ajout de `tokio-postgres-rustls`, permettant à la
+>   connexion miroir PostgreSQL d'utiliser `sslmode=require`,
+>   `verify-ca` ou `verify-full` face à une base gérée
+>   (`sslmode=disable`, la valeur par défaut, garde le comportement en
+>   clair inchangé). Les certificats racine proviennent du magasin de
+>   confiance du système (rustls-native-certs, avec repli sur
+>   webpki-roots). Une porte de secours `OPEN_ENGLISH_DB_TLS_INSECURE=1`
+>   désactive la vérification du certificat (avertissement explicite,
+>   vulnérable à une attaque de l'intercepteur, réservée aux réseaux
+>   fermés de confiance).
+> - **Support de la méthode HTTP HEAD** : le serveur de fichiers statiques
+>   répond désormais correctement aux requêtes `HEAD` (il renvoyait
+>   auparavant 404/405, ce qui compte en pratique puisque de nombreux
+>   clients HTTP et outils de vérification de santé sondent avec HEAD).
+>   Cela a nécessité l'ajout de `MethodRouter::head` à la façade partagée
+>   `RPoem` (`open-runo-poem-compat`) — un ajout pur, sans changement
+>   d'API existante.
+> - **Nouvel alias `/health`** : ajouté aux côtés de l'existant `/healthz`
+>   pour que la forme du contrôle de santé de cette application corresponde
+>   à ce qu'attend génériquement le motif d'enregistrement de locataires
+>   « digital twin » (分身の術) d'autres dépôts de cet écosystème
+>   (open-web-server / open-easy-web). Cela ne signifie pas qu'open-english
+>   est déjà intégré à open-web-server.
+> - `GET /v1/db/info` renvoie désormais aussi `rsync_available` (une
+>   véritable sonde `rsync --version`), pour vérifier si rsync est
+>   utilisable avant d'essayer `/v1/db/rsync-backup`.
+> - Vérifié avec `cargo build`/`cargo test` (18/18 au vert) ainsi qu'avec
+>   un binaire réellement lancé : `HEAD /` et `HEAD /app.js` renvoient le
+>   bon Content-Length/Content-Type avec un corps vide, `GET /health`
+>   renvoie `{"ok":true}`, et `GET /v1/db/info` inclut bien
+>   `rsync_available`.
+
 > 📌 **Dernière mise à jour (2026-08-24) : une école virtuelle (enseignement
 > supérieur) et une école de formation professionnelle en ligne virtuelle** :
 > - **🏫 École virtuelle** propose quatre catégories — école spécialisée

@@ -1,5 +1,54 @@
 ﻿# open-english
 
+> 📌 **Aggiornamento (2026-08-24, seguito 2): aggiunta la "Guida alla
+> carriera" al corso di ripetizioni per anno scolastico.** La schermata
+> degli esercizi ora mostra, per ogni materia, i settori/mestieri a cui
+> potrebbe essere utile e i ruoli avanzati che si potrebbero perseguire
+> approfondendola — sempre con un linguaggio prudente ("potrebbe aiutare",
+> mai una promessa di lavoro garantito). Progettazione ispirata a una
+> ricerca reale sul sistema duale tedesco di formazione professionale
+> (Berufsschule, qualifiche IHK, Ausbildung). Dettagli e fonti in CLAUDE.md.
+
+> 📌 **Ultimo aggiornamento (2026-08-24, seguito): auto-riparazione del DUAL DB
+> (ritentativi automatici della coda) + supporto TLS per la connessione
+> PostgreSQL + supporto al metodo HTTP HEAD**:
+> - **Auto-riparazione del DUAL DB**: ciò che finora era documentato come «non
+>   implementato» ora è implementato. Una scrittura verso il mirror che
+>   fallisce viene accodata in una tabella SQLite locale `mirror_outbox` e
+>   ritentata automaticamente da un'attività in background (ogni 60 secondi
+>   per impostazione predefinita). Le righe vengono ritentate fino a 100 volte
+>   per impostazione predefinita; quelle che continuano a fallire non vengono
+>   scartate in silenzio — sono marcate `give_up` e i conteggi sono visibili
+>   tramite `GET /v1/db/info` (`mirror_outbox_pending`/
+>   `mirror_outbox_given_up`). **Limiti onesti**: sono coperte solo le
+>   scritture che questo stesso processo ha tentato e fallito — righe
+>   cancellate direttamente sul mirror, o modifiche fatte da un altro
+>   percorso, non possono essere rilevate. I ritentativi sono semplici
+>   INSERT, quindi un raro duplicato "at-least-once" è possibile.
+> - **Supporto TLS**: aggiunto `tokio-postgres-rustls`, così la connessione
+>   mirror a PostgreSQL può ora usare `sslmode=require` ecc. verso un database
+>   gestito (`sslmode=disable`, il valore predefinito, mantiene invariato il
+>   comportamento in chiaro esistente).
+> - **Supporto HTTP HEAD**: il server di file statici ora risponde
+>   correttamente alle richieste `HEAD` (prima restituiva 404/405, il che
+>   conta nella pratica perché molti client HTTP e strumenti di health-check
+>   usano HEAD per le loro verifiche). Ciò ha richiesto di aggiungere
+>   `MethodRouter::head` alla facciata condivisa `RPoem`
+>   (`open-runo-poem-compat`) — puramente additivo, nessuna API esistente è
+>   cambiata.
+> - **Nuovo alias `/health`**: aggiunto accanto all'esistente `/healthz`
+>   affinché la forma del controllo di salute di questa app corrisponda a
+>   quanto altri repo di questo ecosistema si aspettano genericamente nel loro
+>   schema di registrazione dei tenant "tecnica del sosia" (分身の術)
+>   (open-web-server / open-easy-web).
+> - `GET /v1/db/info` ora riporta anche `rsync_available` (una verifica reale
+>   con `rsync --version`), così si può controllare se rsync è disponibile
+>   prima di provare `/v1/db/rsync-backup`.
+> - Verificato con `cargo build`/`cargo test` (18/18 verdi) più un binario
+>   realmente in esecuzione: `HEAD /` e `HEAD /app.js` restituiscono il
+>   corretto Content-Length/Content-Type con corpo vuoto, `GET /health`
+>   restituisce `{"ok":true}`, e `GET /v1/db/info` include `rsync_available`.
+
 > 📌 **Ultimo aggiornamento (2026-08-24): una scuola virtuale (istruzione
 > superiore) e una scuola di formazione professionale online virtuale**:
 > - **🏫 Scuola virtuale** propone quattro categorie — istituto professionale

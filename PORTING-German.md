@@ -188,3 +188,11 @@ wie der Nachhilfekurs**, nur mit anderer Zielgruppe.
 - Urheberrecht: allgemeine Prüfungstendenzen recherchieren, aber alle Fragetexte
   selbst verfassen.
 
+
+## Karriereorientierung (2026-08-24)
+
+Neue schlanke Zuordnungstabelle `TUTOR_CAREER_GUIDANCE` (pro Fach, nicht
+pro Frage), die unter jeder Frage im Nachhilfekurs Branchen/Berufe und
+mögliche fortgeschrittene Berufe anzeigt — stets vorsichtig formuliert.
+Details und Quellen zum deutschen dualen System siehe PORTING.md (§17,
+Japanisch).

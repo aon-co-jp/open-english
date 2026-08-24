@@ -1,10 +1,65 @@
 ﻿# open-english
 
 *English*: [README-English.md](README-English.md) ·
-*Other languages*: [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
+*Other languages*: [中文](README-Chinese.md) · [한국어](README-Korean.md) ·
+[Español](README-Spanish.md) · [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
 [Français](README-French.md) · [Русский](README-Russian.md) ·
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
+
+> 📌 **最新の更新(2026-08-24 続き2): 学年別・家庭教師コースに
+> 「キャリアガイダンス」機能を追加**:
+> - 問題を解く画面に、出題中の教科について**「この内容をマスターすると
+>   役立つかもしれない業界・職種」「さらに極めると目指せる可能性のある
+>   上級職種」**を補足表示する🧭キャリアガイダンス欄を追加しました
+>   (国語・算数・生活・理科・社会・英語・プログラミングの7教科分)。
+> - 設計にあたり、ドイツの職業教育制度(デュアルシステム、Berufsschule・
+>   IHK資格・Ausbildung)を実際に日英で調査し、「学習内容が具体的な
+>   職業・上級資格と結びついている」という考え方を参考にしました
+>   (出典: [IHK Darmstadt](https://www.ihk.de/darmstadt/en/productlabels/training/voctrain-2533080)、
+>   [deutschland.de](https://www.deutschland.de/en/topic/business/how-germanys-dual-vocational-training-system-works)、
+>   [Wikipedia: Dual education system](https://en.wikipedia.org/wiki/Dual_education_system))。
+> - **正直な開示**: 「必ず就職できる」という断定表現は使わず、すべて
+>   「〜かもしれません」「〜に役立つ可能性があります」という表現に
+>   統一しています。表示は教科単位(学年×教科の問題1問ごとではなく)
+>   で、全レッスンを網羅するものではありません。就職・資格取得を
+>   保証するものでもありません。
+> - 実機検証: 実際にサーバーを起動し、小学3年生の算数をインストール→
+>   出題→採点後もキャリアガイダンス欄が正しく表示され続けることを
+>   ブラウザで確認しました。
+>
+> 📌 **最新の更新(2026-08-24 続き): DUAL DBの自己修復(未反映キューの自動
+> リトライ)+PostgreSQL接続のTLS対応+HTTP HEADメソッド対応**:
+> - **DUAL DB自己修復**: これまで「未実装」と明記していたミラー書き込み失敗時の
+>   自己修復を実装。ミラー書き込みに失敗した行はローカルSQLiteの`mirror_outbox`
+>   テーブルへ記録され、60秒ごと(既定)のバックグラウンドタスクが自動的に
+>   再送する。既定100回まで再試行し、それでも失敗した行は黙って捨てず
+>   `give_up`件数として`GET /v1/db/info`(`mirror_outbox_pending`/
+>   `mirror_outbox_given_up`)で確認できる。**限界の正直な開示**: このプロセスが
+>   書き込もうとして失敗した行のみが対象で、ミラー先で直接削除された行や
+>   他経路で入った差分は検出できない。再送はINSERTのため、稀に重複行になり得る
+>   (at-least-once)。
+> - **TLS対応**: `tokio-postgres-rustls`を導入し、接続文字列の`sslmode`次第で
+>   `sslmode=require`等のマネージドPostgreSQLへ接続できるようになった
+>   (`sslmode=disable`〈既定〉なら従来どおり平文接続、既存の接続は壊れない)。
+> - **HTTP HEADメソッド対応**: 静的ファイルサーバーが`HEAD`リクエストに正しく
+>   応答するようになった(従来は404/405で、多くのHTTPクライアント・
+>   ヘルスチェックツールがHEADを使うため実用上の影響が大きかった)。
+>   共有基盤`RPoem`(`open-runo-poem-compat`)へ`MethodRouter::head`を追加した
+>   上での対応(追加のみ、既存APIへの影響なし)。
+> - **`/health`エイリアス新設**: `open-web-server`/`open-easy-web`側の
+>   「分身の術」テナント登録パターンが汎用的に期待するヘルスチェック命名に
+>   形状を揃えるため、既存`/healthz`と同一内容を返す`/health`を追加した
+>   (既存の`/healthz`はそのまま維持)。open-english自体をopen-web-server経由で
+>   公開したい場合、この2エンドポイントのどちらでも接続確認が通る。
+> - `GET /v1/db/info`が`rsync_available`(実際に`rsync --version`を呼んで
+>   確認した結果)を返すようになった——`/v1/db/rsync-backup`を試す前に
+>   rsyncが使えるかどうかを1回のAPI呼び出しで確認できる。
+> - 実機検証: `cargo build`/`cargo test`(18/18 green)に加え、実際に
+>   バイナリを起動し`HEAD /`・`HEAD /app.js`が正しい`Content-Length`/
+>   `Content-Type`かつ空ボディで200を返すこと、`GET /health`が
+>   `{"ok":true}`を返すこと、`GET /v1/db/info`に`rsync_available`が
+>   含まれることを確認した。
 
 > 📌 **最新の更新(2026-08-24): バーチャルスクール(高等教育)と
 > バーチャルオンライン職業訓練校を新設**:

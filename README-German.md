@@ -1,5 +1,55 @@
 ﻿# open-english
 
+> 📌 **Update (2026-08-24, Fortsetzung 2): „Karriereorientierung" im
+> Nachhilfekurs nach Klassenstufe hinzugefügt.** Der Übungsbildschirm zeigt
+> jetzt pro Fach, welchen Branchen/Berufen dieser Lernstoff nützlich sein
+> könnte und welche fortgeschrittenen Berufe man durch weiteres Vertiefen
+> anstreben könnte — stets vorsichtig formuliert („könnte helfen", nie ein
+> Versprechen auf einen Arbeitsplatz). Das Design orientiert sich an einer
+> echten Recherche zum deutschen dualen Ausbildungssystem (Berufsschule,
+> IHK-Abschlüsse, Ausbildung). Details und Quellen siehe CLAUDE.md.
+
+> 📌 **Neuestes Update (2026-08-24, Fortsetzung): Selbstheilung bei DUAL DB
+> (automatischer Outbox-Retry) + TLS-Unterstützung für die PostgreSQL-Verbindung
+> + HTTP-HEAD-Unterstützung**:
+> - **Selbstheilung bei DUAL DB**: Was bisher als „nicht implementiert" dokumentiert
+>   war, ist jetzt umgesetzt. Ein fehlgeschlagener Mirror-Schreibvorgang wird in eine
+>   lokale SQLite-Tabelle `mirror_outbox` eingereiht und automatisch von einem
+>   Hintergrundtask erneut versucht (standardmäßig alle 60 Sekunden). Zeilen werden
+>   standardmäßig bis zu 100-mal erneut versucht; Zeilen, die weiterhin scheitern,
+>   werden nicht stillschweigend verworfen — sie erhalten den Status `give_up`, und
+>   die Anzahl ist über `GET /v1/db/info` (`mirror_outbox_pending`/
+>   `mirror_outbox_given_up`) einsehbar. **Ehrliche Grenzen**: Erfasst werden nur
+>   Schreibvorgänge, die dieser Prozess selbst versucht hat und die fehlgeschlagen
+>   sind — Zeilen, die direkt am Mirror gelöscht wurden, oder Änderungen über einen
+>   anderen Weg, können nicht erkannt werden. Die Retries sind einfache INSERTs,
+>   daher ist ein seltenes at-least-once-Duplikat möglich.
+> - **TLS-Unterstützung**: `tokio-postgres-rustls` wurde hinzugefügt, sodass die
+>   PostgreSQL-Mirror-Verbindung nun `sslmode=require` usw. gegen eine verwaltete
+>   Datenbank verwenden kann (`sslmode=disable`, der Standard, belässt das
+>   bisherige Klartextverhalten unverändert). Root-Zertifikate stammen aus dem
+>   Betriebssystem-Vertrauensspeicher (rustls-native-certs, Fallback webpki-roots).
+>   Ein Notausgang `OPEN_ENGLISH_DB_TLS_INSECURE=1` deaktiviert die
+>   Zertifikatsprüfung (mit deutlicher Warnung, anfällig für MITM-Angriffe, nur für
+>   vertrauenswürdige geschlossene Netzwerke gedacht).
+> - **HTTP-HEAD-Unterstützung**: Der statische Dateiserver beantwortet `HEAD`-
+>   Anfragen jetzt korrekt (früher 404/405, was in der Praxis relevant war, da
+>   viele HTTP-Clients und Health-Check-Tools mit HEAD anfragen). Dafür wurde
+>   `MethodRouter::head` zur gemeinsam genutzten `RPoem`-Fassade
+>   (`open-runo-poem-compat`) hinzugefügt — rein additiv, keine bestehende API
+>   wurde verändert.
+> - **Neuer `/health`-Alias**: zusätzlich zum bestehenden `/healthz` eingeführt,
+>   damit die Health-Check-Namensgebung dieser App zu dem passt, was andere Repos
+>   im „Bunshin-no-jutsu"-Mieter-Registrierungsmuster dieses Ökosystems
+>   (open-web-server / open-easy-web) generisch erwarten.
+> - `GET /v1/db/info` meldet jetzt zusätzlich `rsync_available` (eine echte
+>   `rsync --version`-Prüfung), damit man vor `/v1/db/rsync-backup` prüfen kann, ob
+>   rsync überhaupt nutzbar ist.
+> - Verifiziert mit `cargo build`/`cargo test` (18/18 grün) sowie einer echten
+>   laufenden Binärdatei: `HEAD /` und `HEAD /app.js` liefern die korrekten
+>   Content-Length/Content-Type-Header mit leerem Body, `GET /health` liefert
+>   `{"ok":true}`, und `GET /v1/db/info` enthält `rsync_available`.
+
 > 📌 **Neuestes Update (2026-08-24): virtuelle Hochschule und virtuelle
 > Online-Berufsschule**:
 > - **🏫 Virtuelle Hochschule** bietet vier Kategorien — Fachschule (senmon gakko),

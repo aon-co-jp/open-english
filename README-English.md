@@ -1,10 +1,69 @@
 ﻿# open-english
 
 *日本語*: [README.md](README.md) ·
-*Other languages*: [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
+*Other languages*: [中文](README-Chinese.md) · [한국어](README-Korean.md) ·
+[Español](README-Spanish.md) · [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
 [Français](README-French.md) · [Русский](README-Russian.md) ·
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
+
+> 📌 **Latest update (2026-08-24, cont. 2): "Career guidance" added to the
+> grade-based tutor course**:
+> - The practice-question screen now shows a 🧭 Career Guidance box for the
+>   subject being practiced: **"industries/occupations that mastering this
+>   content may help with"** and **"advanced occupations you might be able
+>   to pursue by going further"** (covering 7 subjects: Japanese, math, life
+>   studies, science, social studies, English, and programming).
+> - This was designed after actually researching Germany's dual vocational
+>   education system (Berufsschule, IHK qualifications, Ausbildung) in
+>   Japanese and English, borrowing its idea that learning content is
+>   explicitly linked to specific occupations and further qualifications.
+>   Sources: [IHK Darmstadt](https://www.ihk.de/darmstadt/en/productlabels/training/voctrain-2533080),
+>   [deutschland.de](https://www.deutschland.de/en/topic/business/how-germanys-dual-vocational-training-system-works),
+>   [Wikipedia: Dual education system](https://en.wikipedia.org/wiki/Dual_education_system).
+> - **Honest disclosure**: no claim like "you will definitely get a job" is
+>   made — everything is phrased as "may help" / "might open a path
+>   toward". The guidance is shown per subject (not per individual
+>   question), does not cover every lesson, and does not guarantee
+>   employment or any qualification.
+> - Verified live: started the server, installed elementary-3 math,
+>   answered questions, and confirmed in the browser that the career
+>   guidance box renders correctly and stays visible after scoring.
+>
+> 📌 **Latest update (2026-08-24, cont.): DUAL DB self-repair (automatic
+> outbox retry) + PostgreSQL TLS support + HTTP HEAD support**:
+> - **DUAL DB self-repair**: what used to be documented as "not implemented"
+>   is now implemented. A mirror write that fails is queued into a local
+>   SQLite `mirror_outbox` table and automatically retried by a background
+>   task (every 60s by default). Rows are retried up to 100 times by default;
+>   rows that still fail are not silently dropped — they are marked
+>   `give_up` and the counts are visible via `GET /v1/db/info`
+>   (`mirror_outbox_pending`/`mirror_outbox_given_up`). **Honest limits**:
+>   only writes this process itself attempted and failed are covered — rows
+>   deleted directly on the mirror, or changes made through another path,
+>   can't be detected. Retries are plain INSERTs, so a rare at-least-once
+>   duplicate is possible.
+> - **TLS support**: added `tokio-postgres-rustls` so the PostgreSQL mirror
+>   connection can now use `sslmode=require` etc. against a managed database
+>   (`sslmode=disable`, the default, keeps the existing plaintext behavior
+>   unchanged).
+> - **HTTP HEAD support**: the static file server now answers `HEAD`
+>   requests correctly (it used to return 404/405, which matters in practice
+>   since many HTTP clients and health-check tools probe with HEAD). This
+>   required adding `MethodRouter::head` to the shared `RPoem`
+>   (`open-runo-poem-compat`) facade — purely additive, no existing API
+>   changed.
+> - **New `/health` alias**: added alongside the existing `/healthz` so this
+>   app's health-check shape matches what other repos in this ecosystem's
+>   "digital twin" (分身の術) tenant-registration pattern (open-web-server /
+>   open-easy-web) generically expect.
+> - `GET /v1/db/info` now reports `rsync_available` (an actual
+>   `rsync --version` probe) so you can check whether rsync is usable before
+>   trying `/v1/db/rsync-backup`.
+> - Verified with `cargo build`/`cargo test` (18/18 green) plus a real
+>   running binary: `HEAD /` and `HEAD /app.js` return the correct
+>   Content-Length/Content-Type with an empty body, `GET /health` returns
+>   `{"ok":true}`, and `GET /v1/db/info` includes `rsync_available`.
 
 > 📌 **Latest update (2026-08-24): a virtual school (higher education) and a
 > virtual online vocational school**:

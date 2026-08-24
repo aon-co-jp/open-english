@@ -198,3 +198,51 @@ que le cours de soutien scolaire**, avec un public différent.
 - Droit d'auteur : se documenter sur les tendances générales des épreuves, mais rédiger
   soi-même tous les énoncés.
 
+## Motif : file d'attente locale + nouvelles tentatives pour l'auto-réparation d'un miroir (2026-08-24, suite)
+
+1. **Ne pas essayer de rendre l'écriture miroir infaillible tout de suite** :
+   commencer par écrire aussi vers une table de file d'attente locale
+   (SQLite ici, `mirror_outbox`) chaque fois qu'une écriture vers une
+   destination distante échoue, puis laisser une tâche de fond
+   (`tokio::time::interval`) retenter à intervalle fixe jusqu'à un nombre
+   maximal de tentatives configurable. Marquer les lignes définitivement
+   en échec (`give_up`) plutôt que les supprimer silencieusement, et
+   exposer les compteurs par une route de diagnostic existante plutôt que
+   d'en créer une nouvelle.
+2. **Documenter la portée réelle de la garantie, pas la portée souhaitée** :
+   ce motif ne couvre que les écritures que ce processus a lui-même
+   tentées et manquées ; il ne peut pas détecter une divergence introduite
+   par un autre chemin. Les nouvelles tentatives étant de simples INSERT,
+   un doublon rare (at-least-once) doit être annoncé comme un compromis
+   assumé, pas corrigé en silence.
+3. **Ajouter TLS à un client PostgreSQL existant sans casser le cas par
+   défaut** : introduire `tokio-postgres-rustls` en parallèle du chemin
+   `NoTls` existant, brancher sur `sslmode` de la chaîne de connexion, et
+   garder `sslmode=disable` comme comportement inchangé. Préférer les
+   certificats racine du magasin système (`rustls-native-certs`, repli
+   `webpki-roots`) à un fichier de certificat embarqué. Une porte de
+   secours désactivant la vérification (variable d'environnement dédiée,
+   nom explicite, avertissement bruyant dans les journaux) peut être utile
+   pour des réseaux fermés de confiance, mais ne doit jamais être le
+   réglage par défaut.
+4. **Ajouter le support HTTP HEAD à une façade de serveur de fichiers
+   partagée plutôt qu'à chaque projet** : si plusieurs projets partagent
+   une même façade de routage (ici `RPoem`/`open-runo-poem-compat`),
+   ajouter `MethodRouter::head` une seule fois à la façade profite à tous
+   les projets qui en dépendent, pour un coût additif seul (aucune API
+   existante modifiée).
+5. **Ajouter un alias d'endpoint de santé sans dupliquer la logique** :
+   quand un motif d'écosystème externe attend un nom de route différent
+   (ici `/health` à côté de `/healthz`), faire pointer les deux routes vers
+   la même fonction plutôt que dupliquer le code — et ne jamais présenter
+   l'ajout de l'alias comme une preuve d'intégration réelle avec ce motif
+   externe s'il n'y en a pas.
+
+
+## Guide de carrière (2026-08-24)
+
+Ajout d'une table de correspondance légère `TUTOR_CAREER_GUIDANCE` (par
+matière, pas par question) affichée sous chaque question du parcours de
+tutorat, indiquant secteurs/métiers utiles et métiers avancés possibles,
+avec un langage toujours prudent. Voir PORTING.md (§17, japonais) pour
+les détails et les sources sur le système dual allemand.

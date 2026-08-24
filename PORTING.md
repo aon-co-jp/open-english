@@ -633,3 +633,32 @@ LLMに生成させず人手で書いた固定文を返すパターン。`app.js`
 - **著作権**: 実際の入試問題・市販問題集・教科書は転載しない。
   出題形式の一般的傾向(小論文の三部構成、大学院入試での研究計画など)を
   調べた上で、問題文はすべて書き下ろす。
+
+## 17. 「キャリアガイダンス」機能の移植ポイント(2026-08-24)
+
+学年別・家庭教師コース(`TUTOR_*`)の出題画面に、教科ごとの業界・職種の
+参考情報を補足表示する機能。移植時のポイント:
+
+- **粒度は教科単位**: `TUTOR_CAREER_GUIDANCE`は問題1問ごとではなく
+  教科ID単位(`japanese`/`math`/`life`/`science`/`social`/`english`/
+  `programming`)で持つ。数百問すべてに手作業で個別の内容を付けるのは
+  現実的でないため、既存データ構造(`TUTOR_QUESTIONS`)を変更せず、
+  別の小さいルックアップテーブルとして追加した——既存データへの影響
+  ゼロで追加できる設計。
+- **断定表現は使わない**: 「〜かもしれません」「〜に役立つ可能性が
+  あります」で統一し、「必ず就職できる」「これで資格が取れる」という
+  趣旨の文言は一切使わない。末尾に「一般的な参考情報であり保証しない」
+  旨の注記(`.setup-honest`相当)を必ず添える。
+- **調査に基づく設計判断**: 実装前にドイツの職業教育制度(デュアル
+  システム)を日英で調査し、「学習内容が具体的な職業・上級資格と
+  結びついている」という考え方を参考にした
+  (出典: [IHK Darmstadt](https://www.ihk.de/darmstadt/en/productlabels/training/voctrain-2533080)、
+  [deutschland.de](https://www.deutschland.de/en/topic/business/how-germanys-dual-vocational-training-system-works)、
+  [Wikipedia](https://en.wikipedia.org/wiki/Dual_education_system))。
+  他プロジェクトへ移植する際も、対象国・対象読者に合わせて出典を
+  調べ直し、推測で埋めないこと。
+- **描画のタイミング**: `renderTutorSingleQuestion()`(1問描画するたび)
+  から呼ぶことで、教科を切り替えても・採点後も表示が追従する。専用の
+  `<div id="tutor-career-guidance">`をあらかじめ`index.html`に置き、
+  データが無い教科(将来追加分等)では静かに`hidden`へ戻す——無理に
+  空欄を埋めない。

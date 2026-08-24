@@ -287,3 +287,67 @@ ergänzt: Kategorie wählen → Fachgebiet installieren → Zufallsfragen → Au
   Keine JavaScript-Fehler.
 - Vollständige Fassung: HANDOFF-Eintrag vom 2026-08-24 in [CLAUDE.md](CLAUDE.md).
 
+## DUAL-DB-Selbstheilung, PostgreSQL-TLS, HTTP HEAD, `/health` (2026-08-24, Fortsetzung)
+
+Vier kleinere, aber wichtige Ergänzungen zur bestehenden DUAL-DB-Funktion
+(gleichzeitiges Schreiben in SQLite + optionalen PostgreSQL/aruaru-db-Mirror):
+
+1. **Selbstheilung (Outbox-Retry)**: Ein Mirror-Schreibvorgang, der fehlschlägt,
+   wird jetzt in eine lokale SQLite-Tabelle `mirror_outbox` eingereiht und von
+   einem Hintergrundtask automatisch erneut versucht (standardmäßig alle 60
+   Sekunden, bis zu 100 Versuche). Zeilen, die weiterhin scheitern, werden als
+   `give_up` markiert statt stillschweigend verworfen zu werden; die Zähler
+   `mirror_outbox_pending`/`mirror_outbox_given_up` sind über `GET /v1/db/info`
+   abrufbar. Dies schließt die in der Session vom 2026-08-24 (DUAL DB, siehe
+   [CLAUDE.md](CLAUDE.md)) unter Punkt 6(a) offen gelassene Lücke, bleibt aber
+   selbst mit einer ehrlichen Grenze behaftet: erfasst werden nur Schreibvorgänge,
+   die dieser Prozess selbst versucht und dabei verloren hat — nicht Zeilen, die
+   während einer Downtime direkt am Mirror verändert wurden. Da die Retries
+   einfache INSERTs sind, ist ein seltenes at-least-once-Duplikat möglich.
+2. **TLS für die PostgreSQL-Mirror-Verbindung**: neue Abhängigkeit
+   `tokio-postgres-rustls` erlaubt `sslmode=require`/`verify-ca`/`verify-full`
+   gegen verwaltete PostgreSQL-Instanzen; `sslmode=disable` (Standard) bleibt
+   unverändert im Klartext. Root-Zertifikate kommen aus dem
+   Betriebssystem-Vertrauensspeicher (rustls-native-certs, mit webpki-roots als
+   Fallback). Ein Notausgang `OPEN_ENGLISH_DB_TLS_INSECURE=1` deaktiviert die
+   Zertifikatsprüfung — mit deutlicher Warnung im Log, anfällig für
+   Man-in-the-Middle-Angriffe, nur für vertrauenswürdige geschlossene Netzwerke
+   gedacht. Damit ist der in der DUAL-DB-Session unter 6(b) genannte Punkt
+   „TLS bleibt unimplementiert" erledigt.
+3. **HTTP-HEAD-Unterstützung**: Der statische Dateiserver beantwortete `HEAD`
+   bisher mit 404/405; das betrifft in der Praxis viele HTTP-Clients und
+   Health-Check-Werkzeuge, die standardmäßig mit HEAD prüfen. Behoben durch
+   Hinzufügen von `MethodRouter::head` zur gemeinsamen `RPoem`-Fassade
+   (`open-runo-poem-compat`) — rein additiv, keine bestehende Route wurde
+   verändert.
+4. **`/health`-Alias**: liefert denselben Inhalt wie das bestehende `/healthz`
+   (`{"ok":true}`), damit die Namensgebung zu dem passt, was das
+   „Bunshin-no-jutsu"-Mieter-Registrierungsmuster anderer Repos in diesem
+   Ökosystem (open-web-server / open-easy-web) generisch erwartet. **Das ist
+   keine Behauptung, dass open-english bereits über open-web-server
+   ausgeliefert wird** — nur eine Vorbereitung für Interoperabilität.
+5. `GET /v1/db/info` liefert außerdem `rsync_available` (eine echte
+   `rsync --version`-Prüfung), um vor `/v1/db/rsync-backup` zu erkennen, ob
+   rsync überhaupt vorhanden ist.
+6. **Verifiziert**: `cargo build`/`cargo test` (18/18 grün) sowie echte HTTP-
+   Prüfungen gegen eine laufende Binärdatei (`HEAD /`, `HEAD /app.js`, `GET
+   /health`, `GET /v1/db/info`).
+
+*(Hinweis zur maschinellen Übersetzung: dieser Abschnitt wurde vom KI-Agenten
+selbst übersetzt, ohne Korrekturlesen durch einen Muttersprachler.)*
+
+
+## Karriereorientierung im Nachhilfekurs nach Klassenstufe (2026-08-24, Fortsetzung 2)
+
+Der Übungsbildschirm zeigt jetzt für jedes Fach (Japanisch, Rechnen,
+Naturwissenschaften, Sozialkunde, Englisch, Programmieren, Sachkunde)
+eine „Karriereorientierung"-Box mit Branchen/Berufen, denen das Fach
+nützlich sein könnte, sowie fortgeschrittenen Berufen, die durch weitere
+Vertiefung erreichbar sein könnten. Das Design basiert auf einer echten
+Recherche zum deutschen dualen Ausbildungssystem (Berufsschule,
+IHK-Abschlüsse, Ausbildung — Quellen: IHK Darmstadt, deutschland.de,
+Wikipedia). Formulierungen stets vorsichtig („könnte helfen"), niemals
+ein Versprechen auf einen garantierten Arbeitsplatz. Umfang: Fachebene,
+nicht jede einzelne Frage; live getestet (Server gestartet, Klasse 3
+Mathematik installiert, Anzeige korrekt bestätigt). Vollständige Details
+nur in der japanischen Version von CLAUDE.md.

@@ -300,3 +300,64 @@ domaine → questions tirées au hasard → correction.
   `/v1/db/history`. Aucune erreur JavaScript.
 - Version complète : entrée HANDOFF du 2026-08-24 dans [CLAUDE.md](CLAUDE.md).
 
+## Auto-réparation DUAL DB, TLS PostgreSQL, HTTP HEAD, alias `/health` (2026-08-24, suite)
+
+1. **Auto-réparation de la DUAL DB (file d'attente de nouvelles tentatives)** :
+   ce qui restait documenté comme « non implémenté » depuis l'ajout de
+   l'écriture simultanée sur deux bases est maintenant fait. Une écriture
+   miroir qui échoue est enregistrée dans une table SQLite locale
+   `mirror_outbox` et une tâche de fond la retente automatiquement (toutes
+   les 60 s par défaut, jusqu'à 100 tentatives par défaut). Les lignes qui
+   échouent encore sont marquées `give_up` plutôt que silencieusement
+   perdues, et les compteurs (`mirror_outbox_pending`/
+   `mirror_outbox_given_up`) sont exposés via `GET /v1/db/info`.
+   **Limites honnêtes, à ne pas passer sous silence** : seules les
+   écritures que ce processus a lui-même tentées et manquées sont
+   couvertes — une suppression faite directement côté miroir, ou un
+   changement passé par un autre chemin, échappe à la détection. Les
+   nouvelles tentatives sont de simples INSERT, donc un doublon rare
+   (at-least-once) reste possible.
+2. **Support TLS pour le miroir PostgreSQL** : ajout du crate
+   `tokio-postgres-rustls`, ce qui permet à la connexion miroir d'utiliser
+   `sslmode=require`/`verify-ca`/`verify-full` face à une base gérée.
+   `sslmode=disable` (la valeur par défaut) garde le comportement en clair
+   inchangé. Les certificats racine viennent du magasin système
+   (rustls-native-certs, repli sur webpki-roots). Une porte de secours
+   `OPEN_ENGLISH_DB_TLS_INSECURE=1` désactive la vérification du
+   certificat — avertissement explicite dans les journaux, vulnérable à
+   une attaque de l'intercepteur, réservée aux réseaux fermés de
+   confiance.
+3. **Support de la méthode HTTP HEAD** : le serveur de fichiers statiques
+   répond désormais correctement à `HEAD` (auparavant 404/405). Cela a
+   nécessité l'ajout de `MethodRouter::head` à la façade partagée `RPoem`
+   (`open-runo-poem-compat`) — un ajout purement additif, sans impact sur
+   l'API existante.
+4. **Nouvel alias `/health`** aux côtés de l'existant `/healthz` (même
+   contenu JSON `{"ok":true}`), pour correspondre à ce qu'attend
+   génériquement le motif d'enregistrement de locataires « digital twin »
+   d'autres dépôts de cet écosystème (open-web-server/open-easy-web) —
+   **cela ne signifie pas** qu'open-english est déjà intégré à
+   open-web-server.
+5. **`GET /v1/db/info`** renvoie désormais aussi `rsync_available` (une
+   véritable sonde `rsync --version`).
+6. **Vérification réelle** : `cargo build`/`cargo test` (18/18 au vert)
+   ainsi qu'un binaire réellement lancé — `HEAD /` et `HEAD /app.js`
+   renvoient le bon Content-Length/Content-Type avec un corps vide,
+   `GET /health` renvoie `{"ok":true}`, et `GET /v1/db/info` inclut bien
+   `rsync_available`.
+
+
+## Guide de carrière dans le parcours de tutorat par niveau scolaire (2026-08-24, suite 2)
+
+L'écran d'exercice affiche désormais, pour chaque matière (japonais,
+calcul, sciences, sciences sociales, anglais, programmation, éveil), une
+boîte « Guide de carrière » indiquant les secteurs/métiers auxquels la
+matière pourrait être utile et les métiers avancés envisageables en
+l'approfondissant. Conception fondée sur une recherche réelle du système
+dual allemand de formation professionnelle (Berufsschule, certifications
+IHK, Ausbildung — sources : IHK Darmstadt, deutschland.de, Wikipédia).
+Formulations toujours prudentes (« pourrait aider »), jamais de promesse
+d'emploi garanti. Portée : niveau de la matière, pas de chaque question
+individuelle ; fonctionnalité vérifiée en conditions réelles (serveur
+lancé, CE3/calcul installé, guidage affiché correctement). Détails
+complets uniquement dans la version japonaise de CLAUDE.md.

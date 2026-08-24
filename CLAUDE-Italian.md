@@ -278,3 +278,61 @@ casuali → correzione.
   errore JavaScript.
 - Versione completa: voce HANDOFF del 2026-08-24 in [CLAUDE.md](CLAUDE.md).
 
+## Auto-riparazione del DUAL DB + TLS + supporto HEAD (2026-08-24, seguito)
+
+Quattro cambiamenti, tutti verificati con `cargo build`/`cargo test` (18/18 verdi)
+più controlli HTTP reali su un binario in esecuzione:
+
+- **Auto-riparazione del mirror (coda `mirror_outbox`)**: finora la scrittura
+  simultanea verso il mirror opzionale PostgreSQL/aruaru-db falliva senza
+  alcun meccanismo di recupero (dichiarato esplicitamente "non implementato"
+  nella voce del 2026-08-24 precedente). Ora le scritture fallite vengono
+  accodate in una tabella SQLite locale e ritentate da un'attività in
+  background ogni 60 secondi (fino a 100 tentativi, entrambi valori
+  predefiniti configurabili); le righe che restano irrecuperabili sono
+  marcate `give_up` e contate in `GET /v1/db/info`. **Limiti dichiarati
+  onestamente**: copre solo le scritture fallite da questo stesso processo,
+  non le modifiche fatte altrove sul mirror; i ritentativi sono INSERT
+  semplici, quindi un duplicato raro (at-least-once) resta possibile.
+- **TLS per il mirror PostgreSQL**: aggiunto il crate `tokio-postgres-rustls`
+  per supportare `sslmode=require`/`verify-ca`/`verify-full` verso database
+  gestiti; `sslmode=disable` (predefinito) resta invariato. I certificati
+  radice vengono presi dal trust store del sistema operativo
+  (`rustls-native-certs`, con fallback su `webpki-roots`). Esiste una via
+  di fuga `OPEN_ENGLISH_DB_TLS_INSECURE=1` che disattiva la verifica del
+  certificato — genera un avviso ben visibile, è vulnerabile a
+  man-in-the-middle e va usata solo su reti chiuse fidate.
+- **Supporto al metodo HTTP HEAD**: il server di file statici rispondeva
+  prima con 404/405 alle richieste `HEAD`; ora risponde correttamente. Ha
+  richiesto di aggiungere `MethodRouter::head()` alla facciata condivisa
+  `RPoem` (`open-runo-poem-compat`) — modifica puramente additiva.
+- **Nuovo alias `/health`** accanto all'esistente `/healthz` (stesso JSON
+  `{"ok":true}`), per compatibilità con lo schema di registrazione dei
+  tenant di altri repo dell'ecosistema (open-web-server/open-easy-web) — **non**
+  significa che open-english sia già integrato con open-web-server, solo che
+  la forma del controllo di salute corrisponde.
+- `GET /v1/db/info` ora restituisce anche `rsync_available` (una verifica
+  reale con `rsync --version`).
+
+Verifica effettiva: oltre a `cargo build`/`cargo test`, sono stati eseguiti
+controlli HTTP reali su un binario avviato — `HEAD /` e `HEAD /app.js`
+restituiscono Content-Length/Content-Type corretti a corpo vuoto,
+`GET /health` risponde `{"ok":true}`, `GET /v1/db/info` include
+`rsync_available`. Versione completa (in giapponese): voce HANDOFF
+"2026-08-24 DUAL DB同時書き込みを実装" e seguenti in [CLAUDE.md](CLAUDE.md).
+
+
+## Guida alla carriera nel corso di ripetizioni per anno scolastico (2026-08-24, seguito 2)
+
+La schermata degli esercizi ora mostra, per ogni materia (giapponese,
+calcolo, scienze, scienze sociali, inglese, programmazione, educazione
+civica), un riquadro "Guida alla carriera" con i settori/mestieri a cui
+la materia potrebbe essere utile e i ruoli avanzati raggiungibili
+approfondendola. Progettazione basata su una ricerca reale sul sistema
+duale tedesco di formazione professionale (Berufsschule, qualifiche IHK,
+Ausbildung — fonti: IHK Darmstadt, deutschland.de, Wikipedia).
+Formulazioni sempre prudenti ("potrebbe aiutare"), mai una promessa di
+lavoro garantito. Ambito: livello della materia, non ogni singola
+domanda; verificato dal vivo (server avviato, matematica di terza
+elementare installata, visualizzazione corretta confermata). Dettagli
+completi solo nella versione giapponese di CLAUDE.md.
