@@ -164,3 +164,27 @@ Weitere Sprachen: [日本語 (Original, vollständige Details)](PORTING.md) ·
 5. Beim Portieren von Rätseln: die Lösung selbst nachrechnen und im Text
    festhalten, dass es sich um eine **echte, nachprüfbare Aufgabe** und
    nicht um ein Fangrätsel handelt — sonst suchen Lesende am falschen Ende.
+
+## Muster: bestehendes Kurs-Gerüst für eine andere Zielgruppe wiederverwenden (2026-08-24)
+
+Die virtuelle Hochschule und die virtuelle Berufsschule verwenden **dasselbe Muster
+wie der Nachhilfekurs**, nur mit anderer Zielgruppe.
+
+- Drei Datentabellen genügen: Kategorien (mit einem `mode`-Feld zur Trennung der
+  beiden Schulformen), Fachgebiete je Kategorie und Fragen unter dem Schlüssel
+  `<Kategorie>:<Fachgebiet>`. Keine neuen Konzepte einführen.
+- **Eine einzige Modalbox für beide Schulformen**: eine Funktion tauscht Titel und
+  Überschrift aus und filtert die Kategorienliste nach `mode`. Kein doppeltes HTML.
+  Beim Moduswechsel Auswahl und installierte Fachgebiete verwerfen.
+- **Fehlende Inhalte immer als „noch nicht bereit“ kennzeichnen**: Checkbox
+  deaktivieren und zusätzlich „N von M Fachgebieten verfügbar“ auf der Kategorie-
+  Schaltfläche anzeigen, damit der Umfang schon vor dem Öffnen sichtbar ist. Enthält
+  eine Kategorie gar nichts, dies ausdrücklich vermerken.
+- **YouTube nur als Suchergebnis-Link** (Stichwort per URL-Kodierung anhängen), mit
+  `rel="noopener noreferrer"` und einem Hinweis, dass kein Video empfohlen wird.
+- **Formate, die sich nicht automatisch bewerten lassen** (Aufsatz, Gespräch, Praxis),
+  ausdrücklich als Annäherung kennzeichnen statt sie als Funktion zu bewerben.
+- Ergebnisse über den vorhandenen Verlaufs-Endpunkt speichern, nur mit anderer Rolle.
+- Urheberrecht: allgemeine Prüfungstendenzen recherchieren, aber alle Fragetexte
+  selbst verfassen.
+

@@ -1,4 +1,30 @@
-# open-english
+﻿# open-english
+
+> 📌 **Neuestes Update (2026-08-24): virtuelle Hochschule und virtuelle
+> Online-Berufsschule**:
+> - **🏫 Virtuelle Hochschule** bietet vier Kategorien — Fachschule (senmon gakko),
+>   Junior College, Universität (Bachelor) und Graduiertenschule. Man wählt darin
+>   Fachgebiete aus, installiert sie und erhält **selbst verfasste Übungsfragen**,
+>   die Aufnahmeprüfungen, Vorlesungen und Klausuren nachempfinden, samt Auswertung.
+> - **🛠 Virtuelle Berufsschule** funktioniert genauso für Branchen und Berufe.
+> - **Sieben Fachgebiete funktionieren derzeit wirklich, mit je fünf Fragen**:
+>   Universität = Geistes-/Sozialwissenschaften und Naturwissenschaften/Technik;
+>   Fachschule = Informationstechnik; Graduiertenschule = Forschungsgrundlagen
+>   (Forschungsplan, Forschungsethik, Auswahlgespräch); Berufsschule = IT-/
+>   Programmiergrundlagen, Buchhaltungsgrundlagen, Grundlagen des Kundenservice.
+> - **Alles Übrige zeigt ehrlich „noch nicht bereit“** (Medizinische Verwaltung,
+>   Pflege, Kosmetik, Kochen, Bauwesen, **alle vier Fachgebiete des Junior College**,
+>   Medizin/Pflegewissenschaft, Pädagogik u. a.). Jede Kategorie-Schaltfläche zeigt
+>   „N von M Fachgebieten verfügbar“, sodass der Umfang vorab erkennbar ist.
+> - Zu jedem Fachgebiet gibt es einen Link auf eine **YouTube-Suchergebnisseite** mit
+>   einem allgemeinen Suchbegriff. **Kein bestimmtes Video wird als richtig empfohlen.**
+> - **Ehrliche Offenlegung**: Alle Fragen sind Eigenentwicklungen; nichts stammt aus
+>   echten Aufnahmeprüfungen, Lehrbüchern oder kommerziellen Übungsbänden. **Aufsätze,
+>   Auswahlgespräche und praktische Fertigkeiten werden nur als Multiple-Choice-
+>   Wissensfragen angenähert** und ersetzen kein echtes Aufsatz-Feedback und kein
+>   Bewerbungstraining. Die Punktzahl sagt nichts über echte Zulassungen aus.
+> - Ergebnisse werden über den bestehenden Verlaufs-Endpunkt (`/v1/db/history`)
+>   gespeichert; es wurde keine neue API hinzugefügt.
 
 > 📌 **Neuestes Update (2026-08-23, Fortsetzung 4)**: **Quizfunktion mit
 > einem Original-Rätsel des Autors**. Wer "Stell mir eine Aufgabe",

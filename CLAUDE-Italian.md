@@ -234,3 +234,47 @@ lingue supportate **non** sono state riempite con traduzione automatica
 per simulare una copertura totale; le lingue non incluse ricevono il testo
 bilingue predefinito. Questo limite va mantenuto e dichiarato anche in
 caso di modifiche.
+
+## Scuola virtuale / scuola di formazione professionale online (2026-08-24)
+
+Su indicazione dell'utente sono state aggiunte una **scuola virtuale** (istituto
+professionale, istituto biennale, università, dottorato) e una **scuola di formazione
+professionale online**: scegliere una categoria → installare un ambito → domande
+casuali → correzione.
+
+- L'impianto **riprende integralmente quello del corso di ripetizioni esistente**
+  (`TUTOR_*`); **non sono state aggiunte nuove API, nuovi archivi né nuove tabelle**.
+  I risultati passano dal `POST /v1/db/history` già presente. Codice: `VSCHOOL_*` /
+  `vschool*` in fondo ad `app.js`, interfaccia `#vschool-modal` in `index.html`. Due
+  pulsanti aprono **la stessa finestra modale** in due modalità.
+- **Ricerca preliminare (2026-08-24, ricerca web in giapponese)**: nelle selezioni di
+  università, istituti biennali e istituti professionali prevalgono il tema scritto
+  (su testo, su argomento o su dati) e il colloquio, con la classica struttura in tre
+  parti introduzione–svolgimento–conclusione; nei dottorati contano progetto di
+  ricerca, stato dell'arte, prove specialistiche e colloquio. La formazione
+  professionale pubblica copre tra l'altro informatica, vendita, assistenza alla
+  persona, edilizia, estetica e cucina. **Queste tendenze generali sono servite solo a
+  definire le categorie: tutti i testi delle domande sono scritti appositamente.**
+- **Realizzati (7 ambiti, 5 domande ciascuno)**: università = umanistico-sociale e
+  scientifico-ingegneristico; istituto professionale = informatica; dottorato =
+  fondamenti della ricerca; formazione professionale = informatica, contabilità,
+  servizio al cliente.
+- **Non realizzati, segnalati onestamente come «non ancora pronti»**: segreteria medica,
+  assistenza alla persona, estetica, cucina, edilizia, **tutti e quattro gli ambiti
+  dell'istituto biennale**, area medico-infermieristica, scienze dell'educazione,
+  specialistiche ingegneristiche di dottorato e, nella formazione professionale, basi di
+  assistenza, edilizia, cucina ed estetica.
+- **Divulgazione onesta (da non indebolire)**: nessuna riproduzione di prove reali; tema,
+  colloquio e pratica sono solo approssimati a scelta multipla; nessuna previsione su
+  ammissioni o qualifiche.
+- **YouTube**: solo collegamenti a **pagine di risultati di ricerca** con parole chiave
+  generiche, accompagnati dalla relativa avvertenza.
+- **Verifica sul campo (tre cicli TEST → miglioramento → nuovo TEST)**: server avviato
+  (`http://127.0.0.1:4601/`), entrambe le modalità percorse per intero nel browser (3/3
+  con risposte corrette, 0/3 con indicazione delle domande senza risposta), ripristino da
+  `localStorage` dopo il ricaricamento, azzeramento al cambio di modalità, avviso per una
+  categoria priva di contenuti e pulsante «rivedi con l'insegnante». Due righe
+  `[virtual-school] …` sono state effettivamente salvate in `/v1/db/history`. Nessun
+  errore JavaScript.
+- Versione completa: voce HANDOFF del 2026-08-24 in [CLAUDE.md](CLAUDE.md).
+

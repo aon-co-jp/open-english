@@ -163,3 +163,27 @@ Altre lingue: [日本語 (originale, dettagli completi)](PORTING.md) ·
 5. Nel portare indovinelli: rifare i calcoli della soluzione e dichiarare
    nel testo che si tratta di un **problema autentico e verificabile**, non
    di un tranello, altrimenti il lettore cerca dalla parte sbagliata.
+
+## Schema: riusare l'ossatura di un corso esistente per un altro pubblico (2026-08-24)
+
+La scuola virtuale e la scuola di formazione professionale usano **lo stesso schema del
+corso di ripetizioni**, cambiando soltanto il pubblico.
+
+- Bastano tre tabelle di dati: le categorie (con un campo `mode` che separa i due tipi di
+  scuola), gli ambiti per categoria e le domande sotto la chiave `<categoria>:<ambito>`.
+  Non introdurre concetti nuovi.
+- **Una sola finestra modale per entrambi i tipi di scuola**: una funzione sostituisce
+  titolo e intestazione e filtra l'elenco delle categorie in base a `mode`. Niente HTML
+  duplicato. Al cambio di modalità scartare selezione e ambiti installati.
+- **Segnalare sempre i contenuti mancanti come «non ancora pronti»**: disattivare la
+  casella e mostrare «N ambiti su M disponibili» sul pulsante di categoria, così la
+  copertura si vede prima ancora di aprire. Se una categoria è del tutto vuota, dirlo
+  esplicitamente.
+- **YouTube solo come collegamento ai risultati di ricerca** (parola chiave codificata
+  nell'URL), con `rel="noopener noreferrer"` e una nota che nessun video è raccomandato.
+- **I formati che non si prestano alla correzione automatica** (tema, colloquio, pratica)
+  vanno presentati come semplici approssimazioni, mai come funzionalità.
+- Salvare i risultati tramite lo storico esistente, cambiando soltanto il ruolo.
+- Diritto d'autore: documentarsi sulle tendenze generali delle prove, ma scrivere da sé
+  tutti i testi delle domande.
+

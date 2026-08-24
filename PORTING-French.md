@@ -173,3 +173,28 @@ réponses à texte fixe déclenchées par des règles décrit plus haut.
 4. **Ne pas retirer les phrases qui évitent les fausses pistes** : préciser
    que le problème est de l'arithmétique pure et non une devinette est
    fonctionnel, pas décoratif.
+
+## Motif : réutiliser une ossature de cours existante pour un autre public (2026-08-24)
+
+L'école virtuelle et l'école de formation professionnelle reposent sur **le même motif
+que le cours de soutien scolaire**, avec un public différent.
+
+- Trois tables de données suffisent : les catégories (avec un champ `mode` séparant les
+  deux types d'école), les domaines par catégorie, et les questions sous la clé
+  `<catégorie>:<domaine>`. N'introduire aucun concept nouveau.
+- **Une seule fenêtre modale pour les deux types d'école** : une fonction remplace le
+  titre et l'intitulé, puis filtre la liste des catégories par `mode`. Pas de HTML en
+  double. Au changement de mode, abandonner la sélection et les domaines installés.
+- **Toujours marquer l'absence de contenu comme « pas encore prêt »** : désactiver la
+  case à cocher et afficher « N domaines sur M disponibles » sur le bouton de catégorie,
+  pour que la couverture soit visible avant même l'ouverture. Si une catégorie est
+  entièrement vide, le signaler explicitement.
+- **YouTube uniquement en lien de résultats de recherche** (mot-clé encodé dans l'URL),
+  avec `rel="noopener noreferrer"` et une note précisant qu'aucune vidéo n'est recommandée.
+- **Les formats qui ne se corrigent pas automatiquement** (dissertation, entretien,
+  pratique) doivent être présentés comme de simples approximations, jamais vendus comme
+  une fonctionnalité.
+- Enregistrer les résultats via l'historique existant, en changeant seulement le rôle.
+- Droit d'auteur : se documenter sur les tendances générales des épreuves, mais rédiger
+  soi-même tous les énoncés.
+

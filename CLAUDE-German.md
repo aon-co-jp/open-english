@@ -245,3 +245,45 @@ Sprachen wurden **absichtlich nicht** maschinell aufgefüllt, um "alle
 Sprachen unterstützt" vorzutäuschen; nicht erfasste Sprachen erhalten die
 japanisch-englische Standardausgabe. Diese Grenze ist beim Ändern
 beizubehalten und offenzulegen.
+
+## Virtuelle Hochschule / virtuelle Online-Berufsschule (2026-08-24)
+
+Auf Nutzeranweisung wurde eine **virtuelle Hochschule** (Fachschule, Junior
+College, Universität, Graduiertenschule) und eine **virtuelle Online-Berufsschule**
+ergänzt: Kategorie wählen → Fachgebiet installieren → Zufallsfragen → Auswertung.
+
+- Das Design übernimmt **unverändert das Muster des bestehenden Nachhilfekurses**
+  (`TUTOR_*`); es wurden **keine neue API, kein neuer Speicherort und keine neue
+  Tabelle** eingeführt. Ergebnisse gehen an das bestehende `POST /v1/db/history`.
+  Code: `VSCHOOL_*` / `vschool*` am Ende von `app.js`, UI `#vschool-modal` in
+  `index.html`. Zwei Schaltflächen öffnen **dieselbe Modalbox** in zwei Modi.
+- **Vorab-Recherche (2026-08-24, japanische Websuche)**: Bei Auswahlverfahren an
+  Universitäten, Junior Colleges und Fachschulen dominieren Aufsatz (mit
+  Textvorlage, Themenstellung oder Datenanalyse) und Auswahlgespräch; der Aufsatz
+  folgt üblicherweise dem Dreischritt Einleitung–Hauptteil–Schluss. Bei
+  Graduiertenschulen zählen Forschungsplan, Literaturüberblick, Fachprüfung und
+  Gespräch. Die öffentliche Berufsausbildung deckt u. a. IT, Vertrieb, Pflege, Bau,
+  Kosmetik und Gastronomie ab. **Diese allgemeinen Tendenzen begründen nur die
+  Einteilung; alle Fragetexte sind selbst verfasst.**
+- **Umgesetzt (7 Fachgebiete, je 5 Fragen)**: Universität = Geistes-/Sozial-
+  wissenschaften und Naturwissenschaften/Technik; Fachschule = Informationstechnik;
+  Graduiertenschule = Forschungsgrundlagen; Berufsschule = IT-/Programmiergrundlagen,
+  Buchhaltung, Kundenservice.
+- **Nicht umgesetzt, ehrlich als „noch nicht bereit“ ausgewiesen**: Medizinische
+  Verwaltung, Pflege, Kosmetik, Kochen, Bauwesen, **alle vier Fachgebiete des Junior
+  College**, Medizin/Pflegewissenschaft, Pädagogik, technische Graduiertenfächer sowie
+  Pflege-, Bau-, Koch- und Kosmetikgrundlagen in der Berufsschule.
+- **Ehrliche Offenlegung (nicht abschwächen)**: keine Übernahme echter Prüfungsfragen;
+  Aufsatz, Gespräch und Praxis werden nur als Multiple-Choice angenähert; keine Aussage
+  über echte Zulassungen oder Abschlüsse.
+- **YouTube**: nur Links auf **Suchergebnisseiten** zu allgemeinen Stichwörtern, mit
+  entsprechendem Hinweis. **Kein bestimmtes Video wird als richtig dargestellt.**
+- **Praxistest (drei Runden TEST → Verbesserung → erneuter TEST)**: Server gestartet
+  (`http://127.0.0.1:4601/`), im Browser beide Modi vollständig durchlaufen (3/3 bei
+  korrekten Antworten, 0/3 mit Anzeige unbeantworteter Fragen), Wiederherstellung aus
+  dem `localStorage` nach Neuladen, Zurücksetzen beim Moduswechsel, Hinweis bei einer
+  Kategorie ohne Inhalte sowie die Schaltfläche „mit der Trainerin wiederholen“ geprüft.
+  Zwei Zeilen `[virtual-school] …` wurden tatsächlich in `/v1/db/history` gespeichert.
+  Keine JavaScript-Fehler.
+- Vollständige Fassung: HANDOFF-Eintrag vom 2026-08-24 in [CLAUDE.md](CLAUDE.md).
+

@@ -49,6 +49,38 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/icons/open-english.ico", "icons/open-english.ico", "image/x-icon"),
 ];
 
+/// 静的ファイルへの`HEAD`リクエスト用ハンドラ(2026-08-24新設)。
+///
+/// **背景・正直な開示**: 従来`STATIC_FILES`は`GET`のみ登録しており、
+/// `curl -I`のようなHEADリクエストは(登録された`GET`ルートと同じ
+/// パスであっても)`open_runo_router::hyper_compat::Router`が
+/// メソッド不一致として`404`を返していた。多くのHTTPクライアント・
+/// リバースプロキシ・ヘルスチェックツールは接続確認や更新確認に
+/// `HEAD`を使うため、実用性への影響が小さくない既知のギャップ
+/// だった(この節の直前のHANDOFF「静的ファイルサーバーがHEADメソッド
+/// 未対応」参照)。RFC 9110 9.3.2の定義通り、`GET`と同じヘッダー
+/// (`Content-Type`・`Content-Length`)を返しつつボディは送らない。
+/// `open-runo-poem-compat`側に`MethodRouter::head`/`head()`が
+/// 無かったため、本対応の一環として新設した(`RPoem/crates/
+/// open-runo-poem-compat/src/lib.rs`参照、追加のみで既存APIは
+/// 変更していない)。
+fn static_file_head_handler(path: PathBuf, content_type: &'static str) -> open_runo_poem_compat::Handler {
+    std::sync::Arc::new(move |_req, _params| {
+        let path = path.clone();
+        Box::pin(async move {
+            match tokio::fs::metadata(&path).await {
+                Ok(meta) => hyper::Response::builder()
+                    .status(StatusCode::OK)
+                    .header("content-type", content_type)
+                    .header("content-length", meta.len().to_string())
+                    .body(open_runo_poem_compat::fixed_body(bytes::Bytes::new()))
+                    .expect("building a HEAD response from a fixed set of valid headers cannot fail"),
+                Err(_) => open_runo_poem_compat::empty_status(StatusCode::NOT_FOUND),
+            }
+        })
+    })
+}
+
 /// 静的ファイルの配信元ディレクトリ。
 ///
 /// **正直な開示・実機テストで発覚した実バグ(2026-08-12)**: 以前は
@@ -351,12 +383,21 @@ async fn db_get_settings(db: Arc<Db>) -> Response {
 /// 済みか)は実データを返す。フロントエンド側の円グラフ・保存先選択
 /// UIは、この情報が出揃ってから次の増分で実装する。
 async fn db_info(db: Arc<Db>) -> Response {
+    // `Db::rsync_available()`はブロッキングな子プロセス呼び出し
+    // (`rsync --version`)のため、tokioワーカースレッドを塞がないよう
+    // `spawn_blocking`へ逃がす(2026-08-24、これまでこの関数はどこからも
+    // 呼ばれておらずdead_code警告が出ていた——`/v1/db/rsync-backup`は
+    // 実際に`rsync`を起動してから初めて未インストールを検知する設計
+    // だったため、事前にここで分かるようにして`GET /v1/db/info`一発で
+    // 「バックアップを試す前にrsync が使えるかどうか」を確認できるようにした)。
+    let rsync_available = tokio::task::spawn_blocking(Db::rsync_available).await.unwrap_or(false);
     rs_json_response(
         StatusCode::OK,
         &serde_json::json!({
             "db_path": db.path().display().to_string(),
             "db_file_size_bytes": db.file_size_bytes(),
             "postgres_mirror_configured": db.has_postgres_mirror(),
+            "rsync_available": rsync_available,
             // 2026-08-24 DUAL同時書き込み対応で追加。`dual_mirror`が
             // trueなら`OPEN_ENGLISH_DATABASE_URL`と
             // `OPEN_ENGLISH_DATABASE_URL_SECONDARY`の両方が設定済みで、
@@ -365,6 +406,13 @@ async fn db_info(db: Arc<Db>) -> Response {
             // 含み得るため返さない)。
             "dual_mirror": db.is_dual_mirror(),
             "mirror_targets": db.mirror_labels(),
+            // 2026-08-24 自己修復(未反映キュー)対応で追加。
+            // `mirror_outbox_pending`は「ミラー書き込みに失敗して
+            // 再送待ちの件数」、`mirror_outbox_given_up`は
+            // 「規定回数リトライしても成功しなかった件数」
+            // (黙って捨てず件数として見えるようにしてある)。
+            "mirror_outbox_pending": db.outbox_counts().0,
+            "mirror_outbox_given_up": db.outbox_counts().1,
             "used_disk_bytes": serde_json::Value::Null,
             "total_disk_bytes": serde_json::Value::Null,
         }),
@@ -1050,12 +1098,42 @@ async fn main() {
         }
     );
 
+    // 自己修復(未反映キューの再送)バックグラウンドタスク
+    // (2026-08-24新設、`db.rs`モジュールdoc「自己修復」節参照)。
+    // 起動時に1回試し、その後は一定間隔で繰り返す。ミラー先が
+    // 未設定なら何もしない(タスク自体を起動しない)。
+    if db.has_postgres_mirror() {
+        let retry_secs: u64 = std::env::var("OPEN_ENGLISH_MIRROR_RETRY_SECS").ok().and_then(|v| v.parse().ok()).filter(|n| *n > 0).unwrap_or(60);
+        let retry_path = db.path();
+        let retry_mirrors = db.mirrors();
+        println!("DB mirror self-repair: retry queue enabled (every {retry_secs}s)");
+        tokio::spawn(async move {
+            let mut ticker = tokio::time::interval(std::time::Duration::from_secs(retry_secs));
+            loop {
+                // 1回目の`tick()`は即座に返る(=起動時の初回実行)。
+                ticker.tick().await;
+                db::outbox_retry_once(retry_path.clone(), retry_mirrors.clone()).await;
+            }
+        });
+    }
+
     let mut app = Route::new();
     for (url_path, rel_file, content_type) in STATIC_FILES {
         let file_path = root.join(rel_file);
-        app = app.at(url_path, get(static_file_handler(file_path, content_type)));
+        app = app.at(
+            url_path,
+            get(static_file_handler(file_path.clone(), content_type)).head(static_file_head_handler(file_path, content_type)),
+        );
     }
     app = app.at("/healthz", get(handler_fn(move |_req, _p| async move { healthz().await })));
+    // `/health`はopen-web-server/open-easy-web側の「分身の術」テナント
+    // 登録パターン(他リポジトリのCLAUDE.md HANDOFF多数参照)が汎用的に
+    // 期待するヘルスチェック命名に形状を揃えるための別名(2026-08-24新設)。
+    // 中身は`/healthz`と同一(`healthz()`をそのまま呼ぶだけ、新規ロジック
+    // なし)——open-english自体をopen-web-server経由で公開する際に
+    // エンドポイント名の食い違いで弾かれないようにする、実装コストの
+    // 小さい歩み寄り。既存の`/healthz`は後方互換のためそのまま維持する。
+    app = app.at("/health", get(handler_fn(move |_req, _p| async move { healthz().await })));
     // 実行基盤(CPU命令セット)情報(2026-08-22新設、cpu_runtime()のdoc参照)。
     app = app.at("/v1/cpu-runtime", get(handler_fn(move |_req, _p| async move { cpu_runtime().await })));
     // 多言語擬似模擬試験の対応言語一覧(2026-08-22新設、world_languages()のdoc参照)。

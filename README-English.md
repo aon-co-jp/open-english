@@ -1,10 +1,39 @@
-# open-english
+﻿# open-english
 
 *日本語*: [README.md](README.md) ·
 *Other languages*: [Deutsch](README-German.md) · [Italiano](README-Italian.md) ·
 [Français](README-French.md) · [Русский](README-Russian.md) ·
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
+
+> 📌 **Latest update (2026-08-24): a virtual school (higher education) and a
+> virtual online vocational school**:
+> - **🏫 Virtual school (higher education)** lets you pick one of four categories —
+>   **vocational college (senmon gakko), junior college, university (undergraduate),
+>   graduate school** — then install fields within it. Installed fields produce
+>   **original mock questions** loosely modelled on entrance exams, classes and
+>   in-school tests, and score your answers.
+> - **🛠 Virtual vocational school** works the same way for industry/occupation fields,
+>   testing basic knowledge with **original questions**.
+> - **Seven fields actually work today, five questions each**: university = humanities &
+>   social sciences / science & engineering; vocational college = information technology;
+>   graduate school = research fundamentals (research plans, research ethics, interviews);
+>   vocational training = IT & programming basics / bookkeeping & accounting basics /
+>   customer service basics.
+> - **Everything else honestly says "not ready yet"** (medical office admin, care work,
+>   beauty, cooking, construction, **all four junior-college fields**, medicine & nursing,
+>   education, engineering graduate specialisation, and more). Each category button shows
+>   "N of M fields available" so you can see the coverage before opening it.
+> - Each field carries a link to a **YouTube search-results page** for a generic study
+>   keyword. **No specific video is endorsed as correct.**
+> - **Honest disclosure**: every question is original to this app; nothing is copied from
+>   real entrance exams, textbooks or commercial workbooks. **Essays, interviews and
+>   practical skills are only approximated as multiple-choice knowledge questions** and are
+>   no substitute for real essay feedback or interview practice. Scores predict nothing
+>   about real admissions or qualifications.
+> - Scores are stored through the existing history endpoint (`/v1/db/history`); no new API
+>   was added.
+> See the 2026-08-24 HANDOFF in [CLAUDE.md](CLAUDE.md) for details.
 
 > 📌 **Latest update (2026-08-23, cont. 6): a much bigger tutor course**:
 > - **13 grades, from preschool/kindergarten up to high school 3**, with new

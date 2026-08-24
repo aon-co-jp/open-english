@@ -1,4 +1,33 @@
-# open-english
+﻿# open-english
+
+> 📌 **Dernière mise à jour (2026-08-24) : une école virtuelle (enseignement
+> supérieur) et une école de formation professionnelle en ligne virtuelle** :
+> - **🏫 École virtuelle** propose quatre catégories — école spécialisée
+>   (senmon gakko), institut universitaire de premier cycle, université (licence)
+>   et école doctorale. On y choisit des domaines, on les installe, et l'application
+>   pose des **questions d'entraînement originales** inspirées des concours d'entrée,
+>   des cours et des contrôles, puis les corrige.
+> - **🛠 École de formation professionnelle virtuelle** fonctionne de la même façon
+>   pour des domaines professionnels.
+> - **Sept domaines fonctionnent réellement aujourd'hui, cinq questions chacun** :
+>   université = lettres et sciences sociales / sciences et ingénierie ; école
+>   spécialisée = informatique ; école doctorale = bases de la recherche (projet de
+>   recherche, éthique de la recherche, entretien) ; formation professionnelle =
+>   bases de l'informatique et de la programmation, bases de la comptabilité, bases
+>   de la relation client.
+> - **Tout le reste affiche honnêtement « pas encore prêt »** (secrétariat médical,
+>   aide à la personne, esthétique, cuisine, bâtiment, **les quatre domaines de
+>   l'institut de premier cycle**, santé et soins infirmiers, sciences de l'éducation,
+>   etc.). Chaque bouton de catégorie indique « N domaines sur M disponibles ».
+> - Chaque domaine comporte un lien vers une **page de résultats de recherche YouTube**
+>   pour un mot-clé général. **Aucune vidéo particulière n'est recommandée comme juste.**
+> - **Divulgation honnête** : toutes les questions sont originales ; rien n'est repris
+>   de vrais sujets d'examen, de manuels ou d'annales commerciales. **La dissertation,
+>   l'entretien et les épreuves pratiques ne sont qu'approchés sous forme de questions
+>   à choix multiples** et ne remplacent ni une correction de copie ni un entraînement
+>   à l'entretien. Le score ne préjuge en rien d'une admission réelle.
+> - Les résultats sont enregistrés via l'historique existant (`/v1/db/history`) ;
+>   aucune nouvelle API n'a été ajoutée.
 
 > 📌 **Dernière mise à jour (2026-08-23, suite)** : un **quiz original de
 > l'auteur de l'application, Masahiro Ishizuka (石塚正浩)**. Si vous demandez

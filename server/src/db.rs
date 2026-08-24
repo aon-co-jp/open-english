@@ -72,11 +72,52 @@
 //! SQLiteが常に正の情報源であり、ミラーの失敗でHTTPリクエストが
 //! 失敗することはない、という既存方針は変えていない。
 //!
-//! **正直な開示**: 自己修復(片側が欠落した行を他方から補完し直す
-//! リペア処理)は**実装していない**。実装したのは「書き込み時に両方へ
-//! 送る」ところまでで、片方がダウンしていた期間に取りこぼした行を
-//! 復旧後に追いつかせる仕組みは無い(復旧には既存の`pg_dump`+`rsync`
-//! バックアップからのリストアが必要)。
+//! ## 自己修復(未反映キュー / outbox)の実装(2026-08-24追加)
+//!
+//! **2026-08-24以前の「自己修復は未実装」という記述はこの節で更新される。**
+//! ユーザー指示「片方が失敗した場合、失敗した書き込みを後で自動的に
+//! リトライ・補完できる仕組みを」への対応。設計は指示どおり
+//! **シンプルなリトライキュー**で、分散合意やベクタークロックのような
+//! 仕組みは一切導入していない。
+//!
+//! - ミラー書き込みが失敗すると、その1件を**ローカルSQLiteの
+//!   `mirror_outbox`テーブル**へ「未反映」として記録する(SQLiteは
+//!   常に正の情報源であり続けるので、キューもそこに置くのが最も安全)。
+//! - 起動時に1回、その後は`OPEN_ENGLISH_MIRROR_RETRY_SECS`
+//!   (既定60秒)ごとにバックグラウンドタスクが未反映行を読み出し、
+//!   **元と同じミラー先(`label`で対応付け)**へ再送する。成功した行だけ
+//!   キューから削除し、失敗した行は`attempts`と`last_error`を更新して
+//!   残す(次回また試す)。
+//! - `attempts`が`MAX_OUTBOX_ATTEMPTS`(既定100回)を超えた行は
+//!   **黙って捨てず**、`give_up`フラグを立てて残す——利用者が
+//!   `GET /v1/db/info`の`mirror_outbox`で件数を確認できる。
+//!
+//! **正直な開示・この方式の限界**: (a) 補完できるのは「このプロセスが
+//! 書き込もうとして失敗した行」だけ。ミラー先で直接削除された行や、
+//! open-englishが起動していない間に他経路で入った差分は検出できない
+//! (`pg_dump`同士の突き合わせが必要)。(b) 再送は`INSERT`なので、
+//! 「実際にはミラー先へ届いていたがACKだけ失われた」ケースでは
+//! **重複行になり得る**(at-least-once)。厳密な冪等性が要る場合は
+//! ミラー側にユニーク制約を張る必要がある。(c) キューはローカル
+//! SQLiteファイルにあるため、そのファイルを失うとキューも失われる。
+//!
+//! ## TLS対応(2026-08-24追加)
+//!
+//! 従来は`tokio_postgres::NoTls`固定で、`sslmode=require`のマネージド
+//! PostgreSQLへ接続できなかった。`tokio-postgres-rustls`(rustls 0.23)
+//! を導入し、接続文字列の`sslmode`をtokio-postgres自身に解釈させる
+//! 形へ変更した(`sslmode=disable`〈既定〉ならTLSハンドシェイクは
+//! 発生せず従来と同じ平文接続、`require`/`verify-ca`/`verify-full`なら
+//! TLSで接続する)。ルート証明書はOSのトラストストア
+//! (`rustls-native-certs`)を読み、失敗した場合は`webpki-roots`
+//! (Mozillaのルート集合)へフォールバックする。
+//!
+//! **正直な開示**: 自己署名証明書(社内VPSや`aruaru-db --tls-cert`で
+//! 自前生成した証明書等)は既定では検証に失敗して接続できない。
+//! その場合に限り`OPEN_ENGLISH_DB_TLS_INSECURE=1`で**証明書検証を
+//! 無効化**できるが、これは中間者攻撃に対して無防備になる設定で
+//! あり、信頼できる閉じたネットワーク以外では使わないこと
+//! (起動時に警告ログを出す)。
 //!
 //! ## aruaru-db(PostgreSQL)側の同時rsyncバックアップ(2026-08-19追加)
 //!
@@ -190,7 +231,11 @@ fn mirrors_from_env() -> Vec<MirrorTarget> {
 /// そのまま完了する(SQLite側が常に正の情報源であり続ける設計は従来
 /// 通りで、どちらのミラーが失敗してもHTTPリクエスト自体は成功する)。
 pub async fn mirror_message_to_postgres(url: &str, role: &str, content: &str) -> Result<(), String> {
-    let (client, connection) = tokio_postgres::connect(url, tokio_postgres::NoTls).await.map_err(|e| format!("connect failed: {e}"))?;
+    // エラーは`source()`まで辿って文字列化する——tokio-postgresの
+    // Displayは"invalid configuration"のように要約だけを返すことがあり、
+    // 実際の原因(どの設定がどう悪いのか)が分からず調査に時間を要した
+    // ため(2026-08-24の実機検証で判明)。
+    let (client, connection) = tokio_postgres::connect(url, make_tls()).await.map_err(|e| format!("connect failed: {}", describe_error(&e)))?;
     tokio::spawn(async move {
         if let Err(e) = connection.await {
             eprintln!("open-english: mirror connection error: {e}");
@@ -213,6 +258,194 @@ pub async fn mirror_message_to_postgres(url: &str, role: &str, content: &str) ->
         .await
         .map_err(|e| format!("insert failed: {e}"))?;
     Ok(())
+}
+
+/// エラーを`source()`チェーンごと1行の文字列にする(2026-08-24新設)。
+pub fn describe_error(e: &(dyn std::error::Error + 'static)) -> String {
+    let mut out = e.to_string();
+    let mut cur = e.source();
+    while let Some(s) = cur {
+        out.push_str(&format!(" -> {s}"));
+        cur = s.source();
+    }
+    out
+}
+
+/// TLSコネクタを構築する(2026-08-24新設、モジュールdocのTLS節参照)。
+///
+/// **重要**: これを渡しても、実際にTLSハンドシェイクが起きるかどうかは
+/// 接続文字列の`sslmode`をtokio-postgres自身が解釈して決める。
+/// `sslmode=disable`(PostgreSQLクライアントの既定)ならTLSは使われず
+/// 従来と完全に同じ平文接続になるので、TLS非対応のサーバー
+/// (`aruaru-db`を平文起動している場合等)への既存の接続は壊れない。
+pub fn make_tls() -> tokio_postgres_rustls::MakeRustlsConnect {
+    // rustlsのCryptoProviderは1プロセスにつき1回だけ入れればよい。
+    // 既に入っている場合(他クレートが先に入れた等)のErrは無視する。
+    let _ = rustls::crypto::ring::default_provider().install_default();
+
+    let insecure = std::env::var("OPEN_ENGLISH_DB_TLS_INSECURE").map(|v| v == "1" || v.eq_ignore_ascii_case("true")).unwrap_or(false);
+
+    let config = if insecure {
+        eprintln!(
+            "open-english: WARNING - OPEN_ENGLISH_DB_TLS_INSECURE is set; \
+             TLS certificate verification is DISABLED for DB mirror connections \
+             (vulnerable to man-in-the-middle; use only on a trusted closed network) \
+             / TLS証明書の検証を無効化しています(中間者攻撃に無防備)"
+        );
+        rustls::ClientConfig::builder().dangerous().with_custom_certificate_verifier(std::sync::Arc::new(NoCertVerifier)).with_no_client_auth()
+    } else {
+        let mut roots = rustls::RootCertStore::empty();
+        match rustls_native_certs::load_native_certs() {
+            Ok(certs) => {
+                for cert in certs {
+                    roots.add(cert).ok();
+                }
+            }
+            Err(e) => eprintln!("open-english: could not load OS trust store ({e}); falling back to webpki-roots"),
+        }
+        if roots.is_empty() {
+            roots.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+        }
+        rustls::ClientConfig::builder().with_root_certificates(roots).with_no_client_auth()
+    };
+    tokio_postgres_rustls::MakeRustlsConnect::new(config)
+}
+
+/// `OPEN_ENGLISH_DB_TLS_INSECURE=1`のときだけ使う、検証を一切しない
+/// 証明書検証器。**通常経路では絶対に使われない**(上の`make_tls`が
+/// 環境変数を見て明示的に選んだ場合のみ)。
+#[derive(Debug)]
+struct NoCertVerifier;
+
+impl rustls::client::danger::ServerCertVerifier for NoCertVerifier {
+    fn verify_server_cert(
+        &self,
+        _end_entity: &rustls::pki_types::CertificateDer<'_>,
+        _intermediates: &[rustls::pki_types::CertificateDer<'_>],
+        _server_name: &rustls::pki_types::ServerName<'_>,
+        _ocsp: &[u8],
+        _now: rustls::pki_types::UnixTime,
+    ) -> Result<rustls::client::danger::ServerCertVerified, rustls::Error> {
+        Ok(rustls::client::danger::ServerCertVerified::assertion())
+    }
+
+    fn verify_tls12_signature(
+        &self,
+        _message: &[u8],
+        _cert: &rustls::pki_types::CertificateDer<'_>,
+        _dss: &rustls::DigitallySignedStruct,
+    ) -> Result<rustls::client::danger::HandshakeSignatureValid, rustls::Error> {
+        Ok(rustls::client::danger::HandshakeSignatureValid::assertion())
+    }
+
+    fn verify_tls13_signature(
+        &self,
+        _message: &[u8],
+        _cert: &rustls::pki_types::CertificateDer<'_>,
+        _dss: &rustls::DigitallySignedStruct,
+    ) -> Result<rustls::client::danger::HandshakeSignatureValid, rustls::Error> {
+        Ok(rustls::client::danger::HandshakeSignatureValid::assertion())
+    }
+
+    fn supported_verify_schemes(&self) -> Vec<rustls::SignatureScheme> {
+        rustls::crypto::ring::default_provider().signature_verification_algorithms.supported_schemes()
+    }
+}
+
+/// 再送を諦めるまでの試行回数(モジュールdoc参照)。超えても行は
+/// **削除せず**`give_up=1`を立てて残す(黙って捨てない)。
+pub const MAX_OUTBOX_ATTEMPTS: i64 = 100;
+
+/// 1回のリトライ周期で処理する最大件数(長時間ブロックしないための
+/// 上限。残りは次の周期で処理される)。
+const OUTBOX_BATCH: i64 = 200;
+
+/// 未反映キューへ1件積む(2026-08-24新設)。**自前の接続を開く**
+/// ——`Db`の`Mutex<Connection>`を非同期タスクへ跨がせないための
+/// 意図的な設計(`await`をまたいでロックを保持しない)。
+/// キューへの記録自体に失敗しても、呼び出し元の処理は止めない
+/// (ログに出すのみ——SQLiteの本体書き込みは既に成功しているため)。
+pub fn outbox_enqueue(db_path: &std::path::Path, label: &str, role: &str, content: &str, error: &str) {
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs() as i64;
+    let result = Connection::open(db_path).and_then(|conn| {
+        conn.execute(
+            "INSERT INTO mirror_outbox (label, role, content, created_at_unix, attempts, last_error) VALUES (?1, ?2, ?3, ?4, 1, ?5)",
+            rusqlite::params![label, role, content, now, error],
+        )
+    });
+    match result {
+        Ok(_) => eprintln!("open-english: queued 1 failed mirror write for {label} (will retry automatically)"),
+        Err(e) => eprintln!("open-english: could not queue failed mirror write for {label}: {e}"),
+    }
+}
+
+/// キューに溜まった未反映行を1周ぶん再送する(2026-08-24新設)。
+/// 起動時に1回+`OPEN_ENGLISH_MIRROR_RETRY_SECS`ごとに呼ばれる。
+/// 戻り値は`(送信成功件数, まだ失敗している件数)`。
+///
+/// `label`でミラー先を引き当てるため、環境変数の割り当てを入れ替えた
+/// (primaryとsecondaryを逆にした等)場合、古いキュー行は対応する
+/// ミラー先が見つからず**そのまま残る**——黙って別のDBへ書き込んで
+/// しまうより安全side、という意図的な選択。
+pub async fn outbox_retry_once(db_path: PathBuf, mirrors: Vec<MirrorTarget>) -> (usize, usize) {
+    if mirrors.is_empty() {
+        return (0, 0);
+    }
+    // 送信対象の読み出しは同期SQLite。`await`の前にスコープを閉じる。
+    let pending: Vec<(i64, String, String, String)> = {
+        let conn = match Connection::open(&db_path) {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("open-english: outbox retry could not open DB: {e}");
+                return (0, 0);
+            }
+        };
+        let mut stmt = match conn.prepare("SELECT id, label, role, content FROM mirror_outbox WHERE give_up = 0 ORDER BY id LIMIT ?1") {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("open-english: outbox retry query failed: {e}");
+                return (0, 0);
+            }
+        };
+        let rows = stmt.query_map(rusqlite::params![OUTBOX_BATCH], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)));
+        match rows {
+            Ok(r) => r.filter_map(|x| x.ok()).collect(),
+            Err(_) => Vec::new(),
+        }
+    };
+    if pending.is_empty() {
+        return (0, 0);
+    }
+    let mut ok_ids: Vec<i64> = Vec::new();
+    let mut fail: Vec<(i64, String)> = Vec::new();
+    for (id, label, role, content) in pending {
+        let Some(target) = mirrors.iter().find(|m| m.label == label) else {
+            // 対応するミラー先が今の設定に無い(環境変数が変わった等)。
+            // 誤って別のDBへ書き込まないよう、何もせず残す。
+            continue;
+        };
+        match mirror_message_to_postgres(&target.url, &role, &content).await {
+            Ok(()) => ok_ids.push(id),
+            Err(e) => fail.push((id, e)),
+        }
+    }
+    // 結果の反映(ここも同期SQLite、`await`はもう無い)。
+    if let Ok(conn) = Connection::open(&db_path) {
+        for id in &ok_ids {
+            conn.execute("DELETE FROM mirror_outbox WHERE id = ?1", rusqlite::params![id]).ok();
+        }
+        for (id, err) in &fail {
+            conn.execute(
+                "UPDATE mirror_outbox SET attempts = attempts + 1, last_error = ?2, give_up = CASE WHEN attempts + 1 >= ?3 THEN 1 ELSE 0 END WHERE id = ?1",
+                rusqlite::params![id, err, MAX_OUTBOX_ATTEMPTS],
+            )
+            .ok();
+        }
+    }
+    if !ok_ids.is_empty() {
+        eprintln!("open-english: self-repair replayed {} queued mirror write(s) successfully", ok_ids.len());
+    }
+    (ok_ids.len(), fail.len())
 }
 
 /// DBファイルの保存先。`OPEN_ENGLISH_DB_PATH`環境変数が最優先(将来の
@@ -246,6 +479,20 @@ impl Db {
             CREATE TABLE IF NOT EXISTS settings (
                 key TEXT PRIMARY KEY,
                 value TEXT NOT NULL
+            );
+            -- 自己修復用の未反映キュー(2026-08-24新設、モジュールdoc
+            -- 「自己修復(未反映キュー / outbox)」節参照)。ミラー先への
+            -- 書き込みが失敗した1件をここへ積み、後でバックグラウンド
+            -- タスクが同じ`label`のミラー先へ再送する。
+            CREATE TABLE IF NOT EXISTS mirror_outbox (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                label TEXT NOT NULL,
+                role TEXT NOT NULL,
+                content TEXT NOT NULL,
+                created_at_unix INTEGER NOT NULL,
+                attempts INTEGER NOT NULL DEFAULT 0,
+                last_error TEXT,
+                give_up INTEGER NOT NULL DEFAULT 0
             );
             ",
         )
@@ -306,6 +553,14 @@ impl Db {
     /// ミラー先設定の複製(非同期タスクへ渡す用)。
     pub fn mirrors(&self) -> Vec<MirrorTarget> {
         self.mirrors.clone()
+    }
+
+    /// 未反映キューの件数`(pending, given_up)`(`GET /v1/db/info`用)。
+    pub fn outbox_counts(&self) -> (i64, i64) {
+        let conn = self.conn.lock().unwrap();
+        let pending: i64 = conn.query_row("SELECT COUNT(*) FROM mirror_outbox WHERE give_up = 0", [], |r| r.get(0)).unwrap_or(0);
+        let given_up: i64 = conn.query_row("SELECT COUNT(*) FROM mirror_outbox WHERE give_up = 1", [], |r| r.get(0)).unwrap_or(0);
+        (pending, given_up)
     }
 
     pub fn path(&self) -> PathBuf {
@@ -514,8 +769,16 @@ impl Db {
         if !mirrors.is_empty() {
             let role = role.to_string();
             let content = content.to_string();
+            let db_path = self.path();
             tokio::spawn(async move {
-                Self::mirror_message_to_all(mirrors, role, content).await;
+                let results = Self::mirror_message_to_all(mirrors, role.clone(), content.clone()).await;
+                // 失敗した分だけを未反映キューへ積む(2026-08-24、自己修復)。
+                // 成功した側は何も積まない——再送時に重複させないため。
+                for (label, result) in results {
+                    if let Err(e) = result {
+                        outbox_enqueue(&db_path, &label, &role, &content, &e);
+                    }
+                }
             });
         }
         Ok(())

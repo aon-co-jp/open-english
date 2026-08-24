@@ -27,6 +27,16 @@ anyhow = "1"
 # (`aruaru-llm`側`geo_content.rs`と同じ`tokio-postgres`直結パターン)。
 rusqlite = { version = "0.32", features = ["bundled"] }
 tokio-postgres = "0.7"
+# DBミラー接続のTLS対応(2026-08-24追加、ユーザー指示「sslmode=require等の
+# PostgreSQL標準的な接続オプションに対応してほしい」への対応)。OpenSSL
+# 不要のrustls経路を選ぶ(このリポジトリの既定方針、reqwestも
+# rustls-tlsで統一済み)。実際にTLSハンドシェイクするかどうかは接続
+# 文字列の`sslmode`をtokio-postgres自身が解釈して決めるため、
+# `sslmode=disable`(既定)の既存接続は挙動が変わらない。
+tokio-postgres-rustls = "0.13"
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+rustls-native-certs = "0.7"
+webpki-roots = "0.26"
 # /v1/db/*のHTTPボディ処理(2026-08-18追加、ユーザー指摘「HTTPボディ処理は
 # 対象外とはどういう事？」への対応)。過去のHANDOFFにあった「RS-JSONは
 # 埋め込み/静的JSONファイル向けのみ」という整理は、Rust-JSON側の実際の

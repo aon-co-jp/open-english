@@ -255,3 +255,48 @@ Solution : `(9 × 9 + 9) ÷ 9 = 10` (9×9=81, 81+9=90, 90÷9=10).
 - Prochaine étape possible : si l'auteur propose d'autres problèmes,
   transformer `QUIZ_TEXTS` en tableau de problèmes (aujourd'hui un seul, et
   « un autre problème » renvoie le même).
+
+## École virtuelle / école de formation professionnelle en ligne (2026-08-24)
+
+À la demande de l'utilisateur, une **école virtuelle** (école spécialisée, institut
+de premier cycle, université, école doctorale) et une **école de formation
+professionnelle en ligne** ont été ajoutées : choisir une catégorie → installer un
+domaine → questions tirées au hasard → correction.
+
+- La conception **reprend telle quelle celle du cours de soutien scolaire existant**
+  (`TUTOR_*`) ; **aucune nouvelle API, aucun nouveau stockage, aucune nouvelle table**
+  n'a été créé. Les résultats passent par le `POST /v1/db/history` existant. Code :
+  `VSCHOOL_*` / `vschool*` à la fin de `app.js`, interface `#vschool-modal` dans
+  `index.html`. Deux boutons ouvrent **la même fenêtre modale** en deux modes.
+- **Recherche préalable (2026-08-24, recherche web en japonais)** : dans les
+  procédures d'admission des universités, instituts et écoles spécialisées, la
+  dissertation (sur texte, sur thème ou sur données) et l'entretien dominent, la
+  dissertation suivant classiquement le triptyque introduction–développement–
+  conclusion ; en école doctorale, on évalue le projet de recherche, l'état de l'art,
+  les épreuves spécialisées et l'entretien. La formation professionnelle publique
+  couvre notamment l'informatique, la vente, l'aide à la personne, le bâtiment,
+  l'esthétique et la cuisine. **Ces tendances générales n'ont servi qu'à définir le
+  découpage ; tous les énoncés sont rédigés spécialement pour l'application.**
+- **Réalisé (7 domaines, 5 questions chacun)** : université = lettres et sciences
+  sociales, sciences et ingénierie ; école spécialisée = informatique ; école
+  doctorale = bases de la recherche ; formation professionnelle = informatique,
+  comptabilité, relation client.
+- **Non réalisé, signalé honnêtement comme « pas encore prêt »** : secrétariat médical,
+  aide à la personne, esthétique, cuisine, bâtiment, **les quatre domaines de l'institut
+  de premier cycle**, santé et soins infirmiers, sciences de l'éducation, spécialités
+  doctorales en ingénierie, ainsi que les bases d'aide à la personne, du bâtiment, de
+  la cuisine et de l'esthétique côté formation professionnelle.
+- **Divulgation honnête (à ne pas affaiblir)** : aucune reprise de sujets réels ; la
+  dissertation, l'entretien et la pratique ne sont qu'approchés en QCM ; aucune
+  prédiction d'admission ou de diplôme.
+- **YouTube** : uniquement des liens vers des **pages de résultats de recherche** pour
+  des mots-clés génériques, avec la mise en garde correspondante.
+- **Vérification réelle (trois cycles TEST → amélioration → nouveau TEST)** : serveur
+  démarré (`http://127.0.0.1:4601/`), les deux modes parcourus intégralement dans le
+  navigateur (3/3 avec de bonnes réponses, 0/3 avec affichage des questions sans
+  réponse), restauration depuis `localStorage` après rechargement, réinitialisation au
+  changement de mode, message pour une catégorie sans contenu, et bouton « réviser avec
+  l'entraîneuse ». Deux lignes `[virtual-school] …` ont bien été enregistrées dans
+  `/v1/db/history`. Aucune erreur JavaScript.
+- Version complète : entrée HANDOFF du 2026-08-24 dans [CLAUDE.md](CLAUDE.md).
+

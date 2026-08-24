@@ -1,4 +1,32 @@
-# open-english
+﻿# open-english
+
+> 📌 **Ultimo aggiornamento (2026-08-24): una scuola virtuale (istruzione
+> superiore) e una scuola di formazione professionale online virtuale**:
+> - **🏫 Scuola virtuale** propone quattro categorie — istituto professionale
+>   (senmon gakko), istituto universitario biennale, università (triennale) e
+>   scuola di dottorato. Si scelgono gli ambiti, li si installa e l'app propone
+>   **domande originali** ispirate a esami di ammissione, lezioni e verifiche,
+>   correggendo le risposte.
+> - **🛠 Scuola di formazione professionale virtuale** funziona allo stesso modo
+>   per settori e mestieri.
+> - **Oggi funzionano davvero sette ambiti, con cinque domande ciascuno**:
+>   università = discipline umanistiche e sociali / scienze e ingegneria; istituto
+>   professionale = informatica; dottorato = fondamenti della ricerca (progetto di
+>   ricerca, etica della ricerca, colloquio); formazione professionale = basi di
+>   informatica e programmazione, basi di contabilità, basi del servizio al cliente.
+> - **Tutto il resto indica onestamente «non ancora pronto»** (segreteria medica,
+>   assistenza alla persona, estetica, cucina, edilizia, **tutti e quattro gli ambiti
+>   dell'istituto biennale**, area medico-infermieristica, scienze dell'educazione e
+>   altro). Ogni pulsante di categoria mostra «N ambiti su M disponibili».
+> - Ogni ambito riporta un collegamento a una **pagina di risultati di ricerca YouTube**
+>   con una parola chiave generica. **Nessun video specifico viene indicato come corretto.**
+> - **Divulgazione onesta**: tutte le domande sono originali; nulla è copiato da esami
+>   di ammissione reali, manuali o eserciziari commerciali. **Tema scritto, colloquio e
+>   prove pratiche sono soltanto approssimati come domande a scelta multipla** e non
+>   sostituiscono una correzione reale né un vero allenamento al colloquio. Il punteggio
+>   non dice nulla su ammissioni o qualifiche reali.
+> - I risultati sono salvati tramite lo storico esistente (`/v1/db/history`); non è
+>   stata aggiunta alcuna nuova API.
 
 > 📌 **Ultimo aggiornamento (2026-08-23, seguito 4)**: **funzione quiz con
 > un indovinello originale dell'autore**. Se si scrive "proponimi un
