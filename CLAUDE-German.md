@@ -351,3 +351,15 @@ ein Versprechen auf einen garantierten Arbeitsplatz. Umfang: Fachebene,
 nicht jede einzelne Frage; live getestet (Server gestartet, Klasse 3
 Mathematik installiert, Anzeige korrekt bestätigt). Vollständige Details
 nur in der japanischen Version von CLAUDE.md.
+
+**Update (Fortsetzung, 2026-08-24)**: Career-Guidance auf die virtuelle
+Schule/Berufsschule (`VSCHOOL_FIELDS`, 23 Bereiche) erweitert. Dringender
+Bugfix: weißer Text auf weißem Hintergrund an mehreren Stellen
+(Chat-Eingabe, Sprachpanels) durch hellen Hintergrund ohne explizite
+Textfarbe im dunklen Theme — mit expliziten Textfarben behoben.
+Uneinheitliche Schriftgrößen zwischen japanischem Text und lateinischen
+Labels (z. B. "JP", "(default / 既定)") vereinheitlicht. Veralteter Text
+zur TLS-Unterstützung der Datenbank korrigiert, um die tatsächlich
+implementierte TLS-Unterstützung (`tokio-postgres-rustls`) widerzuspiegeln,
+mit ehrlichem Hinweis, dass dies mangels cargo/psql/Docker auf dieser
+Maschine nicht getestet werden konnte.

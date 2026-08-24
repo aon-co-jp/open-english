@@ -675,3 +675,32 @@ response now carries `disclosure_ja` / `disclosure_en` fields stating that
 the genuinely accelerated consumers are `open-raid-z` (GF(2^8)),
 `open-cuda` / `aruaru-llm` (CPU inference) and `open-cg-cad`
 (cross-section derivative).
+
+## Update (2026-08-24, continued): career guidance extended to the virtual vocational school + display bug fixes
+
+- Career guidance was extended to the virtual school / vocational
+  school corner (`VSCHOOL_FIELDS`, 23 fields), shown on the field
+  selection screen. A duplicate-display bug (caused by two parallel
+  implementations from a session branch) between this and the tutor
+  course was found and fixed on real device testing.
+- **Urgent bug fix**: elements with a light background but no explicit
+  text color (chat input, multilingual sequential display, topic
+  briefing, etc.) rendered white-on-white and were unreadable — fixed.
+  Inconsistent font sizes between Japanese text and Latin labels (e.g.
+  "JP", "(default / 既定)") were also unified.
+- The learning-history DB guidance text still said "no TLS support,"
+  even though TLS support (`tokio-postgres-rustls`) was actually added
+  on 2026-08-24 — updated to match reality. Honestly noted that this
+  machine has no cargo/psql/Docker, so it could not be tested end to
+  end here.
+
+## Update (2026-08-24, continued): one-tap PWA install on Android
+
+Added a Service Worker (`sw.js`) which, combined with the existing
+`manifest.json`, enables PWA installation (one-tap "Add to Home Screen")
+on Android Chrome. **Honest disclosure**: this machine has no `cargo`, so
+the server could not be rebuilt, and it has not been verified end to end
+that `/sw.js` is actually served or that the install banner appears on a
+real device (needs testing once `cargo` is available). The existing
+native APK (`android/`, Android SDK present) was not rebuilt this
+session.

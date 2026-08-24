@@ -37,6 +37,14 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/auto-update.js", "auto-update.js", "application/javascript; charset=utf-8"),
     ("/version.json", "version.json", "application/json; charset=utf-8"),
     ("/manifest.json", "manifest.json", "application/manifest+json; charset=utf-8"),
+    // 2026-08-24新設: PWAとしての「ワンタップでホーム画面に追加」
+    // (Android版Chromeのインストールバナー)を有効にするための
+    // Service Worker。詳細・スコープの制約は`sw.js`冒頭のコメント参照。
+    // **正直な開示**: この変更はソース追加のみで、この開発機に`cargo`が
+    // 無いため実バイナリの再ビルド・実配信確認はできていない
+    // (`server/target/release/open-english-server.exe`は旧バイナリの
+    // ままで、再ビルドされるまで`/sw.js`は配信されない)。
+    ("/sw.js", "sw.js", "application/javascript; charset=utf-8"),
     ("/exam-prep-questions.json", "exam-prep-questions.json", "application/json; charset=utf-8"),
     ("/provider-free-tiers.json", "provider-free-tiers.json", "application/json; charset=utf-8"),
     ("/world-language-exams.json", "world-language-exams.json", "application/json; charset=utf-8"),

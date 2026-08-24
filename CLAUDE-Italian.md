@@ -336,3 +336,14 @@ lavoro garantito. Ambito: livello della materia, non ogni singola
 domanda; verificato dal vivo (server avviato, matematica di terza
 elementare installata, visualizzazione corretta confermata). Dettagli
 completi solo nella versione giapponese di CLAUDE.md.
+
+**Aggiornamento (continua, 2026-08-24)**: Career guidance esteso alla
+scuola virtuale/formazione professionale virtuale (`VSCHOOL_FIELDS`, 23
+aree). Bugfix urgente: testo bianco su sfondo bianco in più punti
+(campo chat, pannelli lingue) causato da sfondi chiari senza colore del
+testo esplicito nel tema scuro — risolto con colori espliciti.
+Dimensioni del font incoerenti tra testo giapponese ed etichette latine
+(es. "JP", "(default / 既定)") uniformate. Testo obsoleto sul supporto
+TLS del database corretto per riflettere il supporto TLS realmente
+implementato (`tokio-postgres-rustls`), con nota onesta che non è stato
+possibile testarlo per mancanza di cargo/psql/Docker su questa macchina.

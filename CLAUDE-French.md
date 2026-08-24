@@ -361,3 +361,15 @@ d'emploi garanti. Portée : niveau de la matière, pas de chaque question
 individuelle ; fonctionnalité vérifiée en conditions réelles (serveur
 lancé, CE3/calcul installé, guidage affiché correctement). Détails
 complets uniquement dans la version japonaise de CLAUDE.md.
+
+**Mise à jour (suite, 2026-08-24)**: Extension du career guidance à l'École
+virtuelle / formation professionnelle virtuelle (`VSCHOOL_FIELDS`, 23
+domaines). Correction d'un bug urgent : texte blanc sur fond blanc dans
+plusieurs zones (saisie de chat, panneaux de langues) à cause d'un fond
+clair sans couleur de texte définie sur le thème sombre — corrigé avec
+des couleurs de texte explicites. Tailles de police incohérentes entre
+texte japonais et libellés latins (ex. "JP", "(default / 既定)")
+uniformisées. Texte obsolète sur le support TLS de la base de données
+corrigé pour refléter le support TLS réellement implémenté
+(`tokio-postgres-rustls`), avec mention honnête que ce n'a pas pu être
+testé faute de cargo/psql/Docker sur cette machine.
