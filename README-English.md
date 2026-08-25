@@ -7,6 +7,19 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Update (2026-08-25, cont. 4): added a "US certifications (mock)"
+> track to Virtual School**:
+> - Added original bilingual (English/Japanese) mock questions (5 each)
+>   for a **Data Scientist** track (honestly noting the US has no single
+>   government-issued license here — the questions are modeled on
+>   representative vendor-neutral certifications) and the **Architect
+>   Registration Examination (NCARB ARE)** (the closest US equivalent to
+>   Japan's Ikkyu Kenchikushi license).
+> - Reuses the existing Virtual School mechanism as-is — no new
+>   machinery was added. Verified live in a browser through installing
+>   and taking the quiz (with answer-choice shuffling intact).
+> - See the 2026-08-25 (cont. 3) entry in [CLAUDE.md](CLAUDE.md).
+>
 > 📌 **Update (2026-08-25, cont. 3): security audit found and fixed two
 > Critical wasmtime CVEs, plus a text-contrast bug fix**:
 > - Ran a `cargo audit` dependency scan and found **two Critical (CVSS
