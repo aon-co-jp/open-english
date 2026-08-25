@@ -202,6 +202,27 @@ AIコーディング支援パネル)にとどめている。
 
 ## HANDOFF
 
+- **2026-08-25(続き9) 主要パネルを CLOSE/OPEN で開閉可能に(ユーザー指示
+  「これらの表示はパネルとしてCLOSEとOPENをクリックで閉じたり開いたり
+  可能にして」への対応)**: 前エントリで実装した正直な開示ボックスの
+  開閉(`setDisclosureCollapsed`)を汎用ヘルパー
+  `makeCollapsiblePanel(boxId, btnId, storageKeySuffix, closedLabel,
+  openLabel)`へ一般化し、以下3箇所にも同じ仕組みを適用した:
+  (1) `#phone-accel-banner`(使わなくなったスマホ活用バナー)、
+  (2) `#world-language-banner`(多言語対応案内バナー)、
+  (3) `#topbar`(年齢層/学びたい言語/レベル/ビジネス英会話/応答言語/
+  Google検索補強+全ボタン一覧を含む設定パネル全体)。各パネルの直前に
+  「✕ CLOSE」ボタンを配置し、押すと「＋ OPEN」に変わりパネルが
+  非表示になる。開閉状態はlocalStorage(`open-english.collapsed.*`)へ
+  保存し次回訪問時も維持する(既存の設定永続化の慣習を踏襲)。
+  **実機検証**: 実際にサーバーを起動し、3つのトグルボタンをJS経由で
+  クリックして、いずれも対応するパネルの`hidden`クラスが正しく
+  切り替わる(表示→非表示)ことを確認した。`node --check app.js`成功。
+  `android/app/src/main/assets/webroot/`へも同期コピー済み。
+  - 次にすべきこと: 特になし(今回のスコープは完了)。今後新しい
+    常設バナー/パネルを追加する際は、同じ`makeCollapsiblePanel`を
+    再利用すればよい。
+
 - **2026-08-25(続き8) データサイエンティスト擬似模擬TESTを多言語対応
   (ユーザー指示「Courseraのデータサイエンティスト講座+擬似模擬TESTを
   英語・日本語をデフォルトに全世界の言語へ対応、まず主要10〜20言語
