@@ -7,6 +7,54 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Latest update (2026-08-25, cont. 13): world-lab multi-device
+> compute dispatch Phase B (explicit receiver approval gate + TLS)
+> implemented, verified live over real HTTP/TLS — cross-device dispatch
+> across real physical devices (Phase C) is still not started**:
+> - **Approval gate**: an incoming compute task never runs until the
+>   receiving device explicitly approves or denies it — the existing
+>   Phase 2 WASM sandbox only executes after approval (no auto-approve
+>   setting exists anywhere in the code). Verified with 7 unit tests plus
+>   real HTTP round-trips (curl/PowerShell): double-approve, double-deny,
+>   unknown IDs, and queue-limit overflow all return honest errors.
+> - **TLS**: reused RPoem's existing rustls implementation, adding an
+>   opt-in second port via `OPEN_ENGLISH_TLS_ENABLED=1` (a dev-only
+>   self-signed certificate is generated if none is provided). Verified
+>   live with `curl`: a real TLS handshake succeeds, and certificate
+>   validation correctly fails without `-k`. The existing plaintext HTTP
+>   port was not removed.
+> - **Honest disclosure**: all of this testing happened on a single
+>   machine via curl/PowerShell — **real cross-device dispatch across two
+>   or more physical devices, including the sending side, has not been
+>   built or tested yet** (that's Phase C).
+> - See the 2026-08-25 (cont. 13) entry in [CLAUDE.md](CLAUDE.md).
+>
+> 📌 **Update (2026-08-25, cont. 12): re-verified the hardware-detection
+> → recommended-LLM-size feature live end-to-end (pre-existing feature,
+> no code changes)**:
+> - `aruaru-llm` already implements `GET /v1/recommend` (CPU/GPU/NPU
+>   detection in `hardware.rs`), and open-english's UI ("🧠 Recommend LLM"
+>   button in the "⚙ Setup aruaru-llm." panel) was already wired to it. We
+>   started both servers and drove the real UI in a browser to confirm it
+>   works — on this machine it correctly detected real CPU AVX2/FMA3 and
+>   recommended `GPT-2 (124M, default)`.
+> - Switching models only happens when the user explicitly clicks
+>   `POST /v1/models/select` — never a silent auto-swap.
+> - **Honest disclosure**: the current recommendation logic is a simple
+>   GPU-VRAM threshold check only — CPU core count, NPU presence, and the
+>   hardware of other world-lab-paired devices are not factored in.
+> - See the 2026-08-25 (cont. 12) entry in [CLAUDE.md](CLAUDE.md).
+>
+> 📌 **Update (2026-08-25, cont. 10): the open-cg-cad "hybrid mutual
+> feature" is now reachable via the installer too**:
+> - The Windows installer now has an optional (unchecked by default) task
+>   to also install `open-cg-cad`.
+> - **Honest disclosure**: as of 2026-08-25, `open-cg-cad` has no
+>   published GitHub Release binary yet, so this task currently just
+>   reports that honestly ("not published yet, build from source") rather
+>   than faking a successful fetch.
+> - See the 2026-08-25 (cont. 10) entry in [CLAUDE.md](CLAUDE.md).
+>
 > 📌 **Update (2026-08-25, cont. 5): recorded a re-researched GPU/NPU
 > safe-design path and a Microsoft Copilot API integration estimate in
 > CLAUDE.md (both still at the vision/planning stage, not implemented)**:
