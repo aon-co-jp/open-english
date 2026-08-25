@@ -202,6 +202,65 @@ AIコーディング支援パネル)にとどめている。
 
 ## HANDOFF
 
+- **2026-08-25(続き7) 3件のバグ修正・機能追加(ユーザー報告「情報処理
+  などのTESTを受けた後に講義を受けようとすると英語のみで日本語が
+  無かった」「サンプルのプログラムソースも好きなプログラム言語で表示
+  するべき」+「開示文をXで閉じたりOPENで開いたり出来るように」への
+  対応)**:
+  1. **【バグ修正】`reviewVschoolWithTrainer()`がreply-langを
+     hybridへ強制していなかった**: JLPT・世界の言語の模擬試験後の
+     トレーナー引き継ぎ(`practiceExamPrepWithTrainer`)は元々
+     `replyLangEl.value = "hybrid"`を明示的に設定していたが、
+     バーチャルスクール/職業訓練校/米国資格(uscert)側の同等の引き継ぎ
+     関数`reviewVschoolWithTrainer()`にはこの1行が無く、利用者が
+     以前どこかでreply-langを「English only」にしていた場合、
+     情報処理・IT等のTEST後の「講師として解説してください」という
+     依頼も英語のみの応答になってしまう抜け穴だった。JLPT/世界言語
+     フローと同じ1行を追加して修正。**実機検証**: `reply-lang`を
+     意図的に`"en"`へ設定した状態で`reviewVschoolWithTrainer()`を
+     実際に呼び出し、呼び出し後に`"hybrid"`へ戻っていることを確認した
+     (`ensureHybridReply`が効くようになるための前提条件)。**正直な
+     開示**: これでリクエスト送信時の設定は必ずhybridになるが、
+     GPT-2自体の日本語生成が弱いという根本制約(既存の`ensureHybridReply`
+     のdoc参照)は変わらない——あくまで「短い日本語の一言は必ず付く」
+     という構造上の保証が今回のバグ修正で正しく効くようになった、
+     という意味。
+  2. **【新機能】サンプルプログラムを4つの言語/フレームワークから
+     選択可能に**(ユーザー推奨「Python+FastAPI・PHP+Laravel・
+     Rust+Poem・Rust+RPoem」への対応): `VSCHOOL_FIELDS.senmon`の
+     「情報処理・IT」分野へ`sampleCode`配列(同じ最小API=「/helloを
+     叩くと挨拶メッセージのJSONを返すだけ」を4通りの言語/フレームワーク
+     で実装)を追加し、新設`buildVschoolSampleCodeElement(field)`が
+     `<select>`+`<pre>`のUIを構築する。選択を切り替えると表示コードが
+     即座に差し替わる。**コードは`textContent`で挿入**(`<`/`>`/引用符を
+     含むため、既存の`renderTutorProgrammingMaterials`と同じ徹底事項——
+     `innerHTML`文字列結合は使わない)。**正直な開示**: これらは実際に
+     動作検証したコードではなく、読んで学ぶための静的サンプル(本アプリ
+     用に簡潔に書き下ろしたもの)。`Rust + RPoem`は本エコシステム自身の
+     フレームワークのため「詳細はaon-co-jp/RPoemを参照」という注記を
+     コード冒頭に含めている。**実機検証**: サーバーを起動し、実際に
+     `<select>`が4件のoption(Python + FastAPI/PHP + Laravel/
+     Rust + Poem/Rust + RPoem)を持つこと、初期表示がPython+FastAPI、
+     `rust_rpoem`へ切り替えると表示コードが実際にRPoem版へ変わることを
+     JS経由で確認した。
+  3. **【新機能】正直な開示ボックスの開閉**(ユーザー指示「Xで閉じたり
+     OPENで開いたり出来るように」への対応): チャットパネル冒頭の
+     `.disclosure`ボックス(GPT-2ファインチューニング無しの開示・
+     Web Speech API・メイドカフェ参考記事のクレジット等)の直前に
+     `#disclosure-toggle-btn`を新設し、クリックで`.disclosure`の
+     表示/非表示を切り替える。開閉状態は`localStorage`
+     (`open-english.disclosureCollapsed`)へ保存し、次回訪問時も
+     維持する(既存の設定永続化の慣習に合わせた)。**実機検証**:
+     初期状態で開いていること、クリックで閉じてボタン文言が
+     「ℹ OPEN / 開示を開く」に変わり`localStorage`に`"1"`が保存される
+     こと、再度クリックで開き直り`localStorage`が`"0"`に戻ることを
+     確認した。
+  4. **`node --check app.js`成功**。`android/app/src/main/assets/
+     webroot/`へも`app.js`/`index.html`/`style.css`を同期コピー済み。
+  - 次にすべきこと: (1) 他の分野(medoffice等)にもサンプルプログラムを
+    追加するかの検討(現状は情報処理・ITのみ)、(2) 開閉ボタンの状態を
+    Androidミラー側でも同様に検証(今回はPC版のみ実機確認)。
+
 - **2026-08-25(続き6) VPS(easy-web.tokyo)へ実際にデプロイして公開
   (ユーザー指示「実際にサーバーを動かして公開して」への対応)**:
   1. **配置場所**: `/root/easy-web.tokyo/open-english`(GitHubから
