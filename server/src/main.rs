@@ -506,6 +506,129 @@ fn fs_list_roots() -> serde_json::Value {
     }
 }
 
+/// DuckDNS(無料の動的DNSサービス)経由で、この端末に固定のURL
+/// (例: `https://your-name.duckdns.org`)を割り当てる(ユーザー指示
+/// 「アイコンクリックで起動するか、URLをお気に入りに入れて、DuckDNSや
+/// 好きなURLを割り当て可能に」への対応、2026-08-25新設)。
+///
+/// **正直な開示・世界のネットワークの仕組み上の限界(重要)**:
+/// (1) DuckDNSは**ドメイン名→現在のIPアドレスの対応付け**を行う
+///     サービスに過ぎない。**ポート開放・ポートフォワーディングは
+///     一切行わない**——world-labの`wan`接続ラベル設計
+///     (`world_lab.rs`)と同じ考え方で、UPnP等による自動ポート開放は
+///     意図的に実装していない(踏み台化防止の既存方針)。実際に
+///     インターネット越しに到達させたい場合は、利用者自身がルーターの
+///     ポートフォワーディング設定、および`open-web-server`/
+///     `open-easy-web`等によるTLS終端を別途用意する必要がある。
+/// (2) このサーバー自体は既定で`127.0.0.1`(ループバックのみ)へ
+///     バインドしており(`OPEN_ENGLISH_SERVER_BIND`環境変数で変更
+///     しない限り)、DuckDNSでドメインを割り当てただけでは**外部から
+///     到達可能にはならない**——この点をUI上でも明記すること。
+/// (3) DuckDNSのトークンはリクエストのたびに受け取り、このプロセスの
+///     メモリ上でのみ使う(`github_agent.rs`と同じ設計、ディスクへの
+///     平文保存はしない)。
+#[derive(serde::Deserialize)]
+struct DuckDnsUpdateRequest {
+    domain: String,
+    token: String,
+    /// 空文字/未指定ならDuckDNS側にリクエスト元IPから自動検出させる。
+    ip: Option<String>,
+}
+
+async fn duckdns_update(req: Request) -> Response {
+    let body: DuckDnsUpdateRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    let domain = body.domain.trim();
+    let token = body.token.trim();
+    if domain.is_empty() || token.is_empty() {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": "domain and token are required / domainとtokenは必須です"}));
+    }
+    // DuckDNSのドメイン名はサブドメイン部分のみ(例: "your-name")を
+    // 受け付ける仕様のため、利用者が誤って"your-name.duckdns.org"の
+    // ように入力しても動くよう剥がす。
+    let domain = domain.trim_end_matches(".duckdns.org");
+    let ip = body.ip.as_deref().unwrap_or("").trim();
+
+    let url = format!("https://www.duckdns.org/update?domains={}&token={}&ip={}", urlencoding_simple(domain), urlencoding_simple(token), urlencoding_simple(ip));
+    let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(10)).build() {
+        Ok(c) => c,
+        Err(e) => return rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"ok": false, "error": format!("client build failed: {e}")})),
+    };
+    let resp = match client.get(&url).send().await {
+        Ok(r) => r,
+        Err(e) => return rs_json_response(StatusCode::BAD_GATEWAY, &serde_json::json!({"ok": false, "error": format!("could not reach DuckDNS / DuckDNSへ接続できませんでした: {e}")})),
+    };
+    let text = resp.text().await.unwrap_or_default();
+    let ok = text.trim().starts_with("OK");
+    let full_url = format!("https://{domain}.duckdns.org/");
+    rs_json_response(
+        StatusCode::OK,
+        &serde_json::json!({
+            "ok": ok,
+            "duckdns_response": text.trim(),
+            "assigned_url": if ok { Some(full_url) } else { None },
+            "note_en": "This only points the domain name at your current IP address. It does NOT open any ports on your router and does NOT make this server reachable from the internet by itself — this server still listens on 127.0.0.1 only unless you explicitly change OPEN_ENGLISH_SERVER_BIND, and your router still needs manual port forwarding + TLS (e.g. via open-web-server/open-easy-web) for real WAN access.",
+            "note_ja": "これはドメイン名を現在のIPアドレスへ結びつけるだけです。ルーターのポートは一切開きません。このサーバー自体もOPEN_ENGLISH_SERVER_BINDを明示的に変更しない限り127.0.0.1限定のままで、DuckDNSでドメインを割り当てただけではインターネットから到達可能にはなりません——実際に外部公開する場合は、ルーターのポートフォワーディング設定と、TLS終端(open-web-server/open-easy-web等)を別途ご自身で用意してください。",
+        }),
+    )
+}
+
+/// 現在このサーバーが「公開(WANから到達しうる)」か「非公開(ループバック
+/// 限定)」かを、ユーザーがいつでも一目で確認できるようにする(ユーザー
+/// 指示「公開サーバーか非公開サーバーかはいつでも選択可能として…
+/// 表示して」への対応、2026-08-25新設)。
+///
+/// **正直な開示**: この判定は`OPEN_ENGLISH_SERVER_BIND`に設定された
+/// アドレスが`127.0.0.1`/`localhost`/`::1`かどうかだけを見る簡易判定
+/// であり、実際にルーターのポートフォワーディング・ファイアウォールが
+/// 外部到達を許しているかまでは分からない(あくまで「このプロセス自身が
+/// ループバック限定でリッスンしているか」の確認)。**切り替え自体は
+/// この環境変数を変更してサーバーを再起動する必要がある**——起動中の
+/// プロセスがリッスンしているソケットを無停止で差し替えることはせず、
+/// 誤った「今すぐ安全に切り替えました」という印象を与えない設計にした。
+fn network_status_json() -> serde_json::Value {
+    let addr = bind_addr();
+    let ip = addr.ip();
+    let is_loopback = ip.is_loopback();
+    serde_json::json!({
+        "bind": addr.to_string(),
+        "is_public": !is_loopback,
+        "note_en": if is_loopback {
+            "Private: this server only listens on the loopback address (127.0.0.1), so it is not reachable from other devices or the internet."
+        } else {
+            "Public-facing bind address configured: this server is listening on a non-loopback address. Whether it is actually reachable from the internet still depends on your router/firewall settings, which this app does not control."
+        },
+        "note_ja": if is_loopback {
+            "非公開: このサーバーはループバックアドレス(127.0.0.1)限定でリッスンしているため、他の端末やインターネットからは到達できません。"
+        } else {
+            "公開向けのバインドアドレスが設定されています: ループバック以外のアドレスでリッスンしています。実際にインターネットから到達できるかどうかは、このアプリが関知しないルーター/ファイアウォール設定に依存します。"
+        },
+        "switch_instructions_en": "To switch, set the OPEN_ENGLISH_SERVER_BIND environment variable (e.g. 127.0.0.1:4601 for private, or 0.0.0.0:4601 to listen on all interfaces) and restart this server. This app never changes your router or firewall automatically.",
+        "switch_instructions_ja": "切り替えるには環境変数 OPEN_ENGLISH_SERVER_BIND を設定し(例: 非公開なら127.0.0.1:4601、全インターフェースで待ち受けるなら0.0.0.0:4601)、サーバーを再起動してください。このアプリがルーターやファイアウォールを自動で変更することはありません。",
+    })
+}
+
+async fn network_status(_req: Request) -> Response {
+    rs_json_response(StatusCode::OK, &network_status_json())
+}
+
+/// `reqwest`のURLエンコード用ヘルパは`percent-encoding`クレート追加が
+/// 必要になるため、DuckDNSが受け付ける値の範囲(英数字・ハイフン・
+/// ピリオドのみを想定するドメイン名/トークン)に限定した最小限の
+/// エンコードで済ませる(汎用エンコーダは意図的に導入しない)。
+fn urlencoding_simple(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for b in s.bytes() {
+        match b {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => out.push(b as char),
+            _ => out.push_str(&format!("%{b:02X}")),
+        }
+    }
+    out
+}
+
 /// 保存先変更(ユーザー指示「DATA保存先は、既存の保存先でもそれ以外でも
 /// 選択可能にして」への対応、2026-08-18新設)。`new_path`にフルパスを
 /// 渡す(例: 増設したマイクロSDのマウント先配下)。
@@ -1451,6 +1574,8 @@ async fn main() {
             })),
         );
         app = app.at("/v1/fs/list-dir", get(handler_fn(move |req, _p| async move { fs_list_dir(req).await })));
+        app = app.at("/v1/duckdns/update", post(handler_fn(move |req, _p| async move { duckdns_update(req).await })));
+        app = app.at("/v1/network/status", get(handler_fn(move |req, _p| async move { network_status(req).await })));
         let db_for_rsync = Arc::clone(&db);
         app = app.at(
             "/v1/db/rsync-backup",
