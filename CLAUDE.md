@@ -202,6 +202,53 @@ AIコーディング支援パネル)にとどめている。
 
 ## HANDOFF
 
+- **2026-08-25(続き10) open-cg-cadとの「ハイブリッド相互機能」仕様を
+  インストーラーへ反映(ユーザー指示「open-englishかopen-easy-webから
+  open-cg-cadをインストールすると、open-englishとopen-cg-cadは
+  ハイブリッドで相互に機能するシステムという仕様にして」への対応)**:
+  1. **仕様の定義(正直な開示)**: 「ハイブリッド相互機能」とは、
+     専用の連携APIを新設することではなく、既存の(a)双方向ナビゲーション
+     リンク(open-english「🏗 open-cg-cad」ボタン⇄open-cg-cadの
+     「← open-englishへ戻る」リンク、localStorage経由でお互いのURLを
+     渡し合う)、(b)同じ`aruaru-llm`インスタンスを両アプリが指すことで
+     成立する図面AI解説機能の共有、の2点を指す(open-cg-cad側の
+     2026-08-25エントリで既に実装済み)。今回はこれを**インストーラー
+     経由でも到達可能にする**ことに対応した。
+  2. **実装内容**: `installer/windows/open-english.iss`に
+     `installopencgcad`タスク(既定未チェック、他の任意タスクと同じ方針)
+     と対応する`[Run]`エントリを追加、`fetch-open-cg-cad.ps1`を新設
+     (`fetch-open-easy-web.ps1`と同型、GitHub Releasesの`latest`を
+     試行)。`README-INSTALLED.txt`(日英両方)にも、open-easy-web/
+     open-web-serverとは異なり実際に相互連携する設計であることを明記。
+  3. **正直な開示(重要な制約)**: 2026-08-25時点で`open-cg-cad`には
+     まだGitHub Releasesのビルド済みバイナリが無い(継続的インテグレー
+     ションのリリースパイプライン自体が未整備)。そのため
+     `fetch-open-cg-cad.ps1`は現時点では「まだ公開されていません、
+     ソースからビルドしてください」という正直なメッセージを返す
+     だけの状態——取得成功を偽装しない。将来open-cg-cad側にリリース
+     パイプラインが整備されれば、このタスクは何も変更せずそのまま
+     機能するようになる設計。
+  4. **open-easy-webからのインストールについて**: `open-easy-web`
+     自身のインストーラー(`open-easy-web-install.iss`)には
+     open-englishのような`[Tasks]`ベースの個別co-installチェックボックス
+     機構が無く(汎用のVPS側アプリ配布・管理ツールという役割のため)、
+     今回はopen-english側のみに実装した。open-easy-web経由での
+     「まとめてインストール」は次回以降の課題として持ち越す。
+  5. **検証**: `[System.Management.Automation.Language.Parser]::
+     ParseFile`で`fetch-open-cg-cad.ps1`の構文エラー無しを確認
+     (初回、UTF-8 BOM無しで保存したため日本語コメントが原因で
+     構文エラーになる実バグを検出——既存の`fetch-open-easy-web.ps1`が
+     BOM付きUTF-8であることを確認し、同じくBOMを付与して解消)。
+     実際のInno Setupでのビルド・インストール実行(Windows専用ツール)は
+     このセッションでは実施していない(次回、Windows実機でのインストーラー
+     ビルド・実行確認が必要)。
+  - 次にすべきこと: (1) 実際にInno Setupでビルドし、
+    `installopencgcad`タスクを含むインストーラーを実機で実行して
+    動作確認する、(2) open-cg-cad側にリリースパイプライン
+    (`.github/workflows/release.yml`)を新設し、`fetch-open-cg-cad.ps1`
+    が実際にバイナリを取得できるようにする、(3) open-easy-web経由の
+    まとめてインストール対応。
+
 - **2026-08-25(続き9) 主要パネルを CLOSE/OPEN で開閉可能に(ユーザー指示
   「これらの表示はパネルとしてCLOSEとOPENをクリックで閉じたり開いたり
   可能にして」への対応)**: 前エントリで実装した正直な開示ボックスの

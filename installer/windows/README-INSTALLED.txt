@@ -73,6 +73,22 @@ open-englishの英会話AI機能はaruaru-llmローカルサーバーへの接�
 自動起動はしません——それぞれの製品を試したい場合のみ、ご自身で
 実行ファイルを起動してください(使い方は各製品自身のREADMEを参照)。
 
+【任意】open-cg-cad(AI工務店&AI建設)について(2026-08-25追加):
+インストール時に「open-cg-cadも一緒にインストール」にチェックを入れた
+場合、{app}\open-cg-cad\ にファイルが取得されます(2026-08-25時点で
+open-cg-cadにはまだGitHub Releasesのビルド済みバイナリが公開されて
+いないため、実際には「まだ公開されていません」というメッセージのみが
+表示されます——取得成功を偽装しません。将来公開され次第、このタスクで
+自動取得できるようになります)。**open-easy-web/open-web-serverとは
+異なり、open-cg-cadはopen-englishと実際に連携する設計です**——
+open-english画面の「🏗 open-cg-cad」ボタンから別タブで開けるほか、
+open-cg-cad側にも「← open-englishへ戻る」リンクがあり、両者は
+localStorage経由でお互いのURLを渡し合います。また両アプリとも同じ
+aruaru-llmインスタンス(既定http://127.0.0.1:4600)を指せば、
+図面のAI解説機能を共有できます。取得後もopen-cg-cad-server.exeの
+自動起動はしません(ご自身で起動してください、既定
+http://127.0.0.1:4701/)。
+
 ---
 
 Thank you for installing open-english.
@@ -153,3 +169,19 @@ local aruaru-llm server; nothing changes whether or not you install
 these. Neither is auto-launched after download — only run their
 executables yourself if you want to try them (see each product's own
 README for setup).
+
+[Optional] About open-cg-cad (AI construction/CAD assistant, added
+2026-08-25): If you checked "Also install open-cg-cad" during setup,
+files were fetched to {app}\open-cg-cad\ (as of 2026-08-25, open-cg-cad
+has not yet published a built binary on GitHub Releases, so in
+practice you'll only see an honest "not published yet" message — no
+fake success. Once a release exists, this same task will fetch it
+automatically). **Unlike open-easy-web/open-web-server, open-cg-cad is
+designed to actually interoperate with open-english** — a "🏗
+open-cg-cad" button in open-english opens it in a new tab, and
+open-cg-cad has its own "back to open-english" link; the two pass
+each other's URL via localStorage. Both apps can also point at the
+same local aruaru-llm instance (default http://127.0.0.1:4600) to
+share the drawing AI-explanation feature. open-cg-cad-server.exe is
+not auto-launched after download — run it yourself (default
+http://127.0.0.1:4701/).

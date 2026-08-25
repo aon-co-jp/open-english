@@ -88,6 +88,7 @@ Source: "fetch-aruaru-llm.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-aruaru-db.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-open-easy-web.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-open-web-server.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "fetch-open-cg-cad.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
@@ -130,6 +131,17 @@ Name: "installaruarudb"; Description: "Also install aruaru-db (optional PostgreS
 ; と同様に既定オフの任意タスクとした。取得後も自動起動はしない。
 Name: "installopeneasyweb"; Description: "Also install open-easy-web (optional, unrelated standalone web-server manager, not required for open-english to work) / open-easy-web(任意、open-englishの動作には無関係な独立Webサーバー管理ツール、必須ではありません)も一緒にインストール"; Flags: unchecked
 Name: "installopenwebserver"; Description: "Also install open-web-server (optional, unrelated standalone reverse-proxy/web server, not required for open-english to work) / open-web-server(任意、open-englishの動作には無関係な独立リバースプロキシ/Webサーバー、必須ではありません)も一緒にインストール"; Flags: unchecked
+; open-cg-cad同梱タスク(ユーザー指示「open-englishかopen-easy-webから
+; open-cg-cadをインストールすると、open-englishとopen-cg-cadはハイブリッド
+; で相互に機能するシステムという仕様にして」への対応、2026-08-25)。
+; 既定は未チェック(必須ではないため、他の任意タスクと同じ方針)——ただし
+; open-easy-web/open-web-serverとは異なり「無関係」ではなく、実際に
+; 相互リンク+同じaruaru-llmインスタンスの共有という形で連携する設計
+; (詳細はfetch-open-cg-cad.ps1冒頭のコメント、CLAUDE.md「アーキテクチャ」
+; 節参照)。正直な開示: 2026-08-25時点でopen-cg-cadにはまだGitHub
+; Releasesのビルド済みバイナリが無く、このタスクを有効にしても
+; スクリプトが正直にその旨を報告するのみに留まる(取得成功を偽装しない)。
+Name: "installopencgcad"; Description: "Also install open-cg-cad (optional, AI construction/CAD app that interoperates with open-english via shared links and a shared aruaru-llm backend) / open-cg-cad(任意、open-englishと相互リンク+同じaruaru-llmバックエンド共有で連携するAI工務店&AI建設CADアプリ)も一緒にインストール"; Flags: unchecked
 
 [Run]
 Filename: "powershell.exe"; \
@@ -152,6 +164,11 @@ Filename: "powershell.exe"; \
     StatusMsg: "Downloading open-web-server (optional)... / open-web-server(任意)をダウンロード中..."; \
     Flags: runhidden waituntilterminated; \
     Tasks: installopenwebserver
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-open-cg-cad.ps1"" -DestDir ""{app}\open-cg-cad"""; \
+    StatusMsg: "Downloading open-cg-cad (optional)... / open-cg-cad(任意)をダウンロード中..."; \
+    Flags: runhidden waituntilterminated; \
+    Tasks: installopencgcad
 ; 実機E2E検証(2026-08-12)で発覚した実バグ: self_update.rsは
 ; `/VERYSILENT`でこのインストーラーを起動して無人での自動更新を行う
 ; ため、サーバー起動エントリに`skipifsilent`が付いていると更新後に
