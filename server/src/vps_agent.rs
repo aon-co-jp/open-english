@@ -38,6 +38,7 @@
 
 use anyhow::{bail, Context, Result};
 use russh::client::{self, Handle};
+use russh::keys::PrivateKeyWithHashAlg;
 use russh::ChannelMsg;
 use std::sync::Arc;
 
@@ -82,17 +83,21 @@ fn shell_quote(s: &str) -> String {
 
 struct SshHandler;
 
-#[async_trait::async_trait]
 impl client::Handler for SshHandler {
     type Error = russh::Error;
 
-    async fn check_server_key(&mut self, _server_public_key: &russh_keys::key::PublicKey) -> Result<bool, Self::Error> {
+    // **2026-08-25更新**: `russh` 0.45→0.63へアップグレード
+    // (RUSTSEC-2026-0153/0154、High 7.5——`russh-cryptovec`の未検査
+    // アロケーション/成長処理を修正した安全なバージョンへの追従)に
+    // 伴い、シグネチャが`&PublicKey`→`&PublicKeyOrCertificate`、
+    // `async fn`→`fn(...) -> impl Future<...> + Send`へ変更された。
+    fn check_server_key(&mut self, _server_public_key: &russh::keys::PublicKeyOrCertificate) -> impl std::future::Future<Output = Result<bool, Self::Error>> + Send {
         // **正直な開示**: ホスト鍵の検証(known_hostsとの照合)は今回の
         // スコープでは実装していない——TOFU(Trust On First Use)すら
         // 行わず常に受理する簡易実装。実運用では中間者攻撃(MITM)への
         // 耐性が無いという既知の制約であり、`OPEN_ENGLISH_VPS_HOST`を
         // 信頼できる直接到達可能な自社VPSに限定する運用を前提としている。
-        Ok(true)
+        async { Ok(true) }
     }
 }
 
@@ -117,9 +122,16 @@ fn config_from_env() -> Result<VpsConfig> {
 async fn connect(cfg: &VpsConfig) -> Result<Handle<SshHandler>> {
     let ssh_config = Arc::new(client::Config::default());
     let mut session = client::connect(ssh_config, (cfg.host.as_str(), cfg.port), SshHandler).await.context("failed to connect to VPS over SSH")?;
-    let key_pair = russh_keys::load_secret_key(&cfg.key_path, None).with_context(|| format!("failed to load SSH private key from {}", cfg.key_path))?;
-    let authenticated = session.authenticate_publickey(&cfg.user, Arc::new(key_pair)).await.context("SSH publickey authentication failed")?;
-    if !authenticated {
+    let key_pair = russh::keys::load_secret_key(&cfg.key_path, None).with_context(|| format!("failed to load SSH private key from {}", cfg.key_path))?;
+    // **2026-08-25更新**: `russh` 0.63の`authenticate_publickey`は
+    // `PrivateKeyWithHashAlg`を受け取り`AuthResult`を返す(旧`bool`
+    // ではない)。RSA鍵向けのハッシュアルゴリズム指定は`None`
+    // (`PrivateKeyWithHashAlg::new`が非RSA鍵では無視し、RSA鍵では
+    // レガシーなsha-rsa〈SHA-1〉にフォールバックする)——挙動は旧
+    // バージョンと同等のまま。
+    let key = PrivateKeyWithHashAlg::new(Arc::new(key_pair), None);
+    let auth_result = session.authenticate_publickey(&cfg.user, key).await.context("SSH publickey authentication failed")?;
+    if !matches!(auth_result, client::AuthResult::Success) {
         bail!("SSH authentication was rejected by the VPS / VPS側でSSH認証が拒否されました");
     }
     Ok(session)

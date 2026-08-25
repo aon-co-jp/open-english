@@ -7,6 +7,22 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Update (2026-08-25, cont. 3): security audit found and fixed two
+> Critical wasmtime CVEs, plus a text-contrast bug fix**:
+> - Ran a `cargo audit` dependency scan and found **two Critical (CVSS
+>   9.0) sandbox-escape vulnerabilities in wasmtime 21.0.2** — the exact
+>   engine world-lab's Phase 2 sandbox depends on. Upgraded to
+>   **48.0.1**, bringing 21 known vulnerabilities down to 1 (an
+>   upstream-unfixed `rsa` crate issue with no available patch).
+> - **Bonus**: this upgrade also fixed the previously-documented "fuel
+>   exhaustion crashes the host process" bug — verified live (the
+>   subprocess-isolation defense stays in place regardless).
+> - Also found and fixed two High (CVSS 7.5) vulnerabilities in `russh`
+>   (used for the VPS SSH integration), upgrading to 0.63.1.
+> - Fixed a reported contrast bug where the trainer's first greeting
+>   speech bubble showed dark text on a dark background.
+> - See the 2026-08-25 entry in [CLAUDE.md](CLAUDE.md).
+>
 > 📌 **Update (2026-08-25, cont. 2): added bulk pairing**:
 > - Added a "🏢 Bulk pairing" feature (`POST /v1/world-lab/pair/bulk`)
 >   for offices/large stores with many PCs/tablets/phones — paste

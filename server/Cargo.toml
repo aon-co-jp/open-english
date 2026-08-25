@@ -59,8 +59,7 @@ hyper = { version = "1.10", features = ["full"] }
 # libssh2/OpenSSLへのCバインディング〈ssh2クレート〉と違いvcpkg等の
 # 追加ネイティブ依存が要らずクロスプラットフォームで扱いやすいため採用)。
 # 鍵ファイルの読み込みには`russh-keys`を使う。
-russh = "0.45"
-russh-keys = "0.45"
+russh = "0.63"
 async-trait = "0.1"
 # GitHubのContents API(Base64エンコードされたファイル内容)を扱うため。
 base64 = "0.22"
@@ -71,4 +70,4 @@ base64 = "0.22"
 # アクセス能力は一切guestコードに与わらない(サンドボックスの安全性は
 # 「どの機能を有効化するか」ではなく「どのホスト関数をimportとして
 # linkするか」で決まる——本リポジトリでは空のLinkerしか使わない)。
-wasmtime = "21.0.2"
+wasmtime = "48"

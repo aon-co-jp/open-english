@@ -90,6 +90,115 @@ Phase 2と同じ「別プロセス隔離+リソース上限+ペアリングト�
 
 ## HANDOFF
 
+- **2026-08-25(続き2) セキュリティ監査(cargo audit)を実施し、依存関係の
+  重大な脆弱性を修正(ユーザー指示「関連リポジトリのセキュリティ監査
+  〈依存関係・入力検証等〉」への対応)**:
+  1. **`cargo audit`導入**: この開発機に`cargo-audit`が入っていな
+     かったため`cargo install cargo-audit --locked`でインストールし、
+     open-english/server・open-cuda・aruaru-llm・open-web-server・
+     open-raid-z/web・aruaru-db(+`web`サブクレート)・open-directxの
+     計8箇所(open-englishを含む)をスキャンした。
+  2. **【最重要】`wasmtime`21.0.2に**Critical(CVSS 9.0)のサンドボックス
+     脱出脆弱性が2件**含まれていたことを発見**: 「Wasmtime with Winch
+     compiler backend may allow a sandbox-escaping memory access」
+     「Miscompiled guest heap access enables sandbox escape on aarch64
+     Cranelift」。ほかにも高〜中程度の脆弱性(WASI実装でのリソース
+     枯渇、component modelの各種OOB/パニック等)を含め、**wasmtime
+     関連だけで21件中17件**を占めていた——まさにworld-lab Phase 2
+     (WASMサンドボックスでの計算タスク実行)が守ろうとしていた領域
+     そのものにCriticalな脆弱性が存在していたことになる。
+  3. **修正**: `wasmtime`を21.0.2→**48.0.1**へアップグレード。
+     `cargo build --release`成功(コード変更不要、API破壊的変更に
+     一切当たらなかった)。`cargo test --release`34 passed/1 ignored
+     を維持。**副産物として、2026-08-24付HANDOFFに記録した「fuel
+     枯渇トラップがWindows上でホストプロセスをクラッシュさせる」
+     という既知のバグも、48.0.1では解消していることを実機で確認した**
+     ——以前27.0.0で再現実験した際は同じクラッシュが再現していたため、
+     21〜27の間ではなく27〜48の間で上流が修正したと考えられる
+     (`world_lab.rs`の`repro_in_process_fuel_exhaustion_crash`
+     〈`#[ignore]`〉を実行し、abortせず正常にエラーを返すことを確認)。
+     **サブプロセス隔離という多層防御は引き続き維持**——根本原因が
+     直ったからといって唯一の防御層を外すことはしない、という方針
+     どおり。
+  4. **`russh`0.45.0/`russh-cryptovec`0.7.3にHigh(CVSS 7.5)の脆弱性
+     2件**(「Unbounded 32-bit allocation」「Unchecked `CryptoVec`
+     allocation and growth handling」)も発見・修正。`russh`
+     0.45→**0.63.1**へアップグレード(`russh-keys`は0.63系列が
+     crates.ioに存在せず、新版`russh`自体が`russh::keys`モジュールへ
+     機能統合されていたため依存から削除し`russh::keys::*`を直接
+     参照する形に変更)。API変更点: (a)
+     `client::Handler::check_server_key`が`&PublicKey`→
+     `&PublicKeyOrCertificate`引数・`async fn`→`fn(...) -> impl
+     Future<...> + Send`返り値へ変更、(b)
+     `authenticate_publickey`が`Arc<KeyPair>`→`PrivateKeyWithHashAlg`
+     引数・`bool`→`AuthResult`(enum、`Success`/`Failure`)返り値へ
+     変更。`vps_agent.rs`を新APIへ追従させた(挙動は同等——ホスト鍵は
+     引き続き無条件で受理〈TOFU未実装という既存の制約は不変〉、
+     RSA鍵向けハッシュアルゴリズムは`None`〈非RSA鍵では無視される〉)。
+  5. **`h2`(0.4.15、DoS脆弱性)を0.4.19へ`cargo update -p h2`で
+     互換範囲内更新**(直接の依存指定は無く、`hyper`経由の推移的
+     依存のため設定変更不要)。
+  6. **実機E2E検証(型チェック・ビルド成功だけで完了と報告しない
+     方針の徹底)**: 修正後のバイナリを実際に起動し、(a) 正常な
+     WASM計算タスク("security"→各バイト+1で"tfdvsjuz")が引き続き
+     正しく動作すること、(b) 無限ループ攻撃を送信しても
+     **サブプロセスすらクラッシュせず、正常なfuel枯渇エラー
+     (`"guest module trapped or ran out of fuel"`)が返るように
+     なったこと**(wasmtime 48.0.1がクラッシュ根本原因を修正した
+     ことの直接的な実証)、(c) `/healthz`が引き続き`{"ok":true}`を
+     返すこと、を確認した。
+  7. **最終`cargo audit`結果**: 21件→**1件**(残るのは`rsa`クレートの
+     Medium 5.9「Marvin Attack」——RustCrypto側で**修正版が存在しない**
+     上流未解決の既知issueであり、このリポジトリ側での対処手段が無い
+     ため、正直な開示としてここに記録するにとどめる)。加えて
+     `bincode`/`rustls-pemfile`の「unmaintained」警告2件(脆弱性では
+     なく保守停止の警告、実害の指摘は無い)。
+  8. **他リポジトリの監査結果(概要、詳細は各リポジトリのCLAUDE.md
+     参照)**: `open-cuda`——警告1件のみ(問題なし)。`aruaru-llm`——
+     `h2`を同様に更新、残る2件(`h2`0.3.27・`protobuf`2.28.0)は
+     `rust-bert`が引き込む依存で**既定featureには含まれない
+     オプション機能`nllb-translate`経由でのみ**持ち込まれることを
+     確認済み(通常ビルド・CIには影響しない)。`open-web-server`——
+     同じ`russh`High脆弱性2件を検出(この修正は`open-web-server`
+     リポジトリ側で別途実施が必要、今回はopen-english側のみ修正)。
+     `open-raid-z/web`——`h2`のみ、更新済み・0件化。`aruaru-db`
+     (+`web`)——`h2`(更新済み)・`quick-xml`のHigh 2件(`rusty-s3`
+     0.7→0.10で更新・解消)を修正、残る`rustls-webpki`(古い`mongodb
+     2.8.2`が引き込む`rustls 0.21`経由)は`mongodb`の3.x系への
+     メジャーバージョン移行が必要でAPI破壊的変更を伴うため、
+     データベースエンジンという性質上、今回は拙速な移行を避け
+     「要対応事項」として記録するにとどめた(詳細は`aruaru-db/
+     CLAUDE.md`参照)。`open-directx`——脆弱性0件(警告3件のみ)。
+  - 次にすべきこと: (1) `open-web-server`リポジトリ側で同じ`russh`
+    アップグレードを実施、(2) `aruaru-db`の`mongodb`2.x→3.x移行
+    (破壊的変更を伴うため、専用のテスト計画を立てた上で別セッション
+    で着手)、(3) `rsa`クレートのMarvin Attack修正が上流でリリース
+    されたら追従する。
+
+- **2026-08-25(続き) トレーナーの吹き出し(初回挨拶)が暗い背景に暗い
+  文字で読めないバグを修正(ユーザー報告「Hi! I'm your English
+  trainer...の背景が黒なら文字は白色にして」への対応)**: 実ブラウザで
+  `#speech-bubble`の`getComputedStyle`を確認したところ、`color:
+  rgb(58, 26, 42)`(暗い臙脂色)が`background: rgb(36, 26, 48)`
+  (暗い紫)に乗っており、白文字/白背景バグの逆パターン(暗色/暗色)で
+  実際に読めない状態だったことを確認した。原因は、親要素`.trainer`
+  (薄いピンク背景`#fbe4ec`)がその背景向けに`color: #3a1a2a`を
+  明示指定しており(2026-08-24付の既存修正コメント参照)、`.trainer`
+  内部にネストされている`.speech-bubble`(独自の暗い背景
+  `var(--panel)`を持つ)がこの色をそのまま継承してしまっていた
+  ——`.speech-bubble`自体には`color`が指定されていなかったための
+  漏れ。`.speech-bubble`へ`color: var(--text)`(`body`と同じほぼ白)を
+  明示的に追加して修正。**同じ漏れが無いか`.trainer`内の他の子要素
+  (`.character-switch-btn`・`.voice-controls`)も確認**——
+  `.character-switch-btn`は独自の`color: #fff`を持ち影響なし、
+  `.voice-controls`は独自背景を持たず`.trainer`の薄いピンク背景の上に
+  直接乗るため`.trainer`の暗い文字色をそのまま使ってよい(意図通り)、
+  という2点を確認し、修正が必要な箇所はこの1件のみと判断した。
+  実機ブラウザで`getComputedStyle`により`color: rgb(245, 238, 247)`
+  (ほぼ白)へ変わったこと、スクリーンショットで実際に文字が読める
+  ことを確認した。`android/app/src/main/assets/webroot/style.css`へも
+  同期コピー済み。
+
 - **2026-08-25 world-labにデバイス種別・自己申告ハードウェア対応を
   追加+Microsoft Copilot/GitHub Copilotをツールリンクへ追加(ユーザー
   指示「複数のスマホ/タブレット/PC接続対応」「Microsoft Copilotや
