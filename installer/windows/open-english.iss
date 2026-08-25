@@ -65,7 +65,7 @@ OutputDir=dist
 ; (バージョン番号なし、常に同じファイル名)に統一する(ユーザー承認、
 ; 2026-08-17)——`server/src/self_update.rs`のアセット検出ロジックも
 ; "setup"ではなく"install"を含むファイル名を探すよう合わせて変更済み。
-OutputBaseFilename=open-english-install
+OutputBaseFilename=open-english-installer
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 

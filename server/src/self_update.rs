@@ -16,8 +16,9 @@
 //!   inodeを`rename`/上書きしても、既に起動済みのプロセスは古い
 //!   inodeを掴んだまま実行を続けられるため、ファイルロックの制約が
 //!   無い)。このため`apply_update_linux`を新設し、
-//!   `open-english-<os_label>.tar.gz`(CI`.github/workflows/
-//!   release.yml`の`build-unix-installer`が生成するのと同じ命名)を
+//!   `open-english-installer-<os_label>.tar.gz`(CI`.github/workflows/
+//!   release.yml`の`build-unix-installer`が生成するのと同じ命名、
+//!   2026-08-25に`open-english-<os_label>.tar.gz`から改名)を
 //!   ダウンロード→展開→現在の実行ディレクトリ(`installer/unix/
 //!   install.sh`が配置する構成、バイナリと静的アセットが同じ
 //!   ディレクトリに同居)へ上書きコピー→新バイナリを子プロセスとして
@@ -402,6 +403,9 @@ pub(crate) async fn fetch_latest_release_for(repo: &str) -> anyhow::Result<Lates
 /// ユーザーが一目でインストーラーと分かる名前)へ変更したため、
 /// マッチ対象の部分文字列も"setup"から"install"へ合わせた。旧リリース
 /// (v0.6.6以前)のアセット名との後方互換のため"setup"も引き続き許容する。
+/// **2026-08-25追記**: 全リポジトリ共通の命名規則統一により、実際の
+/// ファイル名は`open-english-installer.exe`へ変更した(`"installer"`は
+/// `"install"`を含むため、下記のマッチロジック自体は変更不要)。
 fn windows_installer_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
     release.assets.iter().find(|a| {
         let name = a.name.to_lowercase();
@@ -411,8 +415,9 @@ fn windows_installer_asset(release: &LatestRelease) -> Option<&ReleaseAsset> {
 
 /// Unix系(Linux/macOS)向けリリースtarball(`.github/workflows/
 /// release.yml`の`build-unix-installer`ジョブが生成する`open-english-
-/// linux-x86_64.tar.gz`/`open-english-macos-aarch64.tar.gz`のような
-/// 命名)を探す。実行中のOSに応じて`"linux"`/`"macos"`のいずれかを
+/// installer-linux-x86_64.tar.gz`/`open-english-installer-macos-aarch64.tar.gz`
+/// のような命名、2026-08-25に`open-english-<os_label>.tar.gz`から改名)を
+/// 探す。実行中のOSに応じて`"linux"`/`"macos"`のいずれかを
 /// 含むアセットのみ採用する(2026-08-19変更: 以前は`linux_tarball_
 /// asset`という名前でLinux決め打ち・macOSを明示的に除外していたが、
 /// macOS対応につき実行中のOSで振り分ける形へ一般化した)。

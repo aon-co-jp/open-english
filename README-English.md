@@ -744,7 +744,7 @@ software (no build-from-source required, close to a one-tap install).
 
 | # | What | Windows | Linux | Android/tablet |
 |---|---|---|---|---|
-| 1 | **open-english itself** (this repo — static frontend + delivery server) | [open-english-install.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-install.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (pick the `.apk` asset) |
+| 1 | **open-english itself** (this repo — static frontend + delivery server) | [open-english-installer.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-installer.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) (`open-english-installer-<os>.tar.gz`) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (`open-english-installer.apk`) |
 | 2 | **aruaru-llm** (the AI response engine — required, chat won't work without it) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Bundled already (included inside open-english's APK, no separate install needed) |
 
 **Honest disclosure**: the "latest" links above always point to the newest GitHub
