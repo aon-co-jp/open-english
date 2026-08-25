@@ -88,6 +88,118 @@ Phase 2と同じ「別プロセス隔離+リソース上限+ペアリングト�
 今回は着手していない**——安全性を検証しないまま機能だけ先に実装する
 ことは避けた。
 
+**【追記・2026-08-25】Google検索+GitHub調査による安全設計の再評価
+(ユーザー指示「安全な設計をGoogle検索とGithub調査して英語と日本語で
+検索して」への対応)**: 上記の「同水準に成熟したサンドボックス実行
+標準が今のところ存在しない」という評価を、実際に日英でWeb検索
+(2026-08-25実施)して再確認・更新した。
+
+- **GPU側の有望な候補: `wasi:webgpu`**(WebAssembly公式organization
+  配下、`WebAssembly/wasi-webgpu`)。WebGPU(ブラウザ向けGPU API、
+  W3C Candidate Recommendationとして安定化済み)の設計をWASI
+  (WebAssemblyのサンドボックス外部インターフェース標準)側へ写像した
+  提案で、「サーバー・デスクトップ・Android・ブラウザを問わず移植
+  可能なサンドボックス化されたGPU計算」を掲げている。2026年4月には
+  `wasmCloud`ランタイムで**実際にAdobe TrustMarkの電子透かしモデルを
+  Wasmコンポーネントとして動かし、CPU経路よりも約20%高速化した
+  エンドツーエンドのデモ**が行われている(情報源:
+  https://github.com/WebAssembly/wasi-webgpu 、
+  https://wasmcloud.com/community/2026-04-22-community-meeting/ )。
+  **正直な評価**: 「安全設計が全く存在しない」という前回の評価は
+  やや悲観的すぎた——標準化・実装とも2026年時点で実際に前進している。
+  ただしまだPhase 2段階の提案(WASI P3への移行作業中)であり、
+  Phase 2のWASMサンドボックス(WASM自体は10年以上前から広く実装
+  されている枯れた標準)と同列の成熟度にはまだ達していない。
+- **既知の残存リスク**: WebGPUシェーディング言語(WGSL)の仕様に
+  データ競合(data race)を含むコードが最適化コンパイラによって
+  メモリ安全性の防御機構ごと除去され得る、という研究指摘がある
+  (論文「SafeRace: Assessing and Addressing WebGPU Memory Safety」)。
+  また、そもそも`wasmtime`自体にも(今回のセッションで実際に発見・
+  修正したCritical〈CVSS 9.0〉のサンドボックス脱出脆弱性2件を含め)
+  現実の脆弱性が存在してきた実績があり、「WASM/WASI系の標準だから
+  自動的に安全」という短絡は禁物——上流の脆弱性修正への追従(今回
+  実施した`cargo audit`の定期運用)を前提とした設計であるべき。
+- **NPU側の候補: `wasi-nn`**(モデル+入力テンソルを渡すとホスト側が
+  ONNX Runtime/OpenVINO/TensorFlow Lite等のネイティブMLフレームワーク
+  で推論を実行し出力テンソルを返す、という「グラフ実行」専用の
+  インターフェース)。**ただしこれは「任意の計算をNPU上で実行する」
+  Phase 2的な汎用サンドボックスではなく、「事前に定義された推論
+  グラフを渡す」という限定された用途向け**——world-labの計算タスク
+  (任意のWASMモジュール)とは設計思想が異なり、そのまま流用は
+  できない。
+- **改訂した次に着手する順序**(上記「次に着手するとしたら踏むべき
+  順序」の3段階を、この調査結果を踏まえて具体化):
+  (1) `wasi:webgpu`のWASI P3移行が完了し安定版として利用可能になった
+  段階で、`wasmtime`側の実装状況(対応バージョン・feature flag)を
+  再確認する、(2) まず**単一マシン内**で`wasi:webgpu`を使った
+  サンドボックス化GPU計算タスクの試作を行い、Phase 2と同水準の
+  多層防御(空のLinker相当の制限された権限、リソース上限、
+  サブプロセス隔離)が成立するか検証する、(3) 成立を確認できてから
+  初めて、Phase 1のペアリング(`capabilities`に`"gpu"`を申告した
+  デバイス)への実際のディスパッチを検討する。NPU(`wasi-nn`)は
+  用途が「任意計算」ではなく「推論グラフ実行」に限定されるため、
+  world-labへの統合は別途スコープを切って検討する(現時点では
+  「対応デバイスの目録」に留める)。
+  - 出典(2026-08-25 WebSearch確認): `WebAssembly/wasi-webgpu`
+    (GitHub)、wasmCloudコミュニティミーティング記事、
+    「SafeRace: Assessing and Addressing WebGPU Memory Safety」論文、
+    Wasmtime公式セキュリティドキュメント(docs.wasmtime.dev/
+    security.html)。
+
+### Microsoft 365 Copilot API連携構想(ユーザー指示、2026-08-25、
+### 別スコープとして切り出し、未着手)
+
+**背景**: Microsoft 365 Copilot本体(Graphの`/copilot`名前空間)との
+API連携について相談があり、2026-08-25 WebSearchで認証方式を確認した
+結果、**delegated権限のみサポートされ、client credentials(固定の
+APIキー/クライアントシークレット)方式は使えない**と判明した
+(情報源: https://learn.microsoft.com/en-us/microsoft-365/copilot/
+extensibility/copilot-apis-security-authentication 、Microsoft
+Q&A「How to use Microsoft 365 Copilot Chat API inside Enterprise」)。
+Chat/Retrieval/Search APIはいずれも「実際にサインインした特定の
+Microsoft 365ユーザーのコンテキスト」を要求する設計(そのユーザーが
+アクセス許可された社内コンテンツの範囲内でのみ結果を返す、という
+権限モデル)であり、Google Custom Search連携(`aruaru-llm`の
+`web_search.rs`、APIキーを設定パネルへ貼り付けるだけの単純なBYO方式)
+とは根本的に異なる。
+
+**必要になる実装(見積もり、未着手)**:
+1. **利用者側の事前準備(このアプリでは代行できない)**: Microsoft
+   365 Copilotライセンスの契約、Azure AD(Entra ID)でのアプリ登録
+   (リダイレクトURI登録を含む)。
+2. **OAuth 2.0 Authorization Code(+PKCE推奨)フローの実装**:
+   ブラウザを`https://login.microsoftonline.com/{tenant}/oauth2/
+   v2.0/authorize`へリダイレクト→利用者がMicrosoftアカウントで
+   サインイン・同意→認可コードをこのサーバーへコールバック→
+   `/oauth2/v2.0/token`エンドポイントでアクセストークン+
+   リフレッシュトークンへ交換。
+3. **リフレッシュトークンの安全な保管**: `vps_agent.rs`のSSH秘密鍵
+   (`OPEN_ENGLISH_VPS_SSH_KEY_PATH`、サーバープロセス側のみで読み
+   ブラウザへは一切送信しない設計)と同程度に機微な情報として扱う
+   必要がある——平文でのディスク保存は避け、少なくとも既存の
+   `db.rs`(SQLite)に暗号化した状態で保存するか、OS標準の資格情報
+   ストア(Windows Credential Manager等)の利用を検討する。
+4. **トークン失効・再認可のハンドリング**: リフレッシュトークンが
+   失効した場合に利用者へ再サインインを促すUI導線。
+
+**なぜ今回着手しなかったか(正直な開示)**: (a) このセッションには
+Azure ADアプリ登録・Copilotライセンスという利用者側の事前準備が
+無く、実際に動作検証できる環境が無い。(b) OAuthサインインフロー+
+機微情報(リフレッシュトークン)の保管は、実装ミスがそのまま
+セキュリティインシデントに直結する領域であり、実環境での検証
+(実際にMicrosoft側のログイン画面を経由したE2E確認)無しに「実装
+完了」と報告することは避けるべきと判断した。
+
+**次に着手する場合の順序**: (1) 利用者側でAzure ADアプリ登録・
+リダイレクトURI(例`http://localhost:4601/oauth/copilot/callback`)
+の設定・Copilotライセンス確保を先に完了してもらう、(2) サーバー
+側にOAuthコールバック用エンドポイントを新設し、Authorization Code
++PKCEフローを実装、(3) リフレッシュトークンの暗号化保存方式を
+設計・実装、(4) 実際にサインインしてChat APIを呼び出すE2E検証を
+行う。**この4段階は今回いずれも着手していない**——現時点では
+「Microsoft/GitHub Copilotへのリンクを案内するだけ」(既存の
+AIコーディング支援パネル)にとどめている。
+
 ## HANDOFF
 
 - **2026-08-25(続き3) バーチャルスクールへ「アメリカの資格(擬似模擬)」

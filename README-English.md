@@ -7,6 +7,23 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
+> 📌 **Update (2026-08-25, cont. 5): recorded a re-researched GPU/NPU
+> safe-design path and a Microsoft Copilot API integration estimate in
+> CLAUDE.md (both still at the vision/planning stage, not implemented)**:
+> - **GPU/NPU cross-device dispatch**: identified `wasi:webgpu` (an
+>   official WASI proposal, with a working wasmCloud demo in April 2026)
+>   as a promising candidate. It's still standardizing, though, and known
+>   WGSL memory-safety research concerns exist — it hasn't yet reached
+>   the same maturity as the Phase 2 WASM sandbox, so this remains
+>   unimplemented.
+> - **Microsoft 365 Copilot API**: confirmed it only supports delegated
+>   permissions (no static API-key flow). Building this requires a full
+>   OAuth 2.0 sign-in flow plus secure refresh-token storage, and depends
+>   on the user's own Azure AD app registration and Copilot license — so
+>   we recorded the design as a separate future scope rather than
+>   building it now.
+> - See the "Future Vision" section in [CLAUDE.md](CLAUDE.md).
+>
 > 📌 **Update (2026-08-25, cont. 4): added a "US certifications (mock)"
 > track to Virtual School**:
 > - Added original bilingual (English/Japanese) mock questions (5 each)
