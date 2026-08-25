@@ -202,6 +202,103 @@ AIコーディング支援パネル)にとどめている。
 
 ## HANDOFF
 
+- **2026-08-25(続き6) VPS(easy-web.tokyo)へ実際にデプロイして公開
+  (ユーザー指示「実際にサーバーを動かして公開して」への対応)**:
+  1. **配置場所**: `/root/easy-web.tokyo/open-english`(GitHubから
+     クローン)。ビルドに必要な兄弟依存(`RPoem`/`RS-JSON`/`open-cpu`/
+     `open-web-server`/`RS-SmartTCP`)は、VPS上に既に存在した`/root/*`の
+     クローンへシンボリックリンクして共有した(重複クローンを避けた)。
+     ビルド中、`open-cpu`が実体を持たない壊れた`git init`のみの
+     ディレクトリだったため、これは新規に`git clone`し直した
+     (共有クローンではなく`easy-web.tokyo/open-cpu`専用とした)。
+  2. **ビルドで発覚した実バグ**: `main.rs`の`.head(...)`メソッドが
+     VPS上の`RPoem`(`/root/RPoem`、他サービスと共有)の古いコミットには
+     存在せず、コンパイルエラーになった。`git pull origin main`で
+     最新化(`67412ca Add HEAD method support to poem-compat facade`が
+     含まれる)して解決——**この共有クローンは他サービスもソース
+     依存しているが、既にビルド済みのバイナリは影響を受けない
+     (ソース更新は次回ビルド時のみ反映される)ため安全と判断した**。
+  3. **systemdサービス新設**(`/etc/systemd/system/open-english.service`、
+     `rs-guard.service`と同型): `OPEN_ENGLISH_SERVER_BIND=127.0.0.1:8104`
+     (既存の使用中ポート8090-8111と衝突しない空きポートを事前に
+     `ss -tlnp`で確認)。`systemctl enable --now`で起動、`/healthz`で
+     `{"ok":true}`を確認。
+  4. **【重要な発見】このVPSの実際のリバースプロキシはnginxではなく
+     `open-web-server`(このエコシステム自身の製品)だった**:
+     `nginx.service`は2026-08-04から`failed`状態のまま放置されており
+     (`ss -tlnp`で確認したところ実際にポート80/443を掴んでいたのは
+     `open-web-server`プロセスだった)、当初`/etc/nginx/conf.d/
+     easy-web.tokyo.conf`を編集して`nginx -t`が通ったことで安心
+     しかけたが、**実際にはこの変更は本番トラフィックに一切影響しない
+     無意味な変更だった**——`reload`しようとして初めて
+     `nginx.service: Unit cannot be reloaded because it is inactive`
+     で発覚した。この編集は元に戻し(バックアップから復元、
+     `diff`で完全一致を確認)、代わりに実際にトラフィックを処理して
+     いる`open-web-server`の設定ファイル(`/root/open-web-server/
+     domains.toml`、TOML形式の`[[domain]]`テーブル一覧)へ追記する形へ
+     切り替えた。**教訓**: 「設定ファイルの構文チェックが通った」
+     ことは「その設定ファイルが実際に使われている」ことの証明には
+     ならない——`ss -tlnp`で実際にポートを掴んでいるプロセスを
+     確認すべきだった。
+  5. **`domains.toml`への追記**: 既存の`RS-Ops`等のエントリと同じ形式で
+     2件追加——(a) `path_prefix = "/open-english"`(`strip_prefix =
+     true`、ページ本体・静的アセット用)、(b) `path_prefix = "/v1"`
+     (`strip_prefix = false`、ドメイン直下)。**(b)が必要だった理由**:
+     `app.js`のAPI呼び出し(`fetch("/v1/db/history")`等、多数)は
+     すべて**絶対パス**で書かれており、`/open-english/`という
+     サブパス配信下では、そのままだと`https://easy-web.tokyo/v1/...`
+     (誤り、`/open-english/`が抜け落ちる)へ送信されてしまう。
+     ドメイン直下の`/v1/`もこのポート(8104)へ転送することで解決した。
+     **正直な開示**: この対応はこのドメインの他アプリが`/v1/`という
+     パス名前空間を使っていないことをソースコード横断検索
+     (`open-easy-web`のソース)で確認した上での判断であり、将来
+     このドメインへ`/v1/`を使う別アプリを追加する場合は競合に注意が
+     必要。追記前に`domains.toml`をバックアップ
+     (`domains.toml.bak-20260825-open-english`)し、また**シェルの
+     二重引用符ネストによりTOML文字列のクォートが失われる事故を
+     一度実際に起こした**(`ssh conoha "cat >> file << 'EOF' ... EOF"`の
+     ヒアドキュメント内で`"..."`が剥がれた)——バックアップから復元し、
+     ローカルでファイルを作成して`scp`でアップロード→リモートで
+     `cat >> file`する方式に切り替えて解決した(次回、SSH経由で
+     クォートを含む複数行テキストを書き込む際はこの方式を使うこと)。
+  6. **`systemctl restart open-web-server`で新設定を反映**し、実際に
+     外部から(この開発機のBashツールから直接、VPS内部からではない)
+     `https://easy-web.tokyo/open-english/`(200、ページ本文確認)・
+     `https://easy-web.tokyo/open-english/style.css`(200)・
+     `https://easy-web.tokyo/open-english/app.js`(200)・
+     `https://easy-web.tokyo/v1/network/status`(200、JSON応答確認)を
+     実際に確認した——**本物のインターネット経由での公開を実証**。
+  7. **正直な開示・今回発見した設計上の限界**: `GET /v1/network/status`
+     (このHANDOFFの「続き5」で新設したもの)は、このプロセス自身が
+     `127.0.0.1`限定でリッスンしているかどうかしか判定できない設計
+     ——今回のようにリバースプロキシ(`open-web-server`)を介して
+     実際には外部公開されている場合でも、`is_public: false`
+     (非公開)と表示し続ける。これは実装コメントに元々明記していた
+     既知の限界(「実際に到達可能かどうかはこのアプリが関知しない
+     ルーター/ファイアウォール設定次第」)の具体例そのものだが、
+     **今回のデプロイで実際にこの限界が顕在化したこと自体を正直に
+     記録する**——バッジを鵜呑みにせず、実際に外部公開しているか
+     どうかは自分で把握しておく必要がある。次回、リバースプロキシ
+     配下での運用を主目的にするなら、`Forwarded`/`X-Forwarded-For`
+     ヘッダの有無で「プロキシ経由でアクセスされている」ことだけは
+     検知できるかもしれないが、それでも「本当に世界中から到達可能か」
+     の保証にはならない(あくまで参考情報)——過大な保証はしない。
+  8. **稼働状況**: `open-english.service`は`enabled`(再起動後も自動
+     起動)。会話履歴DBは`/root/easy-web.tokyo/open-english/data/
+     open-english.sqlite3`(SQLiteのみ、`aruaru-db`ミラーは無効のまま)。
+     `aruaru-llm`は今回起動していない(このVPSデプロイでは接続先
+     aruaru-llmが無いため、チャット機能自体は「未接続」表示のまま—
+     UI・資格試験対策・バーチャルスクール等、静的コンテンツ中心の
+     機能は動作する)。
+  - 次にすべきこと: (1) 必要であれば`aruaru-llm`もVPS側へデプロイして
+    実際にチャット機能まで動かす、(2) `/v1/network/status`をリバース
+    プロキシ環境でも意味のある情報を返せるよう改善するか検討、
+    (3) `domains.toml`の`/v1`エントリが将来他アプリと衝突しないか、
+    新規ドメインエントリ追加時に都度確認する運用ルールの明文化、
+    (4) アクセス制限(Basic認証等)を掛けて本当の意味での「私用」に
+    絞るかどうかの検討(現時点では認証なしで誰でもアクセス可能な
+    状態——これも正直な開示として記録する)。
+
 - **2026-08-25(続き5) アイコン起動案内・URLブックマーク案内・DuckDNS
   連携+公開/非公開の常時表示バッジを新設(ユーザー指示「アイコン
   クリックで起動するかURLをお気に入りに入れておけるか、そのURLに
