@@ -754,6 +754,274 @@ pub fn run_worker_main() -> ! {
     std::process::exit(0);
 }
 
+// ============================================================================
+// Phase B(2026-08-25追加): 受信側デバイスでの明示的承認ゲート
+// ============================================================================
+//
+// CLAUDE.md 2026-08-25付「world-lab複数デバイス計算配布のセキュリティ設計」
+// (e)節のPhase B(「受信側の明示的承認UIと、ペアリング通信のTLS化…まだ
+// 実際のタスク転送は行わず、承認フローだけを単体で実機検証する」)への
+// 対応。**このモジュールが実装するのは受信側の承認ゲートのみ**——
+// どこか別のデバイスへ実際にタスクを送りつける経路(送信側)はこの
+// リポジトリのどこにも存在しない(それはPhase C)。「配布リクエストが
+// 届いた」とは、この実装では単に「このサーバーの
+// `/v1/world-lab/dispatch/request`へHTTPリクエストが届いた」ことを
+// 指すだけで、送信元が本当に別の物理デバイスか、同一マシン上のcurlか
+// (今回2台目の実機が用意できなかったため後者のみでテスト)は、この
+// モジュールにとって区別する必要がない設計——どちらであっても全く
+// 同じコード経路を通る。
+//
+// **設計の核心(CLAUDE.md (b)節どおり)**: 有効なペアリングトークンを
+// 持っているだけでは、このデバイス上でタスクを実行してよい許可には
+// **ならない**。すべての配布リクエストはまず`PendingDispatch`として
+// キューへ積まれ、受信側の人間が`approve()`を明示的に呼ぶまでWASM
+// モジュールは一切実行されない。キューを消費する経路は`list()`
+// (一覧表示のみ、実行なし)・`approve()`(実行を伴う唯一の経路)・
+// `deny()`(実行せず破棄)の3つだけで、自動・無承認で実行される経路は
+// どこにも無い。「常時自動承認」の設定はこのモジュールには存在しない
+// (Phase Dのスコープであり、CLAUDE.mdはその段階でもオプトインを
+// 要求している)。
+
+/// キュー一覧表示用のサマリ(WASM/入力の実バイト列は含まない——
+/// 一覧APIのレスポンスに任意サイズのペイロードを含めないための設計、
+/// 承認時にのみ`take_for_approval`で実バイト列を取り出す)。
+#[derive(Debug, Clone, Serialize)]
+pub struct PendingDispatchSummary {
+    pub id: String,
+    pub from_device_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub from_device_id: Option<String>,
+    pub task_name: String,
+    pub wasm_len: usize,
+    pub input_len: usize,
+    pub requested_at_unix: u64,
+}
+
+/// キュー内の1件(実バイト列を保持する完全版、`approve()`で取り出されて
+/// 消費される)。
+pub struct PendingDispatch {
+    pub id: String,
+    pub from_device_name: String,
+    pub from_device_id: Option<String>,
+    pub task_name: String,
+    pub requested_at_unix: u64,
+    pub wasm: Vec<u8>,
+    pub input: Vec<u8>,
+}
+
+impl PendingDispatch {
+    fn summary(&self) -> PendingDispatchSummary {
+        PendingDispatchSummary {
+            id: self.id.clone(),
+            from_device_name: self.from_device_name.clone(),
+            from_device_id: self.from_device_id.clone(),
+            task_name: self.task_name.clone(),
+            wasm_len: self.wasm.len(),
+            input_len: self.input.len(),
+            requested_at_unix: self.requested_at_unix,
+        }
+    }
+}
+
+/// 受信側の承認待ちキュー。`WorldLab`とは別構造体にしている
+/// (承認ゲートはworld-lab全体の記帳機能とは独立した責務のため)が、
+/// 呼び出し側(`main.rs`)は同じペアリングトークンで両方を保護する。
+pub struct ApprovalQueue {
+    pending: Mutex<HashMap<String, PendingDispatch>>,
+    max_pending: usize,
+}
+
+impl Default for ApprovalQueue {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl ApprovalQueue {
+    pub fn new() -> Self {
+        Self { pending: Mutex::new(HashMap::new()), max_pending: 50 }
+    }
+
+    /// 配布リクエストをキューへ積む(実行はしない)。呼び出し元
+    /// (`main.rs`のHTTPハンドラ)がペアリングトークンを既に検証済みで
+    /// ある前提——このメソッド自体はトークンを見ない(`WorldLab`側の
+    /// 責務との分離)。
+    pub fn request(&self, from_device_name: &str, from_device_id: Option<String>, task_name: &str, wasm: Vec<u8>, input: Vec<u8>) -> Result<String, String> {
+        let from_device_name = from_device_name.trim();
+        if from_device_name.is_empty() || from_device_name.chars().count() > 100 {
+            return Err("from_device_name must be 1-100 characters".to_string());
+        }
+        let task_name = {
+            let trimmed = task_name.trim();
+            let name = if trimmed.is_empty() { "(unnamed task)" } else { trimmed };
+            name.chars().take(200).collect::<String>()
+        };
+
+        let mut pending = self.pending.lock().unwrap();
+        if pending.len() >= self.max_pending {
+            return Err(format!("too many pending dispatch approvals already queued ({}, limit {})", pending.len(), self.max_pending));
+        }
+        let id = random_hex(8);
+        pending.insert(
+            id.clone(),
+            PendingDispatch {
+                id: id.clone(),
+                from_device_name: from_device_name.to_string(),
+                from_device_id,
+                task_name,
+                requested_at_unix: SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_secs(),
+                wasm,
+                input,
+            },
+        );
+        Ok(id)
+    }
+
+    /// 承認待ち一覧(何が・どのデバイスから・いつ届いたか)。ペイロード
+    /// 本体は含まない。
+    pub fn list(&self) -> Vec<PendingDispatchSummary> {
+        let mut v: Vec<PendingDispatchSummary> = self.pending.lock().unwrap().values().map(PendingDispatch::summary).collect();
+        v.sort_by_key(|d| d.requested_at_unix);
+        v
+    }
+
+    /// 承認: キューから該当エントリを取り除いて呼び出し元へ返す
+    /// (取り除くこと自体をこの関数の責務とし、実行は呼び出し元
+    /// ——既存Phase 2の`ComputeEngine::run_isolated`——に委ねる。これに
+    /// より、このモジュール自体は「もう一つのサンドボックス」を持たず、
+    /// 既存のWASM実行コードをそのまま再利用する設計になる)。**承認前に
+    /// キューから取り除く**ため、同一IDへの同時多重承認が二重実行に
+    /// ならない(2回目の呼び出しは「見つからない」エラーになる)。
+    pub fn take_for_approval(&self, id: &str) -> Result<PendingDispatch, String> {
+        self.pending.lock().unwrap().remove(id).ok_or_else(|| format!("no pending dispatch approval with id \"{id}\" (already handled, or never existed)"))
+    }
+
+    /// 却下: 実行せずキューから破棄する。呼び出し元(送信側)には
+    /// 「拒否された」という事実を正直に返す(黙って握りつぶさない)。
+    pub fn deny(&self, id: &str) -> Result<(), String> {
+        self.pending
+            .lock()
+            .unwrap()
+            .remove(id)
+            .map(|_| ())
+            .ok_or_else(|| format!("no pending dispatch approval with id \"{id}\" (already handled, or never existed)"))
+    }
+}
+
+#[cfg(test)]
+mod approval_queue_tests {
+    use super::*;
+
+    /// `mod tests`内の同名定数と同一内容(バイト各+1する自己完結WASM)。
+    /// モジュールをまたいだprivate定数の共有を避けるためここに複製した
+    /// (意図的な重複、実装のコピーではなく1関数分のテストフィクスチャ)。
+    const WAT_INCREMENT: &str = r#"
+        (module
+          (memory (export "memory") 2)
+          (func (export "run") (param $in_ptr i32) (param $in_len i32) (param $out_ptr i32) (param $out_cap i32) (result i32)
+            (local $i i32)
+            (local.set $i (i32.const 0))
+            (block $done
+              (loop $loop
+                (br_if $done (i32.ge_s (local.get $i) (local.get $in_len)))
+                (i32.store8
+                  (i32.add (local.get $out_ptr) (local.get $i))
+                  (i32.add (i32.const 1) (i32.load8_u (i32.add (local.get $in_ptr) (local.get $i)))))
+                (local.set $i (i32.add (local.get $i) (i32.const 1)))
+                (br $loop)))
+            (local.get $in_len)))
+    "#;
+
+    fn test_limits() -> ComputeLimits {
+        ComputeLimits {
+            max_wasm_bytes: 64 * 1024,
+            max_input_bytes: 4096,
+            max_output_bytes: 4096,
+            memory_limit_bytes: 256 * 1024,
+            fuel_limit: 10_000_000,
+            timeout_secs: 5,
+        }
+    }
+
+    #[test]
+    fn request_does_not_execute_and_appears_in_pending_list() {
+        let queue = ApprovalQueue::new();
+        let id = queue.request("laptop-2", Some("dev-1".to_string()), "increment bytes", b"wasm-bytes-stub".to_vec(), b"hello".to_vec()).unwrap();
+        let pending = queue.list();
+        assert_eq!(pending.len(), 1);
+        assert_eq!(pending[0].id, id);
+        assert_eq!(pending[0].from_device_name, "laptop-2");
+        assert_eq!(pending[0].from_device_id.as_deref(), Some("dev-1"));
+        assert_eq!(pending[0].task_name, "increment bytes");
+        assert_eq!(pending[0].input_len, 5);
+    }
+
+    #[test]
+    fn approve_removes_from_queue_and_hands_back_the_real_payload_for_execution() {
+        let queue = ApprovalQueue::new();
+        let id = queue.request("laptop-2", None, "task", WAT_INCREMENT.as_bytes().to_vec(), b"hello".to_vec()).unwrap();
+        let entry = queue.take_for_approval(&id).expect("should approve the queued entry");
+        assert_eq!(entry.input, b"hello");
+        assert_eq!(entry.wasm, WAT_INCREMENT.as_bytes());
+        // 承認後はキューから消えている(二重承認できないことの実証)。
+        assert!(queue.take_for_approval(&id).is_err());
+        assert_eq!(queue.list().len(), 0);
+    }
+
+    #[test]
+    fn approve_then_execute_actually_runs_via_the_existing_phase2_sandbox() {
+        // 「承認したら実際にタスクが進行できる」ことを、既存Phase 2の
+        // run_wasm_blocking(サブプロセス隔離の内側で最終的に呼ばれるのと
+        // 同じ関数)を直接呼ぶことで実証する(モックの実行系を新設しない
+        // ——ユーザー指示「既存のPhase 2 WASMサンドボックスコードを
+        // 再利用し、2つ目のサンドボックスを作らない」に対応)。
+        let queue = ApprovalQueue::new();
+        let id = queue.request("laptop-2", None, "increment bytes", WAT_INCREMENT.as_bytes().to_vec(), b"hello".to_vec()).unwrap();
+        let entry = queue.take_for_approval(&id).unwrap();
+        let (output, fuel_consumed) = run_wasm_blocking(&entry.wasm, &entry.input, &test_limits()).expect("approved task should actually execute");
+        assert_eq!(output, vec![b'h' + 1, b'e' + 1, b'l' + 1, b'l' + 1, b'o' + 1]);
+        assert!(fuel_consumed > 0);
+    }
+
+    #[test]
+    fn deny_removes_from_queue_without_executing_and_reports_denial_honestly() {
+        let queue = ApprovalQueue::new();
+        let id = queue.request("laptop-2", None, "task", WAT_INCREMENT.as_bytes().to_vec(), b"hello".to_vec()).unwrap();
+        queue.deny(&id).expect("deny should succeed for a queued entry");
+        // 拒否後は実行できない(take_for_approvalが失敗する=実行経路が
+        // 塞がれていることの実証)。
+        assert!(queue.take_for_approval(&id).is_err());
+        assert_eq!(queue.list().len(), 0);
+        // 二重拒否は「見つからない」を正直に返す(黙って握りつぶさない)。
+        assert!(queue.deny(&id).is_err());
+    }
+
+    #[test]
+    fn approve_or_deny_unknown_id_is_reported_as_an_honest_error() {
+        let queue = ApprovalQueue::new();
+        assert!(queue.take_for_approval("does-not-exist").is_err());
+        assert!(queue.deny("does-not-exist").is_err());
+    }
+
+    #[test]
+    fn queue_rejects_requests_once_the_pending_limit_is_reached() {
+        let queue = ApprovalQueue::new();
+        for i in 0..50 {
+            queue.request(&format!("device-{i}"), None, "task", b"w".to_vec(), b"i".to_vec()).unwrap();
+        }
+        let err = queue.request("one-too-many", None, "task", b"w".to_vec(), b"i".to_vec()).unwrap_err();
+        assert!(err.contains("too many pending"), "got: {err}");
+        assert_eq!(queue.list().len(), 50);
+    }
+
+    #[test]
+    fn rejects_empty_from_device_name() {
+        let queue = ApprovalQueue::new();
+        let err = queue.request("", None, "task", b"w".to_vec(), b"i".to_vec()).unwrap_err();
+        assert!(err.contains("from_device_name"), "got: {err}");
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

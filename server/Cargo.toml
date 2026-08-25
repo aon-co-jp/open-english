@@ -6,7 +6,7 @@ rust-version = "1.75"
 description = "open-englishの静的フロントエンド(index.html/style.css/app.js等)をRPoem(open-runo-poem-compat)で配信するローカルサーバー。file://やpython3 -m http.serverへの依存を解消し、auto-update.jsのfetch()が確実に動作するようにする。"
 
 [dependencies]
-open-runo-poem-compat = { path = "../../RPoem/crates/open-runo-poem-compat" }
+open-runo-poem-compat = { path = "../../RPoem/crates/open-runo-poem-compat", features = ["tls"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "time", "sync"] }
 # 自動アップデート機能(2026-08-11追加、ユーザー指示「起動時の自動
 # メンテナンスで自動UPDATEの自動バージョンアップ機能も搭載して、
@@ -37,6 +37,12 @@ tokio-postgres-rustls = "0.13"
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 rustls-native-certs = "0.7"
 webpki-roots = "0.26"
+# world-lab Phase B TLS(2026-08-25追加): `open_runo_poem_compat::
+# hyper_compat::tls`のAPIが`tokio_rustls::rustls::*`型を返すため、
+# main.rs側でも同じ経路(`tokio_rustls::rustls`)で型を参照できるよう
+# 直接依存として追加(既存の`rustls`依存とバージョンは揃えてあるため
+# 同一の型として扱われる)。
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
 # /v1/db/*のHTTPボディ処理(2026-08-18追加、ユーザー指摘「HTTPボディ処理は
 # 対象外とはどういう事？」への対応)。過去のHANDOFFにあった「RS-JSONは
 # 埋め込み/静的JSONファイル向けのみ」という整理は、Rust-JSON側の実際の
@@ -71,3 +77,15 @@ base64 = "0.22"
 # 「どの機能を有効化するか」ではなく「どのホスト関数をimportとして
 # linkするか」で決まる——本リポジトリでは空のLinkerしか使わない)。
 wasmtime = "48"
+# world-lab Phase B TLS(2026-08-25追加): ペアリング/計算タスクAPIを
+# 平文HTTPのまま残さないための、開発/ローカル検証用の自己署名証明書
+# 生成(`rcgen`、RPoem/RS-SmartTCPの既存TLSテストと同じ用途・同じ
+# クレート)。**独自の暗号/TLS実装は一切追加しない**——実際のTLS
+# ハンドシェイクは`open_runo_poem_compat::hyper_compat::tls`
+# (rustls、上記`tls` feature経由で有効化)に完全に委譲する。本番運用の
+# 正式な証明書(Let's Encrypt等)は別途`OPEN_ENGLISH_TLS_CERT_PATH`/
+# `OPEN_ENGLISH_TLS_KEY_PATH`で用意されたPEMファイルを指すことを想定
+# しており、`rcgen`はその正式な証明書が無い場合の開発用フォールバック
+# としてのみ使う(`world_lab.rs`と同様「本番向けではない」旨をコード内
+# doc・CLAUDE.mdの両方で明記する)。
+rcgen = "0.13"

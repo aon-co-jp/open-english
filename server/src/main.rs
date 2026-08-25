@@ -12,7 +12,7 @@
 //! 上書き可)。`aruaru-llm`(既定`http://localhost:4600`)とは別ポート。
 
 use open_runo_poem_compat::hyper_compat::static_file_handler;
-use open_runo_poem_compat::{get, handler_fn, post, Request, Response, Route, Server, StatusCode, TcpListener};
+use open_runo_poem_compat::{get, handler_fn, post, Request, Response, Route, StatusCode};
 use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -1096,6 +1096,134 @@ async fn read_capped_rs_json_body<T: serde::de::DeserializeOwned>(req: Request, 
         .map_err(|e| rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": format!("invalid JSON body (Rust-JSON strict mode): {e}")})))
 }
 
+// ----------------------------------------------------------------------------
+// world-lab Phase B(2026-08-25新設): 受信側デバイスでの明示的承認ゲート
+// ----------------------------------------------------------------------------
+//
+// `world_lab.rs`の`ApprovalQueue`doc参照。ここは単にHTTPの薄い配線層——
+// 実際の承認ロジック(自動実行しない・二重承認できない・拒否を正直に
+// 報告する等)はすべて`ApprovalQueue`側にある。
+
+#[derive(serde::Deserialize)]
+struct WorldLabDispatchRequestBody {
+    token: String,
+    from_device_name: String,
+    #[serde(default)]
+    from_device_id: Option<String>,
+    #[serde(default)]
+    task_name: String,
+    wasm_base64: String,
+    input_base64: String,
+}
+
+/// `POST /v1/world-lab/dispatch/request`: 他デバイスからの計算タスク配布
+/// リクエストを**キューへ積むだけ**(実行しない)。呼び出し元が
+/// 「実際に別の物理デバイスか、このマシン自身のcurlか」は区別しない
+/// ——`world_lab.rs`モジュールdoc参照。ペアリングトークンの検証は
+/// 必須(トークンを持たない相手からの要求はキューにすら載せない)。
+async fn world_lab_dispatch_request(req: Request, wl: Arc<world_lab::WorldLab>, compute: Arc<world_lab::ComputeEngine>, queue: Arc<world_lab::ApprovalQueue>) -> Response {
+    use base64::Engine as _;
+    // task/runと同じ理由(巨大なBase64文字列によるメモリ枯渇DoS対策)で
+    // ボディサイズをストリーム段階で上限管理する。
+    let max_body_bytes = (compute.limits.max_wasm_bytes + compute.limits.max_input_bytes) * 4 / 3 + 4096;
+    let body: WorldLabDispatchRequestBody = match read_capped_rs_json_body(req, max_body_bytes).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    if !wl.token_matches(&body.token) {
+        return rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": "invalid pairing token"}));
+    }
+    let wasm = match base64::engine::general_purpose::STANDARD.decode(&body.wasm_base64) {
+        Ok(v) => v,
+        Err(e) => return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("wasm_base64 is not valid base64: {e}")})),
+    };
+    let input = match base64::engine::general_purpose::STANDARD.decode(&body.input_base64) {
+        Ok(v) => v,
+        Err(e) => return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("input_base64 is not valid base64: {e}")})),
+    };
+    if wasm.len() > compute.limits.max_wasm_bytes {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("wasm module too large ({} bytes, limit {})", wasm.len(), compute.limits.max_wasm_bytes)}));
+    }
+    if input.len() > compute.limits.max_input_bytes {
+        return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("input too large ({} bytes, limit {})", input.len(), compute.limits.max_input_bytes)}));
+    }
+    match queue.request(&body.from_device_name, body.from_device_id.clone(), &body.task_name, wasm, input) {
+        Ok(id) => rs_json_response(
+            StatusCode::OK,
+            &serde_json::json!({
+                "ok": true,
+                "approval_id": id,
+                "status": "pending_approval",
+                "disclosure_ja": "タスクはまだ実行されていません。受信側デバイスの利用者が明示的に承認するまで待機します。",
+                "disclosure_en": "The task has not executed yet. It will wait until a human operator on this device explicitly approves it.",
+            }),
+        ),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": e})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct WorldLabDispatchTokenOnlyRequest {
+    token: String,
+}
+
+/// `GET /v1/world-lab/dispatch/pending?token=...`: 承認待ちの一覧
+/// (何が・どのデバイスから・いつ届いたか)。ペイロード本体は含まない。
+async fn world_lab_dispatch_pending(req: Request, wl: Arc<world_lab::WorldLab>, queue: Arc<world_lab::ApprovalQueue>) -> Response {
+    let token = open_runo_poem_compat::hyper_compat::query_params(&req).get("token").cloned().unwrap_or_default();
+    if !wl.token_matches(&token) {
+        return rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": "invalid pairing token"}));
+    }
+    rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "pending": queue.list()}))
+}
+
+/// `POST /v1/world-lab/dispatch/:id/approve`: 明示的承認。既存Phase 2の
+/// `ComputeEngine::run_isolated`(サブプロセス隔離、fuel/メモリ/タイム
+/// アウト上限)をそのまま呼び出す——承認ゲート専用の別サンドボックスは
+/// 作らない。`OPEN_ENGLISH_WORLD_LAB_COMPUTE_ENABLED=1`が未設定の場合、
+/// キューからは取り除いた上で(＝再承認はできない)実行不可のエラーを返す
+/// (承認自体は成立した=もう一度キューに戻って人間の判断を待つ必要は
+/// ない、という誠実な扱い)。
+async fn world_lab_dispatch_approve(req: Request, params: open_runo_poem_compat::hyper_compat::Params, wl: Arc<world_lab::WorldLab>, compute: Arc<world_lab::ComputeEngine>, queue: Arc<world_lab::ApprovalQueue>) -> Response {
+    use base64::Engine as _;
+    let id = params.get("id").unwrap_or("").to_string();
+    let body: WorldLabDispatchTokenOnlyRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    if !wl.token_matches(&body.token) {
+        return rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": "invalid pairing token"}));
+    }
+    let entry = match queue.take_for_approval(&id) {
+        Ok(e) => e,
+        Err(e) => return rs_json_response(StatusCode::NOT_FOUND, &serde_json::json!({"ok": false, "error": e})),
+    };
+    match compute.run_isolated(&entry.wasm, &entry.input).await {
+        Ok((output, fuel_consumed)) => rs_json_response(
+            StatusCode::OK,
+            &serde_json::json!({"ok": true, "approved": true, "output_base64": base64::engine::general_purpose::STANDARD.encode(output), "fuel_consumed": fuel_consumed}),
+        ),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "approved": true, "executed": false, "error": e})),
+    }
+}
+
+/// `POST /v1/world-lab/dispatch/:id/deny`: 明示的却下。実行せずキューから
+/// 破棄し、拒否された事実を正直に返す。
+async fn world_lab_dispatch_deny(req: Request, params: open_runo_poem_compat::hyper_compat::Params, wl: Arc<world_lab::WorldLab>, queue: Arc<world_lab::ApprovalQueue>) -> Response {
+    let id = params.get("id").unwrap_or("").to_string();
+    let body: WorldLabDispatchTokenOnlyRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    if !wl.token_matches(&body.token) {
+        return rs_json_response(StatusCode::FORBIDDEN, &serde_json::json!({"ok": false, "error": "invalid pairing token"}));
+    }
+    match queue.deny(&id) {
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "denied": true})),
+        Err(e) => rs_json_response(StatusCode::NOT_FOUND, &serde_json::json!({"ok": false, "error": e})),
+    }
+}
+
 async fn world_lab_task_run(req: Request, wl: Arc<world_lab::WorldLab>, compute: Arc<world_lab::ComputeEngine>) -> Response {
     use base64::Engine as _;
     // Base64は元データの約4/3倍に膨らむため、JSON側の余裕(フィールド名・
@@ -1462,6 +1590,19 @@ async fn main() {
         world_lab::run_worker_main();
     }
 
+    // world-lab Phase B TLS(2026-08-25追加): このプロセスは`rustls`(0.23)
+    // を複数の依存経路(PostgreSQLミラーTLS・`reqwest`のrustls-tls・
+    // world-lab TLS)から使うため、ビルド全体としてはring/aws-lc-ring両方の
+    // crypto backend featureがどこかで有効になり得て、rustls側が
+    // どちらを既定にすべきか自動判定できずpanicする(実際にこの変更を
+    // 実機で起動して発見した実バグ——型チェックだけでは検出できなかった
+    // 起動時crash)。プロセス起動の最初期に明示的に`ring`を既定provider
+    // として一度だけinstallすることで解消する(このリポジトリの既存
+    // rustls依存が`features = ["ring", ...]`である方針と一致)。
+    if tokio_rustls::rustls::crypto::CryptoProvider::get_default().is_none() {
+        let _ = tokio_rustls::rustls::crypto::ring::default_provider().install_default();
+    }
+
     let root = repo_root();
     let db_path = db::db_path(&root);
     let db = Arc::new(Db::open(db_path).expect("failed to open local SQLite DB (data/open-english.sqlite3)"));
@@ -1674,12 +1815,65 @@ async fn main() {
         // 構成を選べる(`world_lab.rs`モジュールdoc「Phase 2」節参照)。
         let compute_engine = Arc::new(world_lab::ComputeEngine::from_env());
         let wl = Arc::clone(&world_lab);
+        let ce = Arc::clone(&compute_engine);
         app = app.at(
             "/v1/world-lab/task/run",
             post(handler_fn(move |req, _p| {
                 let wl = Arc::clone(&wl);
-                let compute_engine = Arc::clone(&compute_engine);
+                let compute_engine = Arc::clone(&ce);
                 async move { world_lab_task_run(req, wl, compute_engine).await }
+            })),
+        );
+
+        // Phase B(2026-08-25新設): 受信側デバイスでの明示的承認ゲート
+        // (`world_lab.rs`の`ApprovalQueue`doc参照)。ペアリングだけ・
+        // Phase 2実行だけ有効化してもこのキュー自体は動く(承認だけ
+        // 積んで、実行はcompute_engineが無効なら`run_isolated`が
+        // 「無効です」エラーを返すだけ——キューへ積むこと自体は
+        // Phase 2の有効/無効に依存しない設計)。
+        let approval_queue = Arc::new(world_lab::ApprovalQueue::new());
+        let wl = Arc::clone(&world_lab);
+        let ce = Arc::clone(&compute_engine);
+        let aq = Arc::clone(&approval_queue);
+        app = app.at(
+            "/v1/world-lab/dispatch/request",
+            post(handler_fn(move |req, _p| {
+                let wl = Arc::clone(&wl);
+                let ce = Arc::clone(&ce);
+                let aq = Arc::clone(&aq);
+                async move { world_lab_dispatch_request(req, wl, ce, aq).await }
+            })),
+        );
+        let wl = Arc::clone(&world_lab);
+        let aq = Arc::clone(&approval_queue);
+        app = app.at(
+            "/v1/world-lab/dispatch/pending",
+            get(handler_fn(move |req, _p| {
+                let wl = Arc::clone(&wl);
+                let aq = Arc::clone(&aq);
+                async move { world_lab_dispatch_pending(req, wl, aq).await }
+            })),
+        );
+        let wl = Arc::clone(&world_lab);
+        let ce = Arc::clone(&compute_engine);
+        let aq = Arc::clone(&approval_queue);
+        app = app.at(
+            "/v1/world-lab/dispatch/:id/approve",
+            post(handler_fn(move |req, p| {
+                let wl = Arc::clone(&wl);
+                let ce = Arc::clone(&ce);
+                let aq = Arc::clone(&aq);
+                async move { world_lab_dispatch_approve(req, p, wl, ce, aq).await }
+            })),
+        );
+        let wl = Arc::clone(&world_lab);
+        let aq = Arc::clone(&approval_queue);
+        app = app.at(
+            "/v1/world-lab/dispatch/:id/deny",
+            post(handler_fn(move |req, p| {
+                let wl = Arc::clone(&wl);
+                let aq = Arc::clone(&aq);
+                async move { world_lab_dispatch_deny(req, p, wl, aq).await }
             })),
         );
     }
@@ -1733,10 +1927,92 @@ async fn main() {
     println!("open-english static server listening on http://{addr}/");
     println!("serving files from {}", root.display());
 
-    let (bound_addr, handle) = Server::new(TcpListener::bind(addr))
-        .run(app)
-        .await
-        .expect("failed to bind local server (is the port already in use?)");
+    // world-lab Phase B TLS(2026-08-25追加、`world_lab.rs`のPhase B節・
+    // CLAUDE.md 2026-08-25設計エントリ(c)への対応)。
+    //
+    // **正直な開示**: 平文HTTPリスナー(上記`addr`)は今回**廃止していない**
+    // ——既存の全エンドポイント(会話履歴・aruaru-llm連携・エージェント
+    // 機能等)を今回のパスでTLS必須に切り替えるのはスコープが大きすぎる
+    // ため見送った。ここで追加したのは、world-lab関連の平文HTTP問題
+    // (CLAUDE.md「現行のPhase 1ペアリングAPIが平文HTTPである点も…
+    // 要修正」という指摘)に対して、**同じルート表を追加のTLSポートでも
+    // 提供できるようにする**という最小限の対応。運用者は
+    // `OPEN_ENGLISH_TLS_ENABLED=1`でこのポートを有効化し、world-lab関連
+    // エンドポイントにはそちらだけを使うことで、平文ポートを別途
+    // ファイアウォールで塞ぐ、という運用ができる(コード側で平文ポートの
+    // world-lab系エンドポイントだけを無効化する、というような強制はして
+    // いない——両ポートで同一ルート表が有効なままなので、平文ポートを
+    // 塞ぐかどうかは運用者の選択に委ねられる)。
+    //
+    // **本番証明書 vs 開発用自己署名証明書**: `OPEN_ENGLISH_TLS_CERT_PATH`/
+    // `OPEN_ENGLISH_TLS_KEY_PATH`が指す実在のPEMファイルがあればそれを
+    // 使う(本番運用ではLet's Encrypt等の正式な証明書を想定)。無ければ
+    // `rcgen`でその場限りの自己署名証明書を生成する
+    // (**開発/ローカル検証専用**、ブラウザ/クライアント側で証明書エラーが
+    // 出るのは想定通り——`curl -k`/`--insecure`や自己署名証明書を信頼
+    // 済みにしたクライアントでの検証が前提)。**トークン由来の独自
+    // pinningスキームは実装していない**——CLAUDE.md
+    // (f)(ii)が「暗号設計として一度も第三者レビューを受けていない自己流の
+    // 案」と正直に指摘した設計は、今回意図的に実装を見送った。TLS
+    // ハンドシェイクそのものは`rustls`(`open_runo_poem_compat::
+    // hyper_compat::tls`、RPoem/RS-SmartTCP既存パターンの再利用)に
+    // 完全に委譲しており、本サーバー独自の暗号コードは一切無い。
+    let router = app.build();
+    let tls_enabled = std::env::var("OPEN_ENGLISH_TLS_ENABLED").map(|v| v == "1").unwrap_or(false);
+    if tls_enabled {
+        match load_or_generate_tls_config() {
+            Ok(tls_config) => {
+                let tls_addr = std::env::var("OPEN_ENGLISH_TLS_BIND").ok().and_then(|s| s.parse::<SocketAddr>().ok()).unwrap_or_else(|| {
+                    let mut a = addr;
+                    a.set_port(addr.port() + 1);
+                    a
+                });
+                let tls_router = router.clone();
+                match open_runo_poem_compat::hyper_compat::tls::serve_tls(tls_router, tls_addr, tls_config).await {
+                    Ok((bound, tls_handle)) => {
+                        println!("open-english TLS listener on https://{bound}/ (world-lab dispatch/pairing should prefer this port once a 2nd device is available for Phase C)");
+                        tokio::spawn(async move {
+                            let _ = tls_handle.await;
+                        });
+                    }
+                    Err(e) => eprintln!("open-english: failed to start TLS listener on {tls_addr}: {e} (continuing with plain HTTP only)"),
+                }
+            }
+            Err(e) => eprintln!("open-english: OPEN_ENGLISH_TLS_ENABLED=1 but TLS config could not be loaded/generated: {e} (continuing with plain HTTP only)"),
+        }
+    } else {
+        println!("open-english TLS listener: disabled (set OPEN_ENGLISH_TLS_ENABLED=1 to also serve over TLS on a second port; see CLAUDE.md Phase B entry for the honest scope of this — dev/self-signed cert unless OPEN_ENGLISH_TLS_CERT_PATH/KEY_PATH point at real ones)");
+    }
+
+    let (bound_addr, handle) = open_runo_poem_compat::hyper_compat::serve(router, addr).await.expect("failed to bind local server (is the port already in use?)");
     println!("bound to http://{bound_addr}/");
     handle.await.expect("server task panicked");
+}
+
+/// world-lab Phase B TLS用の`rustls::ServerConfig`を用意する。実在の
+/// `OPEN_ENGLISH_TLS_CERT_PATH`/`OPEN_ENGLISH_TLS_KEY_PATH`(PEM)があれば
+/// それをロード(本番想定)、無ければ`rcgen`でその場限りの自己署名
+/// 証明書(`localhost`/`127.0.0.1`向け、プロセスを再起動するたびに
+/// 再生成される——ディスクに保存しない)を生成する
+/// (**開発/ローカル検証専用**、正式なCAチェーンではないため本番配布
+/// には使わないこと)。
+fn load_or_generate_tls_config() -> Result<tokio_rustls::rustls::ServerConfig, String> {
+    let cert_path = std::env::var("OPEN_ENGLISH_TLS_CERT_PATH").ok();
+    let key_path = std::env::var("OPEN_ENGLISH_TLS_KEY_PATH").ok();
+    if let (Some(cert_path), Some(key_path)) = (cert_path, key_path) {
+        if Path::new(&cert_path).exists() && Path::new(&key_path).exists() {
+            println!("open-english TLS: loading certificate from {cert_path} (OPEN_ENGLISH_TLS_CERT_PATH/KEY_PATH set)");
+            return open_runo_poem_compat::hyper_compat::tls::load_tls_config(Path::new(&cert_path), Path::new(&key_path)).map_err(|e| e.to_string());
+        }
+        return Err(format!("OPEN_ENGLISH_TLS_CERT_PATH/KEY_PATH set but file(s) not found ({cert_path}, {key_path})"));
+    }
+
+    println!("open-english TLS: OPEN_ENGLISH_TLS_CERT_PATH/KEY_PATH not set — generating a throwaway self-signed dev certificate (rcgen). This is NOT suitable for production; browsers/clients will reject it unless explicitly told to trust it.");
+    let cert = rcgen::generate_simple_self_signed(vec!["localhost".to_string(), "127.0.0.1".to_string()]).map_err(|e| format!("failed to generate self-signed dev certificate: {e}"))?;
+    let cert_der = cert.cert.der().clone();
+    let key_der = tokio_rustls::rustls::pki_types::PrivatePkcs8KeyDer::from(cert.key_pair.serialize_der());
+    tokio_rustls::rustls::ServerConfig::builder()
+        .with_no_client_auth()
+        .with_single_cert(vec![cert_der], tokio_rustls::rustls::pki_types::PrivateKeyDer::Pkcs8(key_der))
+        .map_err(|e| format!("failed to build rustls ServerConfig from generated dev certificate: {e}"))
 }

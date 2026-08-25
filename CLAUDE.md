@@ -202,6 +202,170 @@ AIコーディング支援パネル)にとどめている。
 
 ## HANDOFF
 
+- **2026-08-25(続き13) world-lab複数デバイス計算配布 Phase B実装
+  (受信側の明示的承認ゲート + TLS)、実機HTTP/TLS検証済み。Phase C
+  (実クロスデバイス配布)は依然未着手・未検証(正直な開示)**:
+  上記「(続き12)」エントリの「次にすべきこと(2)」——Phase Bへの着手——
+  への対応。設計どおり**Phase C(実際のタスク送信・2台以上の物理デバイス
+  間E2E)には一切着手していない**。今回実装した2点はいずれも
+  「単体で実機検証する」というPhase Bのスコープに厳密に沿っている。
+
+  1. **受信側の明示的承認ゲート(`server/src/world_lab.rs`の
+     `ApprovalQueue`、新規)**: データモデルは`PendingDispatch`
+     (id・送信元デバイス名/ID・タスク名・受信時刻・WASM本体・入力
+     バイト列)+一覧表示用の`PendingDispatchSummary`(ペイロード本体を
+     含まない)。API: `request()`(キューへ積むだけ、実行しない)・
+     `list()`(一覧、実行しない)・`take_for_approval()`(キューから
+     除去して呼び出し元へ渡す——実行そのものはこの関数の外、既存
+     `ComputeEngine::run_isolated`〈Phase 2のサブプロセス隔離WASM
+     サンドボックス〉が担う。**2つ目のサンドボックスは作っていない**、
+     既存コードをそのまま再利用)・`deny()`(実行せず破棄、拒否の事実を
+     正直に返す)。既定は常に「ask」——自動承認の設定はコード上どこにも
+     存在しない(Phase Dのスコープであり、CLAUDE.md上記(e)節が要求する
+     「その段階でもオプトイン」方針を先取りして守っている)。
+     HTTPエンドポイント(`server/src/main.rs`、`/v1/world-lab/dispatch/*`、
+     ペアリングトークン必須): `POST .../request`(キュー投入、
+     `approval_id`を返す)・`GET .../pending?token=...`(一覧)・
+     `POST .../:id/approve`(実行、既存Phase 2サンドボックス経由)・
+     `POST .../:id/deny`(却下)。
+     **単体テスト7件**(`world_lab::approval_queue_tests`、
+     `cargo test`で実行・全green): キュー投入時に実行されず一覧に
+     現れること、承認するとキューから消え本物のペイロードが渡される
+     こと、承認後の実際のWASM実行(`run_wasm_blocking`を直接呼び、
+     "hello"の各バイト+1で"ifmmp"になることを検証——モック無し)、
+     却下後は実行できずキューが空になること、二重承認・二重却下・
+     不明IDがすべて正直なエラーになること、キュー上限(50件)超過の
+     拒否。
+     **実機HTTP検証(型チェックのみで完了と報告しない、という
+     このエコシステムの方針どおり、実際にサーバーを起動しcurl/
+     PowerShellの`Invoke-RestMethod`で実HTTP往復を確認)**:
+     (a) `POST /v1/world-lab/dispatch/request`にWAT形式の自己完結WASM
+     (バイト+1)を送信→**実行されず**`approval_id`が返ること、
+     (b) `GET /v1/world-lab/dispatch/pending`にそのエントリ(デバイス名
+     `test-peer-device`・タスク名・受信時刻・サイズ)が実際に現れること、
+     (c) `POST .../:id/deny`後は一覧が空になり、同じIDへの再度の
+     denyが`404`+正直なエラーメッセージを返すこと、(d) 新規リクエストを
+     `POST .../:id/approve`で承認すると、既存Phase 2の`run_isolated`
+     (サブプロセス隔離)が実際に実行され、"hello"→"ifmmp"という
+     正しい変換結果を含む`200`が返ること、同じIDへの2回目のapproveが
+     `404`(二重実行を防いでいることの実証)、(e) 不正なペアリング
+     トークンでの`request`が`403`になりキューにすら載らないこと。
+     いずれもこのマシン1台で完結する検証であり、**2台目の物理デバイスは
+     使用していない**(送信元は同一マシンのcurl/PowerShell)——設計書の
+     指示どおり、この点は次のPhase Cへ持ち越す。
+
+  2. **TLS(`RPoem/crates/open-runo-router/src/hyper_compat.rs`の
+     既存`tls`モジュール〈2026-07-12実装済み、rustls・PEM証明書ロード・
+     `serve_tls`〉を再利用、独自の暗号/pinning実装は一切追加していない)**:
+     `RPoem/crates/open-runo-poem-compat`に`tls` feature
+     (`open-runo-router/tls`への単純な転送のみ)を新設し、
+     `open-english/server`の依存に`features = ["tls"]`を追加。
+     `main.rs`起動シーケンスに、既存の平文HTTPポートに加えて
+     `OPEN_ENGLISH_TLS_ENABLED=1`でオプトインする第2のTLSポート
+     (既定は平文ポート+1、`OPEN_ENGLISH_TLS_BIND`で上書き可)を追加。
+     証明書は`OPEN_ENGLISH_TLS_CERT_PATH`/`_KEY_PATH`(実在すれば
+     ロード、本番の正式証明書を想定)、無ければ`rcgen`でその場限りの
+     自己署名証明書を生成(**開発/ローカル検証専用**、ディスクに保存
+     しない)。ルート表(`Route`)は平文/TLS両ポートで**完全に同一**
+     ——`hyper_compat::Router`/`Route`(内部)へ`#[derive(Clone)]`を
+     追加し(Handlerが`Arc`のため複製は安価)、`app.build()`を1回だけ
+     呼んでcloneを両リスナーへ渡す設計にした(ルート表を2回組み立てる
+     二重管理を避けるため)。
+     **実機で発見・修正した実バグ**: `OPEN_ENGLISH_TLS_ENABLED=1`で
+     実際に起動したところ、起動直後に
+     `Could not automatically determine the process-level
+     CryptoProvider from Rustls crate features`でプロセスがpanicして
+     即終了した(型チェック・`cargo check`では検出できない実行時
+     クラッシュ)。原因は、このバイナリが`rustls`を複数の経路
+     (PostgreSQLミラーTLS・`reqwest`のrustls-tls・今回のworld-lab TLS)
+     から使っており、依存関係全体でring/aws-lc-rs両方のバックエンド
+     featureが有効になり得るため、rustls側が既定providerを自動選択
+     できない状態だったこと。`main()`冒頭で明示的に
+     `rustls::crypto::ring::default_provider().install_default()`を
+     一度だけ呼ぶことで解消(このリポジトリの既存rustls依存が
+     `features = ["ring", ...]`という方針と一致させた)。
+     **実機TLS検証(実ハンドシェイク、curl使用)**: `OPEN_ENGLISH_
+     TLS_ENABLED=1`でサーバーを起動し、(a) `curl -k
+     https://127.0.0.1:<tls_port>/v1/world-lab/status`が実際に`200`+
+     正しいJSON本文を返すこと(`ssl_verify_result:0`、実TLS
+     ハンドシェイク成立の確認)、(b) `curl`(オプション`-k`無し)による
+     同じURLへのアクセスが証明書検証エラー(exit 60)で失敗すること
+     (自己署名証明書が正直に「信頼されない」ものとして扱われている
+     ことの確認——なりすまし検証にもなっていない偽の安心感を出して
+     いないことの実証)、(c) 平文HTTPクライアントでTLSポートへ接続
+     すると失敗すること、(d) 既存の平文HTTPポートは無変更のまま引き続き
+     `200`を返すこと(TLS追加が既存機能を壊していないことの確認)、を
+     すべて確認した。
+
+  3. **正直な開示・Phase Cへ進む前に残っている未検証/未実装事項
+     (ユーザー指示どおり、過大な準備完了を主張しない)**:
+     - **2台以上の実物理デバイス間でのクロスデバイス検証は今回
+       一切行っていない**——今回の検証はすべて単一マシン上の
+       curl/PowerShellによるものであり、実際に別のPC/スマホ/タブレットが
+       この承認フローへリクエストを送るところまでは未実施。これは
+       設計書がPhase Bの範囲外(Phase Cのスコープ)と明記している通り。
+     - **実際にタスクを別デバイスへ送信する送信側コードはこの
+       リポジトリのどこにも実装していない**(Phase Cで実装すべきもの)。
+       今回追加した`/v1/world-lab/dispatch/request`は「受信側が
+       リクエストを受け取ったら何をするか」だけを実装しており、
+       送信側(別デバイスへ実際にHTTPを打つクライアント)は今回
+       一切書いていない——ユーザーの手元でのテストもcurl/
+       PowerShellという「送信側の代役」を使っただけで、これを本物の
+       送信側実装だと主張しない。
+     - **既存の平文HTTPポート(4601相当)は今回廃止していない**。
+       TLSは「追加のオプトインポート」として実装したため、運用者が
+       平文ポートを別途ファイアウォール等で塞がない限り、world-lab
+       関連エンドポイントには引き続き平文でも到達できてしまう
+       ("両ポートに同一ルート表"という設計上、コード側で平文ポートの
+       world-lab系エンドポイントだけを無効化する強制は入れていない)。
+     - **CLAUDE.md (f)(ii)が指摘した「トークン由来の独自TLS pinning
+       スキーム」は実装していない**(意図的)——今回のTLSは素の
+       rustls証明書検証(自己署名時はクライアント側で明示的に信頼する
+       か`-k`で無効化するかの二択)のみで、独自の鍵導出・pinningロジックは
+       一切追加していない。本番でWAN越しに使う場合、正式なCA発行証明書
+       (`OPEN_ENGLISH_TLS_CERT_PATH`/`_KEY_PATH`)を用意することを
+       前提とした設計であり、「ペアリングトークンから独自に鍵を導出する
+       スキーム」の実装・レビューが必要という課題は未解決のまま
+       (CLAUDE.md記載通り、これは暗号の専門家またはnoise
+       protocol/mTLS等の既存の検証済み方式で置き換えるべき領域)。
+     - **同時実行数上限・キューイングの相互作用は未検証**——
+       `ApprovalQueue`自体はキュー上限(50件)を持つが、大量の
+       `dispatch/request`を送りつけられた場合の挙動(既存Phase 2の
+       `ComputeEngine`の同時実行数制限との相互作用)は、承認ゲートを
+       通す分の追加テストは今回書いていない。
+     - `RPoem`側で`cargo test -p open-runo-router --features tls`を
+       実行した際、`hyper_compat::tls::tests`の既存2テスト
+       (`plain_http_client_cannot_talk_to_a_tls_listener`・
+       `health_endpoint_serves_over_real_tls`)が同じ
+       `CryptoProvider`未設定エラーで失敗することを確認した——これは
+       RPoemワークスペース全体のfeature統合に起因する既存の
+       テスト環境問題であり、今回の変更(`Route`/`Router`への
+       `#[derive(Clone)]`追加のみ、暗号関連コードは無変更)が原因では
+       ないと考えられるが、**RPoem側でこの2テストを未修正のまま
+       残している**点は正直に記録する(open-english側では上記の
+       `install_default()`呼び出しにより実機動作を確認済みだが、
+       RPoem単体のテストスイートはこの2件が赤いまま)。次回、RPoem側の
+       テストにも同様の`install_default()`呼び出しを追加検討すること。
+
+  4. **検証コマンド一覧**: `cargo check --bin open-english-server`
+     (成功)・`cargo test --bin open-english-server`(41 passed、既存の
+     `repro_in_process_fuel_exhaustion_crash`1件のみ既存どおり
+     `#[ignore]`)・実機TLS/承認ゲートの手動HTTP検証(上記1・2節)。
+     `node --check`は今回`app.js`等フロントエンドを一切変更していない
+     ため対象なし。**未コミットだった多言語対応関連の他ファイル・
+     `fudousan_*.log`/`koumuten_*.log`(セッション開始時点で既に
+     リポジトリ直下に存在していた無関係なログファイル)には一切触れて
+     いない**。
+  - 次にすべきこと: (1) Phase C——実際のタスク送信経路の実装+
+    2台以上の実物理デバイス間でのE2E検証(このリポジトリ最大の
+    残課題)、(2) RPoem側`hyper_compat::tls::tests`の2件へ
+    `install_default()`相当の修正を入れて赤を解消、(3) 平文HTTPポートの
+    world-lab関連エンドポイントを明示的に無効化する設定
+    (例: `OPEN_ENGLISH_WORLD_LAB_REQUIRE_TLS=1`)を検討、(4) トークン由来
+    TLS pinningではなく正式なmTLS/noise protocol等への置き換え検討、
+    (5) 承認ゲートの同時実行数・キューイングとPhase 2
+    `ComputeEngine`側の制限との相互作用のテスト追加。
+
 - **2026-08-25(続き12) ハードウェア検出→推奨LLMサイズ機能の実機検証
   (安全な部分)+ world-lab複数デバイス計算配布(高リスク部分)の
   セキュリティ設計ドキュメント(ユーザー指示「open-english・
