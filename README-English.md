@@ -709,6 +709,26 @@ students from complete beginner to advanced.
 - **Level selection**: the beginner-to-advanced level picker exists in
   the UI, but actual level enforcement is limited to a short prompt
   instruction — GPT-2 is not guaranteed to honor it.
+- **Expanded language support (2026-08-25, honest disclosure — important)**:
+  `#learn-target` and `#reply-lang` now offer German, French, Spanish,
+  Italian, Russian, Arabic, Persian (Farsi), and Hebrew. These options
+  are wired up end-to-end, but **live testing showed aruaru-llm
+  (English-centric small GPT-2) completely ignores the language
+  instruction and always replies in plain English** — repeated tests
+  for Russian, Arabic, Persian, and Hebrew produced zero characters of
+  the target script. We reused the same "structural guarantee" pattern
+  as the existing Japanese `ensureHybridReply`: for Russian/Arabic/
+  Persian/Hebrew (detectable via `\p{Script=Cyrillic}` /
+  `\p{Script=Arabic}` / `\p{Script=Hebrew}`), `app.js`'s
+  `ensureScriptGuaranteedReply` appends an honest bilingual note when
+  no target-script character was generated. German/French/Spanish/
+  Italian use the same Latin alphabet as English, so failed generation
+  can't be mechanically detected — the UI shows a static caveat next
+  to the language picker instead. **Bottom line: these 8 languages are
+  selectable but not practically usable for conversation practice yet
+  — we are not claiming this is a finished feature.** Arabic, Persian,
+  and Hebrew are RTL scripts, so the chat bubble for those selections
+  gets `dir="rtl"` (the rest of the app stays LTR).
 - **Voice**: real Web Speech API (SpeechSynthesis for output,
   SpeechRecognition for mic input) is wired up, with per-character
   pitch/rate tuning (maid vs. Tora-san helper) and a

@@ -202,6 +202,95 @@ AIコーディング支援パネル)にとどめている。
 
 ## HANDOFF
 
+- **2026-08-25(続き11) コア会話トレーナーの対応言語を独・仏・西・伊・露・
+  アラビア語・ペルシャ語・ヘブライ語へ拡張(ユーザー指示「コア会話
+  トレーナーの`#learn-target`・`#reply-lang`にドイツ語・欧州主要言語・
+  ロシア語・アラビア語・ペルシャ語・ヘブライ語を追加し、実機で品質を
+  検証して正直に開示せよ」への対応。`world-language-exams.json`等の
+  別サブシステム〈世界の言語の擬似模擬試験〉とは別のスコープ、混同
+  していないことを確認した上で対応)**:
+  1. **UI(`index.html`)**: `#learn-target`へgerman/french/spanish/
+     italian/russian/arabic/persian/hebrewの8択、`#reply-lang`へ
+     de/fr/es/it/ru/ar/fa/heの8択を追加。`#learn-target`直下に、
+     実機検証結果(後述)を要約した正直な注記
+     (`.setup-note`、日英併記)を常設した。
+  2. **`app.js`のプロンプト構築ロジック拡張**: `langInstructions`
+     (de/fr/es/it/ru/ar/fa/he、各"Reply only in <言語名>."相当)・
+     `trainerRoleByTarget`(german/french/spanish/italian/russian/
+     arabic/persian/hebrew、各言語のトレーナー役割文)を追加。
+  3. **RTL対応**: アラビア語・ペルシャ語・ヘブライ語はRTL(右書き)
+     スクリプトのため、`RTL_LANG_CODES`(reply-lang用)・
+     `RTL_LEARN_TARGETS`(learn-target用)を新設し、`appendMessage()`が
+     該当時に**そのメッセージ吹き出し単体にのみ**`dir="rtl"`を設定する
+     設計にした(トップバー・設定パネル等アプリ全体のLTRレイアウトは
+     変更しない)。あわせて本文自体に実際にアラビア文字/ヘブライ文字が
+     含まれる場合(`isRtlText`)もOR条件でRTL化する——設定と無関係に
+     モデルが偶然RTL文字を生成した場合にも対応するため。
+  4. **【実機検証で判明した最重要事実】aruaru-llm(英語中心の小型
+     GPT-2)は言語指示を完全に無視し、常に英語のみで応答した**:
+     実際に`aruaru-llm.exe`(distilgpt2、ARUARU_LLM_GPT2_DIR経由で
+     ローカル既存の重みを使用)+`open-english-server.exe`を起動し、
+     `curl`で5言語(German/Russian/Arabic/Persian/Hebrew)それぞれに
+     "You are a friendly \<言語\> conversation trainer ... Reply only
+     in \<言語\>.\nStudent: Hello, how are you?\nTrainer:"という
+     プロンプトを送った結果、**5件とも対象言語の文字が1文字も含まれない
+     英語のみの応答**が返った(例: Arabic指定時 "I am very happy to
+     meet with your students and their families! Thank you for
+     visiting my office today!! Thanks again from the staff of our
+     school's Islamic School (IS)...")。さらに実ブラウザ(Claude
+     Browser)でも`learn-target=german`/`reply-lang=de`・
+     `learn-target=arabic`/`reply-lang=ar`の2パターンを実際にチャット
+     送信して同じ結果(英語のみの応答)を確認した——`curl`だけでなく
+     実際のUI操作でも再現することを実証済み。日本語向けの既存の
+     `ensureHybridReply`/`containsJapanese`が対処してきたのと**全く
+     同根の問題**(GPT-2は非英語プロンプト指示に追従しない)である
+     ことが今回のテストで明確になった。
+  5. **実装した対策(`ensureScriptGuaranteedReply`)**: 非ラテン文字
+     言語(ru/ar/fa/he)は`containsCyrillic`/`containsArabicScript`/
+     `containsHebrewScript`(`\p{Script=...}`のUnicodeプロパティ
+     エスケープ、`containsJapanese`と同方式)で機械的に「生成失敗」を
+     検出できるため、対象スクリプトが1文字も無ければ定型の英日併記
+     開示ノート(「このAIは実際には\<言語\>を生成できず英語で応答して
+     しまいました」)を自動追記する構造保証を追加した。ドイツ語・
+     フランス語・スペイン語・イタリア語はラテン文字圏で英語との
+     機械判定ができないため、この自動保証は実装せず、UI側の静的注記
+     (上記1番)のみで正直に開示する方針にした。実ブラウザで
+     `reply-lang=ar`のケースにて、この開示ノートが実際に応答末尾へ
+     追記され、かつメッセージ吹き出しに`dir="rtl"`が正しく設定される
+     ことを確認済み。
+  6. **正直な評価・結論**: 8言語ともUIの選択肢としては配線済みだが、
+     **実用的な会話練習の役には立たない**(常に英語で返ってくる、
+     または「英語で返ってしまいました」という開示ノート付きの英語)。
+     「多言語対応が完成した」とは主張しない——今回のスコープは
+     「配線+正直な検証+正直な開示」までであり、実際にこれらの言語で
+     使えるようにするには、aruaru-llm側でより多言語対応の強いモデル
+     (例: 多言語コーパスで事前学習された小型モデル)への切替、または
+     `world-language-*`サブシステムのような固定文プール方式への
+     切替が必要(いずれも今回は着手していない、別スコープ)。
+  7. **検証**: `node --check app.js`成功(他のテストコマンドは
+     `package.json`が存在せずNode側には無し、Rust側`server/`は
+     今回コード変更していないため`cargo build --release`は既存の
+     リグレッション確認のみ実施し成功を確認)。上記4番・5番の実機
+     検証後、`aruaru-llm.exe`・`open-english-server.exe`はいずれも
+     終了済み。
+  8. **今回のスコープ外(正直な開示)**: (a) `README-German.md`・
+     `README-French.md`・`README-Spanish.md`・`README-Italian.md`・
+     `README-Russian.md`・`README-Arabic.md`・`README-Persian.md`・
+     `README-Hebrew.md`(既存の言語別サマリ版README)は、元々コア
+     会話トレーナーの対応言語一覧を詳述する構成になっていなかった
+     ため、今回は更新していない——次回、これらのファイルにも今回の
+     検証結果を反映するか検討すること。(b) aruaru-llm側のモデル
+     差し替え・多言語対応強化は未着手(上記6番)。(c) フランス語・
+     スペイン語・イタリア語individual実機検証は、ドイツ語・ロシア語・
+     アラビア語・ペルシャ語・ヘブライ語ほど手厚くは行っていない
+     (`langInstructions`/`trainerRoleByTarget`のコードパターンは
+     完全に同一のため、同じ結果〈英語のみで応答〉になると推定される
+     が、個別の実機確認はしていない——推定であることを明記する)。
+  - 次にすべきこと: (1) 上記8番(a)の言語別READMEへの反映、
+    (2) aruaru-llm側で多言語対応の強いモデルへの切替、または
+    world-language方式(固定文プール)への切替を検討、(3) フランス語・
+    スペイン語・イタリア語の個別実機確認(現状は推定のみ)。
+
 - **2026-08-25(続き10) open-cg-cadとの「ハイブリッド相互機能」仕様を
   インストーラーへ反映(ユーザー指示「open-englishかopen-easy-webから
   open-cg-cadをインストールすると、open-englishとopen-cg-cadは
