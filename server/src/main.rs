@@ -428,6 +428,84 @@ async fn db_info(db: Arc<Db>) -> Response {
     )
 }
 
+/// `GET /v1/fs/list-dir`(2026-08-25新設、ユーザー指示「(rsync/DB移動先
+/// 入力欄が)一つのファームだけではわかりにくいので、エクスプローラーの
+/// 様な物を立ち上げて」への対応)。
+///
+/// **設計方針(正直な開示)**: このアプリは利用者自身のPC上でローカル
+/// 起動するデスクトップ寄りのアプリであり(既定`127.0.0.1`限定
+/// バインド)、「バックアップ先フォルダを選ぶ」という操作はOS標準の
+/// 「フォルダを開く」ダイアログに相当する。ブラウザの`File System
+/// Access API`(`showDirectoryPicker()`)は実際のOSダイアログを開ける
+/// ものの、セキュリティ上の理由で**選択したフォルダの絶対パス文字列を
+/// JS側へ一切渡さない**設計になっており、rsyncのコマンドライン引数に
+/// 必要な実際のパス文字列を得られない——このため、`local_agent.rs`の
+/// ような読み書き許可リスト方式ではなく、**ディレクトリ名の一覧のみを
+/// 返す読み取り専用API**をサーバー側(ローカルファイルシステムへ
+/// フルアクセスできる立場)に新設した。ファイルの中身・隠しファイルの
+/// 詳細は返さず、フォルダ名の一覧+現在位置+親ディレクトリのみを返す
+/// (「保存先フォルダを選ぶ」という目的に必要な最小限の情報)。
+async fn fs_list_dir(req: Request) -> Response {
+    let path_param = query_param(&req, "path").filter(|s| !s.is_empty());
+    let requested = match path_param {
+        Some(p) => PathBuf::from(p),
+        None => {
+            // パス未指定 = ルート一覧を返す(Windowsはドライブレター、
+            // Unix系は"/")。
+            return rs_json_response(StatusCode::OK, &fs_list_roots());
+        }
+    };
+    let canonical = match std::fs::canonicalize(&requested) {
+        Ok(p) => p,
+        Err(e) => return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("cannot open '{}': {e}", requested.display())})),
+    };
+    let read_dir = match std::fs::read_dir(&canonical) {
+        Ok(rd) => rd,
+        Err(e) => return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"ok": false, "error": format!("cannot list '{}': {e}", canonical.display())})),
+    };
+    let mut entries: Vec<serde_json::Value> = Vec::new();
+    for entry in read_dir.flatten() {
+        let is_dir = entry.file_type().map(|t| t.is_dir()).unwrap_or(false);
+        if !is_dir {
+            continue; // フォルダ選択が目的のため、ファイルは一覧に含めない。
+        }
+        let name = entry.file_name().to_string_lossy().to_string();
+        entries.push(serde_json::json!({"name": name}));
+    }
+    entries.sort_by(|a, b| a["name"].as_str().unwrap_or("").to_lowercase().cmp(&b["name"].as_str().unwrap_or("").to_lowercase()));
+    // strip_windows_prefixで`\\?\C:\...`形式の冗長プレフィックスを除去
+    // (canonicalizeがWindowsで付与する、そのままだと利用者に分かり
+    // にくい表記)。
+    let display_path = strip_windows_verbatim_prefix(&canonical.display().to_string());
+    let parent = canonical.parent().map(|p| strip_windows_verbatim_prefix(&p.display().to_string()));
+    rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "path": display_path, "parent": parent, "entries": entries}))
+}
+
+/// Windowsの`canonicalize()`が付与する`\\?\`プレフィックス
+/// (Long Path対応の内部表記)を、利用者向け表示・rsync等への入力
+/// どちらでも扱いやすい通常のドライブレター表記へ戻す。
+fn strip_windows_verbatim_prefix(s: &str) -> String {
+    s.strip_prefix(r"\\?\").unwrap_or(s).to_string()
+}
+
+fn fs_list_roots() -> serde_json::Value {
+    #[cfg(target_os = "windows")]
+    {
+        let mut entries = Vec::new();
+        for letter in b'A'..=b'Z' {
+            let drive = format!("{}:\\", letter as char);
+            if std::fs::metadata(&drive).is_ok() {
+                entries.push(serde_json::json!({"name": format!("{}:", letter as char)}));
+            }
+        }
+        serde_json::json!({"ok": true, "path": "", "parent": serde_json::Value::Null, "entries": entries})
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        serde_json::json!({"ok": true, "path": "/", "parent": serde_json::Value::Null, "entries": [{"name": ""}]})
+    }
+}
+
 /// 保存先変更(ユーザー指示「DATA保存先は、既存の保存先でもそれ以外でも
 /// 選択可能にして」への対応、2026-08-18新設)。`new_path`にフルパスを
 /// 渡す(例: 増設したマイクロSDのマウント先配下)。
@@ -1372,6 +1450,7 @@ async fn main() {
                 async move { db_relocate(req, db).await }
             })),
         );
+        app = app.at("/v1/fs/list-dir", get(handler_fn(move |req, _p| async move { fs_list_dir(req).await })));
         let db_for_rsync = Arc::clone(&db);
         app = app.at(
             "/v1/db/rsync-backup",
