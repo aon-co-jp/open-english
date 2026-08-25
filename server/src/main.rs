@@ -237,6 +237,22 @@ async fn healthz() -> Response {
     rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true}))
 }
 
+/// デプロイ固有の設定を返すエンドポイント(2026-08-25新設)。
+///
+/// **背景**: `app.js`の`apiBaseEl`(aruaru-llm接続先)は、ローカルPC版の
+/// 「同一LAN内のPCへ接続する」ユースケース向けに`http://<hostname>:4600`を
+/// 既定値として自動補完する設計になっている。しかしVPS等のリバース
+/// プロキシ配下でaruaru-llmを動かす場合、この既定値(生ポート直叩き)は
+/// ファイアウォール/TLSの都合で到達できないことが多い。
+/// `OPEN_ENGLISH_ARUARU_LLM_BASE_URL`環境変数が設定されている場合のみ
+/// その値を返し、`app.js`側はこれを最優先の既定値として使う——未設定
+/// (ローカルPC版の既定)なら`null`を返し、従来通りhostname:4600の
+/// 自動補完に任せる。
+async fn app_config() -> Response {
+    let aruaru_llm_base_url = std::env::var("OPEN_ENGLISH_ARUARU_LLM_BASE_URL").ok();
+    rs_json_response(StatusCode::OK, &serde_json::json!({"aruaru_llm_base_url": aruaru_llm_base_url}))
+}
+
 /// 実行基盤(CPU)の情報を返すエンドポイント(2026-08-22新設)。
 ///
 /// `aruaru-llm`側に追加した実行基盤バッジ機能と同様に、このサーバーが
@@ -1317,6 +1333,26 @@ async fn updates_downgrade(req: Request) -> Response {
 /// (3〜6問)で、レベル表記もCEFR風の目安に過ぎない。この不均一さは
 /// レスポンスの`question_count`にそのまま出るため、UI側で正直に表示できる。
 async fn world_languages() -> Response {
+    // VPS等のメモリ・ディスク容量が限られたデプロイ向けの制限モード
+    // (2026-08-25新設、ユーザー指示「easy-web.tokyo/open-englishの世界中
+    // 言語対応はメモリとHDD容量が少ないのでここでは英語と日本語だけに
+    // 限定して」への対応)。`OPEN_ENGLISH_LIMITED_LANGUAGES=1`を設定した
+    // 場合のみ有効——ローカルPC版(既定)は従来通り130言語すべてを返す。
+    // 英語・日本語は元々この一覧(world-language-exams.json)には含まれて
+    // いない(`learn-target`側に別途組み込み済み)ため、この一覧を空にする
+    // だけで「英語・日本語のみ」の状態になる。
+    if std::env::var("OPEN_ENGLISH_LIMITED_LANGUAGES").map(|v| v == "1").unwrap_or(false) {
+        return rs_json_response(
+            StatusCode::OK,
+            &serde_json::json!({
+                "count": 0,
+                "limited": true,
+                "notice_en": "This server has limited memory and disk space, so only English and Japanese are supported here. To use all of the world's languages, please download and install open-english on your own device.",
+                "notice_ja": "このサーバーはメモリ・ディスク容量が限られているため、ここでは英語と日本語のみに対応しています。世界中の言語をご利用になりたい場合は、お手元の端末へopen-englishをダウンロード・インストールしてご利用ください。",
+                "languages": [],
+            }),
+        );
+    }
     let path = repo_root().join("world-language-exams.json");
     let raw = match std::fs::read_to_string(&path) {
         Ok(v) => v,
@@ -1646,6 +1682,7 @@ async fn main() {
         );
     }
     app = app.at("/healthz", get(handler_fn(move |_req, _p| async move { healthz().await })));
+    app = app.at("/v1/config", get(handler_fn(move |_req, _p| async move { app_config().await })));
     // `/health`はopen-web-server/open-easy-web側の「分身の術」テナント
     // 登録パターン(他リポジトリのCLAUDE.md HANDOFF多数参照)が汎用的に
     // 期待するヘルスチェック命名に形状を揃えるための別名(2026-08-24新設)。

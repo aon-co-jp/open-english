@@ -2,6 +2,28 @@
 
 他プロジェクトへ`open-english`の実装パターンを移植する際の要点をまとめる。
 
+## 0. Google検索APIキーは訪問者ごとにブラウザローカル保存(2026-08-25追記)
+
+複数の訪問者が同一の`aruaru-llm`インスタンスを共有するデプロイ
+(VPS等)へ「🔎 Setup Google Search」パネルを移植する場合、
+`POST /v1/settings/google-search`(プロセス全体で共有されるグローバル
+設定)へ書き込む旧方式は使わないこと——ある訪問者のキー設定が他の
+全訪問者の検索へ影響してしまう。代わりに、`app.js`の
+`loadOwnGoogleSearchCredentials()`パターン(localStorageにのみ保存し、
+`POST /v1/generate-with-search`のリクエストボディへ`google_search_
+api_key`/`google_search_cx`として同梱する)を踏襲すること
+(`aruaru-llm`側`main.rs`の対応する実装は`aruaru-llm/PORTING.md`参照)。
+
+## 0b. ブラウザ内AI実行(WASM+WebGPU)構想(2026-08-25追記、計画段階)
+
+`RPoem/CLAUDE.md`・`aruaru-llm/CLAUDE.md`の2026-08-25エントリに、
+「利用者の端末上でブラウザ内AI実行(GPU/CPU問わず)を行う」構想の
+技術検証結果・段階的導入計画を記載済み。現時点(2026-08-25)では
+未実装——open-englishの既存アーキテクチャ(利用者が`aruaru-llm`
+ネイティブ版を自分の端末で起動し`localhost:4600`へローカル接続)が
+唯一の実用的な手段のまま。移植先でこの機能を先行実装する場合は
+RPoem側のCLAUDE.mdを必ず先に確認すること。
+
 ## 1. aruaru-llm連携パターン(CORS+繰り返しペナルティ前提)
 
 `app.js`の`askTrainer`関数は、`aruaru-llm`の`POST /v1/generate`を
