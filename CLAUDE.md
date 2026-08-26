@@ -1,5 +1,52 @@
 ﻿# 設計思想＆開発方針＆開発環境ルール(open-english)
 
+> **📌 2026-08-27追記(続き8・実装): Google検索キーもクロスオリジンiframe
+> 保管庫(vault.html)対応へ統一——「全てセキュアモードで受け渡し」を
+> 実現**
+>
+> 直前のエントリ(続き7)で「ブラウザ直接呼び出し」化したGoogle検索
+> について、ユーザーから「Google検索キーの保管・復号は本体ページの
+> JS内で行われており、GitHubトークンのようにvault.html内で隔離
+> されていない。一貫性のためvault方式へ統一すべきでは」との指摘を
+> 受け、その通りと判断し実装した。
+>
+> **実装(`vault.html`)**: GitHubトークンと並列に「Google Search key」
+> セクションを新設。専用の暗号化ストレージキー
+> (`vault.googleSearchCredsEncrypted`)・専用のunlocked変数
+> (`unlockedGoogleSearchCreds`、メモリ上のみ)を持ち、`googleSearchDirect`
+> 関数(googleapis.comへの直接fetch)もvault.html内に複製。新しい
+> postMessageハンドラ`vault:googleSearch`(受信:
+> `{type, requestId, query, maxResults}`、送信:
+> `{type, requestId, ok, results}`または`{..., ok:false, error}`)を
+> 追加——**検索結果(タイトル・スニペット・URL)だけを親ページへ返し、
+> APIキー・cx自体は一切返さない**(検索結果は個人情報ではないため
+> 返して問題ないと判断、GitHub pushの「結果URLのみ返す」と同じ考え方)。
+>
+> **実装(`index.html`/`app.js`)**: Google検索キーの受け渡し方法
+> セレクタに「④クロスオリジンiframe保管庫」を追加(GitHub連携と同じ
+> 4択構成へ統一)。`googleSearchRequestVault(query, maxResults)`
+> (`freelanceRequestVaultGithubPush`と同じpostMessageパターン)を新設。
+> メッセージ送信ロジックに`useVaultSearchPath`分岐を追加し、vaultモード
+> 選択時は`googleSearchDirect`(本体ページから直接呼ぶ、APIキーが本体
+> ページのメモリを一瞬でも通る)ではなく`googleSearchRequestVault`
+> (vault内で完結、APIキーは本体ページに一切現れない)を使うよう変更。
+>
+> **実機検証(2026-08-27)**: `node --check`でapp.js・vault.htmlの
+> スクリプト部分の構文確認、ブラウザでvaultへのGoogle検索キー暗号化
+> 保存→本体ページからのpostMessage経由での検索リクエスト→vault内で
+> 実際に`googleapis.com`への到達(ダミーキーでHTTP 400が実際に返る
+> ことを確認、ネットワーク層まで動作している証拠)→エラーが正しく
+> postMessage経由で本体ページへ伝わることを確認。**本体ページ側の
+> `googleSearchUnlockedCreds`変数が常に`null`のままであること**を
+> 確認し、APIキーが本体ページのJSスコープへ一切渡っていないことを
+> 実証(GitHubトークンの時と同じ検証パターン)。
+>
+> これで①GitHubトークン・②Google検索キーの両方が、同じvault.html
+> という一つの保管庫で管理できるようになった(ユーザーの「全てセキュア
+> モードブラウザで受け渡しした方が良いのでは」という提案を実現)。
+>
+> ---
+>
 > **📌 2026-08-27追記(続き7・実装): Google検索もブラウザから直接呼び出す
 > 方式へ変更、aruaru-llmはキーを一切見なくなった**
 >
