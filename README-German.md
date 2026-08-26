@@ -1,6 +1,16 @@
 ﻿# open-english
 
-> 📌 **Neuestes Update (2026-08-26, Fortsetzung): GitHub/YouTube-Suche +
+> 📌 **Neuestes Update (2026-08-26, Fortsetzung 2, Aufgabe für nächstes
+> Mal notiert):** Es stimmt, dass die KI-Antwort Google-Suchergebnisse
+> widerspiegelt, wenn der Suchboost aktiv ist — die bestehende
+> Einschränkung bleibt jedoch bestehen: kleine GPT-2-Modelle
+> garantieren keine korrekte Nutzung dieses Suchkontexts. Es wurde
+> eine Aufgabe notiert, in der nächsten Sitzung zu untersuchen, ob
+> technische Verbesserungen über Rust + RPoem + open-directx/open-cuda
+> + aruaru-llm diese Einschränkung verringern können (noch nichts
+> untersucht oder umgesetzt). Details siehe CLAUDE.md.
+
+> 📌 **Update (2026-08-26, Fortsetzung): GitHub/YouTube-Suche +
 > Hinweis auf aufgebrauchtes Kontingent + API-Schlüssel-Links + Abfrage
 > zum lokalen Datenbank-Speichern.** Das Panel "🔀 AI Provider Priority"
 > hat jetzt Kontrollkästchen für Google-, GitHub- (Token optional) und

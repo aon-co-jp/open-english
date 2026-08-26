@@ -254,3 +254,14 @@ werden — beide müssen dieselbe `setPosition()`-Funktion durchlaufen
 der tatsächliche Serverstatus abgerufen werden (`GET`-Endpunkte), damit
 bereits per Umgebungsvariable konfigurierte Anbieter sichtbar sind.
 Details siehe japanische PORTING.md.
+
+## Genauigkeit der Suchkontext-Nutzung ≠ GPU-Geschwindigkeit (2026-08-26)
+
+Beim Portieren von `/v1/generate-with-search` nicht verwechseln: "Such-
+ergebnisse werden in den Prompt eingebettet" ist nicht dasselbe wie
+"das Modell nutzt diesen Kontext korrekt". GPT-2-Modelle (ohne
+Instruction-Tuning) bieten keine solche Garantie, und `open-directx`/
+`open-cuda` sind Geschwindigkeits-Infrastruktur für GPU-Inferenz, keine
+Genauigkeits-Infrastruktur. Untersuchung möglicher Abhilfen ist als
+Aufgabe in `aruaru-llm/CLAUDE.md` (2026-08-26) vermerkt, aber noch
+nicht begonnen.

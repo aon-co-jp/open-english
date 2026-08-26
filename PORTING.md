@@ -2,6 +2,28 @@
 
 他プロジェクトへ`open-english`の実装パターンを移植する際の要点をまとめる。
 
+## 0-a. 検索コンテキスト活用精度は「速度基盤」では改善しない(2026-08-26追記、未着手タスク)
+
+`/v1/generate-with-search`(Google検索結果をプロンプトへ埋め込む機能)を
+移植する際、**「検索結果を埋め込む」ことと「モデルがその文脈を正確に
+活用する」ことは別問題**である点を混同しないこと。GPT-2系(指示追従
+ファインチューニング無し)は埋め込んだコンテキストを正確に踏まえる
+保証が無い——`open-directx`/`open-cuda`はGPU推論の**速度**基盤であり、
+この**精度**の問題には直接寄与しない(過去のHANDOFF記録の通り、GPU
+配線は速度の話であって精度の話ではない)。この制約を緩和できるか
+どうかの調査(プロンプト書式改善・instruction-tunedモデルへの切替・
+要約段階の追加)は`aruaru-llm/CLAUDE.md`の2026-08-26(続き3)エントリに
+方針を記録済みだが、**まだ未着手**——移植先でも同じ制約を引き継ぐ
+ことを前提にすること。
+
+*English summary*: When porting `/v1/generate-with-search`, don't
+conflate "search results are embedded in the prompt" with "the model
+accurately uses that context" — GPT-2-family models (no instruction
+tuning) provide no such guarantee, and `open-directx`/`open-cuda` are
+speed infrastructure for GPU inference, not accuracy infrastructure.
+Investigation of possible mitigations is recorded in `aruaru-llm/
+CLAUDE.md`'s 2026-08-26 (cont. 3) entry but not yet started.
+
 ## 0-b. マルチLLMプロバイダ優先順位パネルの移植ポイント(2026-08-26追記)
 
 「🔀 AI Provider Priority」パネル(ChatGPT/DeepSeek/Gemini/Claudeの単体・

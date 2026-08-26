@@ -7,7 +7,19 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-26, cont.): GitHub/YouTube search
+> 📌 **Latest update (2026-08-26, cont. 2, task recorded for next
+> time)**: It's correct that the AI's reply reflects Google search
+> results when search boost is on — but the existing limitation still
+> stands: small GPT-2-family models have no guarantee of using that
+> search context accurately. We recorded a task to investigate, next
+> session, whether engineering improvements across Rust + RPoem +
+> open-directx/open-cuda + aruaru-llm can reduce this limitation
+> (nothing investigated or implemented yet). See the 2026-08-26
+> (cont. 3) entries in [CLAUDE.md](CLAUDE.md) and
+> [aruaru-llm/CLAUDE.md](https://github.com/aon-co-jp/aruaru-llm/blob/main/CLAUDE.md)
+> for details.
+>
+> 📌 **Previous update (2026-08-26, cont.): GitHub/YouTube search
 > integration + free-quota-exhausted notice + API key links + local DB
 > save confirmation**:
 > - The "🔀 AI Provider Priority" panel now has checkboxes for Google

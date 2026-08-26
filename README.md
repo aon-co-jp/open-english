@@ -7,7 +7,16 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **最新の更新(2026-08-26 続き): GitHub/YouTube検索連携+無料枠切れ
+> 📌 **最新の更新(2026-08-26 続き2、未着手タスクの記録)**: 「Google
+> 検索結果を参考にAIが回答している」という理解は正しい一方、GPT-2系の
+> 小型モデルが検索結果を正確に活用する保証は無いという既存の制約は
+> 変わりません。この制約をRust+RPoem+open-directx/open-cuda+
+> aruaru-llm側の改善で緩和できないか、次回セッションで調査・改善する
+> ことを記録しました(今回は調査・実装とも未着手)。詳細は
+> [CLAUDE.md](CLAUDE.md)・[aruaru-llm/CLAUDE.md](https://github.com/aon-co-jp/aruaru-llm/blob/main/CLAUDE.md)の
+> 2026-08-26(続き3)エントリ参照。
+>
+> 📌 **更新(2026-08-26 続き): GitHub/YouTube検索連携+無料枠切れ
 > 表示+APIキー取得リンク+DB保存確認機能を追加**:
 > - 「🔀 AI Provider Priority」パネルからGoogle検索・GitHub検索
 >   (トークン任意)・YouTube検索(APIキー必要)をチェックボックスで

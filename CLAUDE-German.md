@@ -443,3 +443,18 @@ hohe API-Kosten zu vermeiden. Live verifiziert: Browser-UI → Einstellung
 auf aruaru-llm angewendet → echte HTTP-Anfrage an die Anthropic-API.
 Vollständige Details nur in der japanischen Version von CLAUDE.md
 (2026-08-26 HANDOFF).
+
+## Genauigkeit der Suchkontext-Nutzung — Aufgabe für nächstes Mal (2026-08-26)
+
+Es ist korrekt, dass die KI-Antwort Google-Suchergebnisse widerspiegelt,
+wenn "🔎 Google search boost" aktiv ist — die Suchergebnisse werden
+tatsächlich vor den Prompt eingefügt. Die bestehende Einschränkung
+bleibt jedoch bestehen: kleine GPT-2-Modelle (ohne Instruction-Tuning)
+garantieren keine korrekte Nutzung dieses Kontexts. Aufgabe für die
+nächste Sitzung: untersuchen, ob technische Verbesserungen über Rust +
+RPoem + open-directx/open-cuda + aruaru-llm dies verringern können.
+Wichtig: `open-directx`/`open-cuda` sind Geschwindigkeits-Infrastruktur
+für GPU-Inferenz, nicht Genauigkeits-Infrastruktur — dieser Unterschied
+muss bei der Untersuchung beachtet werden. Noch nichts untersucht oder
+umgesetzt; vollständige Details nur in der japanischen Version von
+CLAUDE.md und in `aruaru-llm/CLAUDE.md`.
