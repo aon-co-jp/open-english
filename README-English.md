@@ -7,7 +7,21 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-27, cont.)**: Extended the same secure
+> 📌 **Latest update (2026-08-27, cont. 2)**: Implemented a cross-origin
+> iframe sandbox vault (`vault.html`). GitHub token decryption and the
+> actual fetch call to the GitHub API now happen entirely inside the
+> vault; the main page (index.html) only ever receives the resulting
+> URL — verified end to end that the plain-text token never reaches the
+> main page's own JS. Also set `sandbox="allow-scripts allow-same-origin
+> allow-forms"`, but honestly disclosed a well-known pitfall: combining
+> those two flags effectively neutralizes the sandbox while served
+> same-origin — real isolation only comes from actually deploying
+> vault.html on a different origin, which this session verified the
+> mechanics of but did not actually test cross-origin (a deployment
+> step, deferred). See the 2026-08-27 (cont. 3) entry in
+> [CLAUDE.md](CLAUDE.md) for details.
+>
+> 📌 **Update (2026-08-27, cont.)**: Extended the same secure
 > hand-over options (① file / ② encrypted / ③ plain) to the Google
 > Search API key. For the AI provider keys (ChatGPT/DeepSeek/Gemini/
 > Claude), we deliberately did **not** add encryption — they're always

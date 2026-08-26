@@ -1,5 +1,83 @@
 ﻿# 設計思想＆開発方針＆開発環境ルール(open-english)
 
+> **📌 2026-08-27追記(続き3・実装): クロスオリジンiframeサンドボックス
+> 保管庫(`vault.html`)を実装、GitHub pushをvault内で代行させる方式で
+> 実機検証済み**
+>
+> 前エントリ(続き2)で記録した「クロスオリジンiframeサンドボックス案」
+> のうち、「iframeがGitHub APIへのfetchも代行し、本体には結果のURLだけ
+> 返す」という理想形をユーザー指示で実装した(ユーザー指示「その理想は
+> 『iframeがGitHub APIへのfetchも代行し、本体には結果のURLだけ返す』
+> システム導入の為の開発実装を…Google検索とGithub調査して」への対応)。
+>
+> **調査(Google検索、英語一次情報)**: postMessageによるクロスオリジン
+> 通信のセキュリティベストプラクティスを確認——(1)受信側は必ず
+> `event.origin`を検証する、(2)送信側は`postMessage(data, '*')`ではなく
+> 具体的な宛先originを指定する、(3)受け取ったデータは信頼せず検証する、
+> (4)`sandbox`属性がiframeセキュリティの要、という点(Stripe Elements
+> 等の決済フォームが採用する手法と同じ)。これらをすべて実装に反映した。
+>
+> **実装(`vault.html`新規作成、`app.js`/`index.html`/`server/src/
+> main.rs`を変更)**:
+> 1. `vault.html`: 単体で完結する自己完結ページ(app.js等への依存無し、
+>    別オリジンで単独配信されることを想定)。既存の`owEncryptSecret`/
+>    `owDecryptSecret`と同一アルゴリズム・同一データ形式の暗号化
+>    ヘルパーを複製(依存を持たせないための意図的な複製)。①ファイル
+>    読込・②パスフレーズ暗号化の2方式のみ提供(③平文保存は、vault
+>    自体の存在意義を弱めるため提供しない)。
+> 2. **postMessageプロトコル**: 親ページ→vault
+>    `{type:"vault:githubPush", requestId, repoName, isPrivate,
+>    filePath, fileContent, commitMessage}`、vault→親ページ
+>    `{type:"vault:githubPushResult", requestId, ok, url}`(または
+>    `ok:false, error`)。vaultは`?parentOrigin=`クエリパラメータで
+>    渡された値と`event.origin`が一致するメッセージのみ処理し、返信も
+>    `event.origin`(ワイルドカードではなく)へ送る、双方向のorigin検証。
+>    **復号済みの平文トークンは、いかなるメッセージでも親ページへは
+>    一切送信しない**(親が受け取るのは実行結果のURL/エラー文字列のみ)。
+> 3. `index.html`のフリーランス開発コーナーGitHub連携セクションに
+>    「④クロスオリジンiframe保管庫(実験的)」を追加(①②③と並ぶ第4の
+>    モード)。vault.htmlのURLを入力・読み込むUIと、埋め込み用
+>    `<iframe>`を新設。
+> 4. `server/src/main.rs`の`STATIC_FILES`へ`/vault.html`ルートを追加
+>    (既存の静的配信の仕組みをそのまま利用)。
+>
+> **正直な開示(誇張しないための必須事項)**: このセッションでは実際に
+> 別ドメイン・証明書を用意して**本当にクロスオリジンで配信した状態での
+> 分離効果の検証はできていない**(開発環境の制約)。`vault.html`と
+> `index.html`を**同一オリジン**(同じ`localhost:4601`)で動かした状態
+> での実機検証に留まる——この場合、同一オリジンポリシーによる分離
+> 効果は無く、「仕組み・メッセージプロトコルが正しく動くこと」の検証
+> にとどまる。UIにもこの制約を明記済み(「同じオリジンのままだと分離
+> の効果はありません」という警告を、vault未読み込み時・読み込み後の
+> 両方で表示)。**本当の分離効果を得るには、`vault.html`を実際に別
+> サブドメインへデプロイする運用作業が別途必要**(次回以降の課題)。
+>
+> **実機検証内容(2026-08-27、`open-english-server`をローカル再ビルド・
+> 起動しブラウザで確認)**: (1) `vault.html`単体アクセスで暗号化保存→
+> メモリ上での復号済み状態への遷移を確認、(2) `index.html`から
+> vault.htmlをiframeとして読み込み、vault内でトークンを暗号化保存、
+> (3) 親ページの「GitHubへpush」ボタン押下→postMessage経由でvault内が
+> 実際に`api.github.com`へfetchを実行→(ダミートークンのため)GitHubから
+> 401エラーが返る→そのエラーが正しくpostMessage経由で親ページへ伝わり
+> 表示されることを確認、(4) **親ページ側のJS変数
+> (`freelanceGithubFileToken`/`freelanceGithubUnlockedToken`)が
+> `null`のままであること**を確認し、平文トークンが親ページのJSスコープ
+> へ一切渡っていないことを実証。
+>
+> **追記(同日中に対応済み)**: `sandbox="allow-scripts allow-same-origin
+> allow-forms"`を`<iframe>`へ設定済み(ポップアップ・トップレベル
+> ナビゲーション等は許可しない最小権限)。ただし`allow-scripts`+
+> `allow-same-origin`の組み合わせは、vault.htmlが本体と**同一オリジン**
+> で配信されている場合にsandboxを実質的に無効化する既知の落とし穴が
+> あるため、UI上に「sandbox属性だけでは分離にならない、真の分離は
+> 別オリジン配信でのみ得られる」という注記を追加した(誇張防止)。
+>
+> **次にすべきこと**: (1) 実際に別サブドメインを用意し本当のクロス
+> オリジン配信での分離効果を検証、(2) GitLab/Bitbucket等、他の
+> Gitホスティングサービスへも同じvaultパターンを拡張。
+>
+> ---
+>
 > **📌 2026-08-27追記(続き2・次回タスク記録、未着手): ログイン紐づき
 > 暗号化保管庫、Claude(Anthropic)キーのブラウザ直接呼び出し化**
 >

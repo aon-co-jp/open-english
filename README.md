@@ -7,7 +7,18 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **最新の更新(2026-08-27 続き)**: Google検索APIキーにもGitHub連携と
+> 📌 **最新の更新(2026-08-27 続き2)**: クロスオリジンiframeサンドボックス
+> 保管庫(`vault.html`)を実装。GitHubトークンの復号・GitHub APIへの実際の
+> fetch呼び出しをvault内だけで行い、本体(index.html)へはpush結果のURLの
+> みを返す設計(平文トークンが本体のJSへ一切渡らないことを実機検証済み)。
+> `sandbox="allow-scripts allow-same-origin allow-forms"`も設定したが、
+> **同一オリジン配信の間はこの組み合わせがsandboxを実質的に無効化する
+> 既知の落とし穴があり、真の分離は別オリジン配信でしか得られない**旨を
+> 誇張せずUIに明記。今回は同一オリジンでの動作確認に留まり、実際の
+> 別サブドメイン配信での検証は次回課題。詳細は
+> [CLAUDE.md](CLAUDE.md)の2026-08-27(続き3)エントリ参照。
+>
+> 📌 **更新(2026-08-27 続き)**: Google検索APIキーにもGitHub連携と
 > 同じ安全な受け渡し方式(①ファイル/②暗号化/③平文)を追加。一方AI
 > プロバイダ(ChatGPT/DeepSeek/Gemini/Claude)のキーは、機能上サーバーへ
 > 必ず平文送信される設計のため暗号化しても意味が無いと判断し、**見せかけ

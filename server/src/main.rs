@@ -34,6 +34,15 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     ("/", "index.html", "text/html; charset=utf-8"),
     ("/index.html", "index.html", "text/html; charset=utf-8"),
     ("/facebook.html", "facebook.html", "text/html; charset=utf-8"),
+    // 2026-08-27新設: クロスオリジンiframeサンドボックス保管庫
+    // (`vault.html`)。単体で完結する静的ページで、GitHubトークン等の
+    // 復号・外部API呼び出しをこのページ内だけで行い、親ページ
+    // (index.html)へは結果URLのみをpostMessageで返す設計。**正直な
+    // 開示**: 本番で真の分離効果を得るには、このパスを本体
+    // (index.html)とは別オリジン(別サブドメイン等)で配信する必要が
+    // ある——同一オリジンで配信している間は分離の効果は無い(詳細は
+    // vault.html冒頭のコメント、CLAUDE.mdの2026-08-27エントリ参照)。
+    ("/vault.html", "vault.html", "text/html; charset=utf-8"),
     ("/style.css", "style.css", "text/css; charset=utf-8"),
     ("/app.js", "app.js", "application/javascript; charset=utf-8"),
     ("/auto-update.js", "auto-update.js", "application/javascript; charset=utf-8"),
