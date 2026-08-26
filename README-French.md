@@ -1,5 +1,8 @@
 ﻿# open-english
 
+> 📌 **Mise à jour (2026-08-27)** : Ajout d'un « Coin développement freelance » (100 langages, liens de recherche d'emploi, transfert vers le professeur IA), d'un coffre-fort iframe cross-origin (`vault.html`) qui isole le token GitHub et la clé API Google Search de la page principale, d'une seconde adresse e-mail de secours pour la connexion, et d'un raccourci de lancement Chrome en navigation privée. Deux bugs réels détectés par des tests en direct dans le navigateur (fuite de clé obsolète, message de statut trompeur en mode coffre-fort) ont été corrigés. Voir les entrées du 2026-08-27 dans CLAUDE.md (japonais) pour les détails complets.
+
+
 > 📌 **Mise à jour (2026-08-24, suite 2) : « Conseils de carrière » ajoutés
 > au parcours de tutorat par niveau scolaire.** L'écran d'exercice affiche
 > désormais, pour chaque matière, les secteurs/métiers auxquels elle

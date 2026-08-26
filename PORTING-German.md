@@ -1,5 +1,8 @@
 # PORTING.md — Leitfaden zur Portierung von open-english (Kurzfassung)
 
+> **Seit (2026-08-27)**: neue Patterns — Cross-Origin-iframe-Tresor für Geheimnisse, generische Verschlüsselungs-Helfer (`owEncryptSecret`/`owDecryptSecret`) — siehe PORTING.md (Japanisch) für die Einträge vom 2026-08-27.
+
+
 > **Hinweis**: Dies ist eine kondensierte Übersetzung. Die vollständige
 > technische Anleitung mit Code-Details und Fallstricken bleibt nur auf
 > Japanisch in [PORTING.md](PORTING.md) verfügbar — dort nachschlagen,

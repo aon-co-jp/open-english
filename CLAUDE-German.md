@@ -1,5 +1,8 @@
 # Entwicklungsphilosophie & Umgebungsregeln (open-english)
 
+> **Seit (2026-08-27)**: Freelance-Ecke, Cross-Origin-iframe-Tresor (`vault.html`) für GitHub-Token und Google-Search-Schlüssel, Backup-E-Mail-Login, Bugfixes — siehe CLAUDE.md (Japanisch) für die Einträge vom 2026-08-27.
+
+
 > **Hinweis**: Dies ist eine kondensierte Übersetzung des aktuellen
 > Zustands. Das ausführliche historische HANDOFF-Änderungsprotokoll
 > (Dutzende von Einträgen seit 2026-08-10) bleibt aus Gründen der

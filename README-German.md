@@ -1,5 +1,8 @@
 ﻿# open-english
 
+> 📌 **Update (2026-08-27)**: Eine „Freelance-Ecke“ hinzugefügt (100 Sprachen, Jobsuche-Links, Übergabe an die KI-Lehrerin), ein Cross-Origin-iframe-Tresor (`vault.html`), der das GitHub-Token und den Google-Search-API-Schlüssel von der Hauptseite isoliert, eine zweite Backup-E-Mail-Adresse für den Login sowie eine Chrome-Inkognito-Start-Verknüpfung. Zwei echte, durch Live-Browser-Tests gefundene Fehler (veralteter Schlüssel-Leak, irreführende Statusanzeige im Tresor-Modus) wurden behoben. Details in den Einträgen vom 2026-08-27 in CLAUDE.md (Japanisch).
+
+
 > 📌 **Neuestes Update (2026-08-26, Fortsetzung 2, Aufgabe für nächstes
 > Mal notiert):** Es stimmt, dass die KI-Antwort Google-Suchergebnisse
 > widerspiegelt, wenn der Suchboost aktiv ist — die bestehende

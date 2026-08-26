@@ -1,5 +1,8 @@
 ﻿# open-english
 
+> 📌 **Aggiornamento (2026-08-27)**: Aggiunto un «Angolo sviluppo freelance» (100 lingue, link per la ricerca di lavoro, passaggio all'insegnante IA), una cassaforte iframe cross-origin (`vault.html`) che isola il token GitHub e la chiave API di Google Search dalla pagina principale, un secondo indirizzo email di backup per il login e una scorciatoia per avviare Chrome in incognito. Corretti due bug reali trovati tramite test dal vivo nel browser (perdita di chiave obsoleta, messaggio di stato fuorviante in modalità cassaforte). Dettagli completi nelle voci del 2026-08-27 in CLAUDE.md (giapponese).
+
+
 > 📌 **Aggiornamento (2026-08-24, seguito 2): aggiunta la "Guida alla
 > carriera" al corso di ripetizioni per anno scolastico.** La schermata
 > degli esercizi ora mostra, per ogni materia, i settori/mestieri a cui

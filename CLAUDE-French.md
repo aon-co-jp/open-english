@@ -1,5 +1,8 @@
 # Philosophie de développement et règles d'environnement (open-english)
 
+> **Depuis (2026-08-27)** : Coin développement freelance, coffre-fort iframe cross-origin (`vault.html`) pour le token GitHub et la clé Google Search, connexion avec e-mail de secours, correctifs de bugs — voir CLAUDE.md (japonais) pour les entrées du 2026-08-27.
+
+
 > **Note** : ceci est une traduction condensée de l'état actuel. Le
 > journal historique détaillé des HANDOFF (des dizaines d'entrées
 > depuis le 2026-08-10) reste disponible uniquement en japonais dans

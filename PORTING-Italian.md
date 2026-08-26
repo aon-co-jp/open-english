@@ -1,5 +1,8 @@
 # PORTING.md — Guida al porting di open-english (versione condensata)
 
+> **Da (2026-08-27)**: nuovi pattern — cassaforte iframe cross-origin per segreti, helper di cifratura generico (`owEncryptSecret`/`owDecryptSecret`) — vedi PORTING.md (giapponese) per le voci del 2026-08-27.
+
+
 > **Nota**: questa è una traduzione condensata. La guida tecnica
 > completa con dettagli di codice e insidie resta disponibile solo in
 > giapponese in [PORTING.md](PORTING.md) — consultarla prima di

@@ -1,5 +1,8 @@
 # Filosofia di sviluppo e regole d'ambiente (open-english)
 
+> **Da (2026-08-27)**: Angolo sviluppo freelance, cassaforte iframe cross-origin (`vault.html`) per token GitHub e chiave Google Search, login con email di backup, correzioni di bug — vedi CLAUDE.md (giapponese) per le voci del 2026-08-27.
+
+
 > **Nota**: questa è una traduzione condensata dello stato attuale. Il
 > log storico dettagliato degli HANDOFF (decine di voci dal
 > 2026-08-10) resta disponibile solo in giapponese in

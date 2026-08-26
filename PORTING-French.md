@@ -1,5 +1,8 @@
 # PORTING.md — Guide de portage d'open-english (version condensée)
 
+> **Depuis (2026-08-27)** : nouveaux patterns — coffre-fort iframe cross-origin pour secrets, aide-mémoire de chiffrement générique (`owEncryptSecret`/`owDecryptSecret`) — voir PORTING.md (japonais) pour les entrées du 2026-08-27.
+
+
 > **Note** : ceci est une traduction condensée. Le guide technique
 > complet avec détails de code et pièges reste disponible uniquement
 > en japonais dans [PORTING.md](PORTING.md) — s'y référer avant
