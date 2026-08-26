@@ -7,7 +7,30 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-26): Multi-LLM provider priority**:
+> 📌 **Latest update (2026-08-26, cont.): GitHub/YouTube search
+> integration + free-quota-exhausted notice + API key links + local DB
+> save confirmation**:
+> - The "🔀 AI Provider Priority" panel now has checkboxes for Google
+>   Search, GitHub Search (token optional), and YouTube Search (needs
+>   an API key) — search results are now actually inserted into the
+>   prompt on every chat message when enabled (this fixes a gap from
+>   the earlier version, where the feature was never wired into the
+>   actual conversation flow).
+> - When every configured AI provider has used up today's free quota,
+>   the app shows "Today's free quota has been used up" in English and
+>   Japanese, then automatically falls back to the built-in local AI.
+>   A paid-plan provider keeps working automatically (it never hits the
+>   quota-exceeded condition in the first place).
+> - Added direct links to each provider's API key page (OpenAI,
+>   DeepSeek, Gemini, Claude).
+> - On the downloaded PC version, saving an API key now asks (in
+>   English and Japanese) whether to also save it to the local database
+>   so you don't have to re-enter it next time — only if you agree, and
+>   this prompt never appears in the plain browser version.
+> - See [CLAUDE.md](CLAUDE.md)'s 2026-08-26 (cont. 2) HANDOFF for
+>   details.
+>
+> 📌 **Previous update (2026-08-26): Multi-LLM provider priority**:
 > - Beyond Google Search, you can now call ChatGPT (OpenAI), DeepSeek,
 >   Gemini, and Claude (Anthropic) individually or all at once
 >   (implemented in `aruaru-llm`'s `chat_providers.rs` /

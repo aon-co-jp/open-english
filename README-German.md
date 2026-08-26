@@ -1,6 +1,22 @@
 ﻿# open-english
 
-> 📌 **Neuestes Update (2026-08-26): Multi-LLM-Anbieter-Priorität.**
+> 📌 **Neuestes Update (2026-08-26, Fortsetzung): GitHub/YouTube-Suche +
+> Hinweis auf aufgebrauchtes Kontingent + API-Schlüssel-Links + Abfrage
+> zum lokalen Datenbank-Speichern.** Das Panel "🔀 AI Provider Priority"
+> hat jetzt Kontrollkästchen für Google-, GitHub- (Token optional) und
+> YouTube-Suche (API-Schlüssel nötig) — Suchergebnisse werden jetzt bei
+> jeder Chat-Nachricht tatsächlich in den Prompt eingefügt (dies behebt
+> eine Lücke, bei der die Funktion zuvor nie in den echten
+> Konversationsablauf eingebunden war). Wenn alle konfigurierten
+> Anbieter ihr Tageskontingent aufgebraucht haben, zeigt die App
+> zweisprachig „Heutiges kostenloses Kontingent aufgebraucht" und
+> wechselt automatisch zur lokalen KI; ein bezahlter Anbieter läuft
+> automatisch weiter. Direktlinks zu den API-Schlüssel-Seiten hinzugefügt.
+> Bei der heruntergeladenen PC-Version wird jetzt zweisprachig gefragt,
+> ob der Schlüssel auch in der lokalen Datenbank gespeichert werden soll.
+> Details siehe CLAUDE.md.
+
+> 📌 **Update (2026-08-26): Multi-LLM-Anbieter-Priorität.**
 > Neben der Google-Suche können jetzt ChatGPT (OpenAI), DeepSeek, Gemini
 > und Claude (Anthropic) einzeln oder gleichzeitig aufgerufen werden. Das
 > neue Panel „🔀 AI Provider Priority" erlaubt es, „kostenlose Kontingente
