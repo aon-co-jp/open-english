@@ -7,7 +7,24 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-26, cont. 2, task recorded for next
+> 📌 **Latest update (2026-08-26, cont. 3)**: Added a new "Freelance
+> Dev Corner" (💼 button). Implemented and verified end to end: pick
+> from 100 programming languages (or type your own) + a framework, open
+> Google search in a new tab for official info and freelance/IT job
+> listings (no API key needed), copy URLs/text, use a sample listing or
+> your own job notes, and hand it all off to the AI teacher for a
+> lesson. Also added automatic upload to GitHub — calling the GitHub
+> REST API **directly from the browser** with a personal access token
+> to create a repo (public or private) and push a file — **the token
+> is stored only in the browser's localStorage and never sent to our
+> own server, but a bilingual (JA/EN) security warning is always shown
+> before use**. Automatic VPS read/write (not possible the same way due
+> to a browser platform limitation), similar GitLab/Bitbucket
+> integrations, and database logging remain unimplemented — deferred to
+> a future session. See the 2026-08-26 entries in
+> [CLAUDE.md](CLAUDE.md) for details.
+>
+> 📌 **Update (2026-08-26, cont. 2, task recorded for next
 > time)**: It's correct that the AI's reply reflects Google search
 > results when search boost is on — but the existing limitation still
 > stands: small GPT-2-family models have no guarantee of using that
