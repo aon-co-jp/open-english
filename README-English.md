@@ -7,7 +7,19 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-27, cont. 2)**: Implemented a cross-origin
+> 📌 **Latest update (2026-08-27, cont. 3)**: Extended login to support
+> a second, optional backup email address alongside the required first
+> one. The same one-time code is sent to both; receiving it at either
+> is enough to log in (this is not two-factor authentication — it's a
+> backup address for availability, not an added security layer).
+> Backward compatible with existing clients (`email2` is optional).
+> `cargo build --release` succeeded; verified in-browser that the HTTP
+> request is accepted and the new form fields exist (an end-to-end test
+> with a real SMTP send was not done, as this dev machine has no SMTP
+> environment). See the 2026-08-27 (cont. 5) entry in
+> [CLAUDE.md](CLAUDE.md) for details.
+>
+> 📌 **Update (2026-08-27, cont. 2)**: Implemented a cross-origin
 > iframe sandbox vault (`vault.html`). GitHub token decryption and the
 > actual fetch call to the GitHub API now happen entirely inside the
 > vault; the main page (index.html) only ever receives the resulting

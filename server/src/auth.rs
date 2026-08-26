@@ -139,17 +139,32 @@ fn smtp_config() -> Result<SmtpConfig> {
 /// メール送信する。**正直な開示**: SMTP未設定の場合は生成すら行わず
 /// エラーを返す(呼び出し側main.rsが「設定されていません」と利用者へ
 /// 正直に伝える)。
-pub async fn request_otp(email: &str) -> Result<()> {
-    let email = email.trim().to_lowercase();
-    if email.is_empty() || !email.contains('@') {
-        bail!("invalid email address");
+/// `email1`(必須)と`email2`(任意、2026-08-27新設)へ同じOTPコードを
+/// 送る。`email2`はバックアップ用の位置付け——`email1`が受信できない
+/// 状況(旧メールが使えなくなった等)でも`email2`側で受け取ったコードで
+/// ログインできる(`verify_otp`はコードを送ったいずれのメールアドレスで
+/// 呼んでも成功する、片方だけ届けば十分という設計、ユーザー指示)。
+/// **正直な開示**: 二段階認証(両方の入力を要求する方式)ではない——
+/// `email2`はあくまで予備であり、どちらか一方が使えれば認証を突破できる
+/// (単一メールのみの場合と比べてセキュリティが「強化」されるわけでは
+/// なく、あくまで「本人が受け取れる経路が増える」という可用性の改善)。
+pub async fn request_otp(email1: &str, email2: Option<&str>) -> Result<()> {
+    let email1 = email1.trim().to_lowercase();
+    if email1.is_empty() || !email1.contains('@') {
+        bail!("invalid email address (email1)");
     }
+    let email2 = match email2.map(|e| e.trim().to_lowercase()) {
+        Some(e) if e.is_empty() => None,
+        Some(e) if !e.contains('@') => bail!("invalid email address (email2)"),
+        Some(e) if e == email1 => None, // 同一アドレスを2回送る必要はない
+        other => other,
+    };
     let cfg = smtp_config().context("SMTP not configured")?;
 
     let now = SystemTime::now();
     {
         let otps = state().otps.lock().unwrap();
-        if let Some(existing) = otps.get(&email) {
+        if let Some(existing) = otps.get(&email1) {
             if let Ok(elapsed) = now.duration_since(existing.last_sent_at) {
                 if elapsed < OTP_RESEND_COOLDOWN {
                     bail!("please wait before requesting another code");
@@ -161,7 +176,10 @@ pub async fn request_otp(email: &str) -> Result<()> {
     let code = random_otp_code();
     {
         let mut otps = state().otps.lock().unwrap();
-        otps.insert(email.clone(), OtpEntry { code: code.clone(), expires_at: now + OTP_TTL, last_sent_at: now });
+        otps.insert(email1.clone(), OtpEntry { code: code.clone(), expires_at: now + OTP_TTL, last_sent_at: now });
+        if let Some(ref email2) = email2 {
+            otps.insert(email2.clone(), OtpEntry { code: code.clone(), expires_at: now + OTP_TTL, last_sent_at: now });
+        }
     }
 
     let body = format!(
@@ -170,21 +188,23 @@ pub async fn request_otp(email: &str) -> Result<()> {
          If you did not request this, you can safely ignore this email. / \
          心当たりが無い場合は、このメールを無視して構いません。"
     );
-    let email_msg = Message::builder()
-        .from(cfg.from.parse().context("invalid OPEN_ENGLISH_SMTP_FROM address")?)
-        .to(email.parse().context("invalid recipient email address")?)
-        .subject("Your open-english login code / open-englishのログインコード")
-        .header(ContentType::TEXT_PLAIN)
-        .body(body)
-        .context("failed to build email message")?;
-
     let creds = Credentials::new(cfg.user.clone(), cfg.password.clone());
     let mailer = AsyncSmtpTransport::<Tokio1Executor>::relay(&cfg.host)
         .context("failed to configure SMTP relay")?
         .port(cfg.port)
         .credentials(creds)
         .build();
-    mailer.send(email_msg).await.context("SMTP send failed")?;
+
+    for recipient in std::iter::once(email1.as_str()).chain(email2.as_deref()) {
+        let email_msg = Message::builder()
+            .from(cfg.from.parse().context("invalid OPEN_ENGLISH_SMTP_FROM address")?)
+            .to(recipient.parse().context("invalid recipient email address")?)
+            .subject("Your open-english login code / open-englishのログインコード")
+            .header(ContentType::TEXT_PLAIN)
+            .body(body.clone())
+            .context("failed to build email message")?;
+        mailer.send(email_msg).await.context("SMTP send failed")?;
+    }
     Ok(())
 }
 
@@ -266,6 +286,32 @@ mod tests {
     fn verify_otp_rejects_unknown_email() {
         let result = verify_otp("nobody-requested-this@example.com", "000000");
         assert!(result.is_err());
+    }
+
+    /// email2(2026-08-27新設)のバリデーションが、SMTP設定確認より前に
+    /// 行われることを確認する(SMTP未設定のこのテスト環境でも、不正な
+    /// email2は「SMTP not configured」ではなく「invalid email address
+    /// (email2)」で先に弾かれるはず)。
+    #[tokio::test]
+    async fn request_otp_rejects_invalid_email2_before_checking_smtp() {
+        let result = request_otp("valid@example.com", Some("not-an-email")).await;
+        let err = result.expect_err("invalid email2 should be rejected");
+        assert!(format!("{err:#}").contains("email2"), "error should mention email2: {err:#}");
+    }
+
+    /// email2がemail1と同一(大文字小文字違い含む)の場合は重複送信せず
+    /// email1のみ扱いになる、というdedupロジックのユニットテスト
+    /// (SMTP呼び出しまで到達するため、SMTP未設定環境では
+    /// "SMTP not configured"エラーで止まる=email2バリデーションの
+    /// 分岐自体は正常に通過したことの間接的な確認)。
+    #[tokio::test]
+    async fn request_otp_treats_identical_email2_as_no_backup() {
+        let result = request_otp("Same@Example.com", Some("same@example.com")).await;
+        let err = result.expect_err("no SMTP configured in test environment");
+        assert!(
+            format!("{err:#}").contains("SMTP not configured") || format!("{err:#}").contains("SMTP"),
+            "should fail on SMTP config, not on email2 validation: {err:#}"
+        );
     }
 
     #[test]

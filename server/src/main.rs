@@ -444,6 +444,11 @@ async fn auth_set_config(req: Request, db: Arc<Db>) -> Response {
 #[derive(serde::Deserialize)]
 struct RequestOtpRequest {
     email: String,
+    /// バックアップ用の2つ目のメールアドレス(任意、2026-08-27新設)。
+    /// 指定すると同じOTPコードが両方へ送られ、どちらか一方で
+    /// `verify_otp`できる(`auth::request_otp`のdoc参照)。
+    #[serde(default)]
+    email2: Option<String>,
 }
 
 async fn auth_request_otp(req: Request) -> Response {
@@ -459,7 +464,7 @@ async fn auth_request_otp(req: Request) -> Response {
             }),
         );
     }
-    match auth::request_otp(&body.email).await {
+    match auth::request_otp(&body.email, body.email2.as_deref()).await {
         Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"sent": true})),
         Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": format!("{e:#}")})),
     }
