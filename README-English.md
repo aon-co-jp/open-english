@@ -7,7 +7,26 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-25, cont. 13): world-lab multi-device
+> 📌 **Latest update (2026-08-26): Multi-LLM provider priority**:
+> - Beyond Google Search, you can now call ChatGPT (OpenAI), DeepSeek,
+>   Gemini, and Claude (Anthropic) individually or all at once
+>   (implemented in `aruaru-llm`'s `chat_providers.rs` /
+>   `provider_priority.rs`).
+> - The new "🔀 AI Provider Priority" panel lets you enable "use free
+>   tiers in order, one after another" — the order of the 5 services can
+>   be set either by typing a number or clicking a numbered radio button
+>   (duplicates are resolved by swapping).
+> - Each provider's API key is saved only in this browser's
+>   localStorage and sent to your own aruaru-llm as a runtime setting
+>   (never written to disk there either — same policy as the existing
+>   Google Search key setup).
+> - Verified live: browser UI → settings applied on aruaru-llm → an
+>   actual HTTP request reaching the real Anthropic API.
+> - See [CLAUDE.md](CLAUDE.md)'s 2026-08-26 HANDOFF and
+>   [aruaru-llm/CLAUDE.md](https://github.com/aon-co-jp/aruaru-llm/blob/main/CLAUDE.md)
+>   for details.
+>
+> 📌 **Previous update (2026-08-25, cont. 13): world-lab multi-device
 > compute dispatch Phase B (explicit receiver approval gate + TLS)
 > implemented, verified live over real HTTP/TLS — cross-device dispatch
 > across real physical devices (Phase C) is still not started**:

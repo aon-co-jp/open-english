@@ -202,6 +202,50 @@ AIコーディング支援パネル)にとどめている。
 
 ## HANDOFF
 
+- **2026-08-26(続き) マルチLLMプロバイダ優先順位機能を追加(実装・
+  実機E2E検証済み)**: ユーザー指示「open-englishのGoogle検索APIキーの
+  他にChatGPT無料枠・DeepSeek無料枠・Gemini・Claudeを単体でも同時実行
+  でも使えるようにしてほしい」+「Google、ChatGPT/DeepSeek/Gemini/
+  Claudeは、無料枠を優先で使い切り順番に使用、にチェックを付けられる
+  様にして。Googleなどは、順番を入力したり、数字のラジオボタンを
+  押すかのどちらかで優先の順番を変更可能にして」への対応。
+  1. **実装本体は`aruaru-llm`側**(`src/chat_providers.rs`・
+     `src/provider_priority.rs`、詳細は`aruaru-llm/CLAUDE.md`
+     2026-08-26エントリ参照): 既存の`web_search.rs`(Google Custom
+     Search連携)と同じ設計パターン(APIキーはプロセスメモリ上保持
+     のみ、環境変数フォールバック、正直なエラー開示)でOpenAI/
+     DeepSeek/Gemini/Claudeの4社を単体呼び出し(`POST /v1/
+     chat-providers/complete`)・同時実行(`.../complete-multi`)で
+     叩けるようにし、Google検索を含む5サービス共通の優先順位リスト
+     (`POST/GET/DELETE /v1/settings/provider-priority`)+設定済みの
+     プロバイダを順番に試して最初の成功を返す
+     (`POST /v1/chat-providers/complete-priority`)を新設した。
+  2. **`index.html`/`app.js`**: 「🔀 AI Provider Priority」パネルを
+     新設。チェックボックス(無料枠を優先で使い切り順番に使用)+
+     5サービス分の**番号入力欄とラジオボタンの両方**で順序変更できる
+     (`setPosition()`、重複は入れ替えで解決、既存の言語表示順3系統
+     連動指定と同じ設計パターン)。各社APIキーはこのブラウザの
+     localStorageにのみ保存し(Google Search設定と同じ方針)、保存
+     操作のたびにaruaru-llm側の実行時設定エンドポイントへ送信する。
+  3. **実機E2E検証**: `cargo build --release`成功、`cargo test
+     --release`(aruaru-llm)81件全green(新規6件含む)。実際に
+     `aruaru-llm.exe`+`open-english-server.exe`の両方を起動し、
+     ブラウザで実際にUI操作(パネルを開く→チェックON→Claude APIキー
+     入力→保存)→`aruaru-llm`側`GET /v1/settings/provider-priority`・
+     `GET /v1/settings/chat-providers`で実際に反映されていることを
+     確認→`POST /v1/chat-providers/complete-priority`が実際に
+     Anthropic APIへHTTPリクエストを送り(偽キーのため`401`、想定通り)
+     優先順位フォールバックが正しく記録されることまで確認した
+     (ブラウザUI→サーバー設定反映→外部API実呼び出し、の一気通貫)。
+  4. **正直な開示**: 「無料枠を使い切ったら次へ」という判定は、
+     API呼び出しの失敗全般をトリガーにしており、失敗理由が本当に
+     「無料枠切れ」なのか他の一時的なエラーなのかを正確に判別する
+     精度は保証しない(`provider_priority.rs`モジュールdoc参照)。
+  - 次にすべきこと: (1) 「無料枠切れ」をより正確に判別する仕組み
+    (HTTPステータスコード・エラー本文のパターンマッチ等)の検討、
+    (2) 複数プロバイダの応答を1つへ要約・統合する機能(現状は
+    プロバイダ別の生の応答を返すのみ)。
+
 - **2026-08-26 email+ワンタイムパスワード(OTP)ログイン機能を新設(実装・
   実機HTTP検証済み、既定オフのオプトイン機能)**:
   ユーザー指摘「そのPC・タブレット・スマホなどは、家族や会社で共有する

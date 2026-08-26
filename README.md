@@ -7,7 +7,22 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **最新の更新(2026-08-25 続き14): メンテナンスバナーの改善+
+> 📌 **最新の更新(2026-08-26): マルチLLMプロバイダ優先順位機能を追加**:
+> - Google検索の他、ChatGPT(OpenAI)・DeepSeek・Gemini・Claude
+>   (Anthropic)を単体でも同時実行でも呼び出せるようになりました
+>   (実装は`aruaru-llm`側`chat_providers.rs`・`provider_priority.rs`)。
+> - 「🔀 AI Provider Priority」パネルから「無料枠を優先で使い切り、
+>   順番に使用」を有効化でき、5サービスの優先順位は番号入力欄・
+>   番号のラジオボタンいずれでも変更できます(重複は入れ替えで解決)。
+> - 各社APIキーはこのブラウザのlocalStorageにのみ保存され、
+>   ご自身のaruaru-llmへ実行時設定として送られます(ディスクへの
+>   永続化はしません、既存のGoogle検索キー設定と同じ方針)。
+> - 実際に両サーバーを起動し、ブラウザのUI操作→aruaru-llmへの設定
+>   反映→実際のAnthropic APIへのHTTPリクエストまでを実機検証済みです。
+> - 詳細は[CLAUDE.md](CLAUDE.md)の2026-08-26 HANDOFF、
+>   [aruaru-llm/CLAUDE.md](https://github.com/aon-co-jp/aruaru-llm/blob/main/CLAUDE.md)参照。
+>
+> 📌 **更新(2026-08-25 続き14): メンテナンスバナーの改善+
 > ブラウザ内AI実行(WASM+WebGPU)構想の技術検証+Google検索APIキーの
 > 共有消費バグ修正**:
 > - メンテナンスバナーが終了時に日英併記の「終了しました」メッセージへ
