@@ -89,25 +89,24 @@ Source: "fetch-aruaru-db.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-open-easy-web.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-open-web-server.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "fetch-open-cg-cad.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "fetch-related-tool.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "manage-related-tools.ps1"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
+; インストール後でも関連ツールを追加・削除できるようにする
+; (ユーザー指示「インストールが完了したあとでも、インストールや
+; アンインストール可能なものは簡単に行えるようにして」への対応、
+; 2026-08-26)。対話メニューのためコンソールウィンドウを表示する。
+Name: "{group}\Manage related tools \ 関連ツールの管理"; \
+    Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\manage-related-tools.ps1"""; \
+    WorkingDir: "{app}"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
-; 「まとめてインストール」機能(ユーザー指示「他にも必要な関連リポジトリ
-; やプロジェクトもインストールする時にまとめてインストールしますか？
-; などの機能が欲しい」への対応、2026-08-11)。既定でチェック済み——
-; open-englishはaruaru-llm無しでは動作しない(AI応答が返らない)ため。
-; 正直な開示: これが取得するのはaruaru-llm本体(実行ファイル)のみ。
-; GPT-2/DistilGPT-2の実モデル重み(数百MB〜数GB)は含まない(初回起動後に
-; 別途取得が必要)。aruaru-db本体は下記の別タスク(installaruarudb、
-; 2026-08-19追加)で任意に同梱可能——ただしこちらも任意機能である旨は
-; 変わらない(それぞれ別途セットアップが必要、インストール後に表示する
-; README-INSTALLED.txtに手順を明記)。
-Name: "installaruarullm"; Description: "Also install aruaru-llm (AI backend) / aruaru-llm(AI応答エンジン)も一緒にインストール"; Flags: checkedonce
 ; aruaru-db同梱タスク(ユーザー指示「aruaru-dbも同梱して」への対応、
 ; 2026-08-19)。既定は未チェック——aruaru-llmと違いopen-english本体の
 ; 動作に必須ではないため(会話履歴はSQLite単体で完結。aruaru-dbは
@@ -121,16 +120,28 @@ Name: "installaruarullm"; Description: "Also install aruaru-llm (AI backend) / a
 ; の出力メッセージとREADME-INSTALLED.txtに記載)。
 Name: "installaruarudb"; Description: "Also install aruaru-db (optional PostgreSQL-wire mirror DB, not required) / aruaru-db(任意のPostgreSQL互換ミラーDB、必須ではありません)も一緒にインストール"; Flags: unchecked
 ; open-easy-web/open-web-server同梱タスク(ユーザー指示「open-easy-web も
-; open-web-serverもopen-englishの同梱に含めて」への対応、2026-08-19)。
-; 既定は両方とも未チェック——正直な開示: これら2つはopen-english自身の
-; CLAUDE.md「アーキテクチャ」節に明記の通り、open-englishの実際の動作
-; (英会話AI機能)に技術的な依存関係が無い、独立したエコシステム別製品
-; (open-easy-web=VPS側アプリ配布・管理ツール、open-web-server=汎用
-; リバースプロキシ/Webサーバー)。無関係なサーバーサービスが利用者の
-; 意図に反して勝手に追加インストールされることを避けるため、aruaru-db
-; と同様に既定オフの任意タスクとした。取得後も自動起動はしない。
-Name: "installopeneasyweb"; Description: "Also install open-easy-web (optional, unrelated standalone web-server manager, not required for open-english to work) / open-easy-web(任意、open-englishの動作には無関係な独立Webサーバー管理ツール、必須ではありません)も一緒にインストール"; Flags: unchecked
-Name: "installopenwebserver"; Description: "Also install open-web-server (optional, unrelated standalone reverse-proxy/web server, not required for open-english to work) / open-web-server(任意、open-englishの動作には無関係な独立リバースプロキシ/Webサーバー、必須ではありません)も一緒にインストール"; Flags: unchecked
+; open-web-serverもopen-englishの同梱に含めて」への対応、2026-08-19。
+; 2026-08-26追記: ユーザー指摘「必要なのか?一緒にインストールする
+; メリットを明確に」を受け、下記の通り具体的な利用場面を明記した)。
+;
+; 正直な開示・具体的な必要性(いつ必要か、いつ不要か):
+; - open-englishを**このPC単体でローカルに使うだけなら、どちらも
+;   不要**(既定でlocalhost経由で完結して動作する)。
+; - **open-web-server**が役立つ場面: このPC上のopen-english(または
+;   aruaru-llm)を、スマホ・タブレット等**同一LAN内の他端末**や
+;   インターネット経由で、独自ドメイン+正式なTLS証明書付きで公開
+;   したい場合(汎用リバースプロキシ/Webサーバーとして機能する)。
+;   単にLAN内で使うだけならopen-web-server無しでも既存のLANアクセス
+;   機能(ホスト名:4600への自動接続、CLAUDE.md参照)で足りる。
+; - **open-easy-web**が役立つ場面: 自分のVPS(レンタルサーバー)上に
+;   open-english(や他のaon-co-jp製アプリ)を**複数まとめて**デプロイ・
+;   ドメイン登録・HTTPS自動発行したい場合(VPS側のアプリ配布・管理
+;   ツール)。PC/スマホでの利用のみなら不要。
+; - いずれもopen-english自身のCLAUDE.md「アーキテクチャ」節に明記の
+;   通り、open-englishの英会話AI機能自体への技術的な依存関係は無い
+;   ——上記の追加ユースケースに該当しない場合は不要。既定オフのまま。
+Name: "installopeneasyweb"; Description: "Also install open-easy-web — useful if you want to deploy open-english (or other aon-co-jp apps) on your own VPS/rental server with domain + auto-HTTPS; NOT needed for local PC/phone use / open-easy-webも一緒にインストール——ご自身のVPS/レンタルサーバーへopen-english(や他のaon-co-jp製アプリ)をドメイン+自動HTTPS付きでデプロイしたい場合に便利です。PC/スマホでのローカル利用のみなら不要です"; Flags: unchecked
+Name: "installopenwebserver"; Description: "Also install open-web-server — useful if you want to expose this PC's open-english to other devices on your LAN or the internet with a proper domain + TLS; NOT needed for local-only use / open-web-serverも一緒にインストール——このPCのopen-englishを独自ドメイン+正式なTLSでLAN内の他端末やインターネットへ公開したい場合に便利です。ローカル利用のみなら不要です"; Flags: unchecked
 ; open-cg-cad同梱タスク(ユーザー指示「open-englishかopen-easy-webから
 ; open-cg-cadをインストールすると、open-englishとopen-cg-cadはハイブリッド
 ; で相互に機能するシステムという仕様にして」への対応、2026-08-25)。
@@ -142,13 +153,43 @@ Name: "installopenwebserver"; Description: "Also install open-web-server (option
 ; Releasesのビルド済みバイナリが無く、このタスクを有効にしても
 ; スクリプトが正直にその旨を報告するのみに留まる(取得成功を偽装しない)。
 Name: "installopencgcad"; Description: "Also install open-cg-cad (optional, AI construction/CAD app that interoperates with open-english via shared links and a shared aruaru-llm backend) / open-cg-cad(任意、open-englishと相互リンク+同じaruaru-llmバックエンド共有で連携するAI工務店&AI建設CADアプリ)も一緒にインストール"; Flags: unchecked
+; 2026-08-26新設: aon-co-jpエコシステムの他ツール(open-english本体の
+; 動作には無関係な独立製品)を、ワンクリックでまとめてインストール
+; できるようにする(ユーザー指示「open-english-installer.exeをダブル
+; クリックしただけで、関連インストーラーも全部インストール可能で、
+; 特に必要でない場合関連インストーラーがあれば、選択式にして」への
+; 対応)。**いずれも既定は未チェック**(open-easy-web/open-web-server
+; と同じ方針、無関係な製品を利用者の意図に反して追加インストール
+; しないため)。**この一群は上記のaruaru-llmとは異なり、それぞれが
+; 独自のインストーラー・アンインストーラーを持つ独立した製品として
+; インストールされる**(利用者が後から個別にアンインストール可能
+; ——「Windowsの設定→アプリ」から、または後述の関連ツール管理
+; スクリプトから)。各ツールの役割の要約(詳細は各リポジトリの
+; README/CLAUDE.md参照):
+Name: "installrsblog"; Description: "RS-Blog — independent blog engine / RS-Blog——独立したブログエンジン(open-englishとは無関係)"; Flags: unchecked
+Name: "installrsec"; Description: "RS-EC — independent e-commerce tool / RS-EC——独立したECツール(open-englishとは無関係)"; Flags: unchecked
+Name: "installrsguard"; Description: "RS-Guard — independent security/supply-chain scanner / RS-Guard——独立したセキュリティ/サプライチェーンスキャナ(open-englishとは無関係)"; Flags: unchecked
+Name: "installrsops"; Description: "RS-Ops — independent ops/deployment CLI tool / RS-Ops——独立した運用・デプロイ支援CLIツール(open-englishとは無関係)"; Flags: unchecked
+Name: "installopengitea"; Description: "open-gitea — independent self-hosted Git server / open-gitea——独立した自己ホスト型Gitサーバー(open-englishとは無関係)"; Flags: unchecked
+Name: "installopenraidz"; Description: "open-raid-z — independent ZFS-compatible storage CLI (orzctl) / open-raid-z——独立したZFS互換ストレージCLI(orzctl、open-englishとは無関係)"; Flags: unchecked
+Name: "installopenredmine"; Description: "open-redmine — independent project-management tool / open-redmine——独立したプロジェクト管理ツール(open-englishとは無関係)"; Flags: unchecked
+Name: "installrslinkfusion"; Description: "rs-link-fusion — independent multi-WAN/multi-LAN network tool / rs-link-fusion——独立した複数WAN/LAN対応ネットワークツール(open-englishとは無関係)"; Flags: unchecked
+Name: "installrunotokyo"; Description: "runo.tokyo — independent personal site app / runo.tokyo——独立した個人サイトアプリ(open-englishとは無関係)"; Flags: unchecked
+Name: "installopenrunotray"; Description: "open-runo Tray — independent system-tray companion for the aon-co-jp ecosystem / open-runo Tray——独立したシステムトレイ常駐アプリ(open-englishとは無関係)"; Flags: unchecked
 
 [Run]
+; aruaru-llmはopen-englishのAI応答機能そのものに必須のため(2026-08-26、
+; ユーザー指示「役割上一緒にインストールする事が必要なのは必ず一緒に
+; インストールするシステムにして」への対応)、選択式チェックボックスを
+; 廃止し常に取得する(旧`installaruarullm`タスクは削除済み)。取得先は
+; open-english自身の`{app}\aruaru-llm\`(独立したアンインストーラーを
+; 持たない、open-english自体をアンインストールすれば一緒に削除される)
+; ため、「むやみにそれだけアンインストールできない」という要件も
+; この配置だけで自然に満たされる。
 Filename: "powershell.exe"; \
     Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-aruaru-llm.ps1"" -DestDir ""{app}\aruaru-llm"""; \
-    StatusMsg: "Downloading aruaru-llm... / aruaru-llmをダウンロード中..."; \
-    Flags: runhidden waituntilterminated; \
-    Tasks: installaruarullm
+    StatusMsg: "Downloading aruaru-llm (required)... / aruaru-llm(必須)をダウンロード中..."; \
+    Flags: runhidden waituntilterminated
 Filename: "powershell.exe"; \
     Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-aruaru-db.ps1"" -DestDir ""{app}\aruaru-db"""; \
     StatusMsg: "Downloading aruaru-db (optional)... / aruaru-db(任意)をダウンロード中..."; \
@@ -169,6 +210,60 @@ Filename: "powershell.exe"; \
     StatusMsg: "Downloading open-cg-cad (optional)... / open-cg-cad(任意)をダウンロード中..."; \
     Flags: runhidden waituntilterminated; \
     Tasks: installopencgcad
+; その他のaon-co-jpエコシステムツール(2026-08-26新設、それぞれ独自の
+; インストーラー<リポジトリ名>-installer.exeをダウンロードし
+; /VERYSILENTで実行する。runhiddenを付けない——管理者権限が必要な
+; ものはUACプロンプトを表示する必要があるため)。
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo RS-Blog -DestDir ""{app}\related\RS-Blog"""; \
+    StatusMsg: "Installing RS-Blog (optional)... / RS-Blog(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installrsblog
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo RS-EC -DestDir ""{app}\related\RS-EC"""; \
+    StatusMsg: "Installing RS-EC (optional)... / RS-EC(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installrsec
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo RS-Guard -DestDir ""{app}\related\RS-Guard"""; \
+    StatusMsg: "Installing RS-Guard (optional)... / RS-Guard(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installrsguard
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo RS-Ops -DestDir ""{app}\related\RS-Ops"""; \
+    StatusMsg: "Installing RS-Ops (optional)... / RS-Ops(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installrsops
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo open-gitea -DestDir ""{app}\related\open-gitea"""; \
+    StatusMsg: "Installing open-gitea (optional)... / open-gitea(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installopengitea
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo open-raid-z -DestDir ""{app}\related\open-raid-z"""; \
+    StatusMsg: "Installing open-raid-z (optional)... / open-raid-z(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installopenraidz
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo open-redmine -DestDir ""{app}\related\open-redmine"""; \
+    StatusMsg: "Installing open-redmine (optional)... / open-redmine(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installopenredmine
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo rs-link-fusion -DestDir ""{app}\related\rs-link-fusion"""; \
+    StatusMsg: "Installing rs-link-fusion (optional)... / rs-link-fusion(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installrslinkfusion
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo runo.tokyo -DestDir ""{app}\related\runo.tokyo"""; \
+    StatusMsg: "Installing runo.tokyo (optional)... / runo.tokyo(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installrunotokyo
+Filename: "powershell.exe"; \
+    Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\fetch-related-tool.ps1"" -Owner aon-co-jp -Repo RPoem -DestDir ""{app}\related\open-runo-tray"" -AssetPattern ""open-runo-tray-installer.exe"""; \
+    StatusMsg: "Installing open-runo Tray (optional)... / open-runo Tray(任意)をインストール中..."; \
+    Flags: waituntilterminated; \
+    Tasks: installopenrunotray
 ; 実機E2E検証(2026-08-12)で発覚した実バグ: self_update.rsは
 ; `/VERYSILENT`でこのインストーラーを起動して無人での自動更新を行う
 ; ため、サーバー起動エントリに`skipifsilent`が付いていると更新後に

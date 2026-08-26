@@ -13,17 +13,24 @@ open-english をインストールしていただきありがとうございま�
 「💾 Data & Model Storage」パネルから随時バックアップを取ることを
 おすすめします。
 
-【2026-08-19更新】インストーラーの「aruaru-llmも一緒にインストール」
-オプション(既定でオン)を選んだ場合、コマンド操作は一切不要です。
-インストール中に aruaru-llm(AI応答エンジン)本体を自動でダウンロード
-し、このアプリの起動時(open-english-server.exeの起動時)に aruaru-llm
-がまだ動いていなければ自動的に起動します。スタートメニュー/デスクトップ
-のショートカットを実行するだけで、ブラウザが http://127.0.0.1:4601/ を
-開き、そのままAIとチャットできます。
+【2026-08-26更新】aruaru-llm(AI応答エンジン)は open-english の役割上
+必ず必要なため、コマンド操作もチェックボックスでの選択も不要で、常に
+自動的に一緒にインストールされます(以前は「aruaru-llmも一緒に
+インストール」という任意のチェックボックスでしたが、ユーザー指示
+「役割上一緒にインストールする事が必要なのは必ず一緒にインストール
+するシステムにして」への対応として、選択の余地なく必須コンポーネント
+としました)。このアプリの起動時(open-english-server.exeの起動時)に
+aruaru-llmがまだ動いていなければ自動的に起動します。スタートメニュー/
+デスクトップのショートカットを実行するだけで、ブラウザが
+http://127.0.0.1:4601/ を開き、そのままAIとチャットできます。
+aruaru-llmは独自のアンインストーラーを持たず(open-englishの一部として
+{app}\aruaru-llm\に配置されるのみ)、open-english自体をアンインストール
+すれば一緒に削除されます——それだけを個別にアンインストールすることは
+できません(意図された設計です)。
 
 正直な開示・制約:
-・「aruaru-llmも一緒にインストール」を外した場合、aruaru-llm本体は
-  取得されず自動起動もできません。その場合は以下から手動で取得し、
+・GitHub側に一時的にWindows向けリリースアセットが見つからない等の理由で
+  自動取得が失敗した場合は、以下から手動で取得し、
   {インストール先}\aruaru-llm\aruaru-llm.exe として配置してから
   このアプリを起動し直してください:
   https://github.com/aon-co-jp/aruaru-llm/releases
@@ -90,6 +97,22 @@ aruaru-llmインスタンス(既定http://127.0.0.1:4600)を指せば、
 自動起動はしません(ご自身で起動してください、既定
 http://127.0.0.1:4701/)。
 
+【任意】その他のaon-co-jpエコシステムツール(2026-08-26追加):
+インストール時に、RS-Blog・RS-EC・RS-Guard・RS-Ops・open-gitea・
+open-raid-z・open-redmine・rs-link-fusion・runo.tokyo・open-runo Tray
+——これらいずれも**open-english本体の動作には無関係な独立した
+aon-co-jp製アプリ**です。必要なものだけチェックを入れてください
+(既定はすべて未チェック)。open-easy-web/open-web-serverと違い、
+これらはそれぞれ**独自のインストーラー・アンインストーラーを持つ
+独立した製品として**インストールされます(open-englishをアン
+インストールしても自動的には削除されません、Windowsの「アプリと
+機能」から個別にアンインストール可能)。
+インストール完了後に、あとから追加・削除したくなった場合は、
+スタートメニューの「Manage related tools / 関連ツールの管理」を
+実行してください——対話メニューで、各ツールが現在インストール
+済みかどうかを確認し、番号を選んでインストール/アンインストール
+できます。
+
 ---
 
 Thank you for installing open-english.
@@ -107,19 +130,20 @@ automatic update will no longer lose your conversation history. If you
 want extra peace of mind, use the "💾 Data & Model Storage" panel in
 the app to back up your conversation history whenever you like.
 
-[Updated 2026-08-19] If you chose the installer's "Also install
-aruaru-llm" option (checked by default), no command-line steps are
-needed at all. The installer downloads the aruaru-llm (AI backend)
-binary during setup, and open-english-server.exe automatically
-launches it on startup if it isn't already running. Just run the
-Start Menu / Desktop shortcut, and your browser will open
-http://127.0.0.1:4601/ ready to chat.
+[Updated 2026-08-26] aruaru-llm (the AI backend) is required for
+open-english's core purpose, so it is no longer an optional checkbox —
+it is always downloaded and installed automatically, no command-line
+steps needed. open-english-server.exe automatically launches it on
+startup if it isn't already running. Just run the Start Menu / Desktop
+shortcut, and your browser will open http://127.0.0.1:4601/ ready to
+chat. aruaru-llm has no separate uninstaller of its own (it lives
+inside {app}\aruaru-llm\) — uninstalling open-english removes it too;
+it cannot be uninstalled on its own by design.
 
 Honest disclosure / limitations:
-- If you unchecked "Also install aruaru-llm", the binary is neither
-  fetched nor auto-launched. In that case, download it manually and
-  place it at {install dir}\aruaru-llm\aruaru-llm.exe, then restart
-  this app:
+- If the automatic download fails (e.g. a temporary gap in GitHub
+  release assets), download it manually and place it at
+  {install dir}\aruaru-llm\aruaru-llm.exe, then restart this app:
   https://github.com/aon-co-jp/aruaru-llm/releases
 - The AI model weights aruaru-llm needs for actual response
   generation (GPT-2 family, hundreds of MB) are not bundled by this
@@ -188,3 +212,17 @@ same local aruaru-llm instance (default http://127.0.0.1:4600) to
 share the drawing AI-explanation feature. open-cg-cad-server.exe is
 not auto-launched after download — run it yourself (default
 http://127.0.0.1:4701/).
+
+[Optional] Other aon-co-jp ecosystem tools (added 2026-08-26):
+During setup you can also check RS-Blog, RS-EC, RS-Guard, RS-Ops,
+open-gitea, open-raid-z, open-redmine, rs-link-fusion, runo.tokyo, and
+open-runo Tray — all of these are **independent aon-co-jp apps
+unrelated to open-english's own function** (all unchecked by default).
+Unlike open-easy-web/open-web-server above, each of these is installed
+as its **own product with its own installer/uninstaller** (they are
+not removed automatically when you uninstall open-english; uninstall
+them individually via Windows "Apps & features").
+If you want to add or remove any of them after setup is done, run
+"Manage related tools" from the Start Menu — an interactive menu
+shows which of these tools are currently installed and lets you pick
+a number to install or uninstall it.
