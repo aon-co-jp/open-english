@@ -1,5 +1,62 @@
 ﻿# 設計思想＆開発方針＆開発環境ルール(open-english)
 
+> **📌 2026-08-27追記(続き7・実装): Google検索もブラウザから直接呼び出す
+> 方式へ変更、aruaru-llmはキーを一切見なくなった**
+>
+> ユーザー指示「Google検索も、GitHubトークンと同じ『ブラウザから直接
+> Google Custom Search APIを呼ぶ』方式に変更すれば、aruaru-llmは原理的
+> に一切キーを見ずに済みます…この方式で実装して」への対応。
+>
+> **CORS対応の実機確認**: `curl -H "Origin: ..."`で
+> `www.googleapis.com/customsearch/v1`のレスポンスヘッダーを直接確認し、
+> **任意のOriginへ`Access-Control-Allow-Origin`を動的に返す**ことを
+> 確認した(`localhost:4601`・`https://example.com`の両方で検証、
+> いずれも該当Originがそのまま反射される)。これによりOpenAI/Gemini/
+> DeepSeekとは異なり、Google Custom Search JSON APIはブラウザからの
+> 直接呼び出しが可能と判明。
+>
+> **実装(`app.js`)**:
+> 1. `googleSearchDirect(query, apiKey, cx, maxResults)`: ブラウザから
+>    直接`googleapis.com`へfetchする新関数。
+> 2. `formatSearchResultsAsContext`/`buildSearchAugmentedPromptClient`:
+>    `aruaru-llm::web_search`側の`format_results_as_context`/
+>    `build_search_augmented_prompt`(2026-08-26導入のQA形式プロンプト)
+>    と**完全に同一の書式**をJS側に複製。挙動の差分を「キーを送らなく
+>    なったこと」だけに限定するため(検索結果活用の改善効果自体は
+>    変えない、誠実さのため)。
+> 3. メッセージ送信ロジックを変更: 訪問者自身のGoogle検索キーが設定
+>    されている場合(`ownGoogleSearchCreds`)、**ブラウザが直接検索を
+>    実行**→結果をQA形式プロンプトへ組み立て→**キーを一切含めずに
+>    `/v1/generate`(通常の生成エンドポイント)へ送信**、という経路に
+>    変更した。訪問者自身のキーが無い場合(共有サーバー側のグローバル
+>    設定に任せる場合)は、従来通り`/v1/generate-with-search`をキー
+>    無しで呼ぶ(この経路は元々ブラウザにキーが無いため無変更)。
+>
+> **正直な効果**: 訪問者自身のキーを使う場合、**`aruaru-llm`は
+> Google検索結果を含むプロンプト文字列は受け取るが、APIキー・cx自体は
+> 一度も受け取らなくなった**——前回エントリで議論した「Google検索も
+> ブラウザ直接呼び出し化すればaruaru-llmにキーが渡らなくなる」という
+> 方針を実際に達成した。GitHub連携の`vault.html`とは異なり、こちらは
+> `aruaru-llm`自体との通信(検索結果を踏まえた生成)は引き続き必要
+> なため、専用iframeは使わず通常のページJSで直接fetchする設計とした
+> (検索結果自体は個人情報ではなく、`aruaru-llm`へ渡っても問題ない
+> 情報のため、隔離の必要性がGitHubトークンほど高くないという判断)。
+>
+> **実機検証(2026-08-27)**: `node --check`でapp.jsの構文確認、
+> ブラウザで`formatSearchResultsAsContext`/
+> `buildSearchAugmentedPromptClient`がRust側と同一書式を生成すること、
+> `googleSearchDirect`がダミーキーで実際に`googleapis.com`へ到達し
+> (`HTTP 400 API key not valid`という現実のエラーメッセージが返る
+> ことを確認——ネットワーク層まで実際に動作している証拠)、を確認済み。
+> **実際に有効なAPIキーでの検索結果取得・生成への反映までのE2Eは
+> 未実施**(この開発機に実キーが無いため、次回課題として正直に記録)。
+>
+> **次にすべきこと**: (1) 実際に有効なGoogle検索APIキーでのE2E検証、
+> (2) 同様の「ブラウザ直接呼び出し」方式が使える他の外部APIが無いか
+> 継続調査。
+>
+> ---
+>
 > **📌 2026-08-27追記(続き6・実装): Google検索トグルを「送信ごとに自動
 > OFF」化(ユーザー指示「必要な所だけON/OFF」への対応、実機検証済み)**
 >
