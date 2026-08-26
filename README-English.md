@@ -7,7 +7,18 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-27, cont. 3)**: Extended login to support
+> 📌 **Latest update (2026-08-27, cont. 4)**: Live end-to-end testing
+> uncovered a quality bug in the search-augmented prompt: the persona
+> template and a second generation cue were getting nested inside the
+> "question," instead of a clean `Question: {raw user text}\nAnswer:`
+> structure. Fixed and verified via a fetch interceptor that the
+> request sent to `aruaru-llm` now has the intended simple structure.
+> Also fixed a key-leak bug and a misleading status message in the
+> Google Search ④ vault mode (and applied the same defensive fix to the
+> GitHub token side). See the 2026-08-27 (cont. 11-13) entries in
+> [CLAUDE.md](CLAUDE.md) for details.
+>
+> 📌 **Update (2026-08-27, cont. 3)**: Extended login to support
 > a second, optional backup email address alongside the required first
 > one. The same one-time code is sent to both; receiving it at either
 > is enough to log in (this is not two-factor authentication — it's a
