@@ -28,10 +28,11 @@ open-english をインストールしていただきありがとうございま�
   このアプリを起動し直してください:
   https://github.com/aon-co-jp/aruaru-llm/releases
 ・aruaru-llmの実際の応答生成に使うAIモデルの重み(GPT-2系、数百MB)は
-  このインストーラーには含まれません。初回起動時に aruaru-llm 側の
-  「POST /v1/models/install」、または aruaru-llm 自身のREADMEの手順で
-  別途取得してください(未取得の場合、aruaru-llmはその旨を正直に
-  返します)。
+  このインストーラーには含まれません。取得にコマンド入力は不要です
+  ——open-englishを開き、「⚙ Setup aruaru-llm.」パネル内の
+  「🧠 Recommend LLM / おすすめLLM」ボタンを押すだけで、お使いの
+  端末に合ったモデルを自動的に検出・ダウンロードします(未取得の
+  間は、aruaru-llmがその旨を正直に返します)。
 ・GitHubのリリースにWindows向け aruaru-llm アセットが見つからない場合
   (例: 一時的な欠落)、自動取得はスキップされ、上記の手動手順が
   必要になります。
@@ -122,9 +123,11 @@ Honest disclosure / limitations:
   https://github.com/aon-co-jp/aruaru-llm/releases
 - The AI model weights aruaru-llm needs for actual response
   generation (GPT-2 family, hundreds of MB) are not bundled by this
-  installer. Fetch them separately on first run via aruaru-llm's own
-  "POST /v1/models/install", or follow its README (aruaru-llm will
-  honestly report if weights are missing).
+  installer. No commands needed to fetch them — open open-english,
+  go to the "⚙ Setup aruaru-llm." panel, and click the
+  "🧠 Recommend LLM" button; it auto-detects your hardware and
+  downloads a matching model (aruaru-llm will honestly report if
+  weights are still missing).
 - If no Windows aruaru-llm release asset is found on GitHub (e.g. a
   temporary gap), the automatic fetch is skipped and the manual steps
   above are required.

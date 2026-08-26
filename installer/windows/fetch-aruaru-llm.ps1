@@ -2,10 +2,14 @@
 # 「まとめてインストール」タスクから取得するスクリプト(2026-08-11新設)。
 #
 # 正直な開示: これはaruaru-llmの実行ファイルのみを取得する。GPT-2/
-# DistilGPT-2の実モデル重み(数百MB〜数GB、初回起動時に別途ダウンロード
-# または `POST /v1/models/install` で取得)・aruaru-db・PostgreSQLは
-# 含まない——それぞれ別リポジトリのセットアップ手順に従うこと
-# (README-INSTALLED.txt参照)。
+# DistilGPT-2の実モデル重み(数百MB〜数GB)は含まない——ただしこれは
+# 手動コマンド不要で取得できる。open-englishを起動し「⚙ Setup
+# aruaru-llm.」パネル内の「🧠 Recommend LLM / おすすめLLM」ボタンを
+# 押すだけでよい(内部でaruaru-llm側のAPIを自動的に呼ぶGUI導線、
+# 2026-08-26修正——以前は`POST /v1/models/install`という生のAPI呼び
+# 出しを案内していたが、これは大半の利用者が実行できないコマンドで
+# あり不親切だった)。aruaru-db・PostgreSQLは含まない——それぞれ別
+# リポジトリのセットアップ手順に従うこと(README-INSTALLED.txt参照)。
 param(
     [Parameter(Mandatory = $true)]
     [string]$DestDir
@@ -30,7 +34,7 @@ try {
     Expand-Archive -Path $zipPath -DestinationPath $DestDir -Force
     Remove-Item $zipPath -Force
 
-    Write-Output "aruaru-llm downloaded to $DestDir. Model weights are NOT included - run aruaru-llm.exe once and use POST /v1/models/install, or see its own README."
+    Write-Output "aruaru-llm downloaded to $DestDir. Model weights are NOT included - no manual commands needed, just open open-english, go to 'Setup aruaru-llm', and click the 'Recommend LLM' button."
 } catch {
     # ダウンロード失敗はインストーラー全体を止めない(可用性優先、
     # 既存のaruaru-llm自体の「サービスを止めない」設計方針と同じ)。
