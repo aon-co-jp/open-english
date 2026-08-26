@@ -7,7 +7,17 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-26, cont. 3)**: Added a new "Freelance
+> 📌 **Latest update (2026-08-27)**: Expanded how the Freelance Dev
+> Corner's GitHub token is handed over, to three options: ① read from
+> a local file each time, never saved (recommended), ② encrypt with a
+> passphrase (AES-GCM) before saving — a convenience/security
+> trade-off, with its real limits honestly disclosed, ③ save in plain
+> text (not recommended, the old behavior). Verified end to end
+> (encrypt/decrypt round-trip, wrong-passphrase failure, clearing, and
+> file-based loading all confirmed). See the 2026-08-27 entry in
+> [CLAUDE.md](CLAUDE.md) for details.
+>
+> 📌 **Update (2026-08-26, cont. 3)**: Added a new "Freelance
 > Dev Corner" (💼 button). Implemented and verified end to end: pick
 > from 100 programming languages (or type your own) + a framework, open
 > Google search in a new tab for official info and freelance/IT job
