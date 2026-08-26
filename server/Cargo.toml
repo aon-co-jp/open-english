@@ -89,3 +89,5 @@ wasmtime = "48"
 # としてのみ使う(`world_lab.rs`と同様「本番向けではない」旨をコード内
 # doc・CLAUDE.mdの両方で明記する)。
 rcgen = "0.13"
+lettre = { version = "0.11.19", default-features = false, features = ["smtp-transport", "tokio1-rustls-tls", "builder", "pool"] }
+ring = "0.17.14"

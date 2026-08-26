@@ -147,7 +147,7 @@
 //! エラーメッセージとして利用者へ返す(黙って成功したことにしない)。
 
 use anyhow::{Context, Result};
-use rusqlite::Connection;
+use rusqlite::{Connection, OptionalExtension};
 use std::path::PathBuf;
 use std::sync::Mutex;
 
@@ -807,6 +807,14 @@ impl Db {
             .execute("INSERT INTO settings (key, value) VALUES (?1, ?2) ON CONFLICT(key) DO UPDATE SET value = excluded.value", rusqlite::params![key, value])
             .context("failed to upsert setting")?;
         Ok(())
+    }
+
+    /// 単一設定値の取得(2026-08-26新設、auth.rsのログイン要否設定用)。
+    pub fn get_setting(&self, key: &str) -> Result<Option<String>> {
+        let conn = self.conn.lock().unwrap();
+        conn.query_row("SELECT value FROM settings WHERE key = ?1", rusqlite::params![key], |row| row.get::<_, String>(0))
+            .optional()
+            .context("failed to read setting")
     }
 
     pub fn get_all_settings(&self) -> Result<Vec<(String, String)>> {

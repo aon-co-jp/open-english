@@ -17,6 +17,7 @@ use std::net::SocketAddr;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+mod auth;
 mod component_update;
 mod db;
 mod github_agent;
@@ -396,6 +397,139 @@ async fn db_get_settings(db: Arc<Db>) -> Response {
             rs_json_response(StatusCode::OK, &map)
         }
         Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+/// ログイン保護の現在の設定を返す(2026-08-26新設、auth.rsモジュール
+/// doc参照)。`login_required`はDB設定(既定false)、`smtp_configured`は
+/// 環境変数の有無から判定する(実際にメール送信が可能かどうかの正直な
+/// 開示)。
+async fn auth_config(db: Arc<Db>) -> Response {
+    let login_required =
+        db.get_setting(auth::LOGIN_REQUIRED_SETTING_KEY).ok().flatten().map(|v| v == "true").unwrap_or(false);
+    rs_json_response(
+        StatusCode::OK,
+        &serde_json::json!({
+            "login_required": login_required,
+            "smtp_configured": auth::is_smtp_configured(),
+        }),
+    )
+}
+
+#[derive(serde::Deserialize)]
+struct SetAuthConfigRequest {
+    login_required: bool,
+}
+
+async fn auth_set_config(req: Request, db: Arc<Db>) -> Response {
+    let body: SetAuthConfigRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match db.set_setting(auth::LOGIN_REQUIRED_SETTING_KEY, if body.login_required { "true" } else { "false" }) {
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"ok": true, "login_required": body.login_required})),
+        Err(e) => rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": e.to_string()})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct RequestOtpRequest {
+    email: String,
+}
+
+async fn auth_request_otp(req: Request) -> Response {
+    let body: RequestOtpRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    if !auth::is_smtp_configured() {
+        return rs_json_response(
+            StatusCode::SERVICE_UNAVAILABLE,
+            &serde_json::json!({
+                "error": "SMTP is not configured on this server. Set OPEN_ENGLISH_SMTP_HOST/_PORT/_USER/_PASSWORD/_FROM. / このサーバーではSMTPが未設定です。OPEN_ENGLISH_SMTP_HOST/_PORT/_USER/_PASSWORD/_FROMを設定してください。"
+            }),
+        );
+    }
+    match auth::request_otp(&body.email).await {
+        Ok(()) => rs_json_response(StatusCode::OK, &serde_json::json!({"sent": true})),
+        Err(e) => rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": format!("{e:#}")})),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct VerifyOtpRequest {
+    email: String,
+    code: String,
+}
+
+async fn auth_verify_otp(req: Request) -> Response {
+    let body: VerifyOtpRequest = match read_rs_json_body(req).await {
+        Ok(v) => v,
+        Err(resp) => return resp,
+    };
+    match auth::verify_otp(&body.email, &body.code) {
+        Ok(token) => {
+            let body = rust_json::to_vec_strict(&serde_json::json!({"ok": true})).unwrap_or_else(|_| b"{}".to_vec());
+            // HttpOnly+SameSite=Laxでクッキーを発行する(XSS経由の窃取を
+            // 難しくする、CSRF対策としてはSameSite=Laxが最低限の防御)。
+            // `Secure`属性は付けていない(このアプリは既定で平文HTTPの
+            // localhost/LAN向けであり、TLS未使用環境でSecureを付けると
+            // クッキーが一切送信されなくなるため——TLS有効時
+            // 〈OPEN_ENGLISH_TLS_ENABLED〉に限定してSecureを付ける改善は
+            // 次回以降の課題)。
+            hyper::Response::builder()
+                .status(StatusCode::OK)
+                .header("content-type", "application/json")
+                .header(
+                    "set-cookie",
+                    format!("{}={token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400", auth::SESSION_COOKIE_NAME),
+                )
+                .body(open_runo_poem_compat::hyper_compat::fixed_body(bytes::Bytes::from(body)))
+                .expect("building a response from a fixed set of valid headers cannot fail")
+        }
+        Err(e) => rs_json_response(StatusCode::UNAUTHORIZED, &serde_json::json!({"error": format!("{e:#}")})),
+    }
+}
+
+async fn auth_session(req: Request) -> Response {
+    let cookie_header = req.headers().get("cookie").and_then(|v| v.to_str().ok());
+    let token = auth::extract_session_cookie(cookie_header);
+    let email = token.as_deref().and_then(auth::session_email);
+    rs_json_response(StatusCode::OK, &serde_json::json!({"logged_in": email.is_some(), "email": email}))
+}
+
+async fn auth_logout(req: Request) -> Response {
+    let cookie_header = req.headers().get("cookie").and_then(|v| v.to_str().ok());
+    if let Some(token) = auth::extract_session_cookie(cookie_header) {
+        auth::logout(&token);
+    }
+    hyper::Response::builder()
+        .status(StatusCode::OK)
+        .header("content-type", "application/json")
+        .header("set-cookie", format!("{}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0", auth::SESSION_COOKIE_NAME))
+        .body(open_runo_poem_compat::hyper_compat::fixed_body(bytes::Bytes::from(&b"{\"ok\":true}"[..])))
+        .expect("building a response from a fixed set of valid headers cannot fail")
+}
+
+/// ログイン保護が有効な場合のみ、有効なセッションCookieを要求する
+/// ゲート(2026-08-26新設)。保護対象ハンドラの先頭で呼ぶ——`Ok(())`なら
+/// 続行、`Err(response)`ならそのレスポンスをそのまま返して処理を止める。
+/// **正直な開示**: 現時点で実際にこのゲートを適用しているのは
+/// `/v1/db/*`(会話履歴・設定)のみ(auth.rsモジュールdoc参照)。
+async fn require_session(req: &Request, db: &Arc<Db>) -> Result<(), Response> {
+    let login_required =
+        db.get_setting(auth::LOGIN_REQUIRED_SETTING_KEY).ok().flatten().map(|v| v == "true").unwrap_or(false);
+    if !login_required {
+        return Ok(());
+    }
+    let cookie_header = req.headers().get("cookie").and_then(|v| v.to_str().ok());
+    let token = auth::extract_session_cookie(cookie_header);
+    match token.as_deref().and_then(auth::session_email) {
+        Some(_) => Ok(()),
+        None => Err(rs_json_response(
+            StatusCode::UNAUTHORIZED,
+            &serde_json::json!({"error": "login required / ログインが必要です"}),
+        )),
     }
 }
 
@@ -1699,27 +1833,66 @@ async fn main() {
     app = app.at("/v1/region-info", get(handler_fn(move |req, _p| async move { region_info(req).await })));
     app = app.at("/v1/region-news", get(handler_fn(move |req, _p| async move { region_news(req).await })));
 
+    // email+OTPログイン(2026-08-26新設、auth.rsモジュールdoc参照)。
+    {
+        let db_for_auth_get = Arc::clone(&db);
+        let db_for_auth_set = Arc::clone(&db);
+        app = app.at(
+            "/v1/auth/config",
+            get(handler_fn(move |_req, _p| {
+                let db = Arc::clone(&db_for_auth_get);
+                async move { auth_config(db).await }
+            }))
+            .post(handler_fn(move |req, _p| {
+                let db = Arc::clone(&db_for_auth_set);
+                async move { auth_set_config(req, db).await }
+            })),
+        );
+        app = app.at("/v1/auth/request-otp", post(handler_fn(move |req, _p| async move { auth_request_otp(req).await })));
+        app = app.at("/v1/auth/verify-otp", post(handler_fn(move |req, _p| async move { auth_verify_otp(req).await })));
+        app = app.at("/v1/auth/session", get(handler_fn(move |req, _p| async move { auth_session(req).await })));
+        app = app.at("/v1/auth/logout", post(handler_fn(move |req, _p| async move { auth_logout(req).await })));
+    }
+
     // 会話履歴・設定の永続化API(2026-08-18新設、db.rsモジュールdoc参照)。
     {
+        // ログイン保護(2026-08-26新設、auth.rsモジュールdoc参照)が有効な
+        // 場合、会話履歴・設定という最も個人情報に近いデータへは
+        // `require_session`でセッションCookieを要求する。
         let db_for_add = Arc::clone(&db);
         let db_for_list = Arc::clone(&db);
         app = app.at(
             "/v1/db/history",
             post(handler_fn(move |req, _p| {
                 let db = Arc::clone(&db_for_add);
-                async move { db_add_message(req, db).await }
+                async move {
+                    if let Err(resp) = require_session(&req, &db).await {
+                        return resp;
+                    }
+                    db_add_message(req, db).await
+                }
             }))
-            .get(handler_fn(move |_req, _p| {
+            .get(handler_fn(move |req, _p| {
                 let db = Arc::clone(&db_for_list);
-                async move { db_list_messages(db).await }
+                async move {
+                    if let Err(resp) = require_session(&req, &db).await {
+                        return resp;
+                    }
+                    db_list_messages(db).await
+                }
             })),
         );
         let db_for_clear = Arc::clone(&db);
         app = app.at(
             "/v1/db/history/clear",
-            post(handler_fn(move |_req, _p| {
+            post(handler_fn(move |req, _p| {
                 let db = Arc::clone(&db_for_clear);
-                async move { db_clear_messages(db).await }
+                async move {
+                    if let Err(resp) = require_session(&req, &db).await {
+                        return resp;
+                    }
+                    db_clear_messages(db).await
+                }
             })),
         );
         let db_for_set = Arc::clone(&db);
@@ -1728,11 +1901,21 @@ async fn main() {
             "/v1/db/settings",
             post(handler_fn(move |req, _p| {
                 let db = Arc::clone(&db_for_set);
-                async move { db_set_setting(req, db).await }
+                async move {
+                    if let Err(resp) = require_session(&req, &db).await {
+                        return resp;
+                    }
+                    db_set_setting(req, db).await
+                }
             }))
-            .get(handler_fn(move |_req, _p| {
+            .get(handler_fn(move |req, _p| {
                 let db = Arc::clone(&db_for_get);
-                async move { db_get_settings(db).await }
+                async move {
+                    if let Err(resp) = require_session(&req, &db).await {
+                        return resp;
+                    }
+                    db_get_settings(db).await
+                }
             })),
         );
         let db_for_info = Arc::clone(&db);
