@@ -424,3 +424,22 @@ ein Einzel-Pairing; ein fehlgeschlagener Eintrag verwirft nicht die
 erfolgreichen anderen (Stapelgrößenlimit 100). Verifiziert mit 30
 simulierten Büro-PCs in einer Anfrage sowie live im Browser. Vollständige
 Details nur in der japanischen Version von CLAUDE.md.
+
+## Multi-LLM-Anbieter-Priorität (2026-08-26)
+
+Neben Google Search können jetzt ChatGPT (OpenAI), DeepSeek, Gemini und
+Claude (Anthropic) einzeln oder gleichzeitig aufgerufen werden (Hauptteil
+in `aruaru-llm`: `chat_providers.rs` / `provider_priority.rs`). Das neue
+Panel "🔀 AI Provider Priority" erlaubt "kostenlose Kontingente der Reihe
+nach aufbrauchen" — die Reihenfolge der 5 Dienste kann per Zahleneingabe
+oder nummerierten Radiobuttons geändert werden (Duplikate werden per
+Tausch aufgelöst). API-Schlüssel werden nur im lokalen Speicher dieses
+Browsers gespeichert und beim Speichern an die eigene aruaru-llm-Instanz
+als Laufzeiteinstellung gesendet (nie auf Festplatte geschrieben, gleiche
+Richtlinie wie bei Google Search). Sicherheitsüberprüfung: Gemini-Schlüssel
+läuft jetzt über den Header `x-goog-api-key` statt Query-String; ein
+Prompt-Längenlimit (20.000 Zeichen) wurde eingeführt, um versehentliche
+hohe API-Kosten zu vermeiden. Live verifiziert: Browser-UI → Einstellung
+auf aruaru-llm angewendet → echte HTTP-Anfrage an die Anthropic-API.
+Vollständige Details nur in der japanischen Version von CLAUDE.md
+(2026-08-26 HANDOFF).

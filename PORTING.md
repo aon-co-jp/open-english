@@ -2,6 +2,26 @@
 
 他プロジェクトへ`open-english`の実装パターンを移植する際の要点をまとめる。
 
+## 0-b. マルチLLMプロバイダ優先順位パネルの移植ポイント(2026-08-26追記)
+
+「🔀 AI Provider Priority」パネル(ChatGPT/DeepSeek/Gemini/Claudeの単体・
+同時実行呼び出し+無料枠優先順次使用)を他プロジェクトへ移植する場合:
+- **サーバー側実装は`aruaru-llm`にある**(`src/chat_providers.rs`・
+  `src/provider_priority.rs`)。open-english側はUIのみで、APIキー自体は
+  持たない——上記0番のGoogle検索キーと同じく、各社APIキーはブラウザの
+  localStorageにのみ保存し、保存操作のたびに`POST /v1/settings/
+  chat-providers`(1プロバイダずつ)・`POST /v1/settings/
+  provider-priority`(5サービス共通の順序+有効/無効)へ実行時設定として
+  送る設計を踏襲すること。
+- 優先順位の並べ替えは「番号入力欄」「番号のラジオボタン」のどちらから
+  でも同じ`setPosition()`関数を通す設計(重複は入れ替えで解決)——
+  片方だけ実装すると要件を満たさない。
+- パネルを開くたびに`GET /v1/settings/provider-priority`・
+  `GET /v1/settings/chat-providers`を呼び、サーバー側の実際の現状
+  (環境変数等で既に設定済みの場合を含む)を反映すること(2026-08-26の
+  実機TESTで発見した使いやすさの粗——保存するまで画面に何も表示され
+  ないUIは分かりにくい)。
+
 ## 0. Google検索APIキーは訪問者ごとにブラウザローカル保存(2026-08-25追記)
 
 複数の訪問者が同一の`aruaru-llm`インスタンスを共有するデプロイ

@@ -239,3 +239,18 @@ Beim Hinzufügen von `bulk_pair()`: intern denselben einzelnen `pair()`-
 Aufruf wiederverwenden (keine separate, laxere Validierungslogik für den
 Massenfall). Teilerfolge zulassen statt alles abzubrechen, wenn ein
 Eintrag ungültig ist. Eine feste Obergrenze für die Stapelgröße setzen.
+
+## Multi-LLM-Anbieter-Priorität-Panel (2026-08-26)
+
+Die serverseitige Implementierung liegt in `aruaru-llm`
+(`chat_providers.rs` / `provider_priority.rs`). Die open-english-Seite
+enthält nur die UI — API-Schlüssel werden wie beim Google-Search-Setup
+nur im lokalen Speicher des Browsers gespeichert und bei jedem Speichern
+als Laufzeiteinstellung an `POST /v1/settings/chat-providers` /
+`POST /v1/settings/provider-priority` gesendet. Die Reihenfolge kann
+sowohl per Zahleneingabe als auch per nummeriertem Radiobutton geändert
+werden — beide müssen dieselbe `setPosition()`-Funktion durchlaufen
+(Duplikate werden per Tausch aufgelöst). Beim Öffnen des Panels sollte
+der tatsächliche Serverstatus abgerufen werden (`GET`-Endpunkte), damit
+bereits per Umgebungsvariable konfigurierte Anbieter sichtbar sind.
+Details siehe japanische PORTING.md.

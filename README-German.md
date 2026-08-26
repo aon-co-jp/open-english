@@ -1,5 +1,16 @@
 ﻿# open-english
 
+> 📌 **Neuestes Update (2026-08-26): Multi-LLM-Anbieter-Priorität.**
+> Neben der Google-Suche können jetzt ChatGPT (OpenAI), DeepSeek, Gemini
+> und Claude (Anthropic) einzeln oder gleichzeitig aufgerufen werden. Das
+> neue Panel „🔀 AI Provider Priority" erlaubt es, „kostenlose Kontingente
+> der Reihe nach aufbrauchen" zu aktivieren — die Reihenfolge der 5 Dienste
+> kann per Zahleneingabe oder nummerierten Radiobuttons festgelegt werden.
+> API-Schlüssel werden nur im lokalen Speicher dieses Browsers gespeichert
+> und als Laufzeiteinstellung an die eigene aruaru-llm-Instanz gesendet
+> (nie dort auf Festplatte geschrieben). Live über echte HTTP-Anfragen an
+> Anthropic verifiziert. Details siehe CLAUDE.md.
+
 > 📌 **Update (2026-08-25, Fortsetzung 2): Massen-Pairing hinzugefügt.** Neue Funktion für Büros/große Filialen mit vielen PCs/Tablets/Handys — Gerätenamen zeilenweise einfügen und alle in einer Aktion pairen. Das Grundprinzip bleibt unverändert: erfordert weiterhin das korrekte Token und explizites Handeln, jeder Eintrag durchläuft dieselbe Validierung wie ein einzelnes Pairing. Details siehe CLAUDE.md.
 
 > 📌 **Update (2026-08-25, Fortsetzung): „wan"-Verbindungslabel hinzugefügt,
