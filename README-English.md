@@ -7,7 +7,20 @@
 [Українська](README-Ukrainian.md) · [עברית](README-Hebrew.md) ·
 [فارسی](README-Persian.md) · [العربية](README-Arabic.md)
 
-> 📌 **Latest update (2026-08-27)**: Expanded how the Freelance Dev
+> 📌 **Latest update (2026-08-27, cont.)**: Extended the same secure
+> hand-over options (① file / ② encrypted / ③ plain) to the Google
+> Search API key. For the AI provider keys (ChatGPT/DeepSeek/Gemini/
+> Claude), we deliberately did **not** add encryption — they're always
+> sent in plain text to your aruaru-llm server by design, so encrypting
+> the browser-side copy wouldn't meaningfully help, and we chose not to
+> add security theater (the reasoning is spelled out in the UI). Also
+> added guidance recommending you revoke/reissue any GitHub token saved
+> during the 2026-08-26–27 plain-text-only window, and general advice
+> to discard/reissue any VPS/rental-server SSH keys you may have stored
+> in plain text elsewhere before this secure hand-over mechanism
+> existed. See the 2026-08-27 (cont.) entry in [CLAUDE.md](CLAUDE.md).
+>
+> 📌 **Update (2026-08-27)**: Expanded how the Freelance Dev
 > Corner's GitHub token is handed over, to three options: ① read from
 > a local file each time, never saved (recommended), ② encrypt with a
 > passphrase (AES-GCM) before saving — a convenience/security
