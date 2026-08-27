@@ -1,5 +1,28 @@
 ﻿# 設計思想＆開発方針＆開発環境ルール(open-english)
 
+> **📌 2026-08-27追記(続き15): インストール後の起動方法(検索語)を
+> README.md/README-English.md/README-INSTALLED.txtへ日英併記で記載**
+>
+> ユーザーからの質問「アイコンをダブルクリックか、左下の検索では、
+> 何と検索したらアプリが起動できますか? open-englishで良い?」への
+> 回答として、`installer/windows/open-english.iss`を確認し、アプリ名・
+> スタートメニューのグループ名・ショートカット名がいずれも
+> 「open-english」という文字列で統一されていることを確認した(回答:
+> はい、「open-english」で検索すれば見つかる)。この説明をREADME.md/
+> README-English.md(「必要なインストーラー一覧」節、WEB版=GitHub上で
+> 読まれるドキュメント)とinstaller/windows/README-INSTALLED.txt
+> (アプリ版=インストール後にローカルで表示されるドキュメント、日本語
+> 専用だったため英語も併記)の両方へ日英併記で追記した。
+>
+> あわせて、インストーラー本体(`open-english-installer.exe`)が
+> `installer/windows/open-english-installer.exe`としてGitHubリポジトリ
+> 内に直接コミットされている(2026-08-26のHANDOFF参照)ことを再確認し、
+> READMEからそのパスへのリンクも追加した(GitHub Releasesの
+> 「latest」リンクが引き続き推奨だが、リポジトリ内から直接辿りたい
+> 場合の分かりやすい導線として)。
+>
+> ---
+>
 > **📌 2026-08-27追記(続き14・BUG修正): Chromeシークレット起動
 > ショートカットの起動先URLを修正(ユーザーからの質問「シークレット
 > モードにした場合、そのURLはどうしますか？」がきっかけ)**

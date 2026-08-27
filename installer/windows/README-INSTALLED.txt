@@ -1,5 +1,19 @@
 open-english をインストールしていただきありがとうございます。
 
+【起動方法・2026-08-27追記、ユーザーからの質問への回答】
+アプリ名・スタートメニューのグループ名・ショートカット名は、いずれも
+「open-english」という文字列で統一されています。デスクトップアイコンの
+ダブルクリックでも、Windows検索(画面左下の検索欄)に「open-english」と
+入力してもアプリが見つかり起動できます(デスクトップアイコン作成を
+選んだ場合、そのアイコンも同じ「open-english」という名前です)。
+[How to launch it (added 2026-08-27, in response to a user question)]
+The app name, Start Menu group name, and shortcut name are all the
+same string, "open-english". You can launch it either by
+double-clicking the desktop icon or by typing "open-english" into
+Windows Search (bottom-left search box) -- both find the same app (if
+you chose to create a desktop icon, it uses the same "open-english"
+name too).
+
 【重要・2026-08-20追記】会話履歴データについて:
 アンインストール(「アプリと機能」から手動でアンインストールした場合)
 を選ぶと、会話履歴・設定を保存している {app}\data\ フォルダも含めて

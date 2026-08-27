@@ -946,6 +946,29 @@ software (no build-from-source required, close to a one-tap install).
 | 1 | **open-english itself** (this repo — static frontend + delivery server) | [open-english-installer.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-installer.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest) (`open-english-installer-<os>.tar.gz`) | [APK](https://github.com/aon-co-jp/open-english/releases/latest) (`open-english-installer.apk`) |
 | 2 | **aruaru-llm** (the AI response engine — required, chat won't work without it) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Bundled already (included inside open-english's APK, no separate install needed) |
 
+**How to launch it after installing (added 2026-08-27, in response to a
+user question)**: the app name, Start Menu group name, and shortcut
+name in the installer (`installer/windows/open-english.iss`) are all
+the same string, **"open-english"**. You can launch it either by
+double-clicking the desktop icon or by typing "open-english" into
+Windows Search (bottom-left search box) — both find the same app (the
+desktop icon, if you chose to create one during install, also uses the
+same "open-english" name). / **インストール後の起動方法(2026-08-27
+追記、ユーザーからの質問への回答)**: インストーラーのアプリ名・
+スタートメニューのグループ名・ショートカット名は、いずれも
+「open-english」という文字列で統一されています。デスクトップアイコンの
+ダブルクリックでも、Windows検索(画面左下の検索欄)に「open-english」と
+入力してもアプリが見つかり起動できます。
+
+The installer binary (`open-english-installer.exe`) is also committed
+directly in the GitHub repository at
+[`installer/windows/open-english-installer.exe`](installer/windows/open-english-installer.exe)
+(the GitHub Releases "latest" link above is still the recommended way
+to get it, but this is a clear, discoverable spot if you'd rather
+browse the repo directly). / インストーラー本体は
+[`installer/windows/open-english-installer.exe`](installer/windows/open-english-installer.exe)
+にも直接コミットされています。
+
 **Honest disclosure**: the "latest" links above always point to the newest GitHub
 Release (use the [Releases page](https://github.com/aon-co-jp/open-english/releases)
 directly if you want a specific pinned version). There is no prebuilt macOS binary for

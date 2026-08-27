@@ -1097,6 +1097,34 @@ open-englishを動かすには、以下2つのソフトをダウンロード・�
 | 1 | **open-english本体**(このリポジトリ、静的フロントエンド+配信サーバー) | [open-english-installer.exe](https://github.com/aon-co-jp/open-english/releases/latest/download/open-english-installer.exe) | [tar.gz](https://github.com/aon-co-jp/open-english/releases/latest)(`open-english-installer-<os>.tar.gz`) | [APK](https://github.com/aon-co-jp/open-english/releases/latest)(`open-english-installer.apk`) |
 | 2 | **aruaru-llm**(AI応答エンジン、必須——無いとチャット機能が動きません) | [aruaru-llm-windows-x86_64.zip](https://github.com/aon-co-jp/aruaru-llm/releases/latest/download/aruaru-llm-windows-x86_64.zip) | [tar.gz](https://github.com/aon-co-jp/aruaru-llm/releases/latest) | Android版は同梱済み(open-englishのAPK内に含まれる、別途インストール不要) |
 
+**インストール後の起動方法(2026-08-27追記、ユーザーからの質問への
+回答)**: インストーラー(`installer/windows/open-english.iss`)の
+アプリ名・スタートメニューのグループ名・ショートカット名は、いずれも
+**「open-english」**という文字列で統一されています。デスクトップ
+アイコンのダブルクリックでも、Windows検索(画面左下の検索欄)に
+「open-english」と入力してもアプリが見つかり起動できます(既定で
+デスクトップアイコンも「open-english」という名前で作成されます、
+インストール時に「デスクトップアイコンを作成」を選んだ場合)。<br />
+**How to launch it after installing (added 2026-08-27, in response to a
+user question)**: the app name, Start Menu group name, and shortcut
+name in the installer (`installer/windows/open-english.iss`) are all
+the same string, **"open-english"**. You can launch it either by
+double-clicking the desktop icon or by typing "open-english" into
+Windows Search (bottom-left search box) — both find the same app (the
+desktop icon, if you chose to create one during install, also uses the
+same "open-english" name).
+
+なお、インストーラー本体(`open-english-installer.exe`)はGitHubリポジトリ
+内の[`installer/windows/open-english-installer.exe`](installer/windows/open-english-installer.exe)
+にも直接コミットされています(通常はGitHub Releasesの最新版リンクを
+推奨しますが、リポジトリ内から直接辿りたい場合の分かりやすい場所として)。<br />
+The installer binary (`open-english-installer.exe`) is also committed
+directly in the GitHub repository at
+[`installer/windows/open-english-installer.exe`](installer/windows/open-english-installer.exe)
+(the GitHub Releases "latest" link below is still the recommended way
+to get it, but this is a clear, discoverable spot if you'd rather
+browse the repo directly).
+
 **正直な開示**: 上記の表の「latest」リンクはGitHub Releasesの最新版を指す
 自動追従リンクです(タグを固定した特定バージョンが欲しい場合は
 [Releasesページ](https://github.com/aon-co-jp/open-english/releases)から
