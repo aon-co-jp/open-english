@@ -100,7 +100,22 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDi
 ; (ユーザー指示「インストールが完了したあとでも、インストールや
 ; アンインストール可能なものは簡単に行えるようにして」への対応、
 ; 2026-08-26)。対話メニューのためコンソールウィンドウを表示する。
-Name: "{group}\Manage related tools \ 関連ツールの管理"; \
+;
+; 【2026-08-27 BUG修正、続き】Nameパラメータ内の"\"はInno Setupにとって
+; スタートメニューの「サブフォルダ区切り」であり、単なる日英併記の
+; 視覚的な区切り文字としては使えない——旧記述
+; "Manage related tools \ 関連ツールの管理" は、末尾に半角スペースを
+; 含むサブフォルダ「Manage related tools 」を作成しようとし、
+; 実機でIPersistFile::Save エラー(コード0x80070003、指定されたパスが
+; 見つかりません)を引き起こすバグだった(ユーザー報告のスクリーン
+; ショットで実際に確認)。**最初の修正で"/"(スラッシュ)へ変更したが、
+; 実機再検証したところ"/"もWindowsのパスAPI側で"\"へ正規化され、
+; 依然として空のサブフォルダが作成されてしまうことが判明した**
+; (正直な記録: 1回目の修正は不十分だった)。パス区切りとして解釈
+; されない文字が必要なため、最終的にスラッシュ類を避け
+; "Manage related tools (関連ツールの管理)"という、丸括弧で日本語訳を
+; 併記する形に変更した。
+Name: "{group}\Manage related tools (関連ツールの管理)"; \
     Filename: "powershell.exe"; \
     Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\manage-related-tools.ps1"""; \
     WorkingDir: "{app}"
