@@ -2178,6 +2178,18 @@ async function checkHealth() {
       renderRuntimeBadge(null);
     }
   } catch (err) {
+    // 2026-09-13改善: 閲覧者自身の端末(`base`)へ到達できなくても、
+    // askTrainer()は既にVPS共有aruaru-llmへ自動フォールバックできる
+    // (2026-09-12対応)。にもかかわらずこの上部ステータスは常に
+    // 「unreachable」と表示し続け、実際には会話できるのに閲覧者を
+    // 誤解させていた(ユーザー報告「WEB版でaruaru-llmが動いていない
+    // ようです」複数回)。フォールバック可否を確認し、可能なら
+    // その旨を正しく伝える。
+    if (!err.isTimeout && (await isAruaruLlmPublicChatAvailable())) {
+      setStatus(true, "aruaru-llm: using shared demo server (your own device not detected) / 共有デモサーバーを使用中(ご自身の端末は未検出)");
+      wasConnected = true;
+      return;
+    }
     setStatus(false, err.isTimeout ? "aruaru-llm: no response within 4s / 4秒以内に応答なし" : "aruaru-llm: unreachable (CORS or server not running?)");
     wasConnected = false;
     renderRuntimeBadge(null);
