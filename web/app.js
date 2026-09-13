@@ -1793,7 +1793,11 @@ function speak(text) {
   if (voiceOutEl.checked && "speechSynthesis" in window) {
     try {
       window.speechSynthesis.cancel();
-      const lang = replyLangEl.value === "ja" ? "ja-JP" : "en-US";
+      // 2026-09-13改善: 「自動判定」モードでは`replyLangEl.value`が
+      // "auto"のままなので言語コード判定に使えない。実際に生成された
+      // 返信テキスト自体に日本語が含まれるかで読み上げ音声を選ぶ方が
+      // "auto"以外の既存モードにも通用し、より確実。
+      const lang = replyLangEl.value === "ja" || (replyLangEl.value === "auto" && containsJapanese(text)) ? "ja-JP" : "en-US";
       const utter = new SpeechSynthesisUtterance(extractSpeechText(text, lang));
       utter.lang = lang;
       const isHelper = typeof activeCharacter !== "undefined" && activeCharacter === "helper";
@@ -2265,7 +2269,13 @@ async function askTrainer(userText) {
   if (businessEnglishEl && businessEnglishEl.checked) {
     levelInstruction = `${levelInstruction} ${BUSINESS_ENGLISH_INSTRUCTION}`;
   }
-  let langInstruction = langInstructions[replyLangEl.value] || "";
+  // 「自動判定」(2026-09-13新設、ユーザー指示「日本語で質問しても英語で
+  // 質問しても自動判定して自動回答して」への対応): 返信言語を毎回
+  // 手動選択させず、学習者の発話に日本語が含まれるかどうかだけで
+  // ja/enを自動的に決める。世界の言語(ドイツ語等)を「学びたい言語」に
+  // 選んでいる場合はそちらを優先する(自動判定は英日の二択のみ対応)。
+  const effectiveReplyLang = replyLangEl.value === "auto" ? (containsJapanese(userText) ? "ja" : "en") : replyLangEl.value;
+  let langInstruction = langInstructions[effectiveReplyLang] || "";
   // ユーザーの発話が日本語の場合、その事実をプロンプトへ明示する
   // (ユーザー報告「日本語でしゃべっても英語と日本語で返事して」への
   // 対応、第一段階)。GPT-2は英語中心の語彙のため、これだけでは
@@ -2398,18 +2408,25 @@ async function askTrainer(userText) {
     ? buildSearchAugmentedPromptClient(formatSearchResultsAsContext(directSearchResults), userText)
     : prompt;
 
-  // タイムアウト上限(2026-08-22追加、2026-09-12短縮)。GPT-2のCPU貪欲
-  // デコードは1トークンあたりほぼ一定時間かかるため、大きなモデル
-  // (gpt2-xl等)へ切り替えた環境では24トークンでも数十秒かかり得る。
-  // 実測(distilgpt2・32スレッドCPU)は24トークンで約5秒。Google検索補強
-  // 分の直接フェッチ(`googleSearchDirect`)には別途8秒のタイムアウトを
-  // 設けた(同日追加)ため、以前のように検索自体がハングして生成全体が
-  // 90秒以上固まることは無くなった——ユーザー指示「1分以内にして」に
-  // 対応し、生成自体のタイムアウトも60秒→45秒へ短縮する(検索補強分の
-  // 8秒を足しても余裕で1分以内に収まる)。
-  const timeoutMs = 45000;
+  // タイムアウト上限(2026-08-22追加、2026-09-12短縮、2026-09-13再調整)。
+  // GPT-2のCPU貪欲デコードは1トークンあたりほぼ一定時間かかるため、
+  // 大きなモデル(gpt2-xl等)へ切り替えた環境では24トークンでも数十秒
+  // かかり得る。実測(distilgpt2・32スレッドCPU)は24トークンで約5秒。
+  // **正直な開示・実機で発覚した制約**: GPT-2のBPEトークナイザーは
+  // 英語中心の語彙で学習されており、日本語1文字が複数バイト単位の
+  // トークンに分解される(例:「消費税問題は？」だけでも数十トークン)。
+  // さらにopen-cuda-llmのGPT-2実装はKVキャッシュを持たず毎ステップ
+  // 入力全体を再計算するため、入力トークン数が増えるとほぼ2乗で遅く
+  // なる——実機で「消費税問題は？」のようなごく短い日本語質問だけで
+  // 50秒以上かかることを確認した(2026-09-13、ユーザー報告)。この
+  // アーキテクチャ上の制約自体は今日のセッションでは解消できない
+  // (KVキャッシュの実装はopen-cuda-llm側の大きな変更が必要)ため、
+  // 日本語を含む入力は生成トークン数を減らして体感時間を縮め、
+  // タイムアウトも少し延ばして「ほぼ確実に応答が返る」方を優先する。
+  const inputIsJapanese = containsJapanese(userText);
+  const timeoutMs = inputIsJapanese ? 55000 : 45000;
   const startedAt = performance.now();
-  const requestBody = { prompt: effectivePrompt, max_new_tokens: 24 };
+  const requestBody = { prompt: effectivePrompt, max_new_tokens: inputIsJapanese ? 12 : 24 };
   // useDirectSearchPathの場合はここでkey/cxを一切requestBodyへ入れない
   // (aruaru-llmへ渡らないことがこの変更の目的そのもの)。訪問者自身の
   // キーが無い場合の従来経路(/v1/generate-with-search)には元々キーが
@@ -5114,8 +5131,10 @@ function speechLangTag() {
     ? lt.slice(6)
     : LEARN_TARGET_TO_LANG_CODE[lt] || null;
 
-  // 2) 返信言語(hybridは方向が定まらないので除外)
-  if (!code && replyLangEl && replyLangEl.value && replyLangEl.value !== "hybrid") {
+  // 2) 返信言語(hybrid/auto("auto"は固定の言語コードではないため
+  // codeToTagにそのまま渡すと無効なBCP-47タグになる、2026-09-13修正)
+  // は方向が定まらないので除外)
+  if (!code && replyLangEl && replyLangEl.value && replyLangEl.value !== "hybrid" && replyLangEl.value !== "auto") {
     code = replyLangEl.value;
   }
   const tag = codeToTag(code);
