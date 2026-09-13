@@ -2265,6 +2265,15 @@ function switchCharacter() {
 characterSwitchBtn.addEventListener("click", switchCharacter);
 
 async function askTrainer(userText) {
+  // カスタムQ&Aデータベース(2026-09-13新設)を最優先でチェックする。
+  // 一致すれば、AI推論(GPT-2/外部プロバイダとも)を一切呼ばず、利用者が
+  // 事前に登録した回答をそのまま返す——「この様な質問にはこの様な回答が
+  // 良いでしょう」という利用者自身の判断を、内蔵AIの弱い回答より優先する
+  // 設計(ユーザー指示)。
+  const customQaMatch = typeof matchCustomQa === "function" ? matchCustomQa(userText) : null;
+  if (customQaMatch) {
+    return `${customQaMatch.answer}\n\n📚 (Custom Q&A match / カスタムQ&Aに一致: ${customQaMatch.keywords.join(", ")})`;
+  }
   const base = apiBaseEl.value.trim();
   const level = levelEl.value;
   let levelInstruction = levelInstructions[level] || "";
@@ -8222,6 +8231,121 @@ function practiceExamPrepWithTrainer() {
 }
 
 // ===========================================================================
+// カスタムQ&Aデータベース(2026-09-13新設)
+// ---------------------------------------------------------------------------
+// ユーザー指示への対応: 「DATABASEの自動参照は、私がこの様な質問には
+// この様な回答が良いでしょうの様なDATABASEです」——消費税問題のような、
+// 内蔵AI(小型GPT-2)が弱い具体的な現実の質問に対し、利用者自身が
+// 「この質問にはこの回答」という組み合わせを登録し、一致したメッセージ
+// では登録済みの回答をそのまま使う(AI推論をバイパスする)機能。
+// 正直な開示: 既存の`consumptionTaxSuffix`/`pensionSuffix`等の固定文
+// パターンと設計思想は同じだが、それらはコード内にハードコードされた
+// 開発者(ユーザー)の意見表明である一方、こちらは利用者が自由に追加・
+// 削除できる汎用データベースという違いがある。
+// ===========================================================================
+const CUSTOM_QA_KEY = "open-english.customQaPairs";
+
+function loadCustomQaPairs() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_QA_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((p) => p && typeof p.answer === "string" && Array.isArray(p.keywords)) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomQaPairs(pairs) {
+  persistSetting(CUSTOM_QA_KEY, JSON.stringify(pairs));
+}
+
+/**
+ * 発話がある組み合わせの全キーワードを含む場合、その回答を返す(最初に
+ * 見つかった一致を採用、大文字小文字を無視した部分一致)。一致が無ければ
+ * `null`。
+ */
+function matchCustomQa(userText) {
+  const pairs = loadCustomQaPairs();
+  const haystack = userText.toLowerCase();
+  for (const pair of pairs) {
+    if (pair.keywords.length === 0) continue;
+    if (pair.keywords.every((kw) => haystack.includes(String(kw).toLowerCase()))) {
+      return pair;
+    }
+  }
+  return null;
+}
+
+function renderCustomQaList() {
+  const listEl = document.getElementById("custom-qa-list");
+  if (!listEl) return;
+  const pairs = loadCustomQaPairs();
+  if (pairs.length === 0) {
+    listEl.innerHTML = '<p class="setup-note">No pairs registered yet. / まだ何も登録されていません。</p>';
+    return;
+  }
+  listEl.innerHTML = "";
+  pairs.forEach((pair, i) => {
+    const row = document.createElement("div");
+    row.className = "settings-field";
+    const label = document.createElement("div");
+    label.textContent = `[${pair.keywords.join(", ")}] → ${pair.answer}`;
+    row.appendChild(label);
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "setup-btn";
+    delBtn.textContent = "🗑 Delete / 削除";
+    delBtn.addEventListener("click", () => {
+      const next = loadCustomQaPairs();
+      next.splice(i, 1);
+      saveCustomQaPairs(next);
+      renderCustomQaList();
+    });
+    row.appendChild(delBtn);
+    listEl.appendChild(row);
+  });
+}
+
+const customQaBtn = document.getElementById("custom-qa-btn");
+const customQaModal = document.getElementById("custom-qa-modal");
+if (customQaBtn && customQaModal) {
+  const closeBtn = document.getElementById("custom-qa-close");
+  customQaBtn.addEventListener("click", () => {
+    customQaModal.classList.remove("hidden");
+    renderCustomQaList();
+  });
+  if (closeBtn) closeBtn.addEventListener("click", () => customQaModal.classList.add("hidden"));
+  customQaModal.addEventListener("click", (e) => {
+    if (e.target === customQaModal) customQaModal.classList.add("hidden");
+  });
+  const addBtn = document.getElementById("custom-qa-add-btn");
+  const keywordsEl = document.getElementById("custom-qa-keywords");
+  const answerEl = document.getElementById("custom-qa-answer");
+  const statusEl = document.getElementById("custom-qa-status");
+  if (addBtn) {
+    addBtn.addEventListener("click", () => {
+      const keywords = (keywordsEl.value || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+      const answer = (answerEl.value || "").trim();
+      if (keywords.length === 0 || !answer) {
+        if (statusEl) statusEl.textContent = "⚠ Please fill in both keywords and an answer. / キーワードと回答の両方を入力してください。";
+        return;
+      }
+      const pairs = loadCustomQaPairs();
+      pairs.push({ keywords, answer });
+      saveCustomQaPairs(pairs);
+      keywordsEl.value = "";
+      answerEl.value = "";
+      if (statusEl) statusEl.textContent = "✅ Added / 追加しました";
+      renderCustomQaList();
+    });
+  }
+}
+
+// ===========================================================================
 // 多言語擬似模擬試験 + 追加言語パック選択(2026-08-22新設)
 // ---------------------------------------------------------------------------
 // ユーザー指示への対応:
@@ -8309,7 +8433,7 @@ async function restoreSettingsFromServer() {
     return; // サーバー未起動・file://等では何もしない(localStorageのみで動作)
   }
   if (!settings || typeof settings !== "object") return;
-  [ENABLED_LANGUAGES_KEY, NATIVE_LANGUAGE_KEY, LANGUAGE_ORDER_KEY].forEach((key) => {
+  [ENABLED_LANGUAGES_KEY, NATIVE_LANGUAGE_KEY, LANGUAGE_ORDER_KEY, CUSTOM_QA_KEY].forEach((key) => {
     try {
       if (localStorage.getItem(key) === null && typeof settings[key] === "string") {
         localStorage.setItem(key, settings[key]);

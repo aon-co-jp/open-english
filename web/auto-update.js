@@ -54,6 +54,7 @@
     "open-english.nativeLanguage",     // 母国語(ネイティブ)
     "open-english.languageOrder",      // 連続表示・読み上げの順番
     "open-english.languagePromptShown",
+    "open-english.customQaPairs",      // カスタムQ&Aデータベース(2026-09-13)
   ];
 
   // このアプリ専用の名前空間(`openEnglish.`接頭辞)を持つlocalStorage

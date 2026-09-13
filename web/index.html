@@ -346,6 +346,7 @@
       🔎 Google search boost: forced ON once your key is set up / Google検索で補強: キー設定後は常時ON
     </span>
     <button type="button" id="google-search-settings-btn" class="setup-btn">🔎 Setup Google Search.</button>
+    <button type="button" id="custom-qa-btn" class="setup-btn">📚 Custom Q&amp;A / カスタムQ&amp;A</button>
     <button type="button" id="provider-priority-settings-btn" class="setup-btn">🔀 AI Provider Priority.</button>
     <span id="web-search-own-key-status" class="setup-note" style="display:inline-block;margin-left:6px;"></span>
     <button type="button" id="setup-btn" class="setup-btn">⚙ Setup aruaru-llm.</button>
@@ -681,6 +682,40 @@ cargo run --release</pre>
         になります(<code>/healthz</code>で確認)。
       </p>
       <button type="button" id="setup-recheck" class="setup-btn">Check connection now / 今すぐ接続確認</button>
+    </div>
+  </div>
+
+  <div id="custom-qa-modal" class="setup-modal hidden">
+    <div class="setup-panel">
+      <button type="button" id="custom-qa-close" class="setup-close">✕</button>
+      <h2>📚 Custom Q&amp;A / カスタムQ&amp;A</h2>
+      <p class="setup-honest">
+        <strong>Honest disclosure:</strong> The built-in AI (small GPT-2) often gives weak answers to
+        specific real-world questions (e.g. tax policy). Here you can register your own
+        "for this kind of question, this answer is best" pairs. When your message matches all of a
+        pair's keywords, that saved answer is used directly — the AI is not called for that message. This
+        is entirely stored in your browser (and this app's local database) — it never leaves your
+        device.<br /><br />
+        <strong>正直な開示:</strong> 内蔵AI(小型GPT-2)は具体的な現実の質問(税制など)に弱い回答しか
+        返せないことがよくあります。ここでは「この様な質問には、この様な回答が良いでしょう」という
+        組み合わせをご自身で登録できます。メッセージがある組み合わせのキーワードを全て含む場合、
+        登録した回答がそのまま使われます(AIは呼び出されません)。すべてこのブラウザ(とこのアプリの
+        ローカルDB)にのみ保存され、外部へは一切送信されません。
+      </p>
+      <div id="custom-qa-list"></div>
+      <hr />
+      <h3>Add a new pair / 新しい組み合わせを追加</h3>
+      <label class="setup-label">
+        Keywords (comma-separated, ALL must appear in the message) / キーワード(カンマ区切り、
+        メッセージに全て含まれている場合に一致)<br />
+        <input type="text" id="custom-qa-keywords" class="setup-input" placeholder="例: 消費税, どう思う" />
+      </label>
+      <label class="setup-label">
+        Answer (shown as-is, English/Japanese mixed OK) / 回答(そのまま表示されます、英日混在可)<br />
+        <textarea id="custom-qa-answer" class="setup-input" rows="4" placeholder="ここに模範回答を書いてください"></textarea>
+      </label>
+      <button type="button" id="custom-qa-add-btn" class="setup-btn">➕ Add / 追加</button>
+      <p id="custom-qa-status" class="setup-note"></p>
     </div>
   </div>
 
