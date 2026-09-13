@@ -2270,7 +2270,7 @@ async function askTrainer(userText) {
   // 事前に登録した回答をそのまま返す——「この様な質問にはこの様な回答が
   // 良いでしょう」という利用者自身の判断を、内蔵AIの弱い回答より優先する
   // 設計(ユーザー指示)。
-  const customQaMatch = typeof matchCustomQa === "function" ? matchCustomQa(userText) : null;
+  const customQaMatch = typeof matchCustomQa === "function" ? await matchCustomQa(userText) : null;
   if (customQaMatch) {
     return `${customQaMatch.answer}\n\n📚 (Custom Q&A match / カスタムQ&Aに一致: ${customQaMatch.keywords.join(", ")})`;
   }
@@ -8261,12 +8261,35 @@ function saveCustomQaPairs(pairs) {
 }
 
 /**
+ * サーバー側の共有カスタムQ&A一覧を取得する(2026-09-13新設)。
+ * 管理者(PC版・VPS本番)が登録した内容を、デモ来場者の発話にも自動で
+ * 反映させるための仕組み(ユーザー指示「デモ画面では、管理者画面で
+ * 登録した内容に反応して自動回答なのは良いです」)。デモサーバー側は
+ * `OPEN_ENGLISH_CUSTOM_QA_SOURCE_URL`環境変数で本番のこの同じ
+ * エンドポイントを中継するため、同一オリジンのfetchで済む。
+ */
+async function fetchSharedCustomQaPairs() {
+  try {
+    const res = await fetchWithTimeout("/v1/custom-qa", { cache: "no-store" }, 4000);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const pairs = Array.isArray(data.pairs) ? data.pairs : [];
+    return pairs.filter((p) => p && typeof p.answer === "string" && Array.isArray(p.keywords));
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
  * 発話がある組み合わせの全キーワードを含む場合、その回答を返す(最初に
  * 見つかった一致を採用、大文字小文字を無視した部分一致)。一致が無ければ
- * `null`。
+ * `null`。このブラウザのlocalStorage分とサーバー側共有分(管理者が
+ * 登録した内容、デモでは本番から中継)の両方を合わせて照合する。
  */
-function matchCustomQa(userText) {
-  const pairs = loadCustomQaPairs();
+async function matchCustomQa(userText) {
+  const localPairs = loadCustomQaPairs();
+  const sharedPairs = await fetchSharedCustomQaPairs();
+  const pairs = [...localPairs, ...sharedPairs];
   const haystack = userText.toLowerCase();
   for (const pair of pairs) {
     if (pair.keywords.length === 0) continue;
@@ -8309,16 +8332,20 @@ function renderCustomQaList() {
 
 const customQaBtn = document.getElementById("custom-qa-btn");
 const customQaModal = document.getElementById("custom-qa-modal");
-// 2026-09-13追記(ユーザー指示「この機能は、管理者画面のみにして」
-// 「デモ画面には搭載しないで」への対応): カスタムQ&Aは管理者(PC版を
-// 自分の端末で動かしている本人、`isLocalHost`)向けの機能とし、VPS上の
-// 共有インスタンス(本番`/open-english/`・デモ`/open-english/demo`とも)
-// では、一般利用者に見せないようボタンごと非表示にする。
-const isLocalHostForCustomQa = /^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname);
-if (customQaBtn && !isLocalHostForCustomQa) {
+// 2026-09-13追記(ユーザー指示の経緯): 当初は管理者=`isLocalHost`
+// (PC版のみ)としたが、その後「この管理者機能は、PC版とeasy-web.tokyo/
+// open-englishの画面でも登録機能は付けて」「esay-web.tokyo/demoにも
+// カスタムQ&A機能は搭載しないで」と指示が変わり、**登録UIを隠すのは
+// デモ(`/open-english/demo`)のみ**、PC版・VPS本番(`/open-english/`、
+// ログイン機能はそのまま)には登録ボタンを表示する仕様へ確定した。
+// デモ来場者の発話には、本番で登録された内容が(サーバー間中継経由で)
+// 自動的に反映される(`matchCustomQa`のサーバー共有分参照)——デモには
+// 登録"UI"を出さないだけで、登録"内容の反映"はデモでも生きている。
+const isDemoPathForCustomQa = location.pathname.includes("/demo");
+if (customQaBtn && isDemoPathForCustomQa) {
   customQaBtn.classList.add("hidden");
 }
-if (customQaBtn && customQaModal && isLocalHostForCustomQa) {
+if (customQaBtn && customQaModal && !isDemoPathForCustomQa) {
   const closeBtn = document.getElementById("custom-qa-close");
   customQaBtn.addEventListener("click", () => {
     customQaModal.classList.remove("hidden");
