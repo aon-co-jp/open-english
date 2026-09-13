@@ -1434,6 +1434,10 @@ const replyLangEl = document.getElementById("reply-lang");
 // (`#google-search-settings-btn`のモーダルから)。
 // `refreshGoogleSearchStatus()`(下方)が、設定済みかどうかをこの変数へ反映する。
 let googleSearchKeyConfigured = false;
+// 直接検索(googleSearchDirect/googleSearchRequestVault)の連続失敗回数
+// (簡易サーキットブレーカー用、2026-09-13新設)。
+let googleSearchConsecutiveFailures = 0;
+const GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT = 3;
 const micBtn = document.getElementById("mic-btn");
 const voiceOutEl = document.getElementById("voice-out");
 
@@ -2379,17 +2383,32 @@ async function askTrainer(userText) {
 
   let directSearchResults = null;
   let directSearchError = null;
-  if (useVaultSearchPath) {
+  // 2026-09-13追加(簡易サーキットブレーカー): Google検索補強を「鍵設定後は
+  // 常時ON」にした結果、鍵/cxが実際には無効なままだと**毎メッセージ**で
+  // 8秒待たされた上に失敗通知が付くことになり、体感速度が悪化する
+  // (ユーザー報告)。同一セッション内で連続3回失敗したら、それ以降は
+  // 検索を自動で見送り(通常生成のみ)、その旨を一度だけ伝える——鍵の
+  // 再設定(設定パネルを開き直す)でリセットされる。
+  if (useVaultSearchPath && googleSearchConsecutiveFailures < GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT) {
     try {
       directSearchResults = await googleSearchRequestVault(userText, 3);
+      googleSearchConsecutiveFailures = 0;
     } catch (err) {
       directSearchError = err.message || String(err);
+      googleSearchConsecutiveFailures += 1;
     }
-  } else if (useWebSearch && ownGoogleSearchCreds) {
+  } else if (useWebSearch && ownGoogleSearchCreds && googleSearchConsecutiveFailures < GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT) {
     try {
       directSearchResults = await googleSearchDirect(userText, ownGoogleSearchCreds.api_key, ownGoogleSearchCreds.cx, 3);
+      googleSearchConsecutiveFailures = 0;
     } catch (err) {
       directSearchError = err.message || String(err);
+      googleSearchConsecutiveFailures += 1;
+      if (googleSearchConsecutiveFailures === GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT) {
+        directSearchError +=
+          " (Search paused for the rest of this session after repeated failures — check your key/Search Engine ID in 🔎 Setup Google Search, then reopen it to retry. / " +
+          "連続失敗のため、このセッション中は検索を一時停止します——🔎 Setup Google Searchでキー・検索エンジンIDをご確認の上、再度開けば再試行できます。)";
+      }
     }
   }
 
@@ -6572,8 +6591,19 @@ function loadOwnGoogleSearchCredentials() {
     return null;
   }
   try {
-    const api_key = localStorage.getItem(GOOGLE_SEARCH_LOCAL_KEY) || "";
-    const cx = localStorage.getItem(GOOGLE_SEARCH_LOCAL_CX) || "";
+    let api_key = (localStorage.getItem(GOOGLE_SEARCH_LOCAL_KEY) || "").trim();
+    let cx = (localStorage.getItem(GOOGLE_SEARCH_LOCAL_CX) || "").trim();
+    // 2026-09-13バグ修正: Google検索補強を「鍵設定後は常時ON」にしたら
+    // (2026-09-12)、以前はほぼ使われず気づかれなかった保存済みcx/keyの
+    // フォーマット崩れ(前後の空白・cx欄へProgrammable Search Engineの
+    // 管理画面URL全体を貼ってしまう等、よくある入力ミス)が毎メッセージ
+    // で"HTTP 400: Request contains an invalid argument"として顕在化した
+    // (ユーザー報告)。cxがURLっぽい場合は`cx=`パラメータだけを抽出する
+    // 救済策を入れる。
+    if (cx.includes("cx=")) {
+      const match = cx.match(/[?&]cx=([^&]+)/);
+      if (match) cx = decodeURIComponent(match[1]);
+    }
     return api_key && cx ? { api_key, cx } : null;
   } catch (e) {
     return null;
@@ -6937,6 +6967,9 @@ if (googleSearchBtn && googleSearchModal) {
   googleSearchBtn.addEventListener("click", () => {
     googleSearchModal.classList.remove("hidden");
     refreshGoogleSearchStatus();
+    // 設定パネルを開き直したら、サーキットブレーカーをリセットする
+    // (鍵/cxを直したはずなので再試行させる、2026-09-13)。
+    googleSearchConsecutiveFailures = 0;
   });
   googleSearchClose.addEventListener("click", () => googleSearchModal.classList.add("hidden"));
   googleSearchModal.addEventListener("click", (e) => {
