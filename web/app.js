@@ -8284,7 +8284,24 @@ function loadCustomQaPairs() {
 }
 
 function saveCustomQaPairs(pairs) {
-  persistSetting(CUSTOM_QA_KEY, JSON.stringify(pairs));
+  try {
+    localStorage.setItem(CUSTOM_QA_KEY, JSON.stringify(pairs));
+  } catch (e) {
+    /* localStorageが使えなくてもサーバー側保存は試みる */
+  }
+  // 2026-09-13バグ修正: 従来の`persistSetting()`(内部で`POST /v1/db/settings`、
+  // ログイン必須)経由だと、VPS本番でログインしていない場合にサーバー側
+  // 同期だけがサイレントに失敗し、デモや他端末に反映されない実害と
+  // なった(ユーザー報告)。専用のログイン不要な`POST /v1/custom-qa`を
+  // 直接呼ぶことで、登録UIの表示制御(管理者にのみボタンを見せる)を
+  // アクセス制御として使う既存方針と整合させる。
+  fetch("/v1/custom-qa", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pairs }),
+  }).catch(() => {
+    /* サーバー未起動・file://等では黙って諦める(localStorageのみで動作) */
+  });
 }
 
 /**
