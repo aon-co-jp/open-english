@@ -8309,7 +8309,16 @@ function renderCustomQaList() {
 
 const customQaBtn = document.getElementById("custom-qa-btn");
 const customQaModal = document.getElementById("custom-qa-modal");
-if (customQaBtn && customQaModal) {
+// 2026-09-13追記(ユーザー指示「この機能は、管理者画面のみにして」
+// 「デモ画面には搭載しないで」への対応): カスタムQ&Aは管理者(PC版を
+// 自分の端末で動かしている本人、`isLocalHost`)向けの機能とし、VPS上の
+// 共有インスタンス(本番`/open-english/`・デモ`/open-english/demo`とも)
+// では、一般利用者に見せないようボタンごと非表示にする。
+const isLocalHostForCustomQa = /^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname);
+if (customQaBtn && !isLocalHostForCustomQa) {
+  customQaBtn.classList.add("hidden");
+}
+if (customQaBtn && customQaModal && isLocalHostForCustomQa) {
   const closeBtn = document.getElementById("custom-qa-close");
   customQaBtn.addEventListener("click", () => {
     customQaModal.classList.remove("hidden");
