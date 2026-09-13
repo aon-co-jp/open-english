@@ -711,10 +711,19 @@ cargo run --release</pre>
         <input type="text" id="custom-qa-keywords" class="setup-input" placeholder="例: 消費税, どう思う" />
       </label>
       <label class="setup-label">
-        Answer (shown as-is, English/Japanese mixed OK) / 回答(そのまま表示されます、英日混在可)<br />
-        <textarea id="custom-qa-answer" class="setup-input" rows="4" placeholder="ここに模範回答を書いてください"></textarea>
+        Answer — write in any one language, it's auto-translated to Japanese/English/Chinese / 回答(どれか1言語で
+        入力すれば、日本語・英語・中国語へ自動翻訳されます)<br />
+        <textarea id="custom-qa-answer" class="setup-input" rows="4" placeholder="ここに模範回答を書いてください(日本語でOK)"></textarea>
       </label>
-      <button type="button" id="custom-qa-add-btn" class="setup-btn">➕ Add / 追加</button>
+      <p class="setup-honest">
+        <strong>Honest disclosure:</strong> The English/Chinese versions are machine-translated
+        (free MyMemory Translation API, no quality guarantee) at the moment you click Add — not by the
+        built-in AI. Review the translations before relying on them for anything important.<br />
+        <strong>正直な開示:</strong> 英語・中国語版は「追加」クリック時に無料の機械翻訳(MyMemory
+        Translation API、品質保証なし)で自動生成されます——内蔵AIによる翻訳ではありません。重要な用途では
+        翻訳結果をご自身でご確認ください。
+      </p>
+      <button type="button" id="custom-qa-add-btn" class="setup-btn">➕ Add (auto-translates) / 追加(自動翻訳)</button>
       <p id="custom-qa-status" class="setup-note"></p>
     </div>
   </div>

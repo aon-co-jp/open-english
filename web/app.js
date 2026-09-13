@@ -2288,7 +2288,16 @@ async function askTrainer(userText) {
   // 設計(ユーザー指示)。
   const customQaMatch = typeof matchCustomQa === "function" ? await matchCustomQa(userText) : null;
   if (customQaMatch) {
-    return `${customQaMatch.answer}\n\n📚 (Custom Q&A match / カスタムQ&Aに一致: ${customQaMatch.keywords.join(", ")})`;
+    // 2026-09-13変更(ユーザー指示「日本語で登録しても、日本語と英語版と
+    // 中国語版でも同時に自動で回答して」): 日英中3言語を毎回同時に表示
+    // する。旧データ形式(単一`answer`フィールド)で登録された既存の
+    // 組み合わせとの後方互換のため、`answer_ja`が無ければ`answer`へ
+    // フォールバックする。
+    const ja = customQaMatch.answer_ja || customQaMatch.answer || "";
+    const en = customQaMatch.answer_en || "";
+    const zh = customQaMatch.answer_zh || "";
+    const sections = [ja && `🇯🇵 ${ja}`, en && `🇺🇸 ${en}`, zh && `🇨🇳 ${zh}`].filter(Boolean).join("\n\n");
+    return `${sections}\n\n📚 (Custom Q&A match / カスタムQ&Aに一致: ${customQaMatch.keywords.join(", ")})`;
   }
   const base = apiBaseEl.value.trim();
   const level = levelEl.value;
@@ -8312,13 +8321,28 @@ function saveCustomQaPairs(pairs) {
  * `OPEN_ENGLISH_CUSTOM_QA_SOURCE_URL`環境変数で本番のこの同じ
  * エンドポイントを中継するため、同一オリジンのfetchで済む。
  */
+// VPS本番の公開カスタムQ&Aエンドポイント(絶対URL)。PC/タブレット/
+// スマホ版(それぞれ`http://localhost:4601`等、別オリジンで動くローカル
+// サーバー)は自分自身の`/v1/custom-qa`(自分のローカルDB、通常は空)
+// ではなく、この絶対URLを直接fetchすることで、管理者がVPS本番へ登録した
+// 最新のQ&Aを毎回反映できる(2026-09-13新設、ユーザー指示「PC、タブレット、
+// スマホ版でも…毎回最新のDATABASE Q&AのDATAもdemoと同じ様にAIが自動回答
+// するように」への対応)。VPS側はこの読み取り専用エンドポイントに
+// `Access-Control-Allow-Origin: *`を付けてCORSを許可済み。
+const SHARED_CUSTOM_QA_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/custom-qa";
+
 async function fetchSharedCustomQaPairs() {
+  // easy-web.tokyo自身(本番・デモとも)は同一オリジンの相対パスで済む
+  // (デモはサーバー側で本番へ中継、本番は自分自身のDBを返す)。それ以外
+  // (PC/タブレット/スマホ版のローカルサーバー)は絶対URLで本番へ直接
+  // fetchする。
+  const url = location.hostname === "easy-web.tokyo" ? "/v1/custom-qa" : SHARED_CUSTOM_QA_ABSOLUTE_URL;
   try {
-    const res = await fetchWithTimeout("/v1/custom-qa", { cache: "no-store" }, 4000);
+    const res = await fetchWithTimeout(url, { cache: "no-store" }, 4000);
     if (!res.ok) return [];
     const data = await res.json();
     const pairs = Array.isArray(data.pairs) ? data.pairs : [];
-    return pairs.filter((p) => p && typeof p.answer === "string" && Array.isArray(p.keywords));
+    return pairs.filter((p) => p && Array.isArray(p.keywords) && (typeof p.answer === "string" || typeof p.answer_ja === "string" || typeof p.answer_en === "string" || typeof p.answer_zh === "string"));
   } catch (e) {
     return [];
   }
@@ -8344,6 +8368,38 @@ async function matchCustomQa(userText) {
   return null;
 }
 
+/**
+ * MyMemory Translation API(無料・APIキー不要)で機械翻訳する
+ * (2026-09-13新設、ユーザー指示「日本語で登録しても、日本語と英語版と
+ * 中国語版でも同時に自動で回答して」「自動で翻訳して」への対応)。
+ * **正直な開示**: 無料枠のシンプルな機械翻訳サービスであり、翻訳品質は
+ * 保証されない——契約不要・自己完結を志向する既存の設計思想からは
+ * 外れる意図的な例外(Google Custom Search連携と同じ位置づけ)。
+ * 失敗時は元のテキストをそのまま返す(既存の可用性優先の設計方針)。
+ */
+async function translateViaMyMemory(text, sourceLang, targetLang) {
+  if (sourceLang === targetLang) return text;
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+    const res = await fetchWithTimeout(url, {}, 8000);
+    if (!res.ok) return text;
+    const data = await res.json();
+    return data?.responseData?.translatedText || text;
+  } catch (e) {
+    return text;
+  }
+}
+
+/** 簡易言語検出(ja/zh/en)。カスタムQ&A登録時、入力言語を推定してから
+ * 残り2言語へ機械翻訳するために使う。中国語(漢字のみ、ひらがな無し)と
+ * 日本語(ひらがな有り)は文字種だけでは区別が付かないケースもあるが、
+ * ひらがなの有無を主な決め手にする実用上のヒューリスティック。 */
+function detectSimpleLang(text) {
+  if (/[\p{Script=Hiragana}\p{Script=Katakana}]/u.test(text)) return "ja";
+  if (/\p{Script=Han}/u.test(text)) return "zh-CN";
+  return "en";
+}
+
 function renderCustomQaList() {
   const listEl = document.getElementById("custom-qa-list");
   if (!listEl) return;
@@ -8357,7 +8413,7 @@ function renderCustomQaList() {
     const row = document.createElement("div");
     row.className = "settings-field";
     const label = document.createElement("div");
-    label.textContent = `[${pair.keywords.join(", ")}] → ${pair.answer}`;
+    label.textContent = `[${pair.keywords.join(", ")}] → 🇯🇵${pair.answer_ja || pair.answer || ""} / 🇺🇸${pair.answer_en || ""} / 🇨🇳${pair.answer_zh || ""}`;
     row.appendChild(label);
     const delBtn = document.createElement("button");
     delBtn.type = "button";
@@ -8404,7 +8460,7 @@ if (customQaBtn && customQaModal && !isDemoPathForCustomQa) {
   const answerEl = document.getElementById("custom-qa-answer");
   const statusEl = document.getElementById("custom-qa-status");
   if (addBtn) {
-    addBtn.addEventListener("click", () => {
+    addBtn.addEventListener("click", async () => {
       const keywords = (keywordsEl.value || "")
         .split(",")
         .map((s) => s.trim())
@@ -8414,12 +8470,27 @@ if (customQaBtn && customQaModal && !isDemoPathForCustomQa) {
         if (statusEl) statusEl.textContent = "⚠ Please fill in both keywords and an answer. / キーワードと回答の両方を入力してください。";
         return;
       }
+      addBtn.disabled = true;
+      if (statusEl) statusEl.textContent = "⏳ Translating (ja/en/zh)… / 翻訳中(日英中)…";
+      // 2026-09-13新設: 入力言語を推定し、残り2言語へ機械翻訳する
+      // (ユーザー指示「日本語で登録しても、日本語と英語版と中国語版でも
+      // 同時に自動で回答して」「自動で翻訳して」への対応)。
+      const sourceLang = detectSimpleLang(answer);
+      const targets = ["ja", "en", "zh-CN"].filter((l) => l !== sourceLang);
+      const [t1, t2] = await Promise.all(targets.map((t) => translateViaMyMemory(answer, sourceLang, t)));
+      const byLang = { [sourceLang]: answer, [targets[0]]: t1, [targets[1]]: t2 };
       const pairs = loadCustomQaPairs();
-      pairs.push({ keywords, answer });
+      pairs.push({
+        keywords,
+        answer_ja: byLang.ja,
+        answer_en: byLang.en,
+        answer_zh: byLang["zh-CN"],
+      });
       saveCustomQaPairs(pairs);
       keywordsEl.value = "";
       answerEl.value = "";
-      if (statusEl) statusEl.textContent = "✅ Added / 追加しました";
+      addBtn.disabled = false;
+      if (statusEl) statusEl.textContent = "✅ Added (auto-translated to ja/en/zh) / 追加しました(日英中へ自動翻訳済み)";
       renderCustomQaList();
     });
   }
