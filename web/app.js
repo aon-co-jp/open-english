@@ -432,6 +432,22 @@ function containsJapanese(text) {
   return /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u.test(text);
 }
 
+// 2026-09-13新設(ユーザー報告「日本語で話しかけても英語で話掛けても、
+// 返事がおかしいです。返事が中国語みたいです」への対応)。
+// **正直な開示・実機で発覚した問題**: `containsJapanese()`は漢字/かな/
+// カタカナの**文字種**が含まれるかしか見ておらず、GPT-2(英語中心の
+// バイトレベルBPE)が日本語入力に対して生成する意味不明な漢字の羅列
+// (例:「八自己技やせる」)も"日本語を含む"と誤判定してしまっていた。
+// 本物の日本語の文には(漢字だけの文はまず無く)ひらがなの助詞・語尾
+// (は/を/に/が/の/です/ます等)がほぼ必ず含まれるため、これが無ければ
+// 「漢字はあるが日本語として意味を成していない」ガベージ出力である
+// 可能性が高いと判定する簡易ヒューリスティック。
+const JAPANESE_FUNCTION_WORDS = ["です", "ます", "した", "ください", "は", "を", "に", "が", "の", "と", "も", "ね", "よ", "か"];
+function looksLikeCoherentJapanese(text) {
+  if (!containsJapanese(text)) return false;
+  return JAPANESE_FUNCTION_WORDS.some((w) => text.includes(w));
+}
+
 // 正直な開示: GPT-2/DistilGPT-2は英語中心の語彙(BPE)で事前学習されており、
 // 日本語の生成能力が本質的に弱い。ハイブリッドモード(英日併記)を選んで
 // いても、モデルが英語だけで応答してしまうことがある——ユーザー報告
@@ -2508,6 +2524,17 @@ async function askTrainer(userText) {
   }
   const completion = data.completion ?? "(no completion field in response)";
   let reply = ensureScriptGuaranteedReply(ensureHybridReply(trimDegenerateRepetition(completion), userText));
+  // 2026-09-13追加(ユーザー報告「返事が中国語みたいです」への対応):
+  // 返信言語が日本語(自動判定含む)なのに、生成結果が漢字を含みつつも
+  // 助詞等が無く日本語として意味を成していない(GPT-2の英語中心BPEが
+  // 日本語入力に対して生成しがちなガベージ)場合、正直にその旨を開示する。
+  // `ensureHybridReply`の"日本語が一切無ければ英語で返す"保証だけでは、
+  // 「漢字はあるが日本語になっていない」ケースを見逃していた。
+  if (effectiveReplyLang === "ja" && containsJapanese(reply) && !looksLikeCoherentJapanese(reply)) {
+    reply +=
+      "\n\n(Honest disclosure: this small English-centric AI model produced Japanese-looking characters that don't form a real Japanese sentence. It cannot reliably generate Japanese yet — sorry! / " +
+      "正直な開示: この小型AIモデル(英語中心)は、日本語らしき文字を出力しましたが実際には意味の通る日本語になっていません。まだ日本語の生成を苦手としています、申し訳ございません。)";
+  }
 
   if (useWebSearch) {
     if (useDirectSearchPath) {
