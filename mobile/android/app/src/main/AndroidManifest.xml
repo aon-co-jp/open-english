@@ -43,10 +43,26 @@
           自体を止め、WebViewはCSSのレスポンシブレイアウトで画面サイズ
           変化に追従させる(index.html/style.css側は元々特定の画面向きを
           前提にしていない)。
+
+          android:windowSoftInputMode="adjustResize": 実機検証
+          (2026-09-14、ユーザー報告「demoから最新のスマホ版をダウンロード
+          してインストールしたけど、入力フォームに文字を入力しようと
+          しても、縦スマホでのキーボード表示の上に自動スクロールしない」)
+          で発覚した実バグへの対応。app.js側で入力欄フォーカス時に
+          scrollIntoView()する仕組み(2026-09-14新設)を先に実装したが、
+          本ActivityにwindowSoftInputModeを指定していなかったため既定の
+          挙動(通常adjustPan相当)のままで、オンスクリーンキーボード表示時に
+          WebView自体の可視領域(ビューポート)がリサイズされず、JS側の
+          scrollIntoView()が実質的に無効化されていた。adjustResizeを指定
+          することでキーボード表示時にWebViewのビューポート自体が縮小され、
+          scrollIntoView()が正しく機能するようになる(通常のモバイル
+          ブラウザ〈Chrome等〉では既定でこの挙動のため今まで気づけなかった
+          ——ネイティブAndroidアプリのWebViewシェル特有の設定漏れだった)。
         -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
