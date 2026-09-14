@@ -2338,47 +2338,60 @@ async function askTrainer(userText) {
   }
   const prompt = `${trainerRole} ${levelInstruction} ${langInstruction}\nStudent: ${userText}\nTrainer:`;
 
-  // マルチLLMプロバイダ優先順位機能が有効な場合、まずChatGPT/DeepSeek/
-  // Gemini/Claudeを試す(ユーザー指摘「実際にチャットへ連携していない
-  // のでは」への対応、2026-08-26)。成功すればそのままそれを返信として
-  // 使う(GPT-2ローカル推論は呼ばない)。**「有料版も契約していたら自動で
-  // 継続する」という要件は、この経路自体が既に満たしている**——有料契約
-  // (課金設定)済みのプロバイダは無料枠切れの429を返さずそのまま成功する
-  // ため、無料/有料の切替を明示的に行うロジックは不要(同じAPIキーで
-  // 課金が有効なら黙って成功するだけ)。全プロバイダが無料枠切れだった
-  // 場合のみ、日英併記の「本日の無料枠は使い切りました」を先頭に付けた
-  // 上で、既存のGPT-2ローカル推論へ自動的にフォールバックする(サービス
-  // 全体を止めない、既存の可用性優先の設計を踏襲)。
+  // マルチLLMプロバイダ優先順位機能。試す順序(2026-09-14変更、ユーザー
+  // 指示「ハードウェアと無料API KEYは別々の話し」「無料のGoogleなどの
+  // API KEYは、WEB版を最優先して利用して」への対応):
+  //   1) WEB版(easy-web.tokyo/open-english)で開発者が登録した無料枠
+  //      (Google検索→ChatGPT→Gemini→DeepSeek→Grok、日毎に自動で次へ)
+  //   2) この端末自身に利用者が設定した鍵(有料版含む——「各利用者が
+  //      有料版を登録したらそちらのAPI KEYを自動で使う」)
+  //   3) どちらも不可なら、この端末自身のaruaru-llm(手元のハードウェア)
+  //      によるローカルGPT-2推論(既存の可用性優先の設計を踏襲)
   let quotaExceededPrefix = "";
-  if (typeof window.tryPriorityProviderReply === "function") {
-    const priorityResult = await window.tryPriorityProviderReply(prompt);
-    if (priorityResult && typeof priorityResult.text === "string") {
-      let reply = ensureScriptGuaranteedReply(ensureHybridReply(trimDegenerateRepetition(priorityResult.text), userText));
-      if (priorityResult.provider) {
-        reply += `\n\n🤖 via ${priorityResult.provider} (external LLM) / 外部LLM(${priorityResult.provider})経由`;
-      }
-      reply += await referralsSuffix(userText);
-      reply += consumptionTaxSuffix(userText);
-      reply += pensionSuffix(userText);
-      reply += incomeWallSuffix(userText);
-      reply += vendingMachineSuffix(userText);
-      reply += internetAccessSuffix(userText);
-      reply += govConsultingSuffix(userText);
-      reply += fairTradeSuffix(userText);
-      reply += await newsSuffix(userText);
-      reply += await troubledSuffix(userText);
-      reply += nuclearDeterrenceSuffix(userText);
-  reply += backPainExerciseSuffix(userText);
-  reply += backPainDietSuffix(userText);
-      reply += egovSuffix(userText);
-      return reply;
+  let priorityResult = typeof trySharedPriorityProviderReply === "function" ? await trySharedPriorityProviderReply(prompt) : null;
+  let usedShared = !!(priorityResult && typeof priorityResult.text === "string");
+  if (!usedShared && typeof window.tryPriorityProviderReply === "function") {
+    const ownResult = await window.tryPriorityProviderReply(prompt);
+    if (ownResult && typeof ownResult.text === "string") {
+      priorityResult = ownResult;
+    } else if (ownResult && ownResult.quotaExceeded) {
+      priorityResult = ownResult; // 両方とも枠切れ、というケースの判定に使う
     }
-    if (priorityResult && priorityResult.quotaExceeded) {
-      quotaExceededPrefix =
-        "⚠ Today's free quota has been used up for all configured AI providers. Switching to the " +
-        "built-in local AI for this reply. / 設定済みの全AIプロバイダで本日の無料枠は使い切りました。" +
-        "この返信は内蔵のローカルAIに切り替えて生成します。\n\n";
+  }
+  if (priorityResult && typeof priorityResult.text === "string") {
+    let reply = ensureScriptGuaranteedReply(ensureHybridReply(trimDegenerateRepetition(priorityResult.text), userText));
+    if (priorityResult.provider) {
+      reply += `\n\n🤖 via ${priorityResult.provider} (external LLM) / 外部LLM(${priorityResult.provider})経由`;
     }
+    reply += await referralsSuffix(userText);
+    reply += consumptionTaxSuffix(userText);
+    reply += pensionSuffix(userText);
+    reply += incomeWallSuffix(userText);
+    reply += vendingMachineSuffix(userText);
+    reply += internetAccessSuffix(userText);
+    reply += govConsultingSuffix(userText);
+    reply += fairTradeSuffix(userText);
+    reply += await newsSuffix(userText);
+    reply += await troubledSuffix(userText);
+    reply += nuclearDeterrenceSuffix(userText);
+    reply += backPainExerciseSuffix(userText);
+    reply += backPainDietSuffix(userText);
+    reply += egovSuffix(userText);
+    return reply;
+  }
+  if (priorityResult && priorityResult.quotaExceeded) {
+    // 2026-09-14追加: WEB版・自端末とも無料枠を使い切った場合、日英併記で
+    // Claude Code Desktop等の有料版を案内する(ユーザー指示「最後に
+    // Claude Code DESKTOPの有料版もその他のAIの有料版も御座いますと、
+    // 日本語と英語で紹介」)。
+    quotaExceededPrefix =
+      "⚠ Today's free quota has been used up for all configured AI providers (both the shared web version and " +
+      "this device). Switching to the built-in local AI for this reply. Paid options like Claude Code Desktop " +
+      "or other AI subscriptions are available if you'd like faster, higher-quality replies — register your own " +
+      "API key in 🔀 AI Provider Priority to use it automatically. / " +
+      "設定済みの全AIプロバイダ(共有WEB版・この端末とも)で本日の無料枠は使い切りました。この返信は" +
+      "内蔵のローカルAIに切り替えて生成します。より速く高品質な返信をご希望の場合、Claude Code Desktop等の" +
+      "有料版もご利用いただけます——🔀 AI Provider Priorityでご自身のAPIキーを登録すると自動的に使われます。\n\n";
   }
 
   // Google検索補強(ユーザー指示「発話・入力の都度Google検索する」への
@@ -8330,6 +8343,35 @@ function saveCustomQaPairs(pairs) {
 // するように」への対応)。VPS側はこの読み取り専用エンドポイントに
 // `Access-Control-Allow-Origin: *`を付けてCORSを許可済み。
 const SHARED_CUSTOM_QA_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/custom-qa";
+
+// WEB版(easy-web.tokyo/open-english)で開発者が登録した無料枠プロバイダ
+// (Google検索→ChatGPT→Gemini→DeepSeek→Grok、日毎に自動で次へ切替)を、
+// 公開プロキシ経由で試す(2026-09-14新設)。全インストール合算の
+// グローバルレート制限つき(サーバー側)。easy-web.tokyo自身は同一
+// オリジンの相対パスで済み、それ以外(PC/タブレット/スマホ版)は絶対URL
+// で直接fetchする(カスタムQ&Aの`fetchSharedCustomQaPairs`と同じ
+// パターン)。
+const SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/public/chat-providers/complete-priority";
+async function trySharedPriorityProviderReply(prompt) {
+  const url = location.hostname === "easy-web.tokyo" ? "/v1/public/chat-providers/complete-priority" : SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL;
+  try {
+    const res = await fetchWithTimeout(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt }) }, 45000);
+    if (!res.ok) {
+      if (res.status === 429) return null; // レート制限中は静かに自端末側へフォールバック
+      return null;
+    }
+    const data = await res.json();
+    if (data.reply && typeof data.reply.text === "string") {
+      return { text: data.reply.text, provider: data.reply.provider, searchNotes: data.search_notes || [] };
+    }
+    if (data.all_quota_exceeded) {
+      return { quotaExceeded: true };
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
 
 async function fetchSharedCustomQaPairs() {
   // easy-web.tokyo自身(本番・デモとも)は同一オリジンの相対パスで済む
