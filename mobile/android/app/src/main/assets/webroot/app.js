@@ -4,6 +4,77 @@
 // を受けていない素のGPT-2であり、応答品質・レベル遵守は保証されない。
 // このスクリプトはそれを誠実に開示した上で、実際にaruaru-llmへ接続する。
 
+// スマホ・タブレットで入力欄(input/textarea)をタップした際、オンスクリーン
+// キーボードが画面下半分を覆って入力欄自体が隠れてしまう問題への対応
+// (ユーザー指示、2026-09-14「入力フォーム内をスマホでタッチしたら…
+// キーの画面よりも上に自動スクロールして入力時に見えなくなったりしない
+// 仕様に変更して」)。特定のフォームだけでなく、アプリ全体の全ての
+// input/textarea/select(チャット入力欄・カスタムQ&A・各種設定パネル
+// 等すべて)に効くよう、`focusin`をdocumentレベルで一度だけ登録する
+// (個々のフォームへ毎回書き足す必要が無い汎用実装)。キーボードの
+// アニメーション(せり上がり)が完了してから位置を合わせたいので、
+// 実測で概ね十分な300msだけ遅らせてから`scrollIntoView`する——
+// **正直な開示**: キーボードの表示時間はOS・ブラウザ依存で厳密な
+// 完了イベントが無いため、固定遅延という近似に留まる。
+(function enableMobileKeyboardSafeScroll() {
+  const isFormField = (el) => el && /^(input|textarea|select)$/i.test(el.tagName || "");
+  const isTouchDevice = () => "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  // 2026-09-14再修正(実機検証で発覚): `scrollIntoView({block:"center"})`
+  // はブラウザが「今どこまでが見えているか」をレイアウトビューポート
+  // (`document.documentElement.clientHeight`)基準で判断するため、
+  // AndroidのWebViewでキーボード表示中にレイアウトビューポート自体が
+  // 縮まない(縮むのは`visualViewport`だけ)構成では、実際にはキーボードに
+  // 隠れている行までスクロール済みと誤認して何もしないことがある
+  // (実機のUIダンプで、フォーカス後も要素の座標が一切変化しないことを
+  // 確認して特定)。より確実な方法として、`visualViewport`が実際に報告
+  // する「見えている範囲」(`offsetTop`〜`offsetTop+height`)と、対象要素の
+  // 実際の画面上の位置(`getBoundingClientRect`)を直接比較し、はみ出て
+  // いる分だけを`window.scrollBy`で相殺する——`scrollIntoView`のような
+  // ブラウザ側の暗黙の判断に頼らない、実測ベースの計算。
+  const rescroll = (el) => {
+    if (!el) return;
+    try {
+      if (window.visualViewport) {
+        const vv = window.visualViewport;
+        const rect = el.getBoundingClientRect();
+        const visibleTop = vv.offsetTop;
+        const visibleBottom = vv.offsetTop + vv.height;
+        const margin = 16;
+        if (rect.bottom > visibleBottom - margin) {
+          window.scrollBy({ top: rect.bottom - (visibleBottom - margin), behavior: "smooth" });
+          return;
+        }
+        if (rect.top < visibleTop + margin) {
+          window.scrollBy({ top: rect.top - (visibleTop + margin), behavior: "smooth" });
+          return;
+        }
+        return;
+      }
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (err) {
+      /* 古い環境では黙って諦める */
+    }
+  };
+  document.addEventListener(
+    "focusin",
+    (e) => {
+      if (!isFormField(e.target) || !isTouchDevice()) return;
+      setTimeout(() => rescroll(e.target), 300);
+    },
+    true
+  );
+  // `visualViewport`の`resize`イベント(実際に表示領域の高さが変化した
+  // 瞬間に発火)でも、フォーカス中の入力欄があればその都度計算し直す。
+  if (window.visualViewport && typeof window.visualViewport.addEventListener === "function") {
+    window.visualViewport.addEventListener("resize", () => {
+      const active = document.activeElement;
+      if (isFormField(active) && isTouchDevice()) {
+        setTimeout(() => rescroll(active), 50);
+      }
+    });
+  }
+})();
+
 // 実バグ修正(2026-09-07): このファイル全体で`fetch("/v1/...")`のように
 // **絶対パス**でサーバー自身のAPIを呼んでいる箇所が多数あるため、
 // `https://easy-web.tokyo/open-english/`のようなパスプレフィックス配下に
@@ -432,6 +503,22 @@ function containsJapanese(text) {
   return /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u.test(text);
 }
 
+// 2026-09-13新設(ユーザー報告「日本語で話しかけても英語で話掛けても、
+// 返事がおかしいです。返事が中国語みたいです」への対応)。
+// **正直な開示・実機で発覚した問題**: `containsJapanese()`は漢字/かな/
+// カタカナの**文字種**が含まれるかしか見ておらず、GPT-2(英語中心の
+// バイトレベルBPE)が日本語入力に対して生成する意味不明な漢字の羅列
+// (例:「八自己技やせる」)も"日本語を含む"と誤判定してしまっていた。
+// 本物の日本語の文には(漢字だけの文はまず無く)ひらがなの助詞・語尾
+// (は/を/に/が/の/です/ます等)がほぼ必ず含まれるため、これが無ければ
+// 「漢字はあるが日本語として意味を成していない」ガベージ出力である
+// 可能性が高いと判定する簡易ヒューリスティック。
+const JAPANESE_FUNCTION_WORDS = ["です", "ます", "した", "ください", "は", "を", "に", "が", "の", "と", "も", "ね", "よ", "か"];
+function looksLikeCoherentJapanese(text) {
+  if (!containsJapanese(text)) return false;
+  return JAPANESE_FUNCTION_WORDS.some((w) => text.includes(w));
+}
+
 // 正直な開示: GPT-2/DistilGPT-2は英語中心の語彙(BPE)で事前学習されており、
 // 日本語の生成能力が本質的に弱い。ハイブリッドモード(英日併記)を選んで
 // いても、モデルが英語だけで応答してしまうことがある——ユーザー報告
@@ -537,10 +624,15 @@ makeCollapsiblePanel("download-recommend-banner", "download-recommend-banner-tog
 // インスタンスである」と申告してもらう
 // (`OPEN_ENGLISH_SELF_HOSTED_HOSTNAMES`環境変数、未設定なら従来通り
 // localhost/127.0.0.1のみが対象)。
+// 2026-09-09変更(ユーザー指示): Windows/macOS/Linuxを別々の名称
+// (「open-english-windows」的な個別ブランド)にはせず、まとめて
+// 「open-english-pc」(PC版)として統一表示する。OS別の文言は廃止し、
+// どのOSで検出されても同じ「PC版起動中！」バッジを出す。
+const PC_RUNNING_BADGE_LABEL = { ja: "🖥️ PC版起動中！", en: "PC version running!" };
 const PLATFORM_BADGE_LABELS = {
-  windows: { ja: "🖥️ Windows版の起動に成功致しました！", en: "Windows version launched successfully!" },
-  macos: { ja: "🖥️ macOS版の起動に成功致しました！", en: "macOS version launched successfully!" },
-  linux: { ja: "🖥️ Linux版の起動に成功致しました！", en: "Linux version launched successfully!" },
+  windows: PC_RUNNING_BADGE_LABEL,
+  macos: PC_RUNNING_BADGE_LABEL,
+  linux: PC_RUNNING_BADGE_LABEL,
 };
 // 起動中(問い合わせ確定前)の一時表示。OS別の確定ラベル
 // (PLATFORM_BADGE_LABELS、成功時に上書きされる)とは別に、
@@ -567,7 +659,50 @@ function showLocalInstanceBadgeFromPlatformInfo() {
       // ままにする(既存の可用性優先方針、握りつぶすのみ)。
     });
 }
-if (/^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname)) {
+// 2026-09-09新設(ユーザー指示): ガラケー・スマホでの利用は
+// 「open-english-mobile」として扱い、PC版(Windows/macOS/Linuxを
+// まとめた「open-english-pc」)とは別のバッジ「モバイル版起動中！/
+// Mobile version running!」を上部に表示する。判定はサーバー側の
+// OS(`/v1/platform-info`はPC側のプロセスのビルドOSしか返さない)
+// ではなく、閲覧している端末自身のUser-Agentで行う(PCサーバーへ
+// スマホから接続してくるケースも含め、あくまで「今見ている端末」を
+// 表す)。
+const MOBILE_RUNNING_BADGE_LABEL = { ja: "📱 モバイル版起動中！", en: "Mobile version running!" };
+// 2026-09-09追加(ユーザー指示): タブレット版(open-english-tablet)は
+// ガラケー/スマホ(open-english-mobile、二画面・三画面折りたたみスマホも
+// 含む)とは別枠として「タブレット版起動中！」を表示する。
+const TABLET_RUNNING_BADGE_LABEL = { ja: "📱 タブレット版起動中！", en: "Tablet version running!" };
+function isTabletUserAgent() {
+  const ua = navigator.userAgent || "";
+  // iPadOS: iPadOS 13+のSafariは既定でデスクトップ扱いのUAを名乗るため
+  // (「iPad」の文字列を含まない)、タッチ対応+Macintosh表記の組み合わせ
+  // でも判定する。Androidタブレットは通常UAに"Mobile"を含まない
+  // (含む場合はスマホ扱い)。
+  if (/iPad/i.test(ua)) return true;
+  if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) return true;
+  if (/Android/i.test(ua) && !/Mobile/i.test(ua)) return true;
+  return false;
+}
+function isMobileOrFeaturePhoneUserAgent() {
+  return /Android|iPhone|iPod|Mobile|KAIOS|SymbianOS|BlackBerry|IEMobile|Opera Mini|UP\.Browser|DoCoMo|KDDI|SoftBank\/|J-PHONE/i.test(
+    navigator.userAgent || ""
+  );
+}
+if (isTabletUserAgent()) {
+  document.getElementById("launch-pc-version-banner")?.classList.add("hidden");
+  const badgeEl = document.getElementById("local-instance-badge");
+  if (badgeEl) {
+    badgeEl.textContent = `${TABLET_RUNNING_BADGE_LABEL.ja} / ${TABLET_RUNNING_BADGE_LABEL.en}`;
+    badgeEl.classList.remove("hidden");
+  }
+} else if (isMobileOrFeaturePhoneUserAgent()) {
+  document.getElementById("launch-pc-version-banner")?.classList.add("hidden");
+  const badgeEl = document.getElementById("local-instance-badge");
+  if (badgeEl) {
+    badgeEl.textContent = `${MOBILE_RUNNING_BADGE_LABEL.ja} / ${MOBILE_RUNNING_BADGE_LABEL.en}`;
+    badgeEl.classList.remove("hidden");
+  }
+} else if (/^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname)) {
   document.getElementById("launch-pc-version-banner")?.classList.add("hidden");
   showLocalInstanceBadgeFromPlatformInfo();
 } else {
@@ -1333,8 +1468,31 @@ async function applyDeploymentAruaruLlmBaseIfOwnDeviceUnavailable() {
       // 閲覧者自身の端末への接続はまだ確立していない、VPS側へフォールバック。
     }
     apiBaseEl.value = data.aruaru_llm_base_url;
+    // 閲覧者自身の端末ではなくVPS等の共有インスタンスへフォールバックした
+    // ことを記録する(おすすめLLMモーダルが公開プロキシ経由・install禁止
+    // モードへ切り替えるための判定に使う、2026-09-12)。
+    window.__aruaruLlmSharedDeployment = true;
   } catch (e) {
     // `/v1/config`未提供の配信形態(file://直開き等)では黙って既定のまま。
+  }
+}
+
+/**
+ * サーバー(open-english-server)自身からaruaru-llmへ到達できるかどうか
+ * (2026-09-12新設)。`true`なら、閲覧者自身の端末にaruaru-llmが無くても
+ * `askTrainer`が同一オリジンの`/v1/public/aruaru-llm/generate*`
+ * (グローバルなレート制限付き)へ自動フォールバックできる——ユーザー報告
+ * 「🔌 Could not reach aruaru-llm」(訪問者自身の端末未設置時に会話不可
+ * だった問題)への対応、ユーザー承認「レート制限付きで導入」。
+ */
+async function isAruaruLlmPublicChatAvailable() {
+  try {
+    const res = await fetch("/v1/config", { cache: "no-store" });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!data.aruaru_llm_public_chat_available;
+  } catch (e) {
+    return false;
   }
 }
 
@@ -1354,25 +1512,19 @@ const levelEl = document.getElementById("level");
 const ageGroupEl = document.getElementById("age-group");
 const businessEnglishEl = document.getElementById("business-english-toggle");
 const replyLangEl = document.getElementById("reply-lang");
-const webSearchToggleEl = document.getElementById("web-search-toggle");
-// 2026-09-01追加(ユーザー指示「前回チェックをつけていれば、覚えている
-// ように」への対応): 送信のたびに自動でOFFへ戻す既存の仕様(2026-08-27、
-// 「本当に必要な1回だけキーを渡す」という設計、下の`askTrainer`内の
-// 処理を参照)はそのまま維持しつつ、**利用者が最後に手動でON/OFFを
-// 切り替えた状態**をlocalStorageへ別途記録し、次回ページを開いた時の
-// 初期状態として復元する。送信時の自動OFF処理自体はこのlocalStorageを
-// 更新しない(利用者の「好み」と「今の送信1回限りの状態」を分けるため)。
-const WEB_SEARCH_PREF_KEY = "open-english.webSearchPreferredOn";
-if (webSearchToggleEl) {
-  try {
-    webSearchToggleEl.checked = localStorage.getItem(WEB_SEARCH_PREF_KEY) === "1";
-  } catch { /* ignore */ }
-  webSearchToggleEl.addEventListener("change", () => {
-    try {
-      localStorage.setItem(WEB_SEARCH_PREF_KEY, webSearchToggleEl.checked ? "1" : "0");
-    } catch { /* ignore */ }
-  });
-}
+// 2026-09-12変更(ユーザー指示「Google search boost、切り替えなしで、
+// SETUP後は強制ONにして」への対応): 旧来は手動トグル+送信のたびに自動
+// OFFへ戻す設計(2026-08-27、「本当に必要な1回だけキーを渡す」という
+// コスト意識からの設計)だったが、これを撤廃し、ご自身のGoogle検索キーが
+// 設定されていれば毎回自動でON(常時適用)にする。ON/OFFの手動切替は無く
+// なった——キーそのものを設定/削除することが唯一の制御手段になる
+// (`#google-search-settings-btn`のモーダルから)。
+// `refreshGoogleSearchStatus()`(下方)が、設定済みかどうかをこの変数へ反映する。
+let googleSearchKeyConfigured = false;
+// 直接検索(googleSearchDirect/googleSearchRequestVault)の連続失敗回数
+// (簡易サーキットブレーカー用、2026-09-13新設)。
+let googleSearchConsecutiveFailures = 0;
+const GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT = 3;
 const micBtn = document.getElementById("mic-btn");
 const voiceOutEl = document.getElementById("voice-out");
 
@@ -1732,7 +1884,11 @@ function speak(text) {
   if (voiceOutEl.checked && "speechSynthesis" in window) {
     try {
       window.speechSynthesis.cancel();
-      const lang = replyLangEl.value === "ja" ? "ja-JP" : "en-US";
+      // 2026-09-13改善: 「自動判定」モードでは`replyLangEl.value`が
+      // "auto"のままなので言語コード判定に使えない。実際に生成された
+      // 返信テキスト自体に日本語が含まれるかで読み上げ音声を選ぶ方が
+      // "auto"以外の既存モードにも通用し、より確実。
+      const lang = replyLangEl.value === "ja" || (replyLangEl.value === "auto" && containsJapanese(text)) ? "ja-JP" : "en-US";
       const utter = new SpeechSynthesisUtterance(extractSpeechText(text, lang));
       utter.lang = lang;
       const isHelper = typeof activeCharacter !== "undefined" && activeCharacter === "helper";
@@ -2117,6 +2273,18 @@ async function checkHealth() {
       renderRuntimeBadge(null);
     }
   } catch (err) {
+    // 2026-09-13改善: 閲覧者自身の端末(`base`)へ到達できなくても、
+    // askTrainer()は既にVPS共有aruaru-llmへ自動フォールバックできる
+    // (2026-09-12対応)。にもかかわらずこの上部ステータスは常に
+    // 「unreachable」と表示し続け、実際には会話できるのに閲覧者を
+    // 誤解させていた(ユーザー報告「WEB版でaruaru-llmが動いていない
+    // ようです」複数回)。フォールバック可否を確認し、可能なら
+    // その旨を正しく伝える。
+    if (!err.isTimeout && (await isAruaruLlmPublicChatAvailable())) {
+      setStatus(true, "aruaru-llm: using shared demo server (your own device not detected) / 共有デモサーバーを使用中(ご自身の端末は未検出)");
+      wasConnected = true;
+      return;
+    }
     setStatus(false, err.isTimeout ? "aruaru-llm: no response within 4s / 4秒以内に応答なし" : "aruaru-llm: unreachable (CORS or server not running?)");
     wasConnected = false;
     renderRuntimeBadge(null);
@@ -2184,6 +2352,24 @@ function switchCharacter() {
 characterSwitchBtn.addEventListener("click", switchCharacter);
 
 async function askTrainer(userText) {
+  // カスタムQ&Aデータベース(2026-09-13新設)を最優先でチェックする。
+  // 一致すれば、AI推論(GPT-2/外部プロバイダとも)を一切呼ばず、利用者が
+  // 事前に登録した回答をそのまま返す——「この様な質問にはこの様な回答が
+  // 良いでしょう」という利用者自身の判断を、内蔵AIの弱い回答より優先する
+  // 設計(ユーザー指示)。
+  const customQaMatch = typeof matchCustomQa === "function" ? await matchCustomQa(userText) : null;
+  if (customQaMatch) {
+    // 2026-09-13変更(ユーザー指示「日本語で登録しても、日本語と英語版と
+    // 中国語版でも同時に自動で回答して」): 日英中3言語を毎回同時に表示
+    // する。旧データ形式(単一`answer`フィールド)で登録された既存の
+    // 組み合わせとの後方互換のため、`answer_ja`が無ければ`answer`へ
+    // フォールバックする。
+    const ja = customQaMatch.answer_ja || customQaMatch.answer || "";
+    const en = customQaMatch.answer_en || "";
+    const zh = customQaMatch.answer_zh || "";
+    const sections = [ja && `🇯🇵 ${ja}`, en && `🇺🇸 ${en}`, zh && `🇨🇳 ${zh}`].filter(Boolean).join("\n\n");
+    return `${sections}\n\n📚 (Custom Q&A match / カスタムQ&Aに一致: ${customQaMatch.keywords.join(", ")})`;
+  }
   const base = apiBaseEl.value.trim();
   const level = levelEl.value;
   let levelInstruction = levelInstructions[level] || "";
@@ -2192,7 +2378,13 @@ async function askTrainer(userText) {
   if (businessEnglishEl && businessEnglishEl.checked) {
     levelInstruction = `${levelInstruction} ${BUSINESS_ENGLISH_INSTRUCTION}`;
   }
-  let langInstruction = langInstructions[replyLangEl.value] || "";
+  // 「自動判定」(2026-09-13新設、ユーザー指示「日本語で質問しても英語で
+  // 質問しても自動判定して自動回答して」への対応): 返信言語を毎回
+  // 手動選択させず、学習者の発話に日本語が含まれるかどうかだけで
+  // ja/enを自動的に決める。世界の言語(ドイツ語等)を「学びたい言語」に
+  // 選んでいる場合はそちらを優先する(自動判定は英日の二択のみ対応)。
+  const effectiveReplyLang = replyLangEl.value === "auto" ? (containsJapanese(userText) ? "ja" : "en") : replyLangEl.value;
+  let langInstruction = langInstructions[effectiveReplyLang] || "";
   // ユーザーの発話が日本語の場合、その事実をプロンプトへ明示する
   // (ユーザー報告「日本語でしゃべっても英語と日本語で返事して」への
   // 対応、第一段階)。GPT-2は英語中心の語彙のため、これだけでは
@@ -2217,61 +2409,67 @@ async function askTrainer(userText) {
   }
   const prompt = `${trainerRole} ${levelInstruction} ${langInstruction}\nStudent: ${userText}\nTrainer:`;
 
-  // マルチLLMプロバイダ優先順位機能が有効な場合、まずChatGPT/DeepSeek/
-  // Gemini/Claudeを試す(ユーザー指摘「実際にチャットへ連携していない
-  // のでは」への対応、2026-08-26)。成功すればそのままそれを返信として
-  // 使う(GPT-2ローカル推論は呼ばない)。**「有料版も契約していたら自動で
-  // 継続する」という要件は、この経路自体が既に満たしている**——有料契約
-  // (課金設定)済みのプロバイダは無料枠切れの429を返さずそのまま成功する
-  // ため、無料/有料の切替を明示的に行うロジックは不要(同じAPIキーで
-  // 課金が有効なら黙って成功するだけ)。全プロバイダが無料枠切れだった
-  // 場合のみ、日英併記の「本日の無料枠は使い切りました」を先頭に付けた
-  // 上で、既存のGPT-2ローカル推論へ自動的にフォールバックする(サービス
-  // 全体を止めない、既存の可用性優先の設計を踏襲)。
+  // マルチLLMプロバイダ優先順位機能。試す順序(2026-09-14変更、ユーザー
+  // 指示「ハードウェアと無料API KEYは別々の話し」「無料のGoogleなどの
+  // API KEYは、WEB版を最優先して利用して」への対応):
+  //   1) WEB版(easy-web.tokyo/open-english)で開発者が登録した無料枠
+  //      (Google検索→ChatGPT→Gemini→DeepSeek→Grok、日毎に自動で次へ)
+  //   2) この端末自身に利用者が設定した鍵(有料版含む——「各利用者が
+  //      有料版を登録したらそちらのAPI KEYを自動で使う」)
+  //   3) どちらも不可なら、この端末自身のaruaru-llm(手元のハードウェア)
+  //      によるローカルGPT-2推論(既存の可用性優先の設計を踏襲)
   let quotaExceededPrefix = "";
-  if (typeof window.tryPriorityProviderReply === "function") {
-    const priorityResult = await window.tryPriorityProviderReply(prompt);
-    if (priorityResult && typeof priorityResult.text === "string") {
-      let reply = ensureScriptGuaranteedReply(ensureHybridReply(trimDegenerateRepetition(priorityResult.text), userText));
-      if (priorityResult.provider) {
-        reply += `\n\n🤖 via ${priorityResult.provider} (external LLM) / 外部LLM(${priorityResult.provider})経由`;
-      }
-      reply += await referralsSuffix(userText);
-      reply += consumptionTaxSuffix(userText);
-      reply += pensionSuffix(userText);
-      reply += incomeWallSuffix(userText);
-      reply += vendingMachineSuffix(userText);
-      reply += internetAccessSuffix(userText);
-      reply += govConsultingSuffix(userText);
-      reply += fairTradeSuffix(userText);
-      reply += await newsSuffix(userText);
-      reply += await troubledSuffix(userText);
-      reply += nuclearDeterrenceSuffix(userText);
-  reply += backPainExerciseSuffix(userText);
-  reply += backPainDietSuffix(userText);
-      reply += egovSuffix(userText);
-      return reply;
+  let priorityResult = typeof trySharedPriorityProviderReply === "function" ? await trySharedPriorityProviderReply(prompt) : null;
+  let usedShared = !!(priorityResult && typeof priorityResult.text === "string");
+  if (!usedShared && typeof window.tryPriorityProviderReply === "function") {
+    const ownResult = await window.tryPriorityProviderReply(prompt);
+    if (ownResult && typeof ownResult.text === "string") {
+      priorityResult = ownResult;
+    } else if (ownResult && ownResult.quotaExceeded) {
+      priorityResult = ownResult; // 両方とも枠切れ、というケースの判定に使う
     }
-    if (priorityResult && priorityResult.quotaExceeded) {
-      quotaExceededPrefix =
-        "⚠ Today's free quota has been used up for all configured AI providers. Switching to the " +
-        "built-in local AI for this reply. / 設定済みの全AIプロバイダで本日の無料枠は使い切りました。" +
-        "この返信は内蔵のローカルAIに切り替えて生成します。\n\n";
+  }
+  if (priorityResult && typeof priorityResult.text === "string") {
+    let reply = ensureScriptGuaranteedReply(ensureHybridReply(trimDegenerateRepetition(priorityResult.text), userText));
+    if (priorityResult.provider) {
+      reply += `\n\n🤖 via ${priorityResult.provider} (external LLM) / 外部LLM(${priorityResult.provider})経由`;
     }
+    reply += await referralsSuffix(userText);
+    reply += consumptionTaxSuffix(userText);
+    reply += pensionSuffix(userText);
+    reply += incomeWallSuffix(userText);
+    reply += vendingMachineSuffix(userText);
+    reply += internetAccessSuffix(userText);
+    reply += govConsultingSuffix(userText);
+    reply += fairTradeSuffix(userText);
+    reply += await newsSuffix(userText);
+    reply += await troubledSuffix(userText);
+    reply += nuclearDeterrenceSuffix(userText);
+    reply += backPainExerciseSuffix(userText);
+    reply += backPainDietSuffix(userText);
+    reply += egovSuffix(userText);
+    return reply;
+  }
+  if (priorityResult && priorityResult.quotaExceeded) {
+    // 2026-09-14追加: WEB版・自端末とも無料枠を使い切った場合、日英併記で
+    // Claude Code Desktop等の有料版を案内する(ユーザー指示「最後に
+    // Claude Code DESKTOPの有料版もその他のAIの有料版も御座いますと、
+    // 日本語と英語で紹介」)。
+    quotaExceededPrefix =
+      "⚠ Today's free quota has been used up for all configured AI providers (both the shared web version and " +
+      "this device). Switching to the built-in local AI for this reply. Paid options like Claude Code Desktop " +
+      "or other AI subscriptions are available if you'd like faster, higher-quality replies — register your own " +
+      "API key in 🔀 AI Provider Priority to use it automatically. / " +
+      "設定済みの全AIプロバイダ(共有WEB版・この端末とも)で本日の無料枠は使い切りました。この返信は" +
+      "内蔵のローカルAIに切り替えて生成します。より速く高品質な返信をご希望の場合、Claude Code Desktop等の" +
+      "有料版もご利用いただけます——🔀 AI Provider Priorityでご自身のAPIキーを登録すると自動的に使われます。\n\n";
   }
 
   // Google検索補強(ユーザー指示「発話・入力の都度Google検索する」への
-  // 対応、ブリッジ式)。
-  const useWebSearch = webSearchToggleEl && webSearchToggleEl.checked;
-  // 2026-08-27追加(ユーザー指示「必要な所だけON/OFF」への対応): このON状態を
-  // 使うのはこの1通のメッセージだけとし、送信の時点で即座にOFFへ戻す
-  // (fetch開始前にリセットすることで、ネットワーク失敗時でもON状態が
-  // 残らないようにする)。次のメッセージでもGoogle検索キーを使いたい場合は
-  // 利用者が毎回明示的にチェックし直す必要がある——「本当に必要な1回だけ
-  // aruaru-llmへキーを渡す」という意図をより確実にするための設計。
-  if (useWebSearch && webSearchToggleEl) {
-    webSearchToggleEl.checked = false;
-  }
+  // 対応、ブリッジ式)。2026-09-12以降、キーが設定済みなら手動トグル無しで
+  // 毎回自動的にON(強制適用)——`googleSearchKeyConfigured`は
+  // `refreshGoogleSearchStatus()`が更新する。
+  const useWebSearch = googleSearchKeyConfigured;
 
   // 2026-08-25追加: Google検索補強がONの場合、このブラウザに保存された
   // 訪問者自身のAPIキー/cx(あれば)を使う。
@@ -2303,17 +2501,32 @@ async function askTrainer(userText) {
 
   let directSearchResults = null;
   let directSearchError = null;
-  if (useVaultSearchPath) {
+  // 2026-09-13追加(簡易サーキットブレーカー): Google検索補強を「鍵設定後は
+  // 常時ON」にした結果、鍵/cxが実際には無効なままだと**毎メッセージ**で
+  // 8秒待たされた上に失敗通知が付くことになり、体感速度が悪化する
+  // (ユーザー報告)。同一セッション内で連続3回失敗したら、それ以降は
+  // 検索を自動で見送り(通常生成のみ)、その旨を一度だけ伝える——鍵の
+  // 再設定(設定パネルを開き直す)でリセットされる。
+  if (useVaultSearchPath && googleSearchConsecutiveFailures < GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT) {
     try {
       directSearchResults = await googleSearchRequestVault(userText, 3);
+      googleSearchConsecutiveFailures = 0;
     } catch (err) {
       directSearchError = err.message || String(err);
+      googleSearchConsecutiveFailures += 1;
     }
-  } else if (useWebSearch && ownGoogleSearchCreds) {
+  } else if (useWebSearch && ownGoogleSearchCreds && googleSearchConsecutiveFailures < GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT) {
     try {
       directSearchResults = await googleSearchDirect(userText, ownGoogleSearchCreds.api_key, ownGoogleSearchCreds.cx, 3);
+      googleSearchConsecutiveFailures = 0;
     } catch (err) {
       directSearchError = err.message || String(err);
+      googleSearchConsecutiveFailures += 1;
+      if (googleSearchConsecutiveFailures === GOOGLE_SEARCH_CIRCUIT_BREAKER_LIMIT) {
+        directSearchError +=
+          " (Search paused for the rest of this session after repeated failures — check your key/Search Engine ID in 🔎 Setup Google Search, then reopen it to retry. / " +
+          "連続失敗のため、このセッション中は検索を一時停止します——🔎 Setup Google Searchでキー・検索エンジンIDをご確認の上、再度開けば再試行できます。)";
+      }
     }
   }
 
@@ -2332,20 +2545,30 @@ async function askTrainer(userText) {
     ? buildSearchAugmentedPromptClient(formatSearchResultsAsContext(directSearchResults), userText)
     : prompt;
 
-  // タイムアウト上限(2026-08-22追加)。GPT-2のCPU貪欲デコードは
-  // 1トークンあたりほぼ一定時間かかるため、大きなモデル(gpt2-xl等)へ
-  // 切り替えた環境では24トークンでも数十秒かかり得る。実測(distilgpt2・
-  // 32スレッドCPU)は24トークンで約5秒だったので、余裕を見て60秒
-  // (Google検索補強を挟む場合はさらに+30秒)を上限とする。無限に待つ
-  // 従来挙動よりは遥かにましだが、「速くなる」わけではない(正直な開示)。
-  const timeoutMs = useWebSearch ? 90000 : 60000;
+  // タイムアウト上限(2026-08-22追加、2026-09-12短縮、2026-09-13再調整)。
+  // GPT-2のCPU貪欲デコードは1トークンあたりほぼ一定時間かかるため、
+  // 大きなモデル(gpt2-xl等)へ切り替えた環境では24トークンでも数十秒
+  // かかり得る。実測(distilgpt2・32スレッドCPU)は24トークンで約5秒。
+  // **正直な開示・実機で発覚した制約**: GPT-2のBPEトークナイザーは
+  // 英語中心の語彙で学習されており、日本語1文字が複数バイト単位の
+  // トークンに分解される(例:「消費税問題は？」だけでも数十トークン)。
+  // さらにopen-cuda-llmのGPT-2実装はKVキャッシュを持たず毎ステップ
+  // 入力全体を再計算するため、入力トークン数が増えるとほぼ2乗で遅く
+  // なる——実機で「消費税問題は？」のようなごく短い日本語質問だけで
+  // 50秒以上かかることを確認した(2026-09-13、ユーザー報告)。この
+  // アーキテクチャ上の制約自体は今日のセッションでは解消できない
+  // (KVキャッシュの実装はopen-cuda-llm側の大きな変更が必要)ため、
+  // 日本語を含む入力は生成トークン数を減らして体感時間を縮め、
+  // タイムアウトも少し延ばして「ほぼ確実に応答が返る」方を優先する。
+  const inputIsJapanese = containsJapanese(userText);
+  const timeoutMs = inputIsJapanese ? 55000 : 45000;
   const startedAt = performance.now();
-  const requestBody = { prompt: effectivePrompt, max_new_tokens: 24 };
+  const requestBody = { prompt: effectivePrompt, max_new_tokens: inputIsJapanese ? 12 : 24 };
   // useDirectSearchPathの場合はここでkey/cxを一切requestBodyへ入れない
   // (aruaru-llmへ渡らないことがこの変更の目的そのもの)。訪問者自身の
   // キーが無い場合の従来経路(/v1/generate-with-search)には元々キーが
   // 付いていなかったため、この分岐でも変更は無い。
-  const res = await fetchWithTimeout(`${base}${endpoint}`, {
+  const fetchOpts = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     // 正直な開示: max_new_tokensを48から24へ縮小した(ユーザー指摘
@@ -2354,7 +2577,25 @@ async function askTrainer(userText) {
     // 短縮になる——ファインチューニング無しの素のモデルであるという
     // 制約自体は変わらない。
     body: JSON.stringify(requestBody),
-  }, timeoutMs);
+  };
+  let res;
+  try {
+    res = await fetchWithTimeout(`${base}${endpoint}`, fetchOpts, timeoutMs);
+  } catch (err) {
+    // 閲覧者自身の端末(`base`)に到達できなかった場合、サーバーが
+    // VPS共有のaruaru-llmへ到達可能なら同一オリジンの公開プロキシへ
+    // 自動フォールバックする(2026-09-12、ユーザー報告「🔌 Could not
+    // reach aruaru-llm」でWEBデモが会話不可だった問題への対応。全来場者
+    // 合算のグローバルレート制限つき、ユーザー承認済み)。TypeError
+    // (ネットワーク到達不能)以外——タイムアウト等——はそのまま再送出する。
+    if (!(err instanceof TypeError) || !(await isAruaruLlmPublicChatAvailable())) throw err;
+    // `endpoint`は既に`/v1/generate`(または`/v1/generate-with-search`)
+    // を含むため、単純に`/v1/public/aruaru-llm`と連結すると
+    // `/v1/public/aruaru-llm/v1/generate`という二重パスになってしまう
+    // (実機で404を確認して発覚したバグ、2026-09-12)。先頭の`/v1`を
+    // 取り除いてから公開プロキシのプレフィックスへ付け替える。
+    res = await fetchWithTimeout(`/v1/public/aruaru-llm${endpoint.replace(/^\/v1/, "")}`, fetchOpts, timeoutMs);
+  }
   if (!res.ok) {
     // 本文にaruaru-llm側の`error`フィールドが入っていることがあるので、
     // ステータスコードだけでなく理由も見せる(2026-08-22改善)。
@@ -2376,6 +2617,17 @@ async function askTrainer(userText) {
   }
   const completion = data.completion ?? "(no completion field in response)";
   let reply = ensureScriptGuaranteedReply(ensureHybridReply(trimDegenerateRepetition(completion), userText));
+  // 2026-09-13追加(ユーザー報告「返事が中国語みたいです」への対応):
+  // 返信言語が日本語(自動判定含む)なのに、生成結果が漢字を含みつつも
+  // 助詞等が無く日本語として意味を成していない(GPT-2の英語中心BPEが
+  // 日本語入力に対して生成しがちなガベージ)場合、正直にその旨を開示する。
+  // `ensureHybridReply`の"日本語が一切無ければ英語で返す"保証だけでは、
+  // 「漢字はあるが日本語になっていない」ケースを見逃していた。
+  if (effectiveReplyLang === "ja" && containsJapanese(reply) && !looksLikeCoherentJapanese(reply)) {
+    reply +=
+      "\n\n(Honest disclosure: this small English-centric AI model produced Japanese-looking characters that don't form a real Japanese sentence. It cannot reliably generate Japanese yet — sorry! / " +
+      "正直な開示: この小型AIモデル(英語中心)は、日本語らしき文字を出力しましたが実際には意味の通る日本語になっていません。まだ日本語の生成を苦手としています、申し訳ございません。)";
+  }
 
   if (useWebSearch) {
     if (useDirectSearchPath) {
@@ -5027,8 +5279,10 @@ function speechLangTag() {
     ? lt.slice(6)
     : LEARN_TARGET_TO_LANG_CODE[lt] || null;
 
-  // 2) 返信言語(hybridは方向が定まらないので除外)
-  if (!code && replyLangEl && replyLangEl.value && replyLangEl.value !== "hybrid") {
+  // 2) 返信言語(hybrid/auto("auto"は固定の言語コードではないため
+  // codeToTagにそのまま渡すと無効なBCP-47タグになる、2026-09-13修正)
+  // は方向が定まらないので除外)
+  if (!code && replyLangEl && replyLangEl.value && replyLangEl.value !== "hybrid" && replyLangEl.value !== "auto") {
     code = replyLangEl.value;
   }
   const tag = codeToTag(code);
@@ -6466,8 +6720,19 @@ function loadOwnGoogleSearchCredentials() {
     return null;
   }
   try {
-    const api_key = localStorage.getItem(GOOGLE_SEARCH_LOCAL_KEY) || "";
-    const cx = localStorage.getItem(GOOGLE_SEARCH_LOCAL_CX) || "";
+    let api_key = (localStorage.getItem(GOOGLE_SEARCH_LOCAL_KEY) || "").trim();
+    let cx = (localStorage.getItem(GOOGLE_SEARCH_LOCAL_CX) || "").trim();
+    // 2026-09-13バグ修正: Google検索補強を「鍵設定後は常時ON」にしたら
+    // (2026-09-12)、以前はほぼ使われず気づかれなかった保存済みcx/keyの
+    // フォーマット崩れ(前後の空白・cx欄へProgrammable Search Engineの
+    // 管理画面URL全体を貼ってしまう等、よくある入力ミス)が毎メッセージ
+    // で"HTTP 400: Request contains an invalid argument"として顕在化した
+    // (ユーザー報告)。cxがURLっぽい場合は`cx=`パラメータだけを抽出する
+    // 救済策を入れる。
+    if (cx.includes("cx=")) {
+      const match = cx.match(/[?&]cx=([^&]+)/);
+      if (match) cx = decodeURIComponent(match[1]);
+    }
     return api_key && cx ? { api_key, cx } : null;
   } catch (e) {
     return null;
@@ -6484,7 +6749,13 @@ function loadOwnGoogleSearchCredentials() {
 // 別途確認が必要だった)。
 async function googleSearchDirect(query, apiKey, cx, maxResults) {
   const url = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(apiKey)}&cx=${encodeURIComponent(cx)}&q=${encodeURIComponent(query)}&num=${Math.min(Math.max(maxResults || 3, 1), 10)}`;
-  const res = await fetch(url);
+  // 2026-09-12バグ修正: このfetchにタイムアウトが一切無く、Google検索
+  // 補強を「鍵設定後は常時ON」にした変更(同日)と組み合わさった結果、
+  // 検索が遅延/ハングすると会話全体が90秒以上「考え中」のまま固まる
+  // 実害が発生した(ユーザー報告)。他のGoogle検索/主要フェッチと同じ
+  // `fetchWithTimeout`パターンに揃え、遅延時は例外を投げて呼び出し元の
+  // catch(直接検索を諦めて通常生成へフォールバック)に任せる。
+  const res = await fetchWithTimeout(url, {}, 8000);
   if (!res.ok) {
     let detail = "";
     try {
@@ -6773,10 +7044,16 @@ async function refreshGoogleSearchStatus() {
     }
     const inlineEl = document.getElementById("web-search-own-key-status");
     if (inlineEl) inlineEl.textContent = "🔒 vault mode / vaultモード使用中";
+    // vaultモードは実際の鍵の有無をここでは判定できないため、既存の
+    // 「設定済みとみなす」挙動を踏襲する(vault.html側で完結する設計)。
+    googleSearchKeyConfigured = true;
+    updateWebSearchBoostStatusLabel();
     return;
   }
   const creds = loadOwnGoogleSearchCredentials();
   const configuredOnDevice = !creds && (await isSearchConfiguredOnOwnDevice());
+  googleSearchKeyConfigured = !!(creds || configuredOnDevice);
+  updateWebSearchBoostStatusLabel();
   if (googleSearchStatusEl) {
     if (creds) {
       googleSearchStatusEl.textContent = "✅ Your own key is saved in this browser / このブラウザにご自身のキーが保存されています";
@@ -6799,15 +7076,29 @@ async function refreshGoogleSearchStatus() {
       : "⚠ set your own key to use search / 検索にはご自身のキー設定が必要";
   }
 }
-// 起動時にも一度反映しておく(トグルを押す前から状態が見える)。少し
-// 遅らせて呼ぶ(apiBaseEl.valueがautoDetectAruaruLlmBaseで確定して
-// からの方が、閲覧者自身の端末に対して正しく問い合わせできるため)。
+/** `#web-search-boost-status`の文言を、キー設定済みかどうかで出し分ける。 */
+function updateWebSearchBoostStatusLabel() {
+  const el = document.getElementById("web-search-boost-status");
+  if (!el) return;
+  el.textContent = googleSearchKeyConfigured
+    ? "🔎 Google search boost: ON (your key is set up, applied to every message) / Google検索で補強: ON(キー設定済み、毎回自動適用)"
+    : "🔎 Google search boost: set your own key to enable (forced ON once set up) / Google検索で補強: ご自身のキーを設定すると有効(設定後は常時ON)";
+}
+
+// 起動時にも一度反映しておく(以前はトグルを押す前から状態が見えるように、
+// という意図だったが、トグル撤廃後も「今ONかどうか」を示す表示として同じ
+// タイミングで反映する)。少し遅らせて呼ぶ(apiBaseEl.valueが
+// autoDetectAruaruLlmBaseで確定してからの方が、閲覧者自身の端末に対して
+// 正しく問い合わせできるため)。
 setTimeout(refreshGoogleSearchStatus, 500);
 
 if (googleSearchBtn && googleSearchModal) {
   googleSearchBtn.addEventListener("click", () => {
     googleSearchModal.classList.remove("hidden");
     refreshGoogleSearchStatus();
+    // 設定パネルを開き直したら、サーキットブレーカーをリセットする
+    // (鍵/cxを直したはずなので再試行させる、2026-09-13)。
+    googleSearchConsecutiveFailures = 0;
   });
   googleSearchClose.addEventListener("click", () => googleSearchModal.classList.add("hidden"));
   googleSearchModal.addEventListener("click", (e) => {
@@ -7102,11 +7393,18 @@ if (googleSearchBtn && googleSearchModal) {
 // (`/v1/settings/chat-providers`・`/v1/settings/provider-priority`、
 // いずれもメモリ上保持のみ)へ送信する。
 (() => {
+  // 既定の優先順位(2026-09-12ユーザー指示「デフォルトでGoogle検索を無料の
+  // 範囲を使い終わったらChatGPTの次はGeminiの次は、DeepSeekの次はGrokの
+  // 無料枠と順番に一つずつ無料枠を毎日使い切っていって」への対応)。
+  // **正直な開示**: Grok(xAI)は本アプリ・aruaru-llmサーバーいずれにも
+  // まだプロバイダ実装が無い(APIキー入力欄・サーバー側HTTPクライアント
+  // ともに未実装)ため、この一覧には含めていない。実装が必要な場合は
+  // 別途対応する。Claudeは指示に無かったため既定の並びの末尾に維持。
   const PROVIDER_PRIORITY_SERVICES = [
     { id: "googlesearch", label: "Google Search / Google検索" },
     { id: "openai", label: "ChatGPT (OpenAI)" },
-    { id: "deepseek", label: "DeepSeek" },
     { id: "gemini", label: "Gemini" },
+    { id: "deepseek", label: "DeepSeek" },
     { id: "claude", label: "Claude (Anthropic)" },
   ];
   const PROVIDER_KEY_LOCAL_PREFIX = "open-english.providerKey.";
@@ -8053,6 +8351,265 @@ function practiceExamPrepWithTrainer() {
 }
 
 // ===========================================================================
+// カスタムQ&Aデータベース(2026-09-13新設)
+// ---------------------------------------------------------------------------
+// ユーザー指示への対応: 「DATABASEの自動参照は、私がこの様な質問には
+// この様な回答が良いでしょうの様なDATABASEです」——消費税問題のような、
+// 内蔵AI(小型GPT-2)が弱い具体的な現実の質問に対し、利用者自身が
+// 「この質問にはこの回答」という組み合わせを登録し、一致したメッセージ
+// では登録済みの回答をそのまま使う(AI推論をバイパスする)機能。
+// 正直な開示: 既存の`consumptionTaxSuffix`/`pensionSuffix`等の固定文
+// パターンと設計思想は同じだが、それらはコード内にハードコードされた
+// 開発者(ユーザー)の意見表明である一方、こちらは利用者が自由に追加・
+// 削除できる汎用データベースという違いがある。
+// ===========================================================================
+const CUSTOM_QA_KEY = "open-english.customQaPairs";
+
+function loadCustomQaPairs() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_QA_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((p) => p && typeof p.answer === "string" && Array.isArray(p.keywords)) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomQaPairs(pairs) {
+  try {
+    localStorage.setItem(CUSTOM_QA_KEY, JSON.stringify(pairs));
+  } catch (e) {
+    /* localStorageが使えなくてもサーバー側保存は試みる */
+  }
+  // 2026-09-13バグ修正: 従来の`persistSetting()`(内部で`POST /v1/db/settings`、
+  // ログイン必須)経由だと、VPS本番でログインしていない場合にサーバー側
+  // 同期だけがサイレントに失敗し、デモや他端末に反映されない実害と
+  // なった(ユーザー報告)。専用のログイン不要な`POST /v1/custom-qa`を
+  // 直接呼ぶことで、登録UIの表示制御(管理者にのみボタンを見せる)を
+  // アクセス制御として使う既存方針と整合させる。
+  fetch("/v1/custom-qa", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pairs }),
+  }).catch(() => {
+    /* サーバー未起動・file://等では黙って諦める(localStorageのみで動作) */
+  });
+}
+
+/**
+ * サーバー側の共有カスタムQ&A一覧を取得する(2026-09-13新設)。
+ * 管理者(PC版・VPS本番)が登録した内容を、デモ来場者の発話にも自動で
+ * 反映させるための仕組み(ユーザー指示「デモ画面では、管理者画面で
+ * 登録した内容に反応して自動回答なのは良いです」)。デモサーバー側は
+ * `OPEN_ENGLISH_CUSTOM_QA_SOURCE_URL`環境変数で本番のこの同じ
+ * エンドポイントを中継するため、同一オリジンのfetchで済む。
+ */
+// VPS本番の公開カスタムQ&Aエンドポイント(絶対URL)。PC/タブレット/
+// スマホ版(それぞれ`http://localhost:4601`等、別オリジンで動くローカル
+// サーバー)は自分自身の`/v1/custom-qa`(自分のローカルDB、通常は空)
+// ではなく、この絶対URLを直接fetchすることで、管理者がVPS本番へ登録した
+// 最新のQ&Aを毎回反映できる(2026-09-13新設、ユーザー指示「PC、タブレット、
+// スマホ版でも…毎回最新のDATABASE Q&AのDATAもdemoと同じ様にAIが自動回答
+// するように」への対応)。VPS側はこの読み取り専用エンドポイントに
+// `Access-Control-Allow-Origin: *`を付けてCORSを許可済み。
+const SHARED_CUSTOM_QA_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/custom-qa";
+
+// WEB版(easy-web.tokyo/open-english)で開発者が登録した無料枠プロバイダ
+// (Google検索→ChatGPT→Gemini→DeepSeek→Grok、日毎に自動で次へ切替)を、
+// 公開プロキシ経由で試す(2026-09-14新設)。全インストール合算の
+// グローバルレート制限つき(サーバー側)。easy-web.tokyo自身は同一
+// オリジンの相対パスで済み、それ以外(PC/タブレット/スマホ版)は絶対URL
+// で直接fetchする(カスタムQ&Aの`fetchSharedCustomQaPairs`と同じ
+// パターン)。
+const SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/public/chat-providers/complete-priority";
+async function trySharedPriorityProviderReply(prompt) {
+  const url = location.hostname === "easy-web.tokyo" ? "/v1/public/chat-providers/complete-priority" : SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL;
+  try {
+    const res = await fetchWithTimeout(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt }) }, 45000);
+    if (!res.ok) {
+      if (res.status === 429) return null; // レート制限中は静かに自端末側へフォールバック
+      return null;
+    }
+    const data = await res.json();
+    if (data.reply && typeof data.reply.text === "string") {
+      return { text: data.reply.text, provider: data.reply.provider, searchNotes: data.search_notes || [] };
+    }
+    if (data.all_quota_exceeded) {
+      return { quotaExceeded: true };
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function fetchSharedCustomQaPairs() {
+  // easy-web.tokyo自身(本番・デモとも)は同一オリジンの相対パスで済む
+  // (デモはサーバー側で本番へ中継、本番は自分自身のDBを返す)。それ以外
+  // (PC/タブレット/スマホ版のローカルサーバー)は絶対URLで本番へ直接
+  // fetchする。
+  const url = location.hostname === "easy-web.tokyo" ? "/v1/custom-qa" : SHARED_CUSTOM_QA_ABSOLUTE_URL;
+  try {
+    const res = await fetchWithTimeout(url, { cache: "no-store" }, 4000);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const pairs = Array.isArray(data.pairs) ? data.pairs : [];
+    return pairs.filter((p) => p && Array.isArray(p.keywords) && (typeof p.answer === "string" || typeof p.answer_ja === "string" || typeof p.answer_en === "string" || typeof p.answer_zh === "string"));
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * 発話がある組み合わせの全キーワードを含む場合、その回答を返す(最初に
+ * 見つかった一致を採用、大文字小文字を無視した部分一致)。一致が無ければ
+ * `null`。このブラウザのlocalStorage分とサーバー側共有分(管理者が
+ * 登録した内容、デモでは本番から中継)の両方を合わせて照合する。
+ */
+async function matchCustomQa(userText) {
+  const localPairs = loadCustomQaPairs();
+  const sharedPairs = await fetchSharedCustomQaPairs();
+  const pairs = [...localPairs, ...sharedPairs];
+  const haystack = userText.toLowerCase();
+  for (const pair of pairs) {
+    if (pair.keywords.length === 0) continue;
+    if (pair.keywords.every((kw) => haystack.includes(String(kw).toLowerCase()))) {
+      return pair;
+    }
+  }
+  return null;
+}
+
+/**
+ * MyMemory Translation API(無料・APIキー不要)で機械翻訳する
+ * (2026-09-13新設、ユーザー指示「日本語で登録しても、日本語と英語版と
+ * 中国語版でも同時に自動で回答して」「自動で翻訳して」への対応)。
+ * **正直な開示**: 無料枠のシンプルな機械翻訳サービスであり、翻訳品質は
+ * 保証されない——契約不要・自己完結を志向する既存の設計思想からは
+ * 外れる意図的な例外(Google Custom Search連携と同じ位置づけ)。
+ * 失敗時は元のテキストをそのまま返す(既存の可用性優先の設計方針)。
+ */
+async function translateViaMyMemory(text, sourceLang, targetLang) {
+  if (sourceLang === targetLang) return text;
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+    const res = await fetchWithTimeout(url, {}, 8000);
+    if (!res.ok) return text;
+    const data = await res.json();
+    return data?.responseData?.translatedText || text;
+  } catch (e) {
+    return text;
+  }
+}
+
+/** 簡易言語検出(ja/zh/en)。カスタムQ&A登録時、入力言語を推定してから
+ * 残り2言語へ機械翻訳するために使う。中国語(漢字のみ、ひらがな無し)と
+ * 日本語(ひらがな有り)は文字種だけでは区別が付かないケースもあるが、
+ * ひらがなの有無を主な決め手にする実用上のヒューリスティック。 */
+function detectSimpleLang(text) {
+  if (/[\p{Script=Hiragana}\p{Script=Katakana}]/u.test(text)) return "ja";
+  if (/\p{Script=Han}/u.test(text)) return "zh-CN";
+  return "en";
+}
+
+function renderCustomQaList() {
+  const listEl = document.getElementById("custom-qa-list");
+  if (!listEl) return;
+  const pairs = loadCustomQaPairs();
+  if (pairs.length === 0) {
+    listEl.innerHTML = '<p class="setup-note">No pairs registered yet. / まだ何も登録されていません。</p>';
+    return;
+  }
+  listEl.innerHTML = "";
+  pairs.forEach((pair, i) => {
+    const row = document.createElement("div");
+    row.className = "settings-field";
+    const label = document.createElement("div");
+    label.textContent = `[${pair.keywords.join(", ")}] → 🇯🇵${pair.answer_ja || pair.answer || ""} / 🇺🇸${pair.answer_en || ""} / 🇨🇳${pair.answer_zh || ""}`;
+    row.appendChild(label);
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "setup-btn";
+    delBtn.textContent = "🗑 Delete / 削除";
+    delBtn.addEventListener("click", () => {
+      const next = loadCustomQaPairs();
+      next.splice(i, 1);
+      saveCustomQaPairs(next);
+      renderCustomQaList();
+    });
+    row.appendChild(delBtn);
+    listEl.appendChild(row);
+  });
+}
+
+const customQaBtn = document.getElementById("custom-qa-btn");
+const customQaModal = document.getElementById("custom-qa-modal");
+// 2026-09-13追記(ユーザー指示の経緯): 当初は管理者=`isLocalHost`
+// (PC版のみ)としたが、その後「この管理者機能は、PC版とeasy-web.tokyo/
+// open-englishの画面でも登録機能は付けて」「esay-web.tokyo/demoにも
+// カスタムQ&A機能は搭載しないで」と指示が変わり、**登録UIを隠すのは
+// デモ(`/open-english/demo`)のみ**、PC版・VPS本番(`/open-english/`、
+// ログイン機能はそのまま)には登録ボタンを表示する仕様へ確定した。
+// デモ来場者の発話には、本番で登録された内容が(サーバー間中継経由で)
+// 自動的に反映される(`matchCustomQa`のサーバー共有分参照)——デモには
+// 登録"UI"を出さないだけで、登録"内容の反映"はデモでも生きている。
+const isDemoPathForCustomQa = location.pathname.includes("/demo");
+if (customQaBtn && isDemoPathForCustomQa) {
+  customQaBtn.classList.add("hidden");
+}
+if (customQaBtn && customQaModal && !isDemoPathForCustomQa) {
+  const closeBtn = document.getElementById("custom-qa-close");
+  customQaBtn.addEventListener("click", () => {
+    customQaModal.classList.remove("hidden");
+    renderCustomQaList();
+  });
+  if (closeBtn) closeBtn.addEventListener("click", () => customQaModal.classList.add("hidden"));
+  customQaModal.addEventListener("click", (e) => {
+    if (e.target === customQaModal) customQaModal.classList.add("hidden");
+  });
+  const addBtn = document.getElementById("custom-qa-add-btn");
+  const keywordsEl = document.getElementById("custom-qa-keywords");
+  const answerEl = document.getElementById("custom-qa-answer");
+  const statusEl = document.getElementById("custom-qa-status");
+  if (addBtn) {
+    addBtn.addEventListener("click", async () => {
+      const keywords = (keywordsEl.value || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+      const answer = (answerEl.value || "").trim();
+      if (keywords.length === 0 || !answer) {
+        if (statusEl) statusEl.textContent = "⚠ Please fill in both keywords and an answer. / キーワードと回答の両方を入力してください。";
+        return;
+      }
+      addBtn.disabled = true;
+      if (statusEl) statusEl.textContent = "⏳ Translating (ja/en/zh)… / 翻訳中(日英中)…";
+      // 2026-09-13新設: 入力言語を推定し、残り2言語へ機械翻訳する
+      // (ユーザー指示「日本語で登録しても、日本語と英語版と中国語版でも
+      // 同時に自動で回答して」「自動で翻訳して」への対応)。
+      const sourceLang = detectSimpleLang(answer);
+      const targets = ["ja", "en", "zh-CN"].filter((l) => l !== sourceLang);
+      const [t1, t2] = await Promise.all(targets.map((t) => translateViaMyMemory(answer, sourceLang, t)));
+      const byLang = { [sourceLang]: answer, [targets[0]]: t1, [targets[1]]: t2 };
+      const pairs = loadCustomQaPairs();
+      pairs.push({
+        keywords,
+        answer_ja: byLang.ja,
+        answer_en: byLang.en,
+        answer_zh: byLang["zh-CN"],
+      });
+      saveCustomQaPairs(pairs);
+      keywordsEl.value = "";
+      answerEl.value = "";
+      addBtn.disabled = false;
+      if (statusEl) statusEl.textContent = "✅ Added (auto-translated to ja/en/zh) / 追加しました(日英中へ自動翻訳済み)";
+      renderCustomQaList();
+    });
+  }
+}
+
+// ===========================================================================
 // 多言語擬似模擬試験 + 追加言語パック選択(2026-08-22新設)
 // ---------------------------------------------------------------------------
 // ユーザー指示への対応:
@@ -8140,7 +8697,7 @@ async function restoreSettingsFromServer() {
     return; // サーバー未起動・file://等では何もしない(localStorageのみで動作)
   }
   if (!settings || typeof settings !== "object") return;
-  [ENABLED_LANGUAGES_KEY, NATIVE_LANGUAGE_KEY, LANGUAGE_ORDER_KEY].forEach((key) => {
+  [ENABLED_LANGUAGES_KEY, NATIVE_LANGUAGE_KEY, LANGUAGE_ORDER_KEY, CUSTOM_QA_KEY].forEach((key) => {
     try {
       if (localStorage.getItem(key) === null && typeof settings[key] === "string") {
         localStorage.setItem(key, settings[key]);
@@ -8498,9 +9055,25 @@ if (languagePackModal) {
   const saveBtn = document.getElementById("language-pack-save");
   if (saveBtn) {
     saveBtn.addEventListener("click", () => {
+      const previouslyEnabled = new Set(loadEnabledLanguages());
       const codes = currentlyCheckedLanguageCodes();
       saveEnabledLanguages(codes);
       applyEnabledLanguagesToMenus();
+      // 音声入力の言語を素早く切り替えたい、というニーズ(2026-09-12
+      // ユーザー指示「音声入力がデフォルトが英語なので世界中の言語を簡単に
+      // 選択出来るように」)への対応。「有効化」だけでは音声認識の対象言語は
+      // 変わらない(上の`learn-target`ドロップダウンで別途選ぶ必要がある)
+      // ため、今回**新たに**チェックした言語が1つだけなら、そのまま
+      // 音声入力(学びたい言語)としても自動選択する——2手順を1手順にする。
+      const newlyEnabled = codes.filter((c) => !previouslyEnabled.has(c));
+      if (newlyEnabled.length === 1 && learnTargetEl) {
+        const opt = learnTargetEl.querySelector(`option[value="world:${newlyEnabled[0]}"]`);
+        if (opt) {
+          learnTargetEl.value = `world:${newlyEnabled[0]}`;
+          learnTargetEl.dispatchEvent(new Event("change"));
+        }
+      }
+      updateMicLangQuickLabel();
       if (languagePackStatusEl) {
         languagePackStatusEl.textContent = `保存しました(${DEFAULT_LANGUAGE_CODES.length + codes.length}言語有効: 英語・日本語 + ${codes.length}言語)。 / Saved: English, Japanese + ${codes.length} additional language(s).`;
       }
@@ -8512,6 +9085,31 @@ if (languagePackModal) {
     });
   }
 }
+
+// mic-btn横の🌐クイックボタン——タップ一発で言語パネルを開き、現在の
+// 音声入力言語を短いコードで常時表示する(2026-08-22の`🌐 Languages`
+// ボタンは設定メニューの奥にあり、「話す直前にサッと言語を変えたい」
+// ニーズに対しては遠かったため新設、2026-09-12)。
+function updateMicLangQuickLabel() {
+  const labelEl = document.getElementById("mic-lang-quick-label");
+  if (!labelEl) return;
+  const tag = typeof speechLangTag === "function" ? speechLangTag() : "en-US";
+  labelEl.textContent = String(tag).split("-")[0].toUpperCase();
+}
+const micLangQuickBtn = document.getElementById("mic-lang-quick-btn");
+if (micLangQuickBtn && typeof openLanguagePackModal === "function") {
+  micLangQuickBtn.addEventListener("click", () => {
+    openLanguagePackModal();
+    const filterInput = document.getElementById("language-pack-filter");
+    if (filterInput) filterInput.focus();
+  });
+}
+if (learnTargetEl) learnTargetEl.addEventListener("change", updateMicLangQuickLabel);
+// この時点では`SPEECH_LANG_TAGS`(このファイルの後方で`const`定義)が
+// まだ未初期化(TDZ)のため、`speechLangTag()`を呼ぶ`updateMicLangQuickLabel()`
+// を直接ここで呼ぶと`ReferenceError`になる。スクリプト全体の評価が終わって
+// から実行されるよう1ティック遅らせる。
+setTimeout(updateMicLangQuickLabel, 0);
 
 // --- 多言語の連続表示・連続読み上げ ---------------------------------------
 // ユーザー指示(2026-08-22)への対応: 選択した2〜5か国語(英語・日本語を含む)
@@ -9111,7 +9709,45 @@ function catalogEntryLabel(entry) {
   return `${entry.display_name_en} / ${entry.display_name_ja} (~${entry.approx_size_mb}MB)`;
 }
 
+// 共有デプロイ(VPSデモ等、`window.__aruaruLlmSharedDeployment`)では
+// 同一オリジンの公開プロキシ(`/v1/public/aruaru-llm/*`)を使う——
+// installを一切呼ばず(新規ダウンロードは管理者専用のまま)、既に
+// インストール済みのモデルへのselectのみ許可する設計(2026-09-12、
+// ユーザー指示「デモでも見せるようにして、デモ利用者でも無理のない
+// 大きさのLLMに変更出来るように」への対応。「他の利用者がLLM変更中は
+// 表示して」にも対応——サーバー側が切替中フラグを立て、この画面は
+// それをポーリングして`llm-switching-banner`を出し入れする)。
+function isSharedLlmDeployment() {
+  return window.__aruaruLlmSharedDeployment === true;
+}
+
 async function installAndSwitchModel(base, id, statusEl) {
+  if (isSharedLlmDeployment()) {
+    statusEl.textContent = `Switching to ${id}… / ${id}へ切替中…`;
+    try {
+      const selectRes = await fetch("/v1/public/aruaru-llm/models/select", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await selectRes.json().catch(() => ({}));
+      if (selectRes.status === 429) {
+        statusEl.innerHTML =
+          "⏳ You cannot switch again for 5 minutes. Please wait about 5 minutes before switching again. / " +
+          "LLMを変更後5分間は変更出来ません。再度LLM変更する場合は、5分ほどお待ち下さい。<br />" +
+          `<em>(~${data.cooldown_seconds_remaining || "?"}s remaining / あと約${data.cooldown_seconds_remaining || "?"}秒)</em>`;
+        return;
+      }
+      if (!selectRes.ok) throw new Error(data.error_ja || data.error || `HTTP ${selectRes.status}`);
+      statusEl.innerHTML =
+        `✅ Switched to ${id} / ${id}へ切り替えました<br />` +
+        "<em>You cannot switch again for 5 minutes. Please wait about 5 minutes before switching again. / " +
+        "LLMを変更後5分間は変更出来ません。再度LLM変更する場合は、5分ほどお待ち下さい。</em>";
+    } catch (err) {
+      statusEl.textContent = `⚠ Failed / 失敗しました: ${err.message}`;
+    }
+    return;
+  }
   statusEl.textContent = `Installing & switching to ${id}… / ${id}へインストール・切替中…`;
   try {
     const installRes = await fetch(`${base}/v1/models/install`, {
@@ -9134,19 +9770,29 @@ async function installAndSwitchModel(base, id, statusEl) {
 
 async function detectAndCompareLlm() {
   const base = apiBaseEl.value.trim();
+  const shared = isSharedLlmDeployment();
+  const llmSwitchingBannerEl = document.getElementById("llm-switching-banner");
+  const llmDemoSharedNoteEl = document.getElementById("llm-demo-shared-note");
+  if (llmDemoSharedNoteEl) llmDemoSharedNoteEl.classList.toggle("hidden", !shared);
   llmRecommendBody.innerHTML = "<p class=\"setup-note\">Detecting… / 検出中…</p>";
   try {
-    const [recRes, catalogRes] = await Promise.all([fetch(`${base}/v1/recommend`), fetch(`${base}/v1/models/catalog`)]);
+    const recUrl = shared ? "/v1/public/aruaru-llm/recommend" : `${base}/v1/recommend`;
+    const catalogUrl = shared ? "/v1/public/aruaru-llm/models/catalog" : `${base}/v1/models/catalog`;
+    const [recRes, catalogRes] = await Promise.all([fetch(recUrl), fetch(catalogUrl)]);
     if (!recRes.ok || !catalogRes.ok) throw new Error(`HTTP ${recRes.status}/${catalogRes.status}`);
     const rec = await recRes.json();
     const catalog = await catalogRes.json();
+    const installedIds = new Set(catalog.installed_ids || []);
     const models = catalog.models.slice().sort((a, b) => a.approx_size_mb - b.approx_size_mb);
     const recIndex = models.findIndex((m) => m.id === rec.recommended_model_id);
 
-    const choices = [];
+    let choices = [];
     if (recIndex >= 0) choices.push({ role: "Recommended / おすすめ", entry: models[recIndex] });
     if (recIndex + 1 < models.length) choices.push({ role: "One size larger / もう一つ大きいサイズ", entry: models[recIndex + 1] });
     if (recIndex - 1 >= 0) choices.push({ role: "One size smaller / もう一つ小さいサイズ", entry: models[recIndex - 1] });
+    // 共有デプロイでは、来場者が選べるのはサーバーに既にインストール
+    // 済みのモデルのみ(新規ダウンロードは管理者専用)。
+    if (shared) choices = choices.filter((c) => installedIds.has(c.entry.id));
 
     const hwLine =
       `GPU: ${rec.hardware.gpu_name || "not detected / 未検出"} ` +
@@ -9166,6 +9812,15 @@ async function detectAndCompareLlm() {
       "Similar open-source local LLMs are available — which would you like? / " +
       "似たようなオープンソースのローカルLLMがあります。どちらになさいますか?";
     llmRecommendBody.appendChild(questionP);
+
+    if (shared && choices.length === 0) {
+      const noneP = document.createElement("p");
+      noneP.className = "setup-note";
+      noneP.textContent =
+        "No alternative size is installed on this shared server yet. / " +
+        "この共有サーバーには他サイズがまだインストールされていません。";
+      llmRecommendBody.appendChild(noneP);
+    }
 
     choices.forEach((choice) => {
       const row = document.createElement("div");
@@ -9189,11 +9844,58 @@ async function detectAndCompareLlm() {
   }
 }
 
+// 他の利用者がLLM切替中かどうかをポーリングし、モーダル上部の
+// バナーを出し入れする(共有デプロイのみ意味を持つが、自分専用の
+// aruaru-llmでも同一オリジンのエンドポイントなので害はなく常時ポーリング
+// してよい——サーバー側は常に`switching:false`を返すだけ)。
+let llmSwitchingPollTimer = null;
+async function pollLlmSwitchingStatus() {
+  const bannerEl = document.getElementById("llm-switching-banner");
+  if (!bannerEl) return;
+  try {
+    const res = await fetch("/v1/public/aruaru-llm/switch-status", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.switching) {
+      bannerEl.innerHTML =
+        "🔄 <strong>Another visitor is switching the shared LLM right now — please wait a moment.</strong><br />" +
+        "<strong>他の利用者がLLMを変更中です。しばらくお待ちください。</strong>";
+      bannerEl.classList.remove("hidden");
+    } else if (data.cooldown_seconds_remaining) {
+      bannerEl.innerHTML =
+        "⏳ <strong>You cannot switch again for 5 minutes. Please wait about 5 minutes before switching again. / " +
+        "LLMを変更後5分間は変更出来ません。再度LLM変更する場合は、5分ほどお待ち下さい。</strong><br />" +
+        `<em>(~${data.cooldown_seconds_remaining}s remaining / あと約${data.cooldown_seconds_remaining}秒)</em>`;
+      bannerEl.classList.remove("hidden");
+    } else {
+      bannerEl.classList.add("hidden");
+    }
+  } catch (e) {
+    // 到達不能時は何もしない(バナーの表示状態を維持)。
+  }
+}
+
 if (llmRecommendBtn && llmRecommendModal) {
-  llmRecommendBtn.addEventListener("click", () => llmRecommendModal.classList.remove("hidden"));
-  llmRecommendClose.addEventListener("click", () => llmRecommendModal.classList.add("hidden"));
+  llmRecommendBtn.addEventListener("click", () => {
+    llmRecommendModal.classList.remove("hidden");
+    pollLlmSwitchingStatus();
+    if (!llmSwitchingPollTimer) llmSwitchingPollTimer = setInterval(pollLlmSwitchingStatus, 4000);
+  });
+  llmRecommendClose.addEventListener("click", () => {
+    llmRecommendModal.classList.add("hidden");
+    if (llmSwitchingPollTimer) {
+      clearInterval(llmSwitchingPollTimer);
+      llmSwitchingPollTimer = null;
+    }
+  });
   llmRecommendModal.addEventListener("click", (e) => {
-    if (e.target === llmRecommendModal) llmRecommendModal.classList.add("hidden");
+    if (e.target === llmRecommendModal) {
+      llmRecommendModal.classList.add("hidden");
+      if (llmSwitchingPollTimer) {
+        clearInterval(llmSwitchingPollTimer);
+        llmSwitchingPollTimer = null;
+      }
+    }
   });
   llmRecommendDetectBtn.addEventListener("click", detectAndCompareLlm);
 }

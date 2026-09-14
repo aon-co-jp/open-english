@@ -324,7 +324,8 @@
     <label class="lang-select">
       Reply lang / 応答言語:
       <select id="reply-lang">
-        <option value="hybrid" selected>Hybrid EN+JA / 英日ハイブリッド</option>
+        <option value="auto" selected>Auto-detect (match your language) / 自動判定(あなたの言語に合わせる)</option>
+        <option value="hybrid">Hybrid EN+JA / 英日ハイブリッド</option>
         <option value="en">English only</option>
         <option value="ja">日本語のみ</option>
         <option value="de">Deutsch / ドイツ語のみ</option>
@@ -337,11 +338,15 @@
         <option value="he">עברית / ヘブライ語のみ</option>
       </select>
     </label>
-    <label class="web-search-toggle" title="Turns off again after each message you send — check it again each time you want to use your Google Search key. / メッセージを送るたびに自動でOFFに戻ります——Google検索キーを使いたい時は毎回チェックし直してください。">
-      <input type="checkbox" id="web-search-toggle" />
-      Google search boost (auto-off after each send) / Google検索で補強(送信ごとに自動OFF)
-    </label>
+    <span
+      id="web-search-boost-status"
+      class="web-search-toggle"
+      title="Always applied automatically once your Google Search key is set up — no need to turn it on each time. / ご自身のGoogle検索キーを設定後は、毎回のON操作なしで常に自動適用されます。"
+    >
+      🔎 Google search boost: forced ON once your key is set up / Google検索で補強: キー設定後は常時ON
+    </span>
     <button type="button" id="google-search-settings-btn" class="setup-btn">🔎 Setup Google Search.</button>
+    <button type="button" id="custom-qa-btn" class="setup-btn">📚 Custom Q&amp;A / カスタムQ&amp;A</button>
     <button type="button" id="provider-priority-settings-btn" class="setup-btn">🔀 AI Provider Priority.</button>
     <span id="web-search-own-key-status" class="setup-note" style="display:inline-block;margin-left:6px;"></span>
     <button type="button" id="setup-btn" class="setup-btn">⚙ Setup aruaru-llm.</button>
@@ -680,6 +685,49 @@ cargo run --release</pre>
     </div>
   </div>
 
+  <div id="custom-qa-modal" class="setup-modal hidden">
+    <div class="setup-panel">
+      <button type="button" id="custom-qa-close" class="setup-close">✕</button>
+      <h2>📚 Custom Q&amp;A / カスタムQ&amp;A</h2>
+      <p class="setup-honest">
+        <strong>Honest disclosure:</strong> The built-in AI (small GPT-2) often gives weak answers to
+        specific real-world questions (e.g. tax policy). Here you can register your own
+        "for this kind of question, this answer is best" pairs. When your message matches all of a
+        pair's keywords, that saved answer is used directly — the AI is not called for that message. This
+        is entirely stored in your browser (and this app's local database) — it never leaves your
+        device.<br /><br />
+        <strong>正直な開示:</strong> 内蔵AI(小型GPT-2)は具体的な現実の質問(税制など)に弱い回答しか
+        返せないことがよくあります。ここでは「この様な質問には、この様な回答が良いでしょう」という
+        組み合わせをご自身で登録できます。メッセージがある組み合わせのキーワードを全て含む場合、
+        登録した回答がそのまま使われます(AIは呼び出されません)。すべてこのブラウザ(とこのアプリの
+        ローカルDB)にのみ保存され、外部へは一切送信されません。
+      </p>
+      <div id="custom-qa-list"></div>
+      <hr />
+      <h3>Add a new pair / 新しい組み合わせを追加</h3>
+      <label class="setup-label">
+        Keywords (comma-separated, ALL must appear in the message) / キーワード(カンマ区切り、
+        メッセージに全て含まれている場合に一致)<br />
+        <input type="text" id="custom-qa-keywords" class="setup-input" placeholder="例: 消費税, どう思う" />
+      </label>
+      <label class="setup-label">
+        Answer — write in any one language, it's auto-translated to Japanese/English/Chinese / 回答(どれか1言語で
+        入力すれば、日本語・英語・中国語へ自動翻訳されます)<br />
+        <textarea id="custom-qa-answer" class="setup-input" rows="4" placeholder="ここに模範回答を書いてください(日本語でOK)"></textarea>
+      </label>
+      <p class="setup-honest">
+        <strong>Honest disclosure:</strong> The English/Chinese versions are machine-translated
+        (free MyMemory Translation API, no quality guarantee) at the moment you click Add — not by the
+        built-in AI. Review the translations before relying on them for anything important.<br />
+        <strong>正直な開示:</strong> 英語・中国語版は「追加」クリック時に無料の機械翻訳(MyMemory
+        Translation API、品質保証なし)で自動生成されます——内蔵AIによる翻訳ではありません。重要な用途では
+        翻訳結果をご自身でご確認ください。
+      </p>
+      <button type="button" id="custom-qa-add-btn" class="setup-btn">➕ Add (auto-translates) / 追加(自動翻訳)</button>
+      <p id="custom-qa-status" class="setup-note"></p>
+    </div>
+  </div>
+
   <div id="google-search-modal" class="setup-modal hidden">
     <div class="setup-panel">
       <button type="button" id="google-search-close" class="setup-close">✕</button>
@@ -992,6 +1040,17 @@ cargo run --release</pre>
     <div class="setup-panel">
       <button type="button" id="llm-recommend-close" class="setup-close">✕</button>
       <h2>Recommend an LLM / おすすめLLM</h2>
+      <p id="llm-switching-banner" class="setup-honest hidden" style="background:#fff3cd;border-color:#ffe69c;">
+        🔄 <strong>Another visitor is switching the shared LLM right now — please wait a moment.</strong><br />
+        <strong>他の利用者がLLMを変更中です。しばらくお待ちください。</strong>
+      </p>
+      <p id="llm-demo-shared-note" class="setup-note hidden">
+        This demo shares one LLM instance with all visitors. You can switch to a smaller/lighter
+        model already installed on the server if it feels slow, but new downloads are
+        administrator-only. / このデモは全利用者で1つのLLMを共有しています。動作が重いと感じたら
+        サーバーに既にインストール済みの、より軽いモデルへ切り替えられます(新規ダウンロードは
+        管理者のみ可能です)。
+      </p>
       <p class="setup-honest">
         <strong>Honest disclosure:</strong> This reads your GPU VRAM/CPU/system-memory/NPU
         detection results from <code>aruaru-llm</code> (<code>GET /v1/recommend</code>) and
@@ -2738,6 +2797,9 @@ cd aruaru-db
       <button type="button" id="character-switch-btn" class="character-switch-btn">🔄 Switch Character / キャラ変更</button>
       <div class="voice-controls">
         <button type="button" id="mic-btn" title="Speak / 話す">🎙 Speak</button>
+        <button type="button" id="mic-lang-quick-btn" class="mic-lang-quick-btn" title="Change voice input language / 音声入力の言語を変更">
+          🌐 <span id="mic-lang-quick-label">EN</span>
+        </button>
         <label class="voice-toggle"><input type="checkbox" id="voice-out" checked /> Voice reply / 音声で返答</label>
       </div>
     </div>

@@ -3,7 +3,9 @@ package tokyo.runo.openenglish
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -73,6 +75,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var phoneAccelAutodetectBtn: Button
     private lateinit var phoneAccelToggleBtn: Button
     private lateinit var phoneAccelStatus: TextView
+    private lateinit var reopenSetupBtn: Button
+    private lateinit var closeSetupBtn: Button
     private var phoneAccelWorker: PhoneAccelWorker? = null
 
     private var serverProcess: Process? = null
@@ -105,6 +109,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 2026-09-14追加: 下方のWindowInsetsCompat.Type.ime()リスナーが
+        // 実際にIME(キーボード)の高さを受け取れるようにするため必須
+        // (これが無いと、多くの機種でinsetsのIME部分が常に0のまま伝播
+        // されない——`setOnApplyWindowInsetsListener`単体だけでは不十分)。
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
 
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
@@ -122,10 +131,115 @@ class MainActivity : AppCompatActivity() {
         phoneAccelAutodetectBtn = findViewById(R.id.phone_accel_autodetect_btn)
         phoneAccelToggleBtn = findViewById(R.id.phone_accel_toggle_btn)
         phoneAccelStatus = findViewById(R.id.phone_accel_status)
+        closeSetupBtn = findViewById(R.id.close_setup_btn)
+        reopenSetupBtn = findViewById(R.id.reopen_setup_btn)
+        // 2026-09-14追加(ユーザー指摘「縦スマホの上半分が、無駄で、CLOSE
+        // 出来る機能とCLOSEしたらOPENするボタンも搭載して」への対応):
+        // 初回セットアップ後はほぼ使わない管理者向けパネルを手動で
+        // 折りたたみ可能にする。
+        // 2026-09-14実機検証で発覚したバグの修正: closeSetupBtnを
+        // クラスプロパティへ昇格(以前はローカル変数だったため、サーバー
+        // 起動成功時の自動非表示処理〈下記〉から参照できなかった)。
+        // 自動非表示時にreopenSetupBtnだけをVISIBLEにしてclose側を
+        // GONEにし忘れていたため、両ボタンが画面右上で重なって表示される
+        // 実害(タップ位置がずれる・見た目が崩れる)を実機のUIダンプ
+        // (`close_setup_btn`と`reopen_setup_btn`の両方がbounds重複で
+        // clickable=trueのまま同時に存在)で確認して特定した。
+        closeSetupBtn.setOnClickListener {
+            setupPanel.visibility = View.GONE
+            reopenSetupBtn.visibility = View.VISIBLE
+            closeSetupBtn.visibility = View.GONE
+        }
+        reopenSetupBtn.setOnClickListener {
+            setupPanel.visibility = View.VISIBLE
+            reopenSetupBtn.visibility = View.GONE
+            closeSetupBtn.visibility = View.VISIBLE
+        }
 
         webView.settings.javaScriptEnabled = true
         webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         webView.settings.domStorageEnabled = true
+
+        // 2026-09-14追加(ユーザー報告、複数回「縦スマホでキーボード表示
+        // より上に自動スクロールしない」): v0.8.5の`android:
+        // windowSoftInputMode="adjustResize"`・v0.8.6のJS側`visualViewport`
+        // 監視、いずれを追加してもなお改善しなかった。根本原因の再調査
+        // 結果——`adjustResize`はAndroid 11以降、機種・OSバージョンに
+        // よってWebViewを含むアプリでは期待通りWindowをリサイズしない
+        // ことがある既知の問題(WebView自体がinsetsの伝播経路の途中に
+        // 割り込むケースがある)。JS側(`window.visualViewport`)の変化検知に
+        // 頼るだけでは、そもそもネイティブ側でリサイズが起きていなければ
+        // 検知するものが無い。
+        //
+        // より確実な対策として、WindowInsetsCompat経由でIME(オンスクリーン
+        // キーボード)の実際の高さを直接取得し、WebViewへ動的に
+        // bottom paddingとして適用する——ネイティブ側のリサイズが機能
+        // するかどうかに依存しない、Android公式ドキュメントが推奨する
+        // 現行の方式(WindowInsetsAnimation/WindowInsetsCompat.Type.ime())。
+        // paddingが増えるとWebViewの実効的な描画領域(=JS側から見える
+        // ビューポート)が縮むため、既存のJS側`focusin`/`visualViewport`
+        // ハンドラの`scrollIntoView`が正しい範囲内で動作するようになる。
+        // 2026-09-14実機検証(OPPO Reno11A)で発覚: WindowInsetsCompat.
+        // Type.ime()ベースの`setOnApplyWindowInsetsListener`は正しく
+        // 呼ばれ`imeHeight`も正確に取得できていたが(ログで確認済み)、
+        // それを`View.setPadding()`で適用してもChromiumベースのWebView
+        // 内部のコンポジタが`onSizeChanged`を受け取らず、JS側
+        // `window.innerHeight`/`visualViewport`が一切更新されないことが
+        // 判明した(paddingは確かに反映されるのに画面上は無反応という
+        // 実機ログで特定)。padding方式は撤去し、下記の
+        // `getWindowVisibleDisplayFrame`+`LayoutParams.height`直接変更
+        // 方式(実際のビュー寸法変更として`onSizeChanged`を確実に発火
+        // させる)に一本化する。
+
+        // 2026-09-14追加: 上記のWindowInsetsCompat.Type.ime()方式が実機
+        // (OPPO Reno11A)で効かなかったため、より枯れた
+        // `getWindowVisibleDisplayFrame`方式を主実装として追加。
+        // ルートビューの実際の高さと「実際に見えている範囲」の差分から
+        // キーボード高さを計算する——decorFitsSystemWindows・WindowInsets
+        // APIのバージョン差異・メーカーカスタムROMの実装差に一切依存
+        // しない、最も互換性の高い手法(KeyboardVisibilityEvent等の
+        // 定番ライブラリも同じ原理)。
+        val rootViewForKeyboard = findViewById<View>(R.id.root_layout)
+        var webViewFullHeight = -1
+        rootViewForKeyboard.viewTreeObserver.addOnGlobalLayoutListener {
+            val visibleFrame = Rect()
+            rootViewForKeyboard.getWindowVisibleDisplayFrame(visibleFrame)
+            val screenHeight = rootViewForKeyboard.rootView.height
+            val keypadHeight = screenHeight - visibleFrame.bottom
+            // 画面高さの15%以上を占める場合のみキーボード表示とみなす
+            // (ナビゲーションバー・ステータスバー等の小さな差分をキーボード
+            // と誤認しないための閾値、定番手法での標準的な判定基準)。
+            val imeHeightFallback = if (keypadHeight > screenHeight * 0.15) keypadHeight else 0
+            // 2026-09-14修正(実機検証で発覚): `View.setPadding()`だけでは
+            // ChromiumベースのWebViewの内部コンポジタが`onSizeChanged`を
+            // 受け取らず、JS側`window.innerHeight`/`visualViewport`が
+            // 一切更新されないことを実機ログ(`currentPadding=897`と
+            // paddingは確かに適用されているのに画面上は無反応)で確認した。
+            // paddingではなく`LayoutParams.height`自体を変更し、実際の
+            // ビュー寸法変更(`onSizeChanged`が発火する条件)としてWebViewへ
+            // 伝える。
+            if (webViewFullHeight <= 0 && imeHeightFallback == 0 && webView.height > 0) {
+                webViewFullHeight = webView.height
+            }
+            if (webViewFullHeight > 0) {
+                val targetHeight = webViewFullHeight - imeHeightFallback
+                val lp = webView.layoutParams
+                if (lp.height != targetHeight) {
+                    lp.height = targetHeight
+                    webView.layoutParams = lp
+                }
+            }
+        }
+        // decorFitsSystemWindows(false)によりステータスバー領域まで
+        // コンテンツが描画されるようになった分、ルートレイアウトへ
+        // ステータスバー高さ分のtop paddingを適用して既存UIが隠れない
+        // ようにする(2026-09-14)。
+        val rootLayout = findViewById<View>(R.id.root_layout)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, insets ->
+            val statusBarHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars()).top
+            view.setPadding(view.paddingLeft, statusBarHeight, view.paddingRight, view.paddingBottom)
+            insets
+        }
 
         downloadModelBtn.setOnClickListener { downloadModelsAndRestartAruaruLlm() }
         refreshDownloadModelButtonVisibility()
@@ -346,7 +460,28 @@ class MainActivity : AppCompatActivity() {
             if (ok) {
                 webView.loadUrl("http://127.0.0.1:$serverPort/")
                 webView.visibility = View.VISIBLE
-                setupHelp.visibility = View.GONE
+                // 2026-09-14修正(実機検証で発覚した重大バグ): 従来は
+                // `setupHelp`(起動案内テキスト1つ)だけをGONEにしており、
+                // `setupPanel`自体(AIモデルダウンロード・バックアップ/
+                // 復元・スマホ計算ワーカー等、多数のボタンを含む縦長の
+                // LinearLayout、`wrap_content`)は常に表示されたままだった。
+                // ルートレイアウトはScrollViewで包んでおらず、WebViewは
+                // `layout_height="0dp" layout_weight="1"`(残り領域を使う
+                // 設計)のため、setupPanelの実描画高さが画面全体を超える
+                // 機種では、WebViewの実効的な表示領域が0(またはほぼ0)に
+                // なり、チャット入力欄がDOM上には存在するのに一切
+                // 見えない・操作できない状態になっていた——ユーザーが
+                // 繰り返し報告していた「キーボード表示時に自動スクロール
+                // しない」の実態は、キーボード云々以前にWebView自体の
+                // 表示領域が無かったことだった(実機のUI階層ダンプで
+                // `chat-input`の`bounds="[0,0][0,0]"`を確認して特定)。
+                // 元々のコメント「確認できたらWebViewへ切り替える」という
+                // 設計意図通り、setupPanel全体を非表示にしてWebViewへ
+                // 画面全体を明け渡す。再度開けるよう`reopenSetupBtn`を
+                // 表示する(2026-09-14、手動CLOSE時と同じ挙動に揃える)。
+                setupPanel.visibility = View.GONE
+                reopenSetupBtn.visibility = View.VISIBLE
+                closeSetupBtn.visibility = View.GONE
             } else {
                 setupHelp.text = getString(R.string.server_start_failed)
             }

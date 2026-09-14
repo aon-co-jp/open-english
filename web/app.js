@@ -19,12 +19,40 @@
 (function enableMobileKeyboardSafeScroll() {
   const isFormField = (el) => el && /^(input|textarea|select)$/i.test(el.tagName || "");
   const isTouchDevice = () => "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  // 2026-09-14再修正(実機検証で発覚): `scrollIntoView({block:"center"})`
+  // はブラウザが「今どこまでが見えているか」をレイアウトビューポート
+  // (`document.documentElement.clientHeight`)基準で判断するため、
+  // AndroidのWebViewでキーボード表示中にレイアウトビューポート自体が
+  // 縮まない(縮むのは`visualViewport`だけ)構成では、実際にはキーボードに
+  // 隠れている行までスクロール済みと誤認して何もしないことがある
+  // (実機のUIダンプで、フォーカス後も要素の座標が一切変化しないことを
+  // 確認して特定)。より確実な方法として、`visualViewport`が実際に報告
+  // する「見えている範囲」(`offsetTop`〜`offsetTop+height`)と、対象要素の
+  // 実際の画面上の位置(`getBoundingClientRect`)を直接比較し、はみ出て
+  // いる分だけを`window.scrollBy`で相殺する——`scrollIntoView`のような
+  // ブラウザ側の暗黙の判断に頼らない、実測ベースの計算。
   const rescroll = (el) => {
     if (!el) return;
     try {
+      if (window.visualViewport) {
+        const vv = window.visualViewport;
+        const rect = el.getBoundingClientRect();
+        const visibleTop = vv.offsetTop;
+        const visibleBottom = vv.offsetTop + vv.height;
+        const margin = 16;
+        if (rect.bottom > visibleBottom - margin) {
+          window.scrollBy({ top: rect.bottom - (visibleBottom - margin), behavior: "smooth" });
+          return;
+        }
+        if (rect.top < visibleTop + margin) {
+          window.scrollBy({ top: rect.top - (visibleTop + margin), behavior: "smooth" });
+          return;
+        }
+        return;
+      }
       el.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (err) {
-      /* scrollIntoViewが使えない古い環境では黙って諦める */
+      /* 古い環境では黙って諦める */
     }
   };
   document.addEventListener(
@@ -35,20 +63,13 @@
     },
     true
   );
-  // 2026-09-14追加(実機検証で発覚): AndroidアプリのWebViewシェルでは、
-  // `android:windowSoftInputMode="adjustResize"`を指定していても機種/
-  // OSバージョンによっては`focusin`直後の固定300ms遅延だけでは実際の
-  // キーボード表示アニメーション完了に間に合わない、またはWebViewの
-  // ビューポート高さ変化そのものにJS側が気づけないケースがあった
-  // (ユーザー報告「AndroidキーボードBUGのまま」)。`visualViewport`
-  // API(モダンWebView/Chromeとも対応)の`resize`イベントは、実際に
-  // 表示領域の高さが変化した瞬間に発火するため、固定遅延に頼るより
-  // 確実——現在フォーカス中の入力欄があれば、その都度スクロールし直す。
+  // `visualViewport`の`resize`イベント(実際に表示領域の高さが変化した
+  // 瞬間に発火)でも、フォーカス中の入力欄があればその都度計算し直す。
   if (window.visualViewport && typeof window.visualViewport.addEventListener === "function") {
     window.visualViewport.addEventListener("resize", () => {
       const active = document.activeElement;
       if (isFormField(active) && isTouchDevice()) {
-        rescroll(active);
+        setTimeout(() => rescroll(active), 50);
       }
     });
   }

@@ -11,6 +11,7 @@
   全画面。
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -140,6 +141,31 @@
         android:id="@+id/web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!--
+      2026-09-14追加: phone flavor(../main/res/layout/activity_main.xml)
+      と同じ、setupPanelの内容量に左右されない固定位置オーバーレイの
+      close/reopenボタン(MainActivity.kt共通ソースがfindViewByIdで
+      参照するため、tablet flavor側にも同じIDを持たせる必要がある)。
+    -->
+    <Button
+        android:id="@+id/close_setup_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="4dp"
+        android:elevation="16dp"
+        android:text="@string/close_setup_panel_button" />
+
+    <Button
+        android:id="@+id/reopen_setup_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="4dp"
+        android:elevation="16dp"
+        android:text="@string/open_setup_panel_button"
         android:visibility="gone" />
 
 </FrameLayout>

@@ -127,3 +127,21 @@ dependencies {
     // `tensorflow-lite-support`は不要(重複namespace警告を避けるため
     // 追加しなかった)。
 }
+
+// 2026-09-14追加: `assets/webroot/`(APKへ同梱される静的アセット)が
+// `../../web/`(正本、PC/デモ版と共有)から手動cpでしか同期されておらず、
+// 同期を忘れたまま`web/`側だけ更新してビルドすると、古いWebコンテンツが
+// 実機に配信され続ける実害のあるバグを引き起こしていた(2026-09-14実機
+// 検証で、`web/app.js`の修正がAndroid版に一切反映されていない状態を
+// 確認して特定)。ビルドのたびに自動でコピーし、手動同期を不要にする。
+val syncWebrootFromWeb by tasks.registering(Copy::class) {
+    val webDir = File(rootProject.projectDir, "../../web")
+    from(webDir) {
+        exclude("README.md")
+    }
+    into(File(projectDir, "src/main/assets/webroot"))
+}
+
+tasks.named("preBuild") {
+    dependsOn(syncWebrootFromWeb)
+}
