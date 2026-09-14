@@ -18,24 +18,40 @@
 // 完了イベントが無いため、固定遅延という近似に留まる。
 (function enableMobileKeyboardSafeScroll() {
   const isFormField = (el) => el && /^(input|textarea|select)$/i.test(el.tagName || "");
+  const isTouchDevice = () => "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  const rescroll = (el) => {
+    if (!el) return;
+    try {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (err) {
+      /* scrollIntoViewが使えない古い環境では黙って諦める */
+    }
+  };
   document.addEventListener(
     "focusin",
     (e) => {
-      if (!isFormField(e.target)) return;
-      // デスクトップ(タッチ非対応)では仮想キーボードが無く、この処理は
-      // 不要かつ意図しないスクロールジャンプになり得るため、タッチ操作の
-      // 端末に限定する。
-      if (!("ontouchstart" in window) && navigator.maxTouchPoints === 0) return;
-      setTimeout(() => {
-        try {
-          e.target.scrollIntoView({ behavior: "smooth", block: "center" });
-        } catch (err) {
-          /* scrollIntoViewが使えない古い環境では黙って諦める */
-        }
-      }, 300);
+      if (!isFormField(e.target) || !isTouchDevice()) return;
+      setTimeout(() => rescroll(e.target), 300);
     },
     true
   );
+  // 2026-09-14追加(実機検証で発覚): AndroidアプリのWebViewシェルでは、
+  // `android:windowSoftInputMode="adjustResize"`を指定していても機種/
+  // OSバージョンによっては`focusin`直後の固定300ms遅延だけでは実際の
+  // キーボード表示アニメーション完了に間に合わない、またはWebViewの
+  // ビューポート高さ変化そのものにJS側が気づけないケースがあった
+  // (ユーザー報告「AndroidキーボードBUGのまま」)。`visualViewport`
+  // API(モダンWebView/Chromeとも対応)の`resize`イベントは、実際に
+  // 表示領域の高さが変化した瞬間に発火するため、固定遅延に頼るより
+  // 確実——現在フォーカス中の入力欄があれば、その都度スクロールし直す。
+  if (window.visualViewport && typeof window.visualViewport.addEventListener === "function") {
+    window.visualViewport.addEventListener("resize", () => {
+      const active = document.activeElement;
+      if (isFormField(active) && isTouchDevice()) {
+        rescroll(active);
+      }
+    });
+  }
 })();
 
 // 実バグ修正(2026-09-07): このファイル全体で`fetch("/v1/...")`のように
