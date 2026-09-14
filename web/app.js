@@ -4,6 +4,40 @@
 // を受けていない素のGPT-2であり、応答品質・レベル遵守は保証されない。
 // このスクリプトはそれを誠実に開示した上で、実際にaruaru-llmへ接続する。
 
+// スマホ・タブレットで入力欄(input/textarea)をタップした際、オンスクリーン
+// キーボードが画面下半分を覆って入力欄自体が隠れてしまう問題への対応
+// (ユーザー指示、2026-09-14「入力フォーム内をスマホでタッチしたら…
+// キーの画面よりも上に自動スクロールして入力時に見えなくなったりしない
+// 仕様に変更して」)。特定のフォームだけでなく、アプリ全体の全ての
+// input/textarea/select(チャット入力欄・カスタムQ&A・各種設定パネル
+// 等すべて)に効くよう、`focusin`をdocumentレベルで一度だけ登録する
+// (個々のフォームへ毎回書き足す必要が無い汎用実装)。キーボードの
+// アニメーション(せり上がり)が完了してから位置を合わせたいので、
+// 実測で概ね十分な300msだけ遅らせてから`scrollIntoView`する——
+// **正直な開示**: キーボードの表示時間はOS・ブラウザ依存で厳密な
+// 完了イベントが無いため、固定遅延という近似に留まる。
+(function enableMobileKeyboardSafeScroll() {
+  const isFormField = (el) => el && /^(input|textarea|select)$/i.test(el.tagName || "");
+  document.addEventListener(
+    "focusin",
+    (e) => {
+      if (!isFormField(e.target)) return;
+      // デスクトップ(タッチ非対応)では仮想キーボードが無く、この処理は
+      // 不要かつ意図しないスクロールジャンプになり得るため、タッチ操作の
+      // 端末に限定する。
+      if (!("ontouchstart" in window) && navigator.maxTouchPoints === 0) return;
+      setTimeout(() => {
+        try {
+          e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (err) {
+          /* scrollIntoViewが使えない古い環境では黙って諦める */
+        }
+      }, 300);
+    },
+    true
+  );
+})();
+
 // 実バグ修正(2026-09-07): このファイル全体で`fetch("/v1/...")`のように
 // **絶対パス**でサーバー自身のAPIを呼んでいる箇所が多数あるため、
 // `https://easy-web.tokyo/open-english/`のようなパスプレフィックス配下に
