@@ -37,6 +37,29 @@
   チェックと自動アップグレード）を回す拡張。正本ロジックは
   `open-english/server/src/self_update.rs` ／ `component_update.rs`。
   通常時の定期チェックは 30 分（`open-english` 側で 2026-09-09 に 6h→30m 済み）。
+- **2026-09-14 Androidキーボード自動スクロールの実機根本修正(v0.8.7)**:
+  ユーザー報告「縦スマホでキーボード表示より上に自動スクロールしない」を
+  OPPO Reno11A実機（ADB接続）で繰り返し検証し、3件の実バグを特定・修正した。
+  1. **根本原因**: `WindowInsetsCompat.Type.ime()` + `View.setPadding()`
+     でWebViewへキーボード高さ分のbottom paddingを適用する方式は、padding
+     自体は正しく適用されていたが、Chromium系WebViewが`onSizeChanged`を
+     受け取らずJS側`window.innerHeight`/`visualViewport`が一切更新されない
+     ことを実機ログ(`currentPadding=897`と適用は確認できるのに画面上は
+     無反応)で特定した。`WebView.layoutParams.height`を直接書き換える方式
+     (`getWindowVisibleDisplayFrame`でキーボード高さを算出)に切り替え、
+     実際のビュー寸法変更として確実に`onSizeChanged`を発火させることで
+     解決。ADB実機テストで入力欄がキーボード上に正しく自動スクロールされ、
+     文字入力も可能なことを確認済み。
+  2. ネイティブ`CLOSE`/`OPEN SETUP`ボタンが画面右上で重なって表示される
+     バグ(`closeSetupBtn`がローカル変数でサーバー起動成功時の自動非表示
+     処理から参照できず、非表示にし忘れていた)を修正。tablet flavor側の
+     レイアウトにも同じオーバーレイボタンを追加。
+  3. `assets/webroot/`(APK同梱の静的アセット)が`web/`(正本)から手動`cp`
+     でしか同期されておらず、同期忘れで旧コンテンツが実機に配信され
+     続ける実害を繰り返し引き起こしていた問題を、Gradle `preBuild`依存の
+     自動コピータスク(`app/build.gradle.kts`の`syncWebrootFromWeb`)で解消。
+  詳細は`mobile/android/app/src/main/java/tokyo/runo/openenglish/MainActivity.kt`
+  のコメント参照。
 
 ## GitHub organization
 
