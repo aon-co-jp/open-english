@@ -20357,3 +20357,45 @@ Tags: `France` `2026-10`
 - [Extrême gauche en France](https://fr.wikipedia.org/wiki/Extr%C3%AAme_gauche_en_France) — L'extrême gauche en France regroupe les organisations et les sensibilités politiques françaises considérées comme les plus à gauche du spectre politique. Historiquement, l'extrême gauche rassemble la gauche révolutionnaire, par opposition à la gauche réformiste qui pense gagner démocratiquement par les élections.
 - [Sophia Chikirou](https://fr.wikipedia.org/wiki/Sophia_Chikirou) — Sophia Chikirou, née le 3 juin 1979 à Bonneville (Haute-Savoie), est une femme politique française et communicante. Militante socialiste de 1997 à 2006, Sophia Chikirou rejoint en 2007 La Gauche moderne, fondée par Jean-Marie Bockel qui rejoignait Nicolas Sarkozy, mais quitte le mouvement en 2008 faute d'avoir pu être tête de la liste soutenue par l'UMP lors des élections municipales de 2008 dans le 20e arrondissement de Paris.
 
+
+## アーカイブ日 / Archived on 2026-11-01
+
+### Japan(検索日時 / searched at: 2026-10-31)
+
+Tags: `Japan` `2026-10`
+
+- [日本経済新聞 - ニュース・速報 最新情報](https://www.nikkei.com/) — 速報 ニュース ; 1日 0:16. 局地停戦のウクライナ南部、住民退避完了 「町破壊され悲しい」 ; 22:53 · 日米豪印、首脳会議実現へ擦り合わせ 今年3回目の外相会合 ; 22:34.
+- [NHKニュース 速報・最新情報](https://news.web.nhk/newsweb) — 16 時間前 - 平日の「ニュースウオッチ9」から土曜の「サタデーウオッチ9」へ。長年にわたりNHK報道の中心を担ってきた山下毅解説委員と川口由梨香キャスターがタッグを組みます。週末の夜に1週間のニュースのポイントをわかりやすく解説。世界と日本の今をどう読み解き、明日へとつなげていくのか、みなさんとともに考えます。
+- [Yahoo!ニュース - Yahoo! JAPAN](https://news.yahoo.co.jp/) — HBCニュース北海道10/31(土)11:25 · 0:48 · 2 · 桜島が爆発…噴煙3000メートル 大きな噴石8合目付近まで飛ぶ 鹿児島 · 日テレNEWS NNN10/31(土)12:09 · 1:00 · 3 · 阿蘇市でバイク2台と乗用車1台が関係する事故 ツーリング仲間の2人死傷 ·
+- [毎日新聞デジタル | 毎日新聞のニュースサイト](https://mainichi.jp/) — これまでの 主要ニュース . 福岡県警本部. 工藤会トップ交代か、6代目会長にナンバー2 前会長の勾留続き. 10/31 20:05 · 【トヨタ自動車－SUBARU】六回表トヨタ自動車2死一塁 ...
+- [新着ニュース一覧 - NHKニュース - NHK ONE](https://news.web.nhk/newsweb/pl/news-nwa-latest-nationwide) — 新着ニュース一覧 · クラブツーリズム 不正アクセスで約432万件の個人情報漏えいか · フェンシング全日本選手権 男子サーブル 津森志道が初優勝 · 学生横綱 日体大の ...
+- [Google ニュース](https://news.google.com/home?hl=ja&gl=JP&ceid=JP%3Aja) — 16 時間前 - 韓国の車についてる「ナゾのスポンジ」の正体……日本じゃちょっと考えられない？カーライフ文化比較「まだまだ知らないことも多いな」（乗りものニュース） | 自動車情報・ニュース
+- [時事ドットコム：時事通信社が運営するニュースサイト](https://www.jiji.com/) — ニュースＱ＆Ａ · 解説委員室から · 父が首相、２人の接点◆福田康夫元首相と佐藤信二元通産相 2026年10月27日 · 深層探訪 · 中南米左派退潮にくさび ルラ氏「主権を懸けた選挙」―対米関係修復が課題・ブラジル 2026年10月26日 ·
+- [速報・新着ニュース一覧：朝日新聞](https://www.asahi.com/news/) — 16 時間前 - ニュース > 日付別一覧 · 速報・新着ニュース一覧 · 2026年7月 · 2026年8月 · 2026年9月 · 2026年10月 · 1日 · 2日 · 3日 · 4日 · 5日 · 6日 · 7日 · 8日 · 9日 · 10日 · 11日 · 12日 · 13日 · 14日 · 15日 · 16日 ·
+
+### China(検索日時 / searched at: 2026-10-31)
+
+Tags: `China` `2026-10`
+
+- [今日头条](http://www.baidu.com/link?url=m0EhNrN2rwInbDj7grzmeR-cRuYouCc-o9AlfiWRIZo9sw5KbC-wioqaB78yXwhK) — 
+- [央视网的头条主页 - 今日头条](http://www.baidu.com/link?url=1EMwgYoH24UoZJQvbbd4onZAnBKLhYBF_6Nj1gse0G94oLtt5WgYXmFlakXwWsXE1yeEAgKCgUdxAiOsAtrrMu3hySzy0lbqMrl73UbDCjk7cnGXijEtI7IozcpbWvu1XDE3LrbyCCrt1lzmQBCnia) — 
+- [中国新闻 _央视网(cctv.com)](http://www.baidu.com/link?url=mCJT4TzB3tKjOz1OtGA2T9TWM8Isb4Qk7rHu1Ju10QiiN4UKMA53BZjWOEx8SgJc) — 
+- [头条推荐- 头条新闻 -hao123新闻导航 _hao123上网导航](http://www.baidu.com/link?url=b4UMKqAO3QfegPOZ-ld_MRqi5CVsAyxM5yuWA874dn7_CxpHgIarVBUsHmIUDdGjouZQ_mvIZ-z4t8FZEYaBeifWgTPwCLmoopkqGv5bj44_NDVUEhsmgEzYzlLBQGG9) — 
+- [时事 新闻 _最新时事要闻_澎湃新闻](http://www.baidu.com/link?url=1EMwgYoH24UoZJQvbbd4oeuLazZgHRwZMwh3GWy33F5fF-0Y4CEDJZMixxdYKJ8vjPUsmwDJwzynDUCiPeL2pCen4DBfD8PMA0l2FL_0UXO) — 
+- [中国新闻 _央视网(cctv.com)](http://www.baidu.com/link?url=m0EhNrN2rwInbDj7grzmeMMQmHwqy5K02PtGqUFjwo1f0IAhbYe4mxD3zhFWrSNQiBpJyQ1uO7DX8cM3VyxGgK) — 
+- [中国新闻 网 - 河南新闻](http://www.baidu.com/link?url=1EMwgYoH24UoZJQvbbd4oiyq7qkPSM_ele0re7UcDpEPWo8J3wcJ4RH2Kd39VuMi) — 
+- [中国新闻 _央视网(cctv.com)](http://www.baidu.com/link?url=b4UMKqAO3QfegPOZ-ld_MYJ8by3VD9lm9Fa87z4l6a4Q7zRZa-zN1DsoGwT6UGMX) — 
+
+### United States(検索日時 / searched at: 2026-10-31)
+
+Tags: `United States` `2026-10`
+
+- [US News - The latest headlines from the US | Sky News](https://news.sky.com/us) — 2 days ago - It's a total solar eclipse today - here is where it will be visible · Grid operator issues plea for more power - as COBRA meeting on heatwave called · A wave of soon-to-be retirees are 'staring down the barrel' of homelessness - here's why | Money · Rod Stewart cancels gigs after heart surgery · Stop PC Harper's killers being released, 50 policing chiefs tell PM · Wednesday's newspaper front pages ·
+- [The Washington Post - Breaking news and latest headlines, U.S. news, world news, and video](https://www.washingtonpost.com/) — Breaking news, live coverage, investigations, analysis, video, photos and opinions from The Washington Post. Subscribe for the latest on U.S. and international news, politics, business, technology, climate change, health and wellness, sports, science, weather, lifestyle and more.
+- [USA TODAY - Breaking News and Latest News Today](https://www.usatoday.com/) — College applicants are avoiding entire states over partisan politics
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [Fox News - Breaking News Updates | Latest News Headlines | Photos & News Videos](https://www.foxnews.com/) — Fox News · Terms of Use · New Privacy Policy · Your Privacy Choices · Closed Caption Policy · Help · Contact Us · Accessibility Statement · News Sitemap · Video Sitemap · UNDER SCRUTINY · 5 min read · Landmark ruling may not protect Omar as Trump pushes to oust her from Congress · Published: 3 hours ago
+- [U.S. News: Latest news, breaking news, today's news stories updated daily from CBS News](https://www.cbsnews.com/us/) — 2 days ago - A federal judge ordered the federal government to stop demanding that state and local election officials separate out ballots and threatening criminal prosecution for noncompliance .
+- [Today (American TV program)](https://en.wikipedia.org/wiki/Today_(American_TV_program)) — Today (also called The Today Show) is an American morning television show that airs weekdays from 7:00 a.m. to 11:00 a.m.
+- [Headline](https://en.wikipedia.org/wiki/Headline) — A headline is the text indicating the content or nature of the article below it, typically a news piece, by providing a form of brief summary of its contents. The large type front page headline did not come into use until the late 19th century when increased competition between newspapers led to the use of attention-getting headlines.
+
