@@ -3593,15 +3593,15 @@ async fn main() {
     // aruaru-llm モデル管理プロキシ(このサーバーと同じマシン上の
     // aruaru-llm、127.0.0.1:4600 既定、へ中継。ポート4600自体は外部
     // 公開しないまま、管理画面から操作できるようにする)。
-    app = app.at("/v1/admin/aruaru-llm/models", get(handler_fn(|_req, _p| Box::pin(admin_aruaru_llm_models()))));
-    app = app.at("/v1/admin/aruaru-llm/runtime", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("/v1/runtime")))));
-    app = app.at("/v1/admin/aruaru-llm/recommend-and-download", post(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get_as_post("/v1/recommend-and-download")))));
-    app = app.at("/v1/admin/aruaru-llm/models/select", post(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_post("/v1/models/select", req)))));
-    app = app.at("/v1/admin/aruaru-llm/models/install", post(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_post("/v1/models/install", req)))));
-    app = app.at("/v1/admin/aruaru-llm/download-larger", post(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get_as_post("/v1/download-larger")))));
-    app = app.at("/v1/admin/aruaru-llm/download-smaller", post(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get_as_post("/v1/download-smaller")))));
-    app = app.at("/v1/admin/aruaru-llm/qwen/select", post(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_post("/v1/qwen/select", req)))));
-    app = app.at("/v1/admin/aruaru-llm/qwen/install", post(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_post("/v1/qwen/install", req)))));
+    app = app.at("/v1/admin/aruaru-llm/models", get(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } admin_aruaru_llm_models().await }))));
+    app = app.at("/v1/admin/aruaru-llm/runtime", get(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get("/v1/runtime").await }))));
+    app = app.at("/v1/admin/aruaru-llm/recommend-and-download", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("/v1/recommend-and-download").await }))));
+    app = app.at("/v1/admin/aruaru-llm/models/select", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/models/select", req).await }))));
+    app = app.at("/v1/admin/aruaru-llm/models/install", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/models/install", req).await }))));
+    app = app.at("/v1/admin/aruaru-llm/download-larger", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("/v1/download-larger").await }))));
+    app = app.at("/v1/admin/aruaru-llm/download-smaller", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("/v1/download-smaller").await }))));
+    app = app.at("/v1/admin/aruaru-llm/qwen/select", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/qwen/select", req).await }))));
+    app = app.at("/v1/admin/aruaru-llm/qwen/install", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/qwen/install", req).await }))));
     app = app.at("/v1/public/aruaru-llm/recommend", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("/v1/recommend")))));
     app = app.at("/v1/public/news/ask", get(handler_fn(|req, _p| Box::pin(news_ask(req)))));
     app = app.at("/v1/public/news/stock", get(handler_fn(|_req, _p| Box::pin(news_stock()))));
