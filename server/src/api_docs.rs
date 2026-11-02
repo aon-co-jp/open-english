@@ -272,6 +272,11 @@ pub fn spec() -> Spec {
         .op(post("/v1/public/persona/prompt", "ペルソナのプロンプト", "aruaru-llm").description("aruaru-llmの対応するエンドポイントのレスポンスをそのまま中継する(形状はaruaru-llmの /api/docs を参照)。"))
         .op(get("/v1/public/news/for", "国別ニュース(クエリ: country)", "news").query_param("country", true, "国").description("aruaru-llmの対応するエンドポイントのレスポンスをそのまま中継する(形状はaruaru-llmの /api/docs を参照)。"))
         .op(get_t::<ItemsResponse>("/v1/public/news/archive-search", "ニュースアーカイブ検索", "news").query::<ArchiveSearchQuery>())
+        .op(get("/v1/public/news/ask", "世界情勢Q&A(出典・日付つき)", "news").query_param("q", true, "質問").description("保存した報道記事から、出典と日付つきで回答する。該当が無いときは検索へのリンクを返す。"))
+        .op(get("/v1/public/news/stock", "ニュース保存の状況", "news").description("ためた記事の件数、出典ごとの件数、最新の日時を返す。"))
+        .op(get("/v1/internal/news/export", "ニュースの書き出し(内部)", "news").description("GitHubの公開ニュース保存庫への日次書き出し用。この端末内からのアクセスだけ受け付ける(クエリ: since=Unix秒)。"))
+        .op(get("/v1/public/aruaru-llm/runtime", "実行環境の概要(公開用に整形)", "aruaru-llm").description("aruaru-llmの /v1/runtime を、公開してよい項目だけに整えて返す。"))
+        .op(get("/v1/public/aruaru-llm/accelerators", "利用できる計算資源(公開用に整形)", "aruaru-llm").description("aruaru-llmの /v1/accelerators を、公開してよい項目だけに整えて返す。"))
         .op(post("/v1/public/freelance/job-search", "フリーランス案件の検索", "freelance").body::<PublicFreelanceJobSearchRequest>())
         .op(get("/v1/public/tts/status", "音声合成の状態", "tts"))
         .op(post("/v1/public/tts", "音声合成", "tts").body::<tts::TtsBody>());
