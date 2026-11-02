@@ -1,5 +1,15 @@
 ﻿# open-english
 
+> ⚠️ **廃止のお知らせ(日本語)**: この `open-english` は**廃止**し、**[maid-cafe.tokyo](https://maid-cafe.tokyo/)** へ引っ越しました。
+> 英会話・学習([maid-cafe-english](https://github.com/aon-co-jp/maid-cafe-english))と、データ分析([realdata.pro](https://realdata.pro/))を1つに混ぜた(ハイブリッドにした)サイトです。
+> 今後の開発・不具合の報告・新しい版の配布は、すべて引っ越し先で行います。旧URL(`easy-web.tokyo/open-english/`・`realdata.pro/english/`)には、引っ越しの案内を表示しています。
+> このリポジトリは、履歴の保存のために残します(過去の版の配布ファイルも Releases に残ります)。
+>
+> ⚠️ **Retired (English)**: `open-english` is **retired** and has **moved to [maid-cafe.tokyo](https://maid-cafe.tokyo/)**,
+> a hybrid site that combines the English learning app ([maid-cafe-english](https://github.com/aon-co-jp/maid-cafe-english)) with the data analysis of [realdata.pro](https://realdata.pro/).
+> All further development, bug reports and new releases happen at the new home. The old URLs (`easy-web.tokyo/open-english/` and `realdata.pro/english/`) show a "moved" notice.
+> This repository is kept for its history (downloads of past versions also stay in Releases).
+
 > 📛 **改名のお知らせ**: このプロジェクトは **open-english → [maid-cafe-english](https://github.com/aon-co-jp/maid-cafe-english)** に改名・お引越ししました。旧名のこのリポジトリも**永久に残し**、リンク・リリース・自動更新はそのまま使えます(更新は新旧の両方で配布)。
 > 📛 **Renamed**: this project is now **[maid-cafe-english](https://github.com/aon-co-jp/maid-cafe-english)** (formerly open-english). This repository is kept permanently; links, releases and automatic updates keep working.
 > **世界中の言語での告知 / Notice in 35+ languages → [RENAMED.md](RENAMED.md)**
