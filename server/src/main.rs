@@ -118,7 +118,6 @@ const STATIC_FILES: &[(&str, &str, &str)] = &[
     // (`server/target/release/open-english-server.exe`は旧バイナリの
     // ままで、再ビルドされるまで`/sw.js`は配信されない)。
     ("/sw.js", "sw.js", "application/javascript; charset=utf-8"),
-    ("/connect-shim.js", "connect-shim.js", "application/javascript; charset=utf-8"),
     // 2026-09-23新設: Android App Links検証ファイル。VPS側のリバースプロキシ
     // (open-web-server、domains.toml)に`path_prefix = "/.well-known/
     // assetlinks.json"`かつ`strip_prefix = false`のドメインエントリを追加
