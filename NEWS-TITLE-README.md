@@ -21911,3 +21911,32 @@ Tags: `South Africa` `2026-11`
 - [Fake news](https://en.wikipedia.org/wiki/Fake_news) — Fake news is false or misleading information (misinformation, disinformation, propaganda, and hoaxes) claiming the aesthetics and legitimacy of news. Fake news often has the aim of damaging the reputation of a person or entity, or making money through advertising revenue.
 - [BBC News (British TV channel)](https://en.wikipedia.org/wiki/BBC_News_(British_TV_channel)) — The BBC News channel is a British free-to-air public broadcast television news channel owned and operated by the BBC. The channel is based at and broadcasts from Broadcasting House in the West End of London from which it is anchored during British daytime, with overnight broadcasts anchored from Washington, D.C. and Singapore. It was launched as BBC News 24 on 9 November 1997 at 17:30, as part of the BBC's foray into digital domestic television channels, becoming the first competitor to Sky News, which had been running since 1989.
 
+
+## アーカイブ日 / Archived on 2026-11-04
+
+### United States(検索日時 / searched at: 2026-11-03)
+
+Tags: `United States` `2026-11`
+
+- [USA TODAY - Breaking News and Latest News Today](https://www.usatoday.com/) — USA TODAY delivers current national and local news, sports, entertainment, finance, technology, and more through award-winning journalism, photos, and videos.
+- [US news from the Guardian | The Guardian](https://www.theguardian.com/us-news) — 1 hour ago - Latest US news, breaking news and current affairs coverage from theguardian.com
+- [U.S. News: Latest Breaking Stories and Video on National Issues | NBC News](https://www.nbcnews.com/us-news) — 13 hours ago - Get the latest news headlines and top stories from NBCNews.com. Find videos and news articles on the latest stories in the US.
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [The Washington Post - Breaking news and latest headlines, U.S. news, world news, and video](https://www.washingtonpost.com/) — Start each day with The Post’s flagship political newsletter, where Dan Merica explains why what happens in the nation’s capital matters to you.
+- [U.S. News: Latest news, breaking news, today's news stories updated daily from CBS News](https://www.cbsnews.com/us/) — 3 days ago - Voters in Alaska are going to the polls to cast their ballots in key races, and the state's unique ranked choice voting system is back in the spotlight.
+- [Today (American TV program)](https://en.wikipedia.org/wiki/Today_(American_TV_program)) — Today (also called The Today Show) is an American morning television show that airs weekdays from 7:00 a.m. to 11:00 a.m.
+- [Headline](https://en.wikipedia.org/wiki/Headline) — A headline is the text indicating the content or nature of the article below it, typically a news piece, by providing a form of brief summary of its contents. The large type front page headline did not come into use until the late 19th century when increased competition between newspapers led to the use of attention-getting headlines.
+
+### Japan(検索日時 / searched at: 2026-11-03)
+
+Tags: `Japan` `2026-11`
+
+- [NHKニュース 速報・最新情報](https://news.web.nhk/newsweb) — トップニュース · スペイン列車事故 日本人2人の死亡確認 地元当局が身元特定 · 憲法公布80年 改憲派・護憲派がそれぞれ集会 · ウクライナ南部で31人死亡 東部で70人余けが ...
+- [日本経済新聞 - ニュース・速報 最新情報](https://www.nikkei.com/) — 速報 ニュース ; 3日 22:35. 独自動車部品大手シェフラー、3460人削減 欧州5工場閉鎖へ ; 3日 22:27. J2、アルビレックス新潟が首位 カターレ富山2位浮上 ; 3日 22:00. 3日の高 ...
+- [主要トピックス一覧 - Yahoo!ニュース](https://news.yahoo.co.jp/topics/top-picks) — トピックス一覧 ; イタイイタイ病 最後の原告死去. 11/3(火) 22:29 ; テヘランに「トランプ殺す」看板. 11/3(火) 21:59 ; 武部農相 献金巡り新たな疑惑. 11/3(火) 21:53.
+- [Google ニュース](https://news.google.com/home?hl=ja&gl=JP&ceid=JP%3Aja) — トップ ニュース · アメリカ中間選挙の投票開始…上院選は与野党の勢い拮抗、接戦7州が勝敗のカギ握る · 関東 4日夜-5日に激しい雨の恐れ · 細野担当相、15年前の災害対応を ...
+- [読売新聞 : きょうの最新ニュース・速報：発行部数No.1](https://www.yomiuri.co.jp/) — ニュース · 教育 · 大学入試 · 就活 · 中学受験サポート · 新聞＠スクール · ちょい読み英語 · 日刊！ポケモン · 連載 · 教育ルネサンス · 特集 · ＳＴＯＰ自殺 ♯しんどい君へ · 専門サイト ·
+- [Yahoo!ニュース](https://news.yahoo.co.jp/) — 米中間選挙 集計長期化の可能性も. 149. 46分前 ; 武部農相 献金巡り新たな疑惑. 1524 · 1時間前 ; 露軍 外国人兵に入れ墨で識別番号. 448. 10時間前 ; アソビュー 1580万件が ...
+- [速報・新着ニュース一覧：朝日新聞](https://www.asahi.com/news/) — 2 日前 - ニュース > 日付別一覧 · 速報・新着ニュース一覧 · 2026年8月 · 2026年9月 · 2026年10月 · 2026年11月 · 1日 · 2日 · 3日 · 4日 · 5日 · 6日 · 7日 · 8日 · 9日 · 10日 · 11日 · 12日 · 13日 · 14日 · 15日 · 16日 ·
+- [毎日新聞デジタル | 毎日新聞のニュースサイト](https://mainichi.jp/) — トップ ニュース . 放火で全焼したプレハブ棟のモスク＝北海道江別市で2026年10 · トランプ政権. 米ホワイトハウスで、関税政策について発表するトランプ大統領＝2025年4.
+
