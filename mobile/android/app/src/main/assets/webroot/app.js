@@ -2096,7 +2096,7 @@ function renderRuntimeBadge(info) {
   if (!info) {
     runtimeBadgeEl.textContent = "compute: unknown / 実行基盤: 不明";
     runtimeBadgeEl.className = "runtime-badge unknown";
-    runtimeBadgeEl.title = "aruaru-llmの GET /v1/runtime に接続できませんでした(古いaruaru-llmには存在しないエンドポイントです)。";
+    runtimeBadgeEl.title = "aruaru-llmの Runtime(Connect)に接続できませんでした(古いaruaru-llmには存在しないエンドポイントです)。";
     return;
   }
   // 階層的アクセラレーション(2026-08-23、aruaru-llm側`acceleration`
@@ -7349,7 +7349,7 @@ formEl.addEventListener("submit", async (e) => {
       msg =
         `⏱ aruaru-llm did not reply in time (${err.message}). It may still be loading a large model, ` +
         `or the model is too big for this machine. Try a shorter message, or switch to a smaller model ` +
-        `(POST /v1/download-smaller on the aruaru-llm side).\n` +
+        `(DownloadSmaller on the aruaru-llm side).\n` +
         `⏱ aruaru-llmから時間内に応答がありませんでした(${err.message})。大きなモデルの読み込み中か、` +
         `この端末にはモデルが大きすぎる可能性があります。短い文で試すか、より小さなモデルへ切り替えてください。`;
     } else if (err instanceof TypeError) {
