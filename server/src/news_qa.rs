@@ -745,8 +745,9 @@ fn is_youtube(link: &str) -> bool {
 }
 
 async fn aruaru_search(client: &reqwest::Client, base: &str, query: &str, hl: &str, n: usize) -> Vec<Found> {
-    let url = format!("{base}/v1/search?q={}&hl={hl}&n={n}", pct_encode(query));
-    let v: serde_json::Value = match client.get(&url).send().await {
+    let url = format!("{base}/aruaru_search.v1.Search/Search");
+    let body = serde_json::json!({ "q": query, "hl": hl, "n": n });
+    let v: serde_json::Value = match client.post(&url).json(&body).send().await {
         Ok(r) if r.status().is_success() => r.json().await.unwrap_or_default(),
         _ => return Vec::new(),
     };
