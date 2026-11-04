@@ -1398,3 +1398,6 @@ Reading into `serde_json::Value` gives almost no speed-up even with SIMD (188 ms
 - **WASM по-прежнему остаётся технологией для интерфейса.** Изменилось лишь то, что вызываемый им API теперь построен на Connect.
 - Интерфейсы, форма которых задана внешним стандартом (ACME, обратные вызовы OAuth, вебхуки сторонних сервисов, проверки работоспособности, статические файлы, OTLP), остаются обычным HTTP.
 - **Если есть сомнения — выбирайте Connect.**
+
+## aruaru-llm Connect 化の引き継ぎ(2026-11-05)
+aruaru-llm の REST 全廃に合わせ、呼び出しを `POST /aruaru_llm.v1.Llm/<Method>` へ変更済み(詳細は CLAUDE.md 末尾)。VPS 反映は aruaru-llm の main マージと同時に行うこと(片方だけだと全 AI 機能が 404)。

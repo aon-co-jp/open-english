@@ -727,6 +727,31 @@ fn aruaru_llm_base_url() -> String {
     format!("http://{bind}")
 }
 
+/// aruaru-llm(Connect)のメソッドURL。`POST <base>/aruaru_llm.v1.Llm/<Method>` + JSON本文。
+/// REST全廃方針(2026-11-04)で旧`/v1/...`経路は aruaru-llm 側から削除された。
+pub(crate) fn llm_connect_url(method: &str) -> String {
+    format!("{}/aruaru_llm.v1.Llm/{}", aruaru_llm_base_url(), method)
+}
+
+/// クエリ文字列の値のパーセントデコード(`+`は空白)。
+fn query_decode(x: &str) -> String {
+    let b = x.replace('+', " ").into_bytes();
+    let mut out = Vec::with_capacity(b.len());
+    let mut i = 0;
+    while i < b.len() {
+        if b[i] == b'%' && i + 2 < b.len() + 0 && i + 2 <= b.len() - 1 {
+            if let Ok(v) = u8::from_str_radix(std::str::from_utf8(&b[i + 1..i + 3]).unwrap_or("zz"), 16) {
+                out.push(v);
+                i += 3;
+                continue;
+            }
+        }
+        out.push(b[i]);
+        i += 1;
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
 fn aruaru_llm_unreachable_response(url: &str, e: reqwest::Error) -> Response {
     rs_json_response(
         StatusCode::SERVICE_UNAVAILABLE,
@@ -755,13 +780,20 @@ fn passthrough_response(status: reqwest::StatusCode, content_type: Option<String
 /// `proxy_aruaru_llm_get`と同じだが、元リクエストのクエリ文字列(`?country=...`等)を
 /// そのままaruaru-llm側へ転送する(2026-09-22新設、`/v1/public/news/for`用)。
 async fn proxy_aruaru_llm_get_with_query(req: Request, path: &str) -> Response {
-    let query = req.uri().query().map(|q| format!("?{q}")).unwrap_or_default();
-    let url = format!("{}{}{}", aruaru_llm_base_url(), path, query);
+    // もとGETのクエリ(`?country=jp`等)は、Connectでは JSON 本文の各項目として渡す。
+    let mut obj = serde_json::Map::new();
+    if let Some(q) = req.uri().query() {
+        for pair in q.split('&').filter(|p| !p.is_empty()) {
+            let (k, v) = pair.split_once('=').unwrap_or((pair, ""));
+            obj.insert(query_decode(k), serde_json::Value::String(query_decode(v)));
+        }
+    }
+    let url = llm_connect_url(path);
     let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(15)).build() {
         Ok(c) => c,
         Err(e) => return rs_json_response_cors(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("failed to build HTTP client: {e}")})),
     };
-    match client.get(&url).send().await {
+    match client.post(&url).json(&serde_json::Value::Object(obj)).send().await {
         Ok(resp) => {
             let status = resp.status();
             match resp.bytes().await {
@@ -797,12 +829,12 @@ fn sanitize_public_json(v: &mut serde_json::Value) {
 /// 来場者向けの読み取り専用の中継(aruaru-llmの`/v1/runtime`・`/v1/accelerators`)。VPSに1か所だけ入れた
 /// aruaru-llm(open-cuda)の状態を、各サイトの画面が(閲覧者の端末に無くても)表示できるようにする。
 async fn proxy_aruaru_llm_get_sanitized(path: &str) -> Response {
-    let url = format!("{}{}", aruaru_llm_base_url(), path);
+    let url = llm_connect_url(path);
     let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(10)).build() {
         Ok(c) => c,
         Err(e) => return rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("failed to build HTTP client: {e}")})),
     };
-    match client.get(&url).send().await {
+    match client.post(&url).json(&serde_json::json!({})).send().await {
         Ok(resp) if resp.status().is_success() => match resp.json::<serde_json::Value>().await {
             Ok(mut v) => {
                 sanitize_public_json(&mut v);
@@ -840,12 +872,12 @@ mod sanitize_tests {
 }
 
 async fn proxy_aruaru_llm_get(path: &str) -> Response {
-    let url = format!("{}{}", aruaru_llm_base_url(), path);
+    let url = llm_connect_url(path);
     let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(15)).build() {
         Ok(c) => c,
         Err(e) => return rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("failed to build HTTP client: {e}")})),
     };
-    match client.get(&url).send().await {
+    match client.post(&url).json(&serde_json::json!({})).send().await {
         Ok(resp) => {
             let status = resp.status();
             let content_type = resp.headers().get("content-type").and_then(|v| v.to_str().ok()).map(|s| s.to_string());
@@ -861,12 +893,12 @@ async fn proxy_aruaru_llm_get(path: &str) -> Response {
 /// [`proxy_aruaru_llm_post`]のボディ無し版(`download-larger`/
 /// `download-smaller`はaruaru-llm側もPOSTだがボディを取らない)。
 async fn proxy_aruaru_llm_get_as_post(path: &str) -> Response {
-    let url = format!("{}{}", aruaru_llm_base_url(), path);
+    let url = llm_connect_url(path);
     let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(600)).build() {
         Ok(c) => c,
         Err(e) => return rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("failed to build HTTP client: {e}")})),
     };
-    match client.post(&url).send().await {
+    match client.post(&url).json(&serde_json::json!({})).send().await {
         Ok(resp) => {
             let status = resp.status();
             let content_type = resp.headers().get("content-type").and_then(|v| v.to_str().ok()).map(|s| s.to_string());
@@ -880,7 +912,7 @@ async fn proxy_aruaru_llm_get_as_post(path: &str) -> Response {
 }
 
 async fn proxy_aruaru_llm_post(path: &str, req: Request) -> Response {
-    let url = format!("{}{}", aruaru_llm_base_url(), path);
+    let url = llm_connect_url(path);
     // ボディはJSONとして解釈せず、そのまま転送する(aruaru-llm側の
     // リクエスト型が変わってもこのプロキシ層は無改修で済む)。
     let body: serde_json::Value = match read_rs_json_body(req).await {
@@ -927,7 +959,7 @@ async fn public_freelance_job_search(req: Request) -> Response {
     if query.is_empty() || query.chars().count() > 256 {
         return rs_json_response(StatusCode::BAD_REQUEST, &serde_json::json!({"error": "query must be 1-256 characters"}));
     }
-    let url = format!("{}/v1/search/raw", aruaru_llm_base_url());
+    let url = llm_connect_url("SearchRaw");
     let payload = serde_json::json!({
         "source": "google",
         "query": query,
@@ -1004,7 +1036,6 @@ async fn public_aruaru_llm_switch_status() -> Response {
 /// [`ARUARU_LLM_SWITCHING`] を立てて他の閲覧者の画面に「LLM変更中」を
 /// 表示できるようにする。
 async fn public_aruaru_llm_select(req: Request) -> Response {
-    let base = aruaru_llm_base_url();
     let body: serde_json::Value = match read_rs_json_body(req).await {
         Ok(v) => v,
         Err(resp) => return resp,
@@ -1037,8 +1068,8 @@ async fn public_aruaru_llm_select(req: Request) -> Response {
     };
     // installを一切呼ばず、カタログの`is_installed`だけを見て未インストール
     // モデルへの切替を拒否する(新規ダウンロードは管理者専用のまま)。
-    let catalog_url = format!("{base}/v1/models/catalog");
-    let catalog: serde_json::Value = match client.get(&catalog_url).send().await {
+    let catalog_url = llm_connect_url("ModelsCatalog");
+    let catalog: serde_json::Value = match client.post(&catalog_url).json(&serde_json::json!({})).send().await {
         Ok(resp) if resp.status().is_success() => resp.json().await.unwrap_or(serde_json::Value::Null),
         Ok(resp) => return rs_json_response(StatusCode::BAD_GATEWAY, &serde_json::json!({"error": format!("catalog HTTP {}", resp.status())})),
         Err(e) => return aruaru_llm_unreachable_response(&catalog_url, e),
@@ -1061,7 +1092,7 @@ async fn public_aruaru_llm_select(req: Request) -> Response {
     if let Ok(mut g) = ARUARU_LLM_SWITCHING_TARGET.lock() {
         *g = Some(id.clone());
     }
-    let select_url = format!("{base}/v1/models/select");
+    let select_url = llm_connect_url("ModelsSelect");
     let result = client.post(&select_url).json(&serde_json::json!({"id": id})).send().await;
     ARUARU_LLM_SWITCHING.store(false, std::sync::atomic::Ordering::SeqCst);
     if let Ok(mut g) = ARUARU_LLM_SWITCHING_TARGET.lock() {
@@ -1124,7 +1155,7 @@ fn aruaru_llm_chat_rate_limit_allow() -> bool {
 
 /// `POST /v1/public/aruaru-llm/generate` / `POST /v1/public/aruaru-llm/generate-with-search`
 /// — デモ来場者向け、グローバルレート制限付きのチャット生成プロキシ。
-/// `path`は`"/v1/generate"`または`"/v1/generate-with-search"`。
+/// `path`は`"Generate"`または`"GenerateWithSearch"`(aruaru-llmのConnectメソッド名)。
 async fn public_aruaru_llm_generate(path: &str, req: Request) -> Response {
     if !aruaru_llm_chat_rate_limit_allow() {
         return rs_json_response(
@@ -1144,7 +1175,6 @@ async fn public_aruaru_llm_generate(path: &str, req: Request) -> Response {
 /// (訪問者自身の`127.0.0.1`を指してしまい無関係な接続先になっていた
 /// バグ)を繰り返さないよう、可否のbool値だけを返す設計にする。
 async fn aruaru_llm_reachable_from_server() -> bool {
-    let base = aruaru_llm_base_url();
     let client = match reqwest::Client::builder().timeout(std::time::Duration::from_millis(1500)).build() {
         Ok(c) => c,
         Err(_) => return false,
@@ -1178,7 +1208,6 @@ async fn public_chat_provider_complete_priority(req: Request) -> Response {
             }),
         );
     }
-    let base = aruaru_llm_base_url();
     let body: serde_json::Value = match read_rs_json_body(req).await {
         Ok(v) => v,
         Err(resp) => return resp,
@@ -1187,7 +1216,7 @@ async fn public_chat_provider_complete_priority(req: Request) -> Response {
         Ok(c) => c,
         Err(e) => return rs_json_response_cors(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("failed to build HTTP client: {e}")})),
     };
-    let url = format!("{base}/v1/chat-providers/complete-priority");
+    let url = llm_connect_url("ChatProvidersCompletePriority");
     match client.post(&url).json(&body).send().await {
         Ok(resp) => {
             let status = resp.status();
@@ -1206,12 +1235,11 @@ async fn public_chat_provider_complete_priority(req: Request) -> Response {
 /// 無料AI」表示用。aruaru-llmの`GET /v1/chat-providers/active`(使用中・予備・お休み中の
 /// AI名のみ、キー等は含まない)をそのまま中継する。読み取り専用・軽量のためレート制限は課さない。
 async fn public_chat_provider_active() -> Response {
-    let base = aruaru_llm_base_url();
     let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(5)).build() {
         Ok(c) => c,
         Err(e) => return rs_json_response_cors(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("failed to build HTTP client: {e}")})),
     };
-    match client.get(format!("{base}/v1/chat-providers/active")).send().await {
+    match client.post(llm_connect_url("ChatProvidersActive")).json(&serde_json::json!({})).send().await {
         Ok(resp) if resp.status().is_success() => match resp.json::<serde_json::Value>().await {
             Ok(v) => rs_json_response_cors(StatusCode::OK, &v),
             Err(e) => rs_json_response_cors(StatusCode::BAD_GATEWAY, &serde_json::json!({"error": format!("bad aruaru-llm response: {e}")})),
@@ -1225,21 +1253,20 @@ async fn public_chat_provider_active() -> Response {
 /// ハードウェア推奨を1回でまとめて返す(管理画面が1リクエストで
 /// 「選択可能な一覧」を描画できるように)。
 async fn admin_aruaru_llm_models() -> Response {
-    let base = aruaru_llm_base_url();
     let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(15)).build() {
         Ok(c) => c,
         Err(e) => return rs_json_response(StatusCode::INTERNAL_SERVER_ERROR, &serde_json::json!({"error": format!("failed to build HTTP client: {e}")})),
     };
     async fn fetch_json(client: &reqwest::Client, url: &str) -> serde_json::Value {
-        match client.get(url).send().await {
+        match client.post(url).json(&serde_json::json!({})).send().await {
             Ok(resp) if resp.status().is_success() => resp.json::<serde_json::Value>().await.unwrap_or(serde_json::Value::Null),
             Ok(resp) => serde_json::json!({"error": format!("HTTP {}", resp.status())}),
             Err(e) => serde_json::json!({"error": format!("unreachable: {e}")}),
         }
     }
-    let gpt2_catalog_url = format!("{base}/v1/models/catalog");
-    let qwen_catalog_url = format!("{base}/v1/qwen/catalog");
-    let recommend_url = format!("{base}/v1/recommend");
+    let gpt2_catalog_url = llm_connect_url("ModelsCatalog");
+    let qwen_catalog_url = llm_connect_url("QwenCatalog");
+    let recommend_url = llm_connect_url("Recommend");
     let (gpt2_catalog, qwen_catalog, recommend) = tokio::join!(
         fetch_json(&client, &gpt2_catalog_url),
         fetch_json(&client, &qwen_catalog_url),
@@ -3594,25 +3621,25 @@ async fn main() {
     // aruaru-llm、127.0.0.1:4600 既定、へ中継。ポート4600自体は外部
     // 公開しないまま、管理画面から操作できるようにする)。
     app = app.at("/v1/admin/aruaru-llm/models", get(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } admin_aruaru_llm_models().await }))));
-    app = app.at("/v1/admin/aruaru-llm/runtime", get(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get("/v1/runtime").await }))));
-    app = app.at("/v1/admin/aruaru-llm/recommend-and-download", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("/v1/recommend-and-download").await }))));
-    app = app.at("/v1/admin/aruaru-llm/models/select", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/models/select", req).await }))));
-    app = app.at("/v1/admin/aruaru-llm/models/install", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/models/install", req).await }))));
-    app = app.at("/v1/admin/aruaru-llm/download-larger", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("/v1/download-larger").await }))));
-    app = app.at("/v1/admin/aruaru-llm/download-smaller", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("/v1/download-smaller").await }))));
-    app = app.at("/v1/admin/aruaru-llm/qwen/select", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/qwen/select", req).await }))));
-    app = app.at("/v1/admin/aruaru-llm/qwen/install", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("/v1/qwen/install", req).await }))));
-    app = app.at("/v1/public/aruaru-llm/recommend", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("/v1/recommend")))));
+    app = app.at("/v1/admin/aruaru-llm/runtime", get(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get("Runtime").await }))));
+    app = app.at("/v1/admin/aruaru-llm/recommend-and-download", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("RecommendAndDownload").await }))));
+    app = app.at("/v1/admin/aruaru-llm/models/select", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("ModelsSelect", req).await }))));
+    app = app.at("/v1/admin/aruaru-llm/models/install", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("ModelsInstall", req).await }))));
+    app = app.at("/v1/admin/aruaru-llm/download-larger", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("DownloadLarger").await }))));
+    app = app.at("/v1/admin/aruaru-llm/download-smaller", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_get_as_post("DownloadSmaller").await }))));
+    app = app.at("/v1/admin/aruaru-llm/qwen/select", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("QwenSelect", req).await }))));
+    app = app.at("/v1/admin/aruaru-llm/qwen/install", post(handler_fn(|req, _p| Box::pin(async move { if let Err(r) = require_local_or_admin(&req) { return r; } proxy_aruaru_llm_post("QwenInstall", req).await }))));
+    app = app.at("/v1/public/aruaru-llm/recommend", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("Recommend")))));
     app = app.at("/v1/public/news/ask", get(handler_fn(|req, _p| Box::pin(news_ask(req)))));
     app = app.at("/v1/public/news/stock", get(handler_fn(|_req, _p| Box::pin(news_stock()))));
     app = app.at("/v1/internal/news/export", get(handler_fn(|req, _p| Box::pin(news_export(req)))));
-    app = app.at("/v1/public/aruaru-llm/runtime", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get_sanitized("/v1/runtime")))));
-    app = app.at("/v1/public/aruaru-llm/accelerators", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get_sanitized("/v1/accelerators")))));
-    app = app.at("/v1/public/aruaru-llm/models/catalog", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("/v1/models/catalog")))));
+    app = app.at("/v1/public/aruaru-llm/runtime", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get_sanitized("Runtime")))));
+    app = app.at("/v1/public/aruaru-llm/accelerators", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get_sanitized("Accelerators")))));
+    app = app.at("/v1/public/aruaru-llm/models/catalog", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("ModelsCatalog")))));
     app = app.at("/v1/public/aruaru-llm/models/select", post(handler_fn(|req, _p| async move { public_aruaru_llm_select(req).await })));
     app = app.at("/v1/public/aruaru-llm/switch-status", get(handler_fn(|_req, _p| async move { public_aruaru_llm_switch_status().await })));
-    app = app.at("/v1/public/aruaru-llm/generate", post(handler_fn(|req, _p| Box::pin(public_aruaru_llm_generate("/v1/generate", req)))));
-    app = app.at("/v1/public/aruaru-llm/generate-with-search", post(handler_fn(|req, _p| Box::pin(public_aruaru_llm_generate("/v1/generate-with-search", req)))));
+    app = app.at("/v1/public/aruaru-llm/generate", post(handler_fn(|req, _p| Box::pin(public_aruaru_llm_generate("Generate", req)))));
+    app = app.at("/v1/public/aruaru-llm/generate-with-search", post(handler_fn(|req, _p| Box::pin(public_aruaru_llm_generate("GenerateWithSearch", req)))));
     app = app.at("/v1/public/chat-providers/complete-priority", post(handler_fn(|req, _p| Box::pin(public_chat_provider_complete_priority(req)))));
     app = app.at("/v1/line/webhook", post(handler_fn(|req, _p| Box::pin(line_bot::webhook(req)))));
     app = app.at("/v1/line/audio", get(handler_fn(|req, _p| Box::pin(line_bot::audio(req)))));
@@ -3623,13 +3650,13 @@ async fn main() {
     // `http://localhost:4600`(閲覧者自身の端末)のままだとニュース取得が毎回失敗し
     // 無言で空文字になっていた(`newsSuffix()`のcatch節)。既存の`/v1/public/chat-providers/*`
     // と同じ「同一オリジンの公開プロキシ経由でVPS自身のaruaru-llmへ中継する」パターンで解決する。
-    app = app.at("/v1/public/news/latest", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("/v1/news/latest")))));
+    app = app.at("/v1/public/news/latest", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("NewsLatest")))));
     // 2026-09-22追加: 「日本語なら日本のニュース、英語ならアメリカのニュース」のように
     // 呼び出し側が国を指定できる`/v1/news/for?country=...`のクエリ文字列を、そのまま
     // aruaru-llmへ中継する(`proxy_aruaru_llm_get`は固定パスのみでクエリを転送できないため専用実装)。
-    app = app.at("/v1/public/knowledge/export", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("/v1/knowledge/search")))));
-    app = app.at("/v1/public/persona/prompt",post(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_post("/v1/persona/prompt", req)))));
-    app = app.at("/v1/public/news/for",get(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_get_with_query(req, "/v1/news/for")))));
+    app = app.at("/v1/public/knowledge/export", get(handler_fn(|_req, _p| Box::pin(proxy_aruaru_llm_get("KnowledgeSearch")))));
+    app = app.at("/v1/public/persona/prompt",post(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_post("PersonaPrompt", req)))));
+    app = app.at("/v1/public/news/for",get(handler_fn(|req, _p| Box::pin(proxy_aruaru_llm_get_with_query(req, "NewsFor")))));
     app = app.at("/v1/public/news/archive-search", get(handler_fn(|req, _p| Box::pin(news_archive_search(req)))));
     app = app.at("/v1/public/freelance/job-search", post(handler_fn(|req, _p| Box::pin(public_freelance_job_search(req)))));
     // サーバー側の音声合成(ローカル版・ミックス版、2026-09-30新設、`tts.rs`参照)。WEB版・非対応環境では`status`が`available: false`を返し、

@@ -8587,3 +8587,12 @@ Reading into `serde_json::Value` gives almost no speed-up even with SIMD (188 ms
 - **WASM по-прежнему остаётся технологией для интерфейса.** Изменилось лишь то, что вызываемый им API теперь построен на Connect.
 - Интерфейсы, форма которых задана внешним стандартом (ACME, обратные вызовы OAuth, вебхуки сторонних сервисов, проверки работоспособности, статические файлы, OTLP), остаются обычным HTTP.
 - **Если есть сомнения — выбирайте Connect.**
+
+## aruaru-llm 呼び出しの Connect 化(2026-11-05)
+
+aruaru-llm は REST を全廃し `POST /aruaru_llm.v1.Llm/<Method>`(JSON)のみ受ける(同リポジトリ `connect-migration` ブランチ、main 未マージ・VPS 未反映)。open-english 側の呼び出し元を同時に直した。
+- **server**: `main.rs` に `llm_connect_url(Method)` を新設。`proxy_aruaru_llm_*`・`SearchRaw`・モデル選択/一覧・無料枠プロバイダ・管理画面の一覧・`line_bot.rs`(ChatProvidersCompletePriority/Transcribe)・`news_qa.rs`(Rerank)を Connect へ。もと GET のクエリ(`?country=`)は JSON 本文へ変換。
+- **web/app.js と mobile の webroot/app.js**: `connectNormalize`/`llmFetch` を追加(Connect URL なら POST + JSON、本文既定 `{}`)。呼び出しの URL を `/aruaru_llm.v1.Llm/<Method>` へ。もと DELETE は `Clear…`/`Reset…`、設定の POST は `Set…`、GET は `Get…`。
+- **scripts/archive-news-to-github.sh** は `NewsPruneArchive`。文書の旧パス表記(index.html 等)も更新。
+- open-english 自身の `/v1/public/...` は別方針なので変更なし(中継の内側だけ Connect)。
+- 未了: Kotlin(Transport.kt 等)の旧パス確認、aruaru-llm main マージ後の VPS 同時反映。
