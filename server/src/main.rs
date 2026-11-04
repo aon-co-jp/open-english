@@ -1180,6 +1180,7 @@ async fn aruaru_llm_reachable_from_server() -> bool {
         Ok(c) => c,
         Err(_) => return false,
     };
+    let base = aruaru_llm_base_url();
     client.get(format!("{base}/healthz")).send().await.map(|r| r.status().is_success()).unwrap_or(false)
 }
 
