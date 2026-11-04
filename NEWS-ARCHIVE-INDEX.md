@@ -4,7 +4,7 @@
 
 ## 見出し・リンクのみ(公開)
 
-- [open-english-news-archive](https://github.com/aon-co-jp/open-english-news-archive) — 1.3 MB / public
+- [open-english-news-archive](https://github.com/aon-co-jp/open-english-news-archive) — 1.4 MB / public
 - [open-english-news-archive-002](https://github.com/aon-co-jp/open-english-news-archive-002) — 0 MB / public
 
 ## 抜粋つき完全版(公開)
