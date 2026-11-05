@@ -1598,4 +1598,4 @@ DATABASEに蓄積するデータが溢れる前に非公開GitHubリポジトリ
 - Интерфейсы, форма которых задана внешним стандартом (ACME, обратные вызовы OAuth, вебхуки сторонних сервисов, проверки работоспособности, статические файлы, OTLP), остаются обычным HTTP.
 - **Если есть сомнения — выбирайте Connect.**
 
-> 📌 **aruaru-llm 呼び出しの Connect 化(2026-11-05)**: aruaru-llm の REST 全廃に合わせ、呼び出しを `POST /aruaru_llm.v1.Llm/<Method>`(JSON)へ変更。詳細は [CLAUDE.md](CLAUDE.md) 末尾・[PORTING.md](PORTING.md) 末尾。VPS 反映は aruaru-llm の main マージと同時(片方だけだと 404)。Kotlin(PhoneAccelWorker)は未ビルド。
+> 📌 **aruaru-llm 呼び出しの Connect 化(2026-11-05)**: aruaru-llm の REST 全廃に合わせ、呼び出しを `POST /aruaru_llm.v1.Llm/<Method>`(JSON)へ変更。詳細は [CLAUDE.md](CLAUDE.md) 末尾・[PORTING.md](PORTING.md) 末尾。VPS 反映は aruaru-llm の main マージと同時(片方だけだと 404)。Kotlin(PhoneAccelWorker)は`gradlew :app:compilePhoneDebugKotlin`でコンパイル成功(2026-11-05、実機は未確認)。

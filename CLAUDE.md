@@ -8595,4 +8595,4 @@ aruaru-llm は REST を全廃し `POST /aruaru_llm.v1.Llm/<Method>`(JSON)のみ�
 - **web/app.js と mobile の webroot/app.js**: `connectNormalize`/`llmFetch` を追加(Connect URL なら POST + JSON、本文既定 `{}`)。呼び出しの URL を `/aruaru_llm.v1.Llm/<Method>` へ。もと DELETE は `Clear…`/`Reset…`、設定の POST は `Set…`、GET は `Get…`。
 - **scripts/archive-news-to-github.sh** は `NewsPruneArchive`。文書の旧パス表記(index.html 等)も更新。
 - open-english 自身の `/v1/public/...` は別方針なので変更なし(中継の内側だけ Connect)。
-- 未了: Kotlin(Transport.kt 等)の旧パス確認、aruaru-llm main マージ後の VPS 同時反映。
+- Kotlin は `compilePhoneDebugKotlin` 成功(実機未確認)。未了: aruaru-llm main マージ後の VPS 同時反映。
