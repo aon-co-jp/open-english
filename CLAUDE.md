@@ -8596,3 +8596,6 @@ aruaru-llm は REST を全廃し `POST /aruaru_llm.v1.Llm/<Method>`(JSON)のみ�
 - **scripts/archive-news-to-github.sh** は `NewsPruneArchive`。文書の旧パス表記(index.html 等)も更新。
 - open-english 自身の `/v1/public/...` は別方針なので変更なし(中継の内側だけ Connect)。
 - Kotlin は `compilePhoneDebugKotlin` 成功(実機未確認)。未了: aruaru-llm main マージ後の VPS 同時反映。
+
+### 古い画面の自動再読み込み(2026-11-05)
+切り替え後に旧パスの画面がブラウザに残る問題への対応。(1) `version.json` の `buildId` を更新(`auto-update.js` が5秒ごとに見て、変わっていれば `?v=` 付きで再読み込み)。(2) `app.js` の fetch ラッパーで、Connect 経路(`/openenglish.v1.*`・`/aruaru_llm.v1.Llm/*`)が404のとき、キャッシュを避けて自動で1回再読み込み(10分以内の再発は何もしない=無限ループ防止)。(3) Service Worker のキャッシュ名を v2 へ。**デプロイ時は `version.json` の `buildId` を必ず更新すること。**

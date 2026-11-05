@@ -144,9 +144,27 @@
   window.fetch = (input, init) => {
     if (typeof input === "string") {
       const url = prefix && input.startsWith("/openenglish.v1.") ? prefix + input : input;
-      return originalFetch(url, withConnectDefaults(url, init));
+      return originalFetch(url, withConnectDefaults(url, init)).then(staleCheck(url));
     }
     return originalFetch(input, init);
+  };
+  // 古い画面の自動再読み込み(2026-11-05): 旧パス(`/v1/public/...`等)の画面がブラウザに残っていると、
+  // 切り替え後のサーバーが404を返す。Connectの経路(`/openenglish.v1.*`・`/aruaru_llm.v1.Llm/*`)が404のときは
+  // キャッシュを避けて1回だけ自動で再読み込みする(10分以内の再発は無限ループ防止のため何もしない)。
+  // 併せて`version.json`の`buildId`ポーリング(`auto-update.js`)でも新しい版へ追従する。
+  const staleCheck = (url) => (res) => {
+    try {
+      if (res && res.status === 404 && /\/(openenglish\.v1\.[A-Za-z]+|aruaru_llm\.v1\.Llm)\//.test(url)) {
+        const last = Number(sessionStorage.getItem("openEnglish.staleReloadAt") || 0);
+        if (Date.now() - last > 600000) {
+          sessionStorage.setItem("openEnglish.staleReloadAt", String(Date.now()));
+          const u = new URL(location.href);
+          u.searchParams.set("v", String(Date.now()));
+          location.replace(u.toString());
+        }
+      }
+    } catch (e) { /* sessionStorageが使えない環境では何もしない */ }
+    return res;
   };
 })();
 
