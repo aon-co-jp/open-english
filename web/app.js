@@ -1,3 +1,7 @@
+function isOwnOriginHost() {
+  const h = location.hostname;
+  return h === "easy-web.tokyo" || h.endsWith(".easy-web.tokyo") || h === "maid-cafe.tokyo" || h.endsWith(".maid-cafe.tokyo");
+}
 // open-english フロントエンド(Phase 0)。
 //
 // 正直な開示: `aruaru-llm`の`/v1/generate`は対話特化のファインチューニング
@@ -2620,9 +2624,9 @@ async function personaPromptText() {
     ? "You are Tora, a courteous butler teacher. Use short sentences around one key word, smile, use gestures, find common topics, and praise every attempt."
     : "You are Sakura, a cheerful maid teacher. Use short sentences around one key word, smile, use gestures, find common topics, and praise every attempt.";
   try {
-    const url = location.hostname.endsWith("easy-web.tokyo")
+    const url = isOwnOriginHost()
       ? "/openenglish.v1.Persona/Prompt"
-      : "https://easy-web.tokyo/open-english/v1/public/persona/prompt";
+      : "https://maid-cafe.tokyo/openenglish.v1.Persona/Prompt";
     const res = await fetchWithTimeout(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -4147,7 +4151,7 @@ function topicGuideSuffix(userText) {
 // あわせて(ユーザー指示「日本語の場合は日本の今日のニュースを、英語の場合はアメリカの
 // ニュースを検索」): サーバー接続先国に固定された`/v1/news/latest`ではなく、質問の言語
 // から判定した国を指定できる`/v1/news/for?country=...`を使う。
-const SHARED_NEWS_FOR_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/public/news/for";
+const SHARED_NEWS_FOR_ABSOLUTE_URL = "https://maid-cafe.tokyo/openenglish.v1.News/For";
 function newsCountryForUserText(userText) {
   // 対応中の非英語言語(学びたい言語/応答言語)は、それぞれの国名を返す。
   // 未対応の組み合わせ・自動判定不能な場合は、日本語を含むかどうかで日本/アメリカを選ぶ
@@ -4182,10 +4186,10 @@ function mentionsPastNews(userText) {
 }
 async function archiveNewsSuffix(country) {
   try {
-    const url = location.hostname.endsWith("easy-web.tokyo")
+    const url = isOwnOriginHost()
       ? `/openenglish.v1.News/ArchiveSearch?q=${encodeURIComponent(country)}&limit=3`
-      : `https://easy-web.tokyo/open-english/v1/public/news/archive-search?q=${encodeURIComponent(country)}&limit=3`;
-    const res = await fetchWithTimeout(url, { cache: "no-store" }, AUX_TIMEOUT_MS);
+      : `https://maid-cafe.tokyo/openenglish.v1.News/ArchiveSearch?q=${encodeURIComponent(country)}&limit=3`;
+    const res = await fetchWithTimeout(url, { method: "POST", cache: "no-store" }, AUX_TIMEOUT_MS);
     const data = await res.json();
     if (!data.items || data.items.length === 0) return "";
     const lines = data.items.map((i) => `・[${i.date || "?"}] ${i.title}${i.link ? ` (${i.link})` : ""}`).join("\n");
@@ -4220,10 +4224,10 @@ async function newsSuffix(userText) {
   if (!mentionsNewsTopic(userText)) return "";
   const country = newsCountryForUserText(userText);
   try {
-    const url = location.hostname.endsWith("easy-web.tokyo")
+    const url = isOwnOriginHost()
       ? `/openenglish.v1.News/For?country=${encodeURIComponent(country)}`
       : `${SHARED_NEWS_FOR_ABSOLUTE_URL}?country=${encodeURIComponent(country)}`;
-    const res = await fetchWithTimeout(url, { cache: "no-store" }, AUX_TIMEOUT_MS);
+    const res = await fetchWithTimeout(url, { method: "POST", cache: "no-store" }, AUX_TIMEOUT_MS);
     const data = await res.json();
     if (!data.items || data.items.length === 0) {
       const reason = data.last_error ? ` (${data.last_error})` : "";
@@ -10793,7 +10797,7 @@ function saveCustomQaPairs(pairs) {
 // スマホ版でも…毎回最新のDATABASE Q&AのDATAもdemoと同じ様にAIが自動回答
 // するように」への対応)。VPS側はこの読み取り専用エンドポイントに
 // `Access-Control-Allow-Origin: *`を付けてCORSを許可済み。
-const SHARED_CUSTOM_QA_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/custom-qa";
+const SHARED_CUSTOM_QA_ABSOLUTE_URL = "https://maid-cafe.tokyo/openenglish.v1.CustomQa/CustomQaGet";
 
 // WEB版(easy-web.tokyo/open-english)で開発者が登録した無料枠プロバイダ
 // (Google検索→ChatGPT→Gemini→DeepSeek→Grok、日毎に自動で次へ切替)を、
@@ -10831,10 +10835,10 @@ function getSelectedAis() {
     return [];
   }
 }
-const SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL = "https://easy-web.tokyo/open-english/v1/public/chat-providers/complete-priority";
+const SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL = "https://maid-cafe.tokyo/openenglish.v1.ChatProviders/CompletePriority";
 async function trySharedPriorityProviderReply(prompt) {
   if (isCloudOff()) return null;
-  const url = location.hostname === "easy-web.tokyo" ? "/openenglish.v1.ChatProviders/CompletePriority" : SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL;
+  const url = isOwnOriginHost() ? "/openenglish.v1.ChatProviders/CompletePriority" : SHARED_PRIORITY_PROVIDER_ABSOLUTE_URL;
   try {
     // 2026-09-22追加: 文字入力・音声入力・言語翻訳に「自信がない」と判定できたときは、
     // 共有WEB版の呼び出しにもGoogle検索の裏取りを付ける(`shouldBoostWithGoogleSearch`)。
@@ -10865,9 +10869,11 @@ async function fetchSharedCustomQaPairs() {
   // (デモはサーバー側で本番へ中継、本番は自分自身のDBを返す)。それ以外
   // (PC/タブレット/スマホ版のローカルサーバー)は絶対URLで本番へ直接
   // fetchする。
-  const url = location.hostname === "easy-web.tokyo" ? "/openenglish.v1.CustomQa/CustomQaGet" : SHARED_CUSTOM_QA_ABSOLUTE_URL;
+  const sameOrigin = isOwnOriginHost();
+  const url = sameOrigin ? "/openenglish.v1.CustomQa/CustomQaGet" : SHARED_CUSTOM_QA_ABSOLUTE_URL;
   try {
-    const res = await fetchWithTimeout(url, { cache: "no-store" }, 4000);
+    // サーバー側はConnect(POST)。GETだと405で常に空になり、DBの回答(消費税・核武装など)が出なかった。
+    const res = await fetchWithTimeout(url, { method: "POST", headers: { "content-type": "application/json" }, body: "{}", cache: "no-store" }, 4000);
     if (!res.ok) return [];
     const data = await res.json();
     const pairs = Array.isArray(data.pairs) ? data.pairs : [];
@@ -18890,11 +18896,11 @@ const INSTALLER_QUICK_LINK_CLOSED_KEY = "open-english.installerQuickLinkClosed";
   };
   const nameOf = (id) => AI_NAMES[id] || id;
   const sharedBase = () =>
-    location.hostname.endsWith("easy-web.tokyo") ? "/open-english" : "https://easy-web.tokyo/open-english";
+    isOwnOriginHost() ? "/open-english" : "https://easy-web.tokyo/open-english";
   let lastStatus = null;
   async function refreshAiInUse() {
     try {
-      const res = await fetch(sharedBase() + "/openenglish.v1.ChatProviders/Active", { cache: "no-store" });
+      const res = await fetch(sharedBase() + "/openenglish.v1.ChatProviders/Active", { method: "POST", cache: "no-store" });
       if (!res.ok) throw new Error("HTTP " + res.status);
       const s = await res.json();
       try {
