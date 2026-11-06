@@ -62,6 +62,7 @@ log "backup: $bak"
 rollback() {
   log "ROLLBACK to $applied"
   cp -a "$bak/open-english-server" "$BIN.new" && mv -f "$BIN.new" "$BIN"
+  [ -n "${prev_head:-}" ] && git -C "$ROOT" reset -q --keep "$prev_head" 2>/dev/null
   [ -f "$bak/web.tgz" ] && tar xzf "$bak/web.tgz" -C "$WEB"
   systemctl restart "${SERVICES[@]}"
 }
@@ -69,6 +70,10 @@ rollback() {
 # swap binary (cp + atomic mv; the running process keeps the old inode) and static web files
 cp "$src" "$BIN.new" && chmod 755 "$BIN.new" && mv -f "$BIN.new" "$BIN" || { log "binary swap failed"; exit 1; }
 ( cd "$srcdir" && for f in *.js *.html *.css *.json icons; do [ -e "$f" ] && cp -a "$f" "$WEB/"; done )
+# The server re-syncs $WEB from the git clone's web/ at start, so fast-forward the clone to the tag too
+# (otherwise a restart would put the old web files back).
+prev_head="$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || true)"
+git -C "$ROOT" fetch -q origin "refs/tags/$tag:refs/tags/$tag" 2>/dev/null && git -C "$ROOT" merge -q --ff-only "$tag" 2>&1 | tail -1 || log "warning: could not fast-forward the clone to $tag"
 systemctl restart "${SERVICES[@]}"
 
 good=1
