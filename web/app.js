@@ -1149,6 +1149,7 @@ function autorwIsGithubConfigured() {
 async function autorwRefreshGithubStatus() {
   const el = document.getElementById("autorw-github-status");
   if (!el) return;
+  if (isOwnOriginHost()) return; // 共有WEB版では管理者専用(403になる)ため呼ばない
   const mode = "server"; // 2026-09-01: GitHubトークンはサーバー側管理モードのみに一本化
   if (mode === "server") {
     // ⑤サーバー側管理モード(2026-09-01新設): このモードはブラウザ側の
@@ -1327,6 +1328,7 @@ document.getElementById("autorw-vps-copy-env-btn")?.addEventListener("click", as
 async function autorwRefreshVpsStatus() {
   const el = document.getElementById("autorw-vps-status");
   if (!el) return;
+  if (isOwnOriginHost()) return; // 共有WEB版では管理者専用(403になる)ため呼ばない
   try {
     const res = await fetch("/openenglish.v1.Agent/VpsStatus", { cache: "no-store" });
     const data = await res.json();
@@ -18896,7 +18898,7 @@ const INSTALLER_QUICK_LINK_CLOSED_KEY = "open-english.installerQuickLinkClosed";
   };
   const nameOf = (id) => AI_NAMES[id] || id;
   const sharedBase = () =>
-    isOwnOriginHost() ? "/open-english" : "https://easy-web.tokyo/open-english";
+    isOwnOriginHost() ? "" : "https://maid-cafe.tokyo";
   let lastStatus = null;
   async function refreshAiInUse() {
     try {
