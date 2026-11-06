@@ -1405,5 +1405,45 @@
     ],
     "source": "https://paiza.jp/works/paid_plan_lp/settlement",
     "created_unix": 1793909739
+  },
+  {
+    "id": 117,
+    "text": "【自動調査 2026-11-05・出典3件】ウクライナ情勢\n・ウクライナ情勢 特集サイト - NHKニュース — 20時間前 - ロシアによるウクライナへの軍事侵攻が始まってから4年がたちました 。戦況の変化がわかる地図や最新ニュースはこちらから。侵攻の背景や影響も詳しく解説します。 (news.web.nhk)\n・ウクライナ情勢 関連ニュース：時事ドットコム — 11時間前 - ロシアはウクライナの非軍事化などを要求して全面攻撃を仕掛けたが、首都キーウの短期制圧に失敗 。欧米の支援を受けたウクライナが徹底抗戦し、戦闘は長期化した。25年1 ... (jiji.com)\n・和平問題に影響か 米中間選挙でのトランプ与党敗北（産経 ... — 1日前 - 米中間選挙でトランプ政権の与党・共和党が敗北したことは、ロシアの侵略が続く ウクライナ情勢 の先行きにも影響するとみられている。 (news.yahoo.co.jp)",
+    "tags": [
+      "ウクライナ情勢",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1793912902
+  },
+  {
+    "id": 118,
+    "text": "【自動調査 2026-11-05・出典3件】following\n・Cult following — Cult Following is the second studio album by American-born, Montreal-based indie rock artist Little Scream (Laurel Sprengelmeyer). It was re (en.wikipedia.org)\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Recent headlines (stocked internet news): [The Japan Times Japan] More companies seeking cyber insurance following high-profile data breaches | [BBC News World] China state broadcaster pulls La Liga matches following Mbappé joke",
+    "tags": [
+      "following",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1793913028
+  },
+  {
+    "id": 119,
+    "text": "【自動調査 2026-11-05・出典3件】米ドル\n・米ドル /円【USDJPY】：外国為替相場FXレート・チャートを ... — 2時間前 - 米ドル/円【USDJPY】のリアルタイムFXレートとチャートで為替相場をご覧いただけます 。Yahoo!ファイナンスでは株価速報、チャート、ランキング、 ... (finance.yahoo.co.jp)\n・米ドル /円 - SBI証券 — マーケットでは日本をはじめとする世界の株価、チャート、為替、指数、金利のほか、いま投資家に人気の銘柄をご紹介するランキングも配信しています。 (sbisec.co.jp)\n・為替レート - 米ドル -｜投資情報 - 野村證券 — 米ドル ／円 · 最低5分遅れのデータを表示（計算）しています。 · 為替情報は、月曜日早朝～土曜日早朝更新の気配値のデータとなります。 (advance.quote.nomura.co.jp)",
+    "tags": [
+      "米ドル",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1793916091
+  },
+  {
+    "id": 120,
+    "text": "【自動調査 2026-11-05・出典3件】豪ドル\n・豪ドル 円相場(AUDJPY)リアルタイムチャート・為替レート推移 — 豪ドル／円(AUDJPY). 豪ドルと円の為替レートです . 109.49-109.53(11/6 5:19)-1.51(- ... (nikkei.com)\n・為替チャート 豪ドル ［AUD/JPY］ - JTG証券 — 販売中の 豪ドル 建 既発債券. 発行通貨, AUD, ヴィクトリア州財務公社 豪ドル 建 利付債. 確 認. シミュレーション. 利回り, 年 5.019%, 利率, 年2.25%, 期間, 約8年1ヶ月 ... (jtg-sec.co.jp)\n・豪ドル /円【AUDJPY】：外国為替相場FXレート・チャートを ... — 豪ドル/円【AUDJPY】のリアルタイムFXレートとチャートで為替相場をご覧いただけます 。Yahoo!ファイナンスでは株価速報、チャート、ランキング、ポートフォリオ、 ... (finance.yahoo.co.jp)",
+    "tags": [
+      "豪ドル",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1793916159
   }
 ]
