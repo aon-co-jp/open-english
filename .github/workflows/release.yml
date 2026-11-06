@@ -146,6 +146,51 @@ jobs:
           name: open-english-installer-${{ matrix.os_label }}
           path: open-english-installer-${{ matrix.os_label }}.tar.gz
 
+  # Android同梱のネイティブバイナリ(2026-11-06新設)。APKの `jniLibs/arm64-v8a` に入る
+  # libopenenglishserver.so(open-english-server)・libaruarullm.so(aruaru-llm)・libopen_cpu.so を
+  # **毎回ここでビルド**し、build-android がAPKへ反映する(gitにコミット済みの旧バイナリが
+  # 混ざったままリリースされる事故=v0.8.15のAndroid不整合の再発防止)。失敗したらリリース全体を失敗させる。
+  build-android-native:
+    name: Android native libs (server / aruaru-llm / open-cpu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout sibling path dependencies
+        run: |
+          set -eu
+          for r in RPoem open-web-server RS-SmartTCP open-raid-z open-cpu RS-JSON open-cuda aruaru-llm; do
+            git clone --depth=1 "https://github.com/aon-co-jp/$r.git" "../$r"
+          done
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools ndk;27.1.12297006
+      - name: Install Rust target and cargo-ndk
+        run: |
+          set -eu
+          rustup target add aarch64-linux-android
+          cargo install cargo-ndk --version 4.1.2 --locked
+      - name: Build the three native binaries
+        run: |
+          set -eu
+          export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/27.1.12297006"
+          STRIP="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip"
+          OUT="$PWD/native-libs"; mkdir -p "$OUT"
+          (cd server && cargo ndk -t arm64-v8a build --release)
+          cp server/target/aarch64-linux-android/release/open-english-server "$OUT/libopenenglishserver.so"
+          (cd ../aruaru-llm && cargo ndk -t arm64-v8a build --release)
+          cp ../aruaru-llm/target/aarch64-linux-android/release/aruaru-llm "$OUT/libaruarullm.so"
+          (cd ../open-cpu && cargo ndk -t arm64-v8a build --release)
+          cp ../open-cpu/target/aarch64-linux-android/release/libopen_cpu.so "$OUT/libopen_cpu.so"
+          "$STRIP" "$OUT"/*.so
+          # 新しい(Connect版)ことの確認: 旧REST版には無い文字列を含むこと
+          grep -qa 'aruaru_llm.v1.Llm' "$OUT/libaruarullm.so"
+          grep -qa 'openenglish.v1.' "$OUT/libopenenglishserver.so"
+          ls -la "$OUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-native-libs
+          path: native-libs/*.so
+
   # Android スマホ版 / タブレット版 APK(mobile/android/ を product
   # flavor phone/tablet でビルド。設計は BUILD.md 参照。2026-09-15、
   # open-english-pcの再統合によりsubmoduleではなく本体直下)。
@@ -154,9 +199,15 @@ jobs:
   # assemble*Debug(debug署名、ビルド自体は常に成功する)にフォールバックする。
   build-android:
     name: Android APK (phone / tablet)
+    needs: [build-android-native]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Put the freshly built native libs into jniLibs (replaces the committed ones)
+        uses: actions/download-artifact@v4
+        with:
+          name: android-native-libs
+          path: mobile/android/app/src/main/jniLibs/arm64-v8a
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -212,6 +263,12 @@ jobs:
           mkdir -p ../../android-apks
           cp "$OUT_PHONE" ../../android-apks/open-english-android-phone.apk
           cp "$OUT_TABLET" ../../android-apks/open-english-android-tablet.apk
+          # APKに新しい(Connect版)ネイティブライブラリが入っていることを確認(旧バイナリ混入の検出)
+          for APK in "$OUT_PHONE" "$OUT_TABLET"; do
+            unzip -p "$APK" lib/arm64-v8a/libaruarullm.so | grep -qa 'aruaru_llm.v1.Llm' || { echo "FAIL: $APK has an old libaruarullm.so"; exit 1; }
+            unzip -p "$APK" lib/arm64-v8a/libopenenglishserver.so | grep -qa 'openenglish.v1.' || { echo "FAIL: $APK has an old libopenenglishserver.so"; exit 1; }
+          done
+          echo "OK: both APKs contain the Connect-era native libraries"
       - name: Print release signing SHA-256 fingerprint (for Android App Links assetlinks.json)
         # 2026-09-23追加(ユーザー報告「WEB版アクセス時にインストール済み
         # アプリが自動起動しないBUG」→実際にはApp Links自体が未実装だった
