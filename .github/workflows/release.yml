@@ -164,6 +164,8 @@ jobs:
       - uses: android-actions/setup-android@v3
         with:
           packages: platform-tools ndk;27.1.12297006
+      - name: Install glslc (open-cuda's opencuda-shader-build compiles Vulkan shaders at build time)
+        run: sudo apt-get update && sudo apt-get install -y glslc
       - name: Install Rust target and cargo-ndk
         run: |
           set -eu
