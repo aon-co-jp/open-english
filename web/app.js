@@ -3380,7 +3380,7 @@ async function askTrainer(userText) {
     // `/v1/public/aruaru-llm/v1/generate`という二重パスになってしまう
     // (実機で404を確認して発覚したバグ、2026-09-12)。先頭の`/v1`を
     // 取り除いてから公開プロキシのプレフィックスへ付け替える。
-    res = await fetchWithTimeout(`/v1/public/aruaru-llm${endpoint.replace(/^\/v1/, "")}`, fetchOpts, timeoutMs);
+    res = await fetchWithTimeout(useWebSearch ? "/openenglish.v1.AruaruLlm/GenerateWithSearch" : "/openenglish.v1.AruaruLlm/Generate", fetchOpts, timeoutMs);
   }
   if (!res.ok) {
     // 本文にaruaru-llm側の`error`フィールドが入っていることがあるので、
@@ -4206,7 +4206,7 @@ async function archiveNewsSuffix(country) {
 // Q&Aが先頭、これまでの返答(英会話の先生の口調)はその下に残す。Q&Aに接続できないときは、従来のニュース表示に戻す。
 async function newsQaCompose(userText, reply) {
   if (!mentionsNewsTopic(userText)) return reply;
-  const url = location.hostname.endsWith("maid-cafe.tokyo") ? "/openenglish.v1.News/Ask" : "https://maid-cafe.tokyo/v1/public/news/ask";
+  const url = location.hostname.endsWith("maid-cafe.tokyo") ? "/openenglish.v1.News/Ask" : "https://maid-cafe.tokyo/openenglish.v1.News/Ask";
   try {
     const res = await fetchWithTimeout(`${url}?q=${encodeURIComponent(userText)}`, { cache: "no-store" }, AUX_TIMEOUT_MS);
     if (!res.ok) throw new Error("HTTP " + res.status);
