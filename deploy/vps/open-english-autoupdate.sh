@@ -46,9 +46,11 @@ have="$(ldd --version | head -1 | grep -o '[0-9]*\.[0-9]*$')"
 if [ -n "$need" ] && [ "$(printf '%s\n%s\n' "$need" "$have" | sort -V | tail -1)" != "$have" ]; then log "needs glibc $need > $have; abort"; exit 1; fi
 
 # probe on a spare port with an isolated data path (never touches production data)
-( cd "$ROOT/server" && OPEN_ENGLISH_SERVER_BIND="127.0.0.1:$PROBE_PORT" OPEN_EASY_WEB_LOCAL_BIND="127.0.0.1:$((PROBE_PORT+1))" OPEN_ENGLISH_DB_PATH="$work/probe-store.json" "$src" >"$work/probe.log" 2>&1 & echo $! >"$work/probe.pid" )
+# exec so that $! is the binary itself (a plain `a && b &` would kill only the subshell); fd 9 (lock) is not inherited.
+( cd "$ROOT/server" && exec env OPEN_ENGLISH_SERVER_BIND="127.0.0.1:$PROBE_PORT" OPEN_EASY_WEB_LOCAL_BIND="127.0.0.1:$((PROBE_PORT+1))" OPEN_ENGLISH_DB_PATH="$work/probe-store.json" "$src" >"$work/probe.log" 2>&1 9>&- ) &
+echo $! >"$work/probe.pid"
 ok=0; for _ in $(seq 1 20); do sleep 1; curl -fsS --max-time 2 "http://127.0.0.1:$PROBE_PORT/healthz" >/dev/null 2>&1 && { ok=1; break; }; done
-kill "$(cat "$work/probe.pid")" 2>/dev/null || true
+kill "$(cat "$work/probe.pid")" 2>/dev/null || true; sleep 1; kill -9 "$(cat "$work/probe.pid")" 2>/dev/null || true
 [ "$ok" = 1 ] || { log "probe failed (see below); keeping $applied"; tail -5 "$work/probe.log"; exit 1; }
 
 # back up
