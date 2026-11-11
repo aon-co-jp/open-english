@@ -904,7 +904,7 @@ function ensureScriptGuaranteedReply(completion) {
 // (2026-09-06拡張、ユーザー指示「右上と右下にCLOSEボタンを作って」への
 // 対応——長いパネルを閉じるのに毎回一番上までスクロールしなくて済む
 // よう、同じ開閉状態を複数のボタンで共有制御できるようにした)。
-function makeCollapsiblePanel(boxId, btnIds, storageKeySuffix, closedLabel, openLabel) {
+function makeCollapsiblePanel(boxId, btnIds, storageKeySuffix, closedLabel, openLabel, defaultCollapsed) {
   const box = document.getElementById(boxId);
   const ids = Array.isArray(btnIds) ? btnIds : [btnIds];
   const btns = ids.map((id) => document.getElementById(id)).filter(Boolean);
@@ -919,9 +919,10 @@ function makeCollapsiblePanel(boxId, btnIds, storageKeySuffix, closedLabel, open
       /* localStorage不可でも開閉自体は機能させる */
     }
   }
-  let collapsed = false;
+  let collapsed = !!defaultCollapsed;
   try {
-    collapsed = localStorage.getItem(storageKey) === "1";
+    const saved = localStorage.getItem(storageKey);
+    if (saved !== null) collapsed = saved === "1";
   } catch (e) {
     /* 既定は開いた状態 */
   }
@@ -932,16 +933,16 @@ function makeCollapsiblePanel(boxId, btnIds, storageKeySuffix, closedLabel, open
 }
 
 makeCollapsiblePanel("disclosure-box", "disclosure-toggle-btn", "disclosure", "✕ CLOSE", "＋ OPEN");
-makeCollapsiblePanel("phone-accel-banner", "phone-accel-banner-toggle", "phoneAccelBanner", "✕ CLOSE", "＋ OPEN");
-makeCollapsiblePanel("world-language-banner", "world-language-banner-toggle", "worldLanguageBanner", "✕ CLOSE", "＋ OPEN");
+makeCollapsiblePanel("phone-accel-banner", "phone-accel-banner-toggle", "phoneAccelBanner", "✕ CLOSE", "＋ OPEN", true);
+makeCollapsiblePanel("world-language-banner", "world-language-banner-toggle", "worldLanguageBanner", "✕ CLOSE", "＋ OPEN", true);
 makeCollapsiblePanel("topbar", "topbar-toggle", "topbar", "✕ CLOSE", "＋ OPEN");
 makeCollapsiblePanel("maintenance-banner-detail", "maintenance-banner-toggle", "maintenanceBannerDetail", "✕ CLOSE", "＋ OPEN");
-makeCollapsiblePanel("download-recommend-banner", "download-recommend-banner-toggle", "downloadRecommendBanner", "✕ CLOSE", "＋ OPEN");
-makeCollapsiblePanel("about-school-banner", "about-school-banner-toggle", "aboutSchoolBanner", "✕ CLOSE", "＋ OPEN");
+makeCollapsiblePanel("download-recommend-banner", "download-recommend-banner-toggle", "downloadRecommendBanner", "✕ CLOSE", "＋ OPEN", true);
+makeCollapsiblePanel("about-school-banner", "about-school-banner-toggle", "aboutSchoolBanner", "✕ CLOSE", "＋ OPEN", true);
 // 上の2つ(説明パネル・PC版の案内)をまとめた外側のパネル。
 makeCollapsiblePanel("info-panels", "info-panels-toggle", "infoPanels", "✕ CLOSE", "＋ OPEN");
 // 2026-10-30 ユーザー指示: 「PC版をここからダウンロード…」の範囲も、✕ CLOSE / ＋ OPEN で開閉できるパネルにする(状態は記憶)。
-makeCollapsiblePanel("launch-pc-version-banner", "launch-pc-version-banner-toggle", "launchPcVersionBanner", "✕ CLOSE", "＋ OPEN");
+makeCollapsiblePanel("launch-pc-version-banner", "launch-pc-version-banner-toggle", "launchPcVersionBanner", "✕ CLOSE", "＋ OPEN", true);
 // 2026-09-07追記(ユーザー指示): 「PC版を起動してご利用下さい」という
 // 案内は、ローカルPC版(この端末でインストール済みのサーバーへ
 // localhost/127.0.0.1で接続している場合)では出さない——PC版利用者
@@ -1080,7 +1081,7 @@ if (/^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname)) {
   document.getElementById("download-recommend-banner")?.classList.add("hidden");
   document.getElementById("download-recommend-banner-toggle")?.classList.add("hidden");
 }
-makeCollapsiblePanel("autorw-status-banner", "autorw-status-banner-toggle", "autorwStatusBanner", "✕ CLOSE", "＋ OPEN");
+makeCollapsiblePanel("autorw-status-banner", "autorw-status-banner-toggle", "autorwStatusBanner", "✕ CLOSE", "＋ OPEN", true);
 makeCollapsiblePanel(
   "aruaru-db-setup-content",
   ["aruaru-db-setup-toggle-top", "aruaru-db-setup-toggle-bottom"],
