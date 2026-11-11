@@ -119,6 +119,19 @@ function isOwnOriginHost() {
 // RS-Sync/open-giteaで過去に踏んだのと同じ既知のパターン)。
 // `location.pathname`から実行時に判定した接頭辞を、`/v1/`宛の絶対パス
 // fetchにのみ機械的に前置する(相対パス・他オリジンへのfetchは無変更)。
+// 2026-11-12 自動修復の安全装置: 再読み込みで会話(質問と答え)を消さないための判定。
+// 利用者の発言が画面にあり、直近3分以内に操作があったときは「再読み込みしてはいけない」と答える。
+window.__lastUserActionAt = Date.now();
+["pointerdown", "keydown", "input"].forEach((ev) => window.addEventListener(ev, () => { window.__lastUserActionAt = Date.now(); }, true));
+window.__safeToReload = function safeToReload() {
+  try {
+    const lg = document.getElementById("log");
+    const hasConversation = !!(lg && lg.querySelector(".msg.user"));
+    return !hasConversation || Date.now() - window.__lastUserActionAt > 180000;
+  } catch (e) {
+    return true;
+  }
+};
 (function patchFetchForPathPrefix() {
   const path = location.pathname;
   let prefix = "";
@@ -158,7 +171,11 @@ function isOwnOriginHost() {
   // 併せて`version.json`の`buildId`ポーリング(`auto-update.js`)でも新しい版へ追従する。
   const staleCheck = (url) => (res) => {
     try {
-      if (res && res.status === 404 && /\/(openenglish\.v1\.[A-Za-z]+|aruaru_llm\.v1\.Llm)\//.test(url)) {
+      // 2026-11-12修正: 自分のサーバーのAPI(/openenglish.v1.*)が404のときだけ「古い画面」とみなす。
+      // aruaru_llm.v1.Llm/* は、共有サイト(maid-cafe.tokyo)では元から提供していない(404が正常)ので対象にしない
+      // (対象にしていたため、質問を送るたびに再読み込みされ、答えが一瞬で消えていた)。
+      // 会話の途中(__safeToReloadが偽)のときも、再読み込みしない。
+      if (res && res.status === 404 && /\/openenglish\.v1\.[A-Za-z]+\//.test(url) && window.__safeToReload()) {
         const last = Number(sessionStorage.getItem("openEnglish.staleReloadAt") || 0);
         if (Date.now() - last > 600000) {
           sessionStorage.setItem("openEnglish.staleReloadAt", String(Date.now()));
@@ -19254,6 +19271,62 @@ const INSTALLER_QUICK_LINK_CLOSED_KEY = "open-english.installerQuickLinkClosed";
   apply(stored(), false);
 })();
 
+// 2026-11-12 ユーザー指示「質問の回答が一瞬で消えるBUG。バージョンアップやメンテナンスがあっても自動修復」:
+// 画面が再読み込みされても(更新・メンテナンス・古い画面の自動修復など、理由を問わず)、直前の会話(質問と答え)を元に戻す。
+// 置き場所は、このタブのsessionStorageだけ(サーバーへは送らない。タブを閉じれば消える)。1時間を過ぎた発言は戻さない
+// (「1時間以上前の会話を自動で消す」の約束を守る)。
+(function setupChatSelfRepair() {
+  const KEY = "openEnglish.chatSnapshot";
+  const MAX_ITEMS = 30;
+  const MAX_CHARS = 150000;
+  window.__chatRestored = false;
+  try {
+    const raw = sessionStorage.getItem(KEY);
+    if (raw) {
+      const items = JSON.parse(raw);
+      const now = Date.now();
+      let n = 0;
+      if (Array.isArray(items)) {
+        for (const it of items) {
+          if (!it || typeof it.text !== "string" || !(it.ts > 0) || now - it.ts >= CHAT_RETENTION_MS) continue;
+          const div = appendMessage(String(it.role || "trainer"), it.text);
+          div.dataset.ts = String(it.ts); // 元の時刻のまま(1時間の自動削除の基準を変えない)
+          n++;
+        }
+      }
+      window.__chatRestored = n > 0;
+    }
+  } catch (e) {
+    // 戻せなくても、通常どおり新しい会話として始める
+  }
+  const logNode = document.getElementById("log");
+  if (!logNode) return;
+  let timer = null;
+  const save = () => {
+    timer = null;
+    try {
+      const out = [];
+      for (const el of Array.from(logNode.querySelectorAll(".msg"))) {
+        const ts = Number(el.dataset.ts);
+        if (!(ts > 0) || el.dataset.noSnapshot === "1") continue;
+        out.push({ role: el.dataset.role || "trainer", text: el.textContent || "", ts });
+      }
+      let kept = out.slice(-MAX_ITEMS);
+      let json = JSON.stringify(kept);
+      while (json.length > MAX_CHARS && kept.length > 1) {
+        kept = kept.slice(1);
+        json = JSON.stringify(kept);
+      }
+      sessionStorage.setItem(KEY, json);
+    } catch (e) {
+      // 保存できなくても、会話そのものは続けられる
+    }
+  };
+  new MutationObserver(() => {
+    if (!timer) timer = setTimeout(save, 400);
+  }).observe(logNode, { childList: true, subtree: true, characterData: true }); // 返信は後から同じ吹き出しの中身が書き換わるので、中身の変化も見る
+})();
+
 // 2026-10-30 ユーザー指示: 画面かアプリを起動したら、「お帰りなさいませ!ご主人様!美味しくなーれ…」とお出迎えする。
 // 文字は、開いた直後にチャットへ出す。声は、ブラウザの決まり(最初の操作の後でないと声を出せない)により、最初のタップ/キー入力の後に1回だけ。
 // 音声OFF(🔇)のときは、文字だけで声は出さない。
@@ -19263,7 +19336,10 @@ const INSTALLER_QUICK_LINK_CLOSED_KEY = "open-english.installerQuickLinkClosed";
     const text = helper
       ? "Welcome back, master! / お帰りなさいませ、ご主人様!\nいらっしゃいませ。今日も一緒に学びましょう! / Let's learn together today!"
       : "Welcome home, master! / お帰りなさいませ!ご主人様!\n美味しくなーれ、萌え萌えキュ-ン♡ 萌え萌えキュ-ン♡ / Delicious, moe moe kyun!♡ Moe moe kyun!♡";
-    appendMessage("trainer", text);
+    if (!window.__chatRestored) {
+      const gdiv = appendMessage("trainer", text);
+      gdiv.dataset.noSnapshot = "1";
+    }
     const say = "お帰りなさいませ!ご主人様!美味しくなーれ、萌え萌えキュ〜ン!萌え萌えキュ〜ン!";
     let spoken = false;
     // 声を出す。ブラウザが「操作の前の自動再生」を断った(not-allowed)ときは、onBlockedを呼ぶ。

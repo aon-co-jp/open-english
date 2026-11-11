@@ -106,6 +106,8 @@
         return;
       }
       if (buildId !== initialBuildId) {
+        // 会話の途中は再読み込みしない(答えが消えるため)。会話が無いか、3分操作が無ければ、次の確認(5秒後)で更新する。
+        if (typeof window.__safeToReload === "function" && !window.__safeToReload()) return;
         clearOwnLocalStorage();
         if (version) localStorage.setItem(VERSION_KEY, version);
         reloadBustingCache(buildId);
