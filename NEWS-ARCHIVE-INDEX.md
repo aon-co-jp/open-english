@@ -9,7 +9,7 @@
 
 ## 抜粋つき完全版(公開)
 
-- [open-english-news-snippets-archive](https://github.com/aon-co-jp/open-english-news-snippets-archive) — 5.6 MB / public
+- [open-english-news-snippets-archive](https://github.com/aon-co-jp/open-english-news-snippets-archive) — 5.8 MB / public
 
 ## NEWS-TITLE-README.mdの引っ越し分(公開)
 
