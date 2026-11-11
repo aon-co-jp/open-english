@@ -1601,26 +1601,6 @@
     "created_unix": 1794255549
   },
   {
-    "id": 153,
-    "text": "【自動調査 2026-11-09・出典3件】following\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Cult following — A cult following is a group of fans who are highly dedicated to a person, idea, object, movement, or work, often an artist, in particular a  (en.wikipedia.org)\n・Recent headlines (stocked internet news): [The Japan Times Japan] Man arrested following string of attacks on women on Tokyo street | [The Japan Times Japan] Nikkei 225 falls more than 7% following AI-related declines on Wall Street | [The Japan Times Japan] More companies seeking cyber insurance fo",
-    "tags": [
-      "following",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1794258629
-  },
-  {
-    "id": 154,
-    "text": "【自動調査 2026-11-09・出典3件】米ドル\n・米ドル /円【USDJPY】：外国為替相場FXレート・チャートを ... — 米ドル/円【USDJPY】のリアルタイムFXレートとチャートで為替相場をご覧いただけます 。Yahoo!ファイナンスでは株価速報、チャート、ランキング、ポートフォリオ、 ... (finance.yahoo.co.jp)\n・米ドル /円 - SBI証券 — マーケットでは日本をはじめとする世界の株価、チャート、為替、指数、金利のほか、いま投資家に人気の銘柄をご紹介するランキングも配信しています。 (sbisec.co.jp)\n・為替レート - 米ドル -｜投資情報 - 野村證券 — 米ドル ／円 · 最低5分遅れのデータを表示（計算）しています。 · 為替情報は、月曜日早朝～土曜日早朝更新の気配値のデータとなります。 (advance.quote.nomura.co.jp)",
-    "tags": [
-      "米ドル",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1794261711
-  },
-  {
     "id": 155,
     "text": "【自動調査 2026-11-09・出典3件】カナダドル\n・カナダドル - Wikipedia — カナダ・ドル（英語: Canadian dollar、フランス語: Dollar canadien）は、カナダの通貨である。記号は通常ドル記号「$」で示され、他のドル通貨と区別するために「C$」と記することもある。 (ja.wikipedia.org)\n・カナダドル 円相場(CADJPY)リアルタイムチャート・為替 ... — カナダドル／円(CADJPY). カナダドルと円の為替レートです . 111.8000-111.8400(11/10 3:47)-0.3100(- ... (nikkei.com)\n・カナダドル /円｜為替レート - 三菱UFJモルガン・スタンレー証券 — 三菱UFJモルガン・スタンレー証券株式会社のマーケット情報「 カナダドル /円」をご紹介します。 (sc.mufg.jp)",
     "tags": [
@@ -1675,5 +1655,25 @@
     ],
     "source": "https://paiza.jp/works/paid_plan_lp/settlement",
     "created_unix": 1794341838
+  },
+  {
+    "id": 160,
+    "text": "【自動調査 2026-11-10・出典3件】following\n・Following - Wikipedia — 1 month ago - Following is a 1998 British independent neo-noir film written, directed, photographed and edited by Christopher Nolan in his f (en.wikipedia.org)\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Recent headlines (stocked internet news): [BBC News Top stories] Met Police investigate several new reports on Russell Brand following his conviction | [The Japan Times Japan] Man arrested following string of attacks on women on Tokyo street | [The Japan Times Japan] Nikkei 225 falls more than 7% fo",
+    "tags": [
+      "following",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1794345030
+  },
+  {
+    "id": 161,
+    "text": "【自動調査 2026-11-10・出典3件】米ドル\n・米ドル/円【USDJPY】：外国為替相場FXレート・チャートをリアルタイム表示 - Yahoo!ファイナンス — 5 時間前 - 米ドル /円【USDJPY=FX】 · 外国為替（インターバンクレート） · FXレート · ポートフォリオに追加 · Bid（売値） · 158.230 · Ask（買値） · 158.232 · Change（始値比） · 0.354 · Open（始値） · (finance.yahoo.co.jp)\n・米ドル/円（USDJPY）｜為替レート・チャート｜みんかぶ FX/為替 — 米ドル/円のレートとローソク足チャートをリアルタイム表示 。ローソク足チャートでは1分足・5分足・10分足・15分足・30分足・1時間足・日足・週足・月足から選択して ... (fx.minkabu.jp)\n・リアルタイム為替レート ： 三井住友銀行 — 米ドル （1 USD）, 158.32, 158.82. ユーロ（1 EUR）, 176.57, 177.27. 英ポンド（1 GBP）, 209.93, 211.93. スイスフラン（1 CHF）, 191.95, 192.40. オーストラリアドル（ ... (smbc.co.jp)",
+    "tags": [
+      "米ドル",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1794348310
   }
 ]
