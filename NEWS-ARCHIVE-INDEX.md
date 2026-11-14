@@ -4,12 +4,12 @@
 
 ## 見出し・リンクのみ(公開)
 
-- [open-english-news-archive](https://github.com/aon-co-jp/open-english-news-archive) — 2.1 MB / public
+- [open-english-news-archive](https://github.com/aon-co-jp/open-english-news-archive) — 2.2 MB / public
 - [open-english-news-archive-002](https://github.com/aon-co-jp/open-english-news-archive-002) — 0 MB / public
 
 ## 抜粋つき完全版(公開)
 
-- [open-english-news-snippets-archive](https://github.com/aon-co-jp/open-english-news-snippets-archive) — 6.5 MB / public
+- [open-english-news-snippets-archive](https://github.com/aon-co-jp/open-english-news-snippets-archive) — 6.6 MB / public
 
 ## NEWS-TITLE-README.mdの引っ越し分(公開)
 
