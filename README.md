@@ -1604,3 +1604,5 @@ DATABASEに蓄積するデータが溢れる前に非公開GitHubリポジトリ
 
 **日本語**: メイド/執事の先生の応対と知識の自動復元の本体は`aruaru-llm`側。このリポジトリは`web/app.js`の`personaPromptText()`と、`/openenglish.v1.Persona/Prompt`・`/openenglish.v1.Knowledge/Export`の中継(v0.8.14以降、Android/PC版は`v*`タグでリリース)。再開用メッセージは[`PORTING.md`](PORTING.md)末尾。
 **English**: The persona and the automatic knowledge restore live mostly in `aruaru-llm`. This repo holds `personaPromptText()` in `web/app.js` and the relays for `/openenglish.v1.Persona/Prompt` and `/openenglish.v1.Knowledge/Export` (v0.8.14 onward; Android/PC builds ship via `v*` tags). Resume message: end of [`PORTING.md`](PORTING.md).
+**日本語(追記)**: Windowsインストーラーの実機試験とaruaru-llm v0.2.5の公開(Connect版)を完了。詳細・再開手順は[`PORTING.md`](PORTING.md)末尾。
+**English (addendum)**: The Windows installer was tested on a real PC and aruaru-llm v0.2.5 (Connect build) was published. Details and resume steps: end of [`PORTING.md`](PORTING.md).
