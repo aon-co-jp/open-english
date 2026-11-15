@@ -2483,6 +2483,97 @@ async function serverTtsPump() {
 
 probeServerTts();
 
+// 端末の合成能力の判定とアプリ導入のお勧め(2026-11-15)。
+// 方針: 端末にSIMD(WASM SIMD。x86のAVX2/ArmのNEON相当)・4コア以上・4GB以上のメモリ、またはWebGPUがあり、かつ
+// インストール済みアプリ(ローカルサーバー)で動いていれば端末で合成する。足りない端末は、配信元(VPS)の
+// 合成APIへ任せる(`serverTts`が同じ`/openenglish.v1.Tts/Tts`を呼ぶので追加の経路は不要)。どちらも無ければWeb Speech API。
+function deviceTtsCaps() {
+  let simd = false;
+  try {
+    // v128.const を返す最小のWASMモジュール。検証が通ればSIMD対応。
+    simd = WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11]));
+  } catch (err) {
+    simd = false;
+  }
+  const cores = navigator.hardwareConcurrency || 1;
+  const memGb = navigator.deviceMemory || 0; // 非対応ブラウザは0(=不明)
+  const webgpu = "gpu" in navigator;
+  const localCapable = (simd && cores >= 4 && (memGb === 0 || memGb >= 4)) || webgpu;
+  const standalone =
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  return { simd, cores, memGb, webgpu, localCapable, standalone };
+}
+
+/** 合成の経路: "local-app"(端末のアプリ) / "vps"(配信元の合成) / "browser"(Web Speech API)。 */
+function deviceTtsRoute() {
+  const caps = deviceTtsCaps();
+  const isLocalOrigin = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+  if (serverTts.available && isLocalOrigin && caps.localCapable) return "local-app";
+  if (serverTts.available) return "vps";
+  return "browser";
+}
+
+const INSTALL_TIPS = {
+  ja: ["もっと自然な声で使うには、アプリをインストールしてください。", "インストール"],
+  en: ["For a more natural voice, install the app.", "Install"],
+  "zh-CN": ["安装应用，可获得更自然的语音。", "安装"],
+  "zh-TW": ["安裝應用程式，可獲得更自然的語音。", "安裝"],
+  ko: ["더 자연스러운 목소리를 위해 앱을 설치하세요.", "설치"],
+  es: ["Instala la app para una voz más natural.", "Instalar"],
+  fr: ["Installez l'application pour une voix plus naturelle.", "Installer"],
+  de: ["Installieren Sie die App für eine natürlichere Stimme.", "Installieren"],
+  pt: ["Instale o app para uma voz mais natural.", "Instalar"],
+  ru: ["Установите приложение для более естественного голоса.", "Установить"],
+  ar: ["ثبّت التطبيق للحصول على صوت أكثر طبيعية.", "تثبيت"],
+  hi: ["अधिक स्वाभाविक आवाज़ के लिए ऐप इंस्टॉल करें।", "इंस्टॉल"],
+  id: ["Pasang aplikasi untuk suara yang lebih alami.", "Pasang"],
+  vi: ["Hãy cài ứng dụng để có giọng tự nhiên hơn.", "Cài đặt"],
+  th: ["ติดตั้งแอปเพื่อเสียงที่เป็นธรรมชาติยิ่งขึ้น", "ติดตั้ง"],
+  tr: ["Daha doğal bir ses için uygulamayı yükleyin.", "Yükle"],
+  it: ["Installa l'app per una voce più naturale.", "Installa"],
+};
+
+function showInstallRecommendation() {
+  try {
+    if (localStorage.getItem("installTipDismissed") === "1") return;
+  } catch (err) {
+    // 保存できない環境では毎回出してよい
+  }
+  const caps = deviceTtsCaps();
+  if (caps.standalone || deviceTtsRoute() === "local-app") return;
+  const lang = navigator.language || "en";
+  const tip = INSTALL_TIPS[lang] || INSTALL_TIPS[lang.split("-")[0]] || INSTALL_TIPS.en;
+  const bar = document.createElement("div");
+  bar.setAttribute("role", "status");
+  bar.style.cssText =
+    "position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;gap:8px;align-items:center;justify-content:center;" +
+    "padding:8px 12px;background:#222;color:#fff;font-size:14px;flex-wrap:wrap";
+  const msg = document.createElement("span");
+  msg.textContent = tip[0];
+  const link = document.createElement("a");
+  link.href = "https://github.com/aon-co-jp/maid-cafe-english/releases/latest";
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = tip[1];
+  link.style.cssText = "color:#ffd54f;font-weight:bold";
+  const close = document.createElement("button");
+  close.textContent = "×";
+  close.setAttribute("aria-label", "close");
+  close.onclick = () => {
+    bar.remove();
+    try {
+      localStorage.setItem("installTipDismissed", "1");
+    } catch (err) {
+      // 無視
+    }
+  };
+  bar.append(msg, link, close);
+  document.body.appendChild(bar);
+}
+
+window.addEventListener("load", () => setTimeout(showInstallRecommendation, 2500));
+window.__deviceTts = { caps: deviceTtsCaps, route: deviceTtsRoute };
+
 /** 整えたテキストを分割して読み上げキューに積む。最後の発話が終わったらonEndを呼ぶ。 */
 function enqueueSpeech(text, lang, isHelper, onEnd) {
   const chunks = splitSpeechChunks(text, lang);
