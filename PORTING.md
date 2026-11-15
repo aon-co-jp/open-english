@@ -1406,3 +1406,7 @@ aruaru-llm の REST 全廃に合わせ、呼び出しを `POST /aruaru_llm.v1.Ll
 - 日本語: サーバー自身のAPIは全て `POST /openenglish.v1.<Service>/<Method>`(JSON)。旧 `/v1/...` のRESTルートは削除済み。元GETの引数はクエリのまま受ける(本文は `{}`)。`web/app.js` の `fetch` ラッパーが、method/body 省略時に POST と `{}` を補う。例外として残す: `/healthz`・`/health`、静的ファイル、`/v1/line/webhook`・`/v1/line/audio`・`/v1/line/info`(LINE連携の外部規格)。
 - English: All of this server's own APIs are `POST /openenglish.v1.<Service>/<Method>` (JSON); the old `/v1/...` REST routes are gone. Former GET arguments stay in the query string (body `{}`); the `fetch` wrapper in `web/app.js` supplies POST and `{}` when method/body are omitted. Remaining exceptions: `/healthz`, `/health`, static files, `/v1/line/webhook`, `/v1/line/audio`, `/v1/line/info` (LINE integration).
 - 本番(VPS)デプロイ時は、open-web-server の `domains.toml` に `/openenglish.v1.` を8104へ流す項目が必要(既存の `/v1` 項目と同様)。/ On the VPS, add a `/openenglish.v1.` proxy entry to `domains.toml` (like the existing `/v1` one).
+
+## 再開用メッセージ / Resume message
+**日本語**: `aruaru-llm/PORTING.md`末尾の「再開用メッセージ」を正本とする(再開するリポジトリは`aruaru-llm`と、こちらの`open-english`=`maid-cafe-english`)。こちらでの作業は、`web/app.js`を直したら`mobile/android/app/src/main/assets/webroot/`へ同期し、`web/version.json`と同`webroot/version.json`を上げて`v*`タグをpush。
+**English**: The "Resume message" at the end of `aruaru-llm/PORTING.md` is canonical (repos: `aruaru-llm` and this `open-english` = `maid-cafe-english`). Here: after editing `web/app.js`, sync it into `mobile/android/app/src/main/assets/webroot/`, bump both `version.json` files, and push a `v*` tag.

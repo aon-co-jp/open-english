@@ -1599,3 +1599,8 @@ DATABASEに蓄積するデータが溢れる前に非公開GitHubリポジトリ
 - **Если есть сомнения — выбирайте Connect.**
 
 > 📌 **aruaru-llm 呼び出しの Connect 化(2026-11-05)**: aruaru-llm の REST 全廃に合わせ、呼び出しを `POST /aruaru_llm.v1.Llm/<Method>`(JSON)へ変更。詳細は [CLAUDE.md](CLAUDE.md) 末尾・[PORTING.md](PORTING.md) 末尾。VPS 反映は aruaru-llm の main マージと同時(片方だけだと 404)。Kotlin(PhoneAccelWorker)は`gradlew :app:compilePhoneDebugKotlin`でコンパイル成功(2026-11-05、実機は未確認)。
+
+## 引き継ぎ・再開 / Hand-off and resume (2026-11-15)
+
+**日本語**: メイド/執事の先生の応対と知識の自動復元の本体は`aruaru-llm`側。このリポジトリは`web/app.js`の`personaPromptText()`と、`/openenglish.v1.Persona/Prompt`・`/openenglish.v1.Knowledge/Export`の中継(v0.8.14以降、Android/PC版は`v*`タグでリリース)。再開用メッセージは[`PORTING.md`](PORTING.md)末尾。
+**English**: The persona and the automatic knowledge restore live mostly in `aruaru-llm`. This repo holds `personaPromptText()` in `web/app.js` and the relays for `/openenglish.v1.Persona/Prompt` and `/openenglish.v1.Knowledge/Export` (v0.8.14 onward; Android/PC builds ship via `v*` tags). Resume message: end of [`PORTING.md`](PORTING.md).

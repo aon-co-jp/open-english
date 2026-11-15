@@ -8610,3 +8610,7 @@ aruaru-llm は REST を全廃し `POST /aruaru_llm.v1.Llm/<Method>`(JSON)のみ�
 - **未了/次の手順**: (1)`aruaru-llm`のAndroidリンクを直す→(2)両方をcargo ndkで再ビルドして`jniLibs`へ置く(サーバーは41MBと大きいので`strip`やLTOで縮める)→(3)APKを作り実機(moto g53y等)でConnect経路を確認→(4)タグ。**この3点が済むまでAndroidのタグ付けリリースはしない**(ミラーも含む)。
 ### VPS の自動更新(2026-11-06)
 アプリ内の自己更新(`self_update.rs`)は「子プロセスを起動して自分は終了」という設計で systemd 管理のVPSには合わず、`version.json` が無いので `skipped` になっていた。代わりに `deploy/vps/open-english-autoupdate.{sh,service,timer}`(30分ごと)を使う: 最新Releaseが適用済みタグより新しければ、linuxのtarballを取得 → 別ポートで起動確認(隔離データ) → バックアップ(`/root/open-english-autoupdate-bak/`) → バイナリと静的ファイルを入れ替え → `open-english`・`open-english-demo` を再起動 → healthz確認 → 失敗なら自動ロールバック。適用済みタグは `/var/lib/open-english-autoupdate/applied-tag`。試験用の環境変数: `FORCE_TAG`・`DRY=1`・`OE_TEST_FAIL=1`。
+
+## HANDOFF 2026-11-15
+- **日本語**: 詳細・未解決の最優先課題(国別ニュース話題の行が出ない)は`aruaru-llm/CLAUDE.md`の「HANDOFF 2026-11-15」。こちらは`web/`を正本とし、`mobile/android/.../webroot`へコピーして同期(差分は`README.md`のみ)。リリースは元の`open-english`に`v*`タグをpush。
+- **English**: Details and the top open issue (no country-news line in replies) are in "HANDOFF 2026-11-15" of `aruaru-llm/CLAUDE.md`. Here `web/` is the source of truth, copied into `mobile/android/.../webroot` (only `README.md` differs). Releases: push a `v*` tag to the original `open-english`.
