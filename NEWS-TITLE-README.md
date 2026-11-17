@@ -29284,3 +29284,103 @@ Tags: `Iran (Japanese)` `2026-11`
 - [イラン 軍事衝突 最新 ニュース と解説 - 日本経済新聞](https://www.nikkei.com/topics/19061400) — バーレーンの米軍施設に攻撃 イラン革命防衛隊、報復か · IEA、26年の石油供給見通し引き上げ 中東の輸出回復 · イラン、バーレーンの米軍レーダーを攻撃と発表 · トランプ氏 ...
 - [イラン 情勢-WSJ日本版-jp.wsj.com](https://jp.wsj.com/news/iran) — 米国は2日、 イランのゲ シュム島を攻撃した。トランプ大統領が外交的解決に言及する中、米国がここ数週間イランに対して秘密裏に実施してきた限定的な攻撃 ...
 
+
+## アーカイブ日 / Archived on 2026-11-17
+
+### Cambodia(検索日時 / searched at: 2026-11-16)
+
+Tags: `Cambodia` `2026-11`
+
+- [Kun Khmer](https://en.wikipedia.org/wiki/Kun_Khmer) — Kun Khmer (Khmer: គុនខ្មែរ [kun kʰmae] lit. 'Khmer martial arts'), or Pradal Serey (Khmer: ប្រដាល់សេរី [prɑɗal seːrəj] lit. 'free boxing'), is a combat sport that originated in Cambodia. The sport consists of stand up striking and clinch fighting, where the objective is to knock an opponent out, force a technical knockout, or win a match by points.
+
+### China(検索日時 / searched at: 2026-11-16)
+
+Tags: `China` `2026-11`
+
+- [今天 (NBC)](https://zh.wikipedia.org/wiki/%E4%BB%8A%E5%A4%A9_(NBC)) — 《今天》（英语：Today），也被称为《今日秀》（The Today Show），是一档美国的晨间新闻和脱口秀节目。每个工作日的晨间在美国全国广播公司（NBC）播出，于1952年1月14日首播。
+- [新闻联播](https://zh.wikipedia.org/wiki/%E6%96%B0%E9%97%BB%E8%81%94%E6%92%AD) — 《新闻联播》，中央广播电视总台新闻节目，于1978年1月1日启播，是中华人民共和国收视率最高、影响力最大的电视新闻栏目，被称为“中国政坛的风向标”。目前，该节目于北京时间每晚19:00在CCTV-1（含港澳版）、CCTV-7、CCTV-13、环球资讯广播并机首播，并于每晚21:00在CCTV-13，22:30在CCTV-4重播。
+- [中国中央电视台新闻频道](https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%B8%AD%E5%A4%AE%E7%94%B5%E8%A7%86%E5%8F%B0%E6%96%B0%E9%97%BB%E9%A2%91%E9%81%93) — 中国中央电视台新闻频道（频道呼号：CCTV-13 新闻），是中国中央电视台拥有的以普通话广播为主的新闻频道之一，于2003年5月1日开始对外试播，同年7月1日正式开播，是一个全天候专业播送新闻、评论、访谈的电视频道。
+- [李文儀](https://zh.wikipedia.org/wiki/%E6%9D%8E%E6%96%87%E5%84%80) — 李文仪（1978年9月30日—），于台湾出生的台湾新闻主播、主持人、制作人，毕业于英国伦敦大学学院国际公共政策硕士。现为三立新闻台《台湾大头条》当家主播、《消失的国界》主持人、三立iNEWS《台湾新思路》主持人。
+- [24小时 (节目)](https://zh.wikipedia.org/wiki/24%E5%B0%8F%E6%97%B6_(%E8%8A%82%E7%9B%AE)) — 《24小时》，是中国中央电视台的一档梳理全天新闻的节目，于2009年8月10日开播。现时于中国中央电视台新闻频道播出，每晚23:00播出，时长1小时。
+- [午夜新闻 (中国中央电视台)](https://zh.wikipedia.org/wiki/%E5%8D%88%E5%A4%9C%E6%96%B0%E9%97%BB_(%E4%B8%AD%E5%9B%BD%E4%B8%AD%E5%A4%AE%E7%94%B5%E8%A7%86%E5%8F%B0)) — 《午夜新闻》是中国中央电视台于每天午夜时分播放的新闻节目，前身为0点档的《整点新闻》，节目于2002年8月6日开播。该栏目最初在每天凌晨0时整在中国中央电视台新闻·综合频道播出，直至中国中央电视台新闻频道于2003年5月1日开播后改在中国中央电视台新闻频道播出。
+- [澎湃新闻](https://zh.wikipedia.org/wiki/%E6%BE%8E%E6%B9%83%E6%96%B0%E9%97%BB) — 澎湃新闻，是一家中国综合新闻网站，曾是《东方早报》的一项新媒体计划，总部位于中华人民共和国上海市。主要发表该网站记者撰写的原创新闻文章，并被其他网站所转载。
+- [有线电视新闻网](https://zh.wikipedia.org/wiki/%E6%9C%89%E7%BA%BF%E7%94%B5%E8%A7%86%E6%96%B0%E9%97%BB%E7%BD%91) — 有线电视新闻网（英语：Cable News Network），英语缩写及通称“CNN”，是美国一个通过有线电视与卫星电视播出的新闻频道，由泰德·特纳于1980年创办，最初由特纳广播公司经营，现隶属天舞公司旗下。对全世界播出，CNN总部和主要播报室位于美国佐治亚州的亚特兰大。
+
+### Thailand(検索日時 / searched at: 2026-11-16)
+
+Tags: `Thailand` `2026-11`
+
+- [สำนักข่าวไทย](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B9%84%E0%B8%97%E0%B8%A2) — สำนักข่าวไทย (ชื่อย่อ: สขท.; อังกฤษ: THAI NEWS AGENCY; TNA) เป็นหน่วยงานประกอบกิจการข่าวสารของอสมท จัดตั้งขึ้นเมื่อวันที่ 16 มิถุนายน พ.ศ.
+- [วันนักข่าว](https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B1%E0%B8%99%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7) — วันนักข่าว หรือวันสื่อสารมวลชนแห่งชาติ ในประเทศไทย ตรงกับวันที่ 5 มีนาคม ของทุกปี ซึ่งตรงกับวันสถาปนาสมาคมนักข่าวแห่งประเทศไทย (สมาคมนักข่าวนักหนังสือพิมพ์แห่งประเทศไทย ในปัจจุบัน)
+- [ครอบครัวข่าว 3](https://th.wikipedia.org/wiki/%E0%B8%84%E0%B8%A3%E0%B8%AD%E0%B8%9A%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7_3) — ครอบครัวข่าว 3 (อังกฤษ: Krobkruakao 3) เป็นหน่วยงานย่อยของกลุ่มบีอีซีเวิลด์ ซึ่งทำหน้าที่ผลิตข่าวสารทุกประเภท เพื่อสนับสนุนรายการโทรทัศน์ประเภทข่าวของช่อง 3 เอชดี โดยใช้ชื่อนี้เป็นตราสินค้ารวมของรายการข่าวในช่องตั้งแต่วันที่ 1 กรกฎาคม พ.ศ.
+- [สถานีโทรทัศน์แห่งประเทศไทย](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B5%E0%B9%82%E0%B8%97%E0%B8%A3%E0%B8%97%E0%B8%B1%E0%B8%A8%E0%B8%99%E0%B9%8C%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%A8%E0%B9%84%E0%B8%97%E0%B8%A2) — สถานีโทรทัศน์แห่งประเทศไทย (อังกฤษ: The National Broadcasting Services of Thailand; ชื่อเดิม: สถานีวิทยุโทรทัศน์แห่งประเทศไทย; ชื่อย่อ: เอ็นบีที (NBT)) หรือ เอ็นบีที 2 เอชดี (อังกฤษ: NBT 2HD; อ่านว่า เอ็นบีที ทูเอชดี) เป็นหน่วยงานสถานีวิทยุโทรทัศน์ของรัฐบาล มีสถานะเป็นสถานีโทรทัศน์แห่งชาติของประเทศไทย สังกัดกรมประชาสัมพันธ์ สำนักนายกรัฐมนตรี (โดยมี ศุภมาส อิศรภักดี รัฐมนตรีประจำสำนักนายกรัฐมนตรี เป็นผู้กำกับดูแล) โดยมีการเปลี่ยนชื่อพร้อมปรับปรุงระบบการบริหารงานและรูปแบบของสถานีอยู่หลายครั้ง
+- [สำนักข่าวกรมประชาสัมพันธ์](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B8%81%E0%B8%A3%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%8A%E0%B8%B2%E0%B8%AA%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%B1%E0%B8%99%E0%B8%98%E0%B9%8C) — สำนักข่าวแห่งชาติ กรมประชาสัมพันธ์ (อังกฤษ: National News Bureau of Thailand ชื่อย่อ: NNT) มีที่มาจากการรวบรวมกองข่าวในประเทศ และกองข่าวต่างประเทศ และสำนักข่าว กรมประชาสัมพันธ์ ของกรมประชาสัมพันธ์เข้าด้วยกัน โดยกำหนดสถานะเป็นสำนักข่าวตั้งแต่ปี พ.ศ. 2537 ต่อมาจัดตั้งขึ้นเป็นทางการ เมื่อวันที่ 21 มกราคม พ.ศ.
+- [ข่าวช่อง 7HD](https://th.wikipedia.org/wiki/%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B8%8A%E0%B9%88%E0%B8%AD%E0%B8%87_7HD) — ฝ่ายข่าว ช่อง 7HD (อังกฤษ: CH7HD News) เป็นหน่วยงานย่อยของบริษัท กรุงเทพโทรทัศน์และวิทยุ จำกัด หรือช่อง 7HD ที่ทำหน้าที่ผลิตข้อมูลข่าวสารทุกประเภท ในรูปของเนื้อหาข่าวสำหรับออกอากาศทางโทรทัศน์ ภาพบรรยากาศพิธีกรรม, การแข่งขันกีฬา และบรรยากาศอื่น ๆ และภาพวิดีโอข่าวสำหรับโทรทัศน์ หรือภาพนิ่งในบางกรณี เพื่อสนับสนุนกับรายการข่าวและเหตุการณ์ปัจจุบันที่สถานีฯ ผลิตขึ้นเอง รวมถึงสื่อประเภทอื่น ๆ ของช่อง 7 เอชดี เช่น เว็บไซต์ หรือสื่อสังคมออนไลน์ของสถานีฯ ก่อตั้งขึ้นในช่วงระยะแรกของการก่อตั้งสถานีฯ
+- [สนามข่าว 7 สี](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%99%E0%B8%B2%E0%B8%A1%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7_7_%E0%B8%AA%E0%B8%B5) — สนามข่าว 7 สี และ สนามข่าวเสาร์-อาทิตย์ เป็นรายการโทรทัศน์ประเภทรายการข่าวและเหตุการณ์ปัจจุบันของฝ่ายข่าวช่อง 7HD ที่สร้างความเข้มข้นและครบถ้วนในการรายงานของคนข่าวภาคสนามส่งตรงจากพื้นที่จริง ด้วยเนื้อหาและภาพที่ฉีกและแตกต่างไปจากรูปแบบของรายการข่าวอื่น ๆ โดยรายการนี้เป็นหนึ่งใน 3 รายการ ที่มีสถานะเทียบเท่ากับรายการภาคเช้าของช่อง 7HD โดยออกอากาศต่อเนื่องจากรายการ จ้อข่าวเช้า (เช้าข่าว 7 สี ตั้งแต่วันที่ 1 ตุลาคม 2557 - 31 พฤษภาคม 2567) และรายการ เช้านี้ที่หมอชิต ส่วนรายการในวันเสาร์-อาทิตย์ มีสถานะเทียบเท่ากับรายการภาคเช้าในวันเสาร์-อาทิตย์ (เดิมมีสถานะเป็นรายการข่าวที่ออกอากาศต่อเนื่องจากละครภาคค่ำ) โดยออกอากาศทุกวันจันทร์ - วันศุกร์ 07:00 - 08:20 น. และ รายการสนามข่าวเสาร์-อาทิตย์ ออกอากาศทุกวันเสาร์และวันอาทิตย์ 05:30 - 06:45 น.
+- [สมาคมนักข่าวนักหนังสือพิมพ์แห่งประเทศไทย](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%A1%E0%B8%B2%E0%B8%84%E0%B8%A1%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%AB%E0%B8%99%E0%B8%B1%E0%B8%87%E0%B8%AA%E0%B8%B7%E0%B8%AD%E0%B8%9E%E0%B8%B4%E0%B8%A1%E0%B8%9E%E0%B9%8C%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%A8%E0%B9%84%E0%B8%97%E0%B8%A2) — สมาคมนักข่าวนักหนังสือพิมพ์แห่งประเทศไทย เป็นองค์กรวิชาชีพของสื่อมวลชนไทย ก่อตั้งขึ้นเมื่อวันที่ 2 มีนาคม พ.ศ.
+
+### Taiwan(検索日時 / searched at: 2026-11-16)
+
+Tags: `Taiwan` `2026-11`
+
+- [蘋果日報 (台灣)](https://zh.wikipedia.org/wiki/%E8%98%8B%E6%9E%9C%E6%97%A5%E5%A0%B1_(%E5%8F%B0%E7%81%A3)) — 《蘋果日報》（英語：Apple Daily）是香港壹傳媒曾在臺灣所發行的正體中文報紙，創辦人是黎智英，以香港《蘋果日報》為藍本；自2018年3月起，分為數位及紙媒編輯部，社長陳裕鑫為台灣境內負責人兼紙媒總編輯。由於營運上虧損持續，於2021年5月17日發行最後一期紙本報紙後於次日停刊，集中發展線上新聞網。
+- [李文儀](https://zh.wikipedia.org/wiki/%E6%9D%8E%E6%96%87%E5%84%80) — 李文儀（1978年9月30日—），於台灣出生的台灣新聞主播、主持人、製作人，畢業於英國倫敦大學學院國際公共政策碩士。現為三立新聞台《台灣大頭條》當家主播、《消失的國界》主持人、三立iNEWS《台灣新思路》主持人。
+- [彭文正](https://zh.wikipedia.org/wiki/%E5%BD%AD%E6%96%87%E6%AD%A3) — 彭文正（1961年5月29日—），台灣新聞學者、媒體人、在逃通緝犯，生於新竹縣新埔鎮。曾任國立臺灣大學新聞研究所所長、教授、客家電視台執行長、台灣電視公司記者、陸軍《東湧日報》記者、中華民國法務部檢察官評鑒委員會委員兼發言人。
+- [李晶玉](https://zh.wikipedia.org/wiki/%E6%9D%8E%E6%99%B6%E7%8E%89) — 李晶玉（1968年10月19日—），臺灣新聞主播及主持人，籍貫江西省，夫婿彭文正為通緝犯，夫妻二人曾主持過壹電視新聞台政論節目《正晶限時批》與民視新聞台政論節目《政經看民視》，現擔任網路政論節目《政經關不了》主持人、《今天遇見你》主持人。
+- [中國時報](https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9C%8B%E6%99%82%E5%A0%B1) — 《中國時報》，簡稱中時，是中華民國綜合性中文報紙，由已故知名報業人余紀忠創辦於1950年，現任董事長為王丰，社長兼總編輯為黃樹德。
+- [字幕跑馬燈](https://zh.wikipedia.org/wiki/%E5%AD%97%E5%B9%95%E8%B7%91%E9%A6%AC%E7%87%88) — 新聞跑馬燈（有時簡稱跑馬燈；英語對應詞：News ticker）是在電視新聞畫面上的一個小空間，通常是用來顯示頭條新聞或是新聞報導中較小的細節。跑馬燈有時也指在某些建築物或室內空間用來表現訊息的顯示版，如鐵路站內的列車到站資訊顯示跑馬燈。
+- [台灣民政府](https://zh.wikipedia.org/wiki/%E5%8F%B0%E7%81%A3%E6%B0%91%E6%94%BF%E5%BA%9C) — 台灣民政府是於2008年2月2日在台灣以政治名義成立的爭議性組織。台灣一些縣市警察局已將之列為詐騙集團。
+- [有线电视新闻网](https://zh.wikipedia.org/wiki/%E6%9C%89%E7%BA%BF%E7%94%B5%E8%A7%86%E6%96%B0%E9%97%BB%E7%BD%91) — 有線電視新聞網（英語：Cable News Network），英語縮寫及通稱「CNN」，是美國一個透過有線電視與衛星電視播出的新聞頻道，由泰德·透納於1980年創辦，最初由透納廣播公司經營，現隸屬天舞公司旗下。對全世界播出，CNN總部和主要播報室位於美國喬治亞州的亞特蘭大。
+
+### Philippines(検索日時 / searched at: 2026-11-16)
+
+Tags: `Philippines` `2026-11`
+
+- [List of Philippine television shows](https://en.wikipedia.org/wiki/List_of_Philippine_television_shows) — Here is the list of Philippine television shows categorised into its respective genres.
+- [Big News](https://en.wikipedia.org/wiki/Big_News) — Big News was a Philippine television news broadcasting show broadcast by ABC. Originally anchored by Duds Rivera and Bong Lapira, it aired from March 19, 1962 to September 22, 1972. The show returned on February 24, 1992.
+- [Daniel Razon](https://en.wikipedia.org/wiki/Daniel_Razon) — Daniel Soriano Razon (Tagalog: [ˈdɐnjɛl soɾˈjano ɾaˈson]; born October 11, 1967) is a Filipino television and radio host. He is currently the Overall Servant (minister; Tagalog: Lingkod Pangkalahatan) of the Members Church of God International, succeeding Eli Soriano after the latter's death on February 11, 2021.
+- [List of Philippine television programs by date](https://en.wikipedia.org/wiki/List_of_Philippine_television_programs_by_date) — The following is a partial list of Philippine television programs by date of first broadcast in the Philippines. The lists of television programs are in reverse chronological order by year; within each year, the list is chronological.
+- [List of TV5 original programming](https://en.wikipedia.org/wiki/List_of_TV5_original_programming) — TV5 (also known as 5 and formerly known as ABC) is a Philippine free-to-air television and radio network owned by TV5 Network, Inc. a subsidiary of MediaQuest Holdings, which is controlled by the telecommunications company of PLDT, Inc.
+- [List of programs broadcast by DZRH/DZRH News Television](https://en.wikipedia.org/wiki/List_of_programs_broadcast_by_DZRH/DZRH_News_Television) — These are the programs that have been currently aired on DZRH and through its TeleRadyo channel DZRH News Television.
+- [List of longest-running Philippine television series](https://en.wikipedia.org/wiki/List_of_longest-running_Philippine_television_series) — This is a list of the longest-running Philippine television series, ordered by number of years the show has been aired. This list includes only programs aired ten years and above.
+- [1987 in Philippine television](https://en.wikipedia.org/wiki/1987_in_Philippine_television) — The following is a list of events affecting Philippine television in 1987. Events listed include television show debuts, finales, cancellations, and channel launches, closures and rebrandings, as well as information about controversies and carriage disputes.
+
+### Germany(検索日時 / searched at: 2026-11-16)
+
+Tags: `Germany` `2026-11`
+
+- [Heute (Fernsehsendung)](https://de.wikipedia.org/wiki/Heute_(Fernsehsendung)) — heute ist eine Nachrichtensendung des Zweiten Deutschen Fernsehens (ZDF) mit aktuellen Meldungen des Tages aus den Bereichen Politik, Wirtschaft, Wissenschaft, Kultur, Gesellschaft, Sport und Wetter. Die Hauptausgabe der heute-Sendung wird täglich um 19:00 Uhr ausgestrahlt.
+- [Deutschland](https://de.wikipedia.org/wiki/Deutschland) — Deutschland (; Vollform des Staatsnamens: Bundesrepublik Deutschland) ist ein Bundesstaat in Mitteleuropa. Es besteht aus 16 Ländern und ist als freiheitlich-demokratischer und sozialer Rechtsstaat verfasst.
+- [Heute-journal](https://de.wikipedia.org/wiki/Heute-journal) — Das heute-journal ist ein Nachrichtenmagazin des ZDF.
+- [Heute-show](https://de.wikipedia.org/wiki/Heute-show) — Die heute-show (Eigenschreibweise auch heute show und heute SHOW) ist eine deutsche Comedy- und Satiresendung im ZDF mit Stilelementen einer Nachrichtensendung. Ihr Name wurde in Anlehnung an die ZDF-Nachrichtenformate heute und heute-journal sowie die ARD-Sendung Tagesschau gewählt.
+- [Bundespräsident (Deutschland)](https://de.wikipedia.org/wiki/Bundespr%C3%A4sident_(Deutschland)) — Der Bundespräsident (Abkürzung BPr, auch BPräs) ist das Staatsoberhaupt (Art. 54–61 GG) der Bundesrepublik Deutschland und protokollarisch ihr höchstes Verfassungsorgan.
+- [Redaktionsnetzwerk Deutschland](https://de.wikipedia.org/wiki/Redaktionsnetzwerk_Deutschland) — Die RND Redaktionsnetzwerk Deutschland GmbH (Eigenschreibweise RedaktionsNetzwerk Deutschland, kurz rnd bzw. RND) mit Sitz in Hannover ist die Redaktion für überregionale Inhalte der Verlagsgesellschaft Madsack GmbH & Co.
+- [Bundeskanzler (Deutschland)](https://de.wikipedia.org/wiki/Bundeskanzler_(Deutschland)) — Der Bundeskanzler der Bundesrepublik Deutschland (kurz: Bundeskanzler; Abkürzung BK) ist der Regierungschef der Bundesrepublik Deutschland. Er bildet zusammen mit den Bundesministern die Bundesregierung und bestimmt laut Verfassung die Richtlinien deren Politik.
+- [BR24](https://de.wikipedia.org/wiki/BR24) — BR24 ist eine Hörfunkwelle des Bayerischen Rundfunks, die ganztägig Nachrichten verbreitet, und zugleich eine plattformübergreifende Nachrichtenmarke des BR. Zum 1. Juli 2021 wurde der bis dahin gültige Name B5 aktuell im Zuge eines einheitlichen Markenauftritts durch BR24 ersetzt.
+
+### Italy(検索日時 / searched at: 2026-11-16)
+
+Tags: `Italy` `2026-11`
+
+- [Italia Oggi](https://it.wikipedia.org/wiki/Italia_Oggi) — Italia Oggi è un quotidiano economico, giuridico e politico.
+- [Striscia la notizia](https://it.wikipedia.org/wiki/Striscia_la_notizia) — Striscia la notizia, anche noto semplicemente come Striscia, è stato un programma televisivo italiano di genere infotainment, investigativo e satirico ideato da Antonio Ricci. È andato in onda dal 7 novembre 1988 al 7 giugno 2025 in access prime time, dal lunedi al sabato (e per brevi periodi anche la domenica).
+- [Episodi di Squadra antimafia - Palermo oggi (quinta stagione)](https://it.wikipedia.org/wiki/Episodi_di_Squadra_antimafia_-_Palermo_oggi_(quinta_stagione)) — La quinta stagione della serie televisiva Squadra antimafia - Palermo oggi è stata trasmessa in prima visione in Italia da Canale 5 dal 9 settembre 2013.
+- [Italia](https://it.wikipedia.org/wiki/Italia) — L'Italia (AFI: /iˈtalja/, ), ufficialmente Repubblica Italiana, è un paese dell'Europa meridionale e occidentale, il cui territorio coincide in gran parte con l'omonima regione geografica; Stato membro dell'Unione europea, l'Italia conta una popolazione di circa 59 milioni di abitanti, che ne fanno il terzo Stato dell'Unione per numero di abitanti dopo Germania e Francia. Delimitata dall'arco alpino, l'Italia confina a nord, da ovest a est, con Francia, Svizzera, Austria e Slovenia; la penisola italiana si protende nel mar Mediterraneo, circondata dai mari Ligure, Tirreno, Ionio e Adriatico, e da numerose isole (le maggiori sono Sicilia e Sardegna), per un totale di 302068,26 km².
+- [QN Quotidiano Nazionale](https://it.wikipedia.org/wiki/QN_Quotidiano_Nazionale) — QN Quotidiano Nazionale è il marchio che identifica un consorzio di quattro testate giornalistiche: il Resto del Carlino, edito a Bologna e primo quotidiano in Emilia-Romagna, presente anche nelle Marche e in Veneto nella provincia di Rovigo; La Nazione, edito a Firenze e primo quotidiano in Toscana, radicato anche in Umbria e in Liguria nella Provincia della Spezia; Il Giorno, edito a Milano e uno dei principali quotidiani della Lombardia; Il Telegrafo, storico quotidiano di Livorno, ora attivo come giornale online. Dal 1º luglio 2022 il consorzio di testate giornalistiche è diretto da Agnese Pini.
+- [Notizia](https://it.wikipedia.org/wiki/Notizia) — Una notizia (dalla lingua latina latino notitia) è, in generale, un'informazione di cui si viene a conoscenza. Per gran parte della storia umana le notizie sono state trasmesse oralmente.
+- [Italia 1](https://it.wikipedia.org/wiki/Italia_1) — Italia 1 è un canale televisivo italiano privato di tipo generalista con target giovanile, diffuso a livello nazionale ed edito da Mediaset, società che ha acquistato il canale nel dicembre del 1982 dalla Rusconi, che lo aveva lanciato il 3 gennaio dello stesso anno.
+- [Episodi di Squadra antimafia - Palermo oggi (quarta stagione)](https://it.wikipedia.org/wiki/Episodi_di_Squadra_antimafia_-_Palermo_oggi_(quarta_stagione)) — La quarta stagione della serie televisiva Squadra antimafia - Palermo oggi è stata trasmessa in prima visione in Italia da Canale 5 dal 10 settembre al 19 novembre 2012.
+
+### Malaysia(検索日時 / searched at: 2026-11-16)
+
+Tags: `Malaysia` `2026-11`
+
+- [BeautifulSoup scraping news article](https://stackoverflow.com/questions/60065910) — [SALAH] Passing Grade Universitas Indonesia 18 Tidak ada media arus utama yang mengangkat ber... &hellip; [BERITA] Kemenpan RB: Tidak Ada Pengangkatan C... 198 Juru Bicara Kepala BIN, Wawan Hari Purwanto me... &hellip;
+- [Media Prima](https://en.wikipedia.org/wiki/Media_Prima) — Media Prima Berhad is a Malaysian media company based in Bangsar, Kuala Lumpur. It is the largest media and entertainment conglomerate in Malaysia with business interests in television, print, radio, out-of-home advertising, content creation, and digital media.
+- [List of programmes broadcast by TV3 (Malaysian TV network)](https://en.wikipedia.org/wiki/List_of_programmes_broadcast_by_TV3_(Malaysian_TV_network)) — This is a list of television programmes broadcast by TV3 either currently broadcast or formerly broadcast on TV3 in Malaysia.
+- [Kool FM (Malaysia)](https://en.wikipedia.org/wiki/Kool_FM_(Malaysia)) — Kool FM (briefly known as Buletin FM and KOOL 101) is a Malaysian private radio station owned by Media Prima Berhad through its radio subsidiary, Media Prima Audio, which broadcasts in the Malay language. It was launched on 1 March 2016.
+- [Bernama](https://en.wikipedia.org/wiki/Bernama) — The Malaysian National News Agency (Malay: Pertubuhan Berita Nasional Malaysia), is a news agency of the government of Malaysia. It is an autonomous body under the Ministry of Communications.
+- [TV9 (Malaysian TV network)](https://en.wikipedia.org/wiki/TV9_(Malaysian_TV_network)) — Ch-9 Media Sdn Bhd, operating as TV9 (spelled as tivi sembilan) is a Malaysian free-to-air television network owned and operated by Media Prima Berhad. It airs programming that tends mostly towards the Malay demographic.
+- [TV1 (Malaysian TV network)](https://en.wikipedia.org/wiki/TV1_(Malaysian_TV_network)) — RTM TV1 (stylised as tv1) is a Malaysian free-to-air public television channel owned and operated by Radio Televisyen Malaysia, a broadcasting department of the Malaysian Government. Launched on 28 December 1963, TV1 is the first and oldest TV station in Malaysia.
+- [Sultanah Nur Diana Petra](https://en.wikipedia.org/wiki/Sultanah_Nur_Diana_Petra) — Sultanah Nur Diana Petra Abdullah (Jawi: سلطانة نور ديانا ڤيترا عبدالله; née Jana Jakubková; born 25 February 1988) is the Sultanah of Kelantan as the wife of Sultan Muhammad V, the 29th and current Sultan of the Malaysian state of Kelantan.
+
