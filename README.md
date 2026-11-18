@@ -1606,3 +1606,11 @@ DATABASEに蓄積するデータが溢れる前に非公開GitHubリポジトリ
 **English**: The persona and the automatic knowledge restore live mostly in `aruaru-llm`. This repo holds `personaPromptText()` in `web/app.js` and the relays for `/openenglish.v1.Persona/Prompt` and `/openenglish.v1.Knowledge/Export` (v0.8.14 onward; Android/PC builds ship via `v*` tags). Resume message: end of [`PORTING.md`](PORTING.md).
 **日本語(追記)**: Windowsインストーラーの実機試験とaruaru-llm v0.2.5の公開(Connect版)を完了。詳細・再開手順は[`PORTING.md`](PORTING.md)末尾。
 **English (addendum)**: The Windows installer was tested on a real PC and aruaru-llm v0.2.5 (Connect build) was published. Details and resume steps: end of [`PORTING.md`](PORTING.md).
+
+---
+
+## 引っ越し用メモ(2026-11-18)/ Hand-off for moving accounts
+- **リポジトリ名 / Repository names**: 正式名は [`aon-co-jp/maid-cafe-english`](https://github.com/aon-co-jp/maid-cafe-english)。旧名 [`aon-co-jp/open-english`](https://github.com/aon-co-jp/open-english) も永久に残り、**リリースのタグは旧 `open-english` に push**(CI が新リポジトリへミラー)。作業クローンは `F:\open-english-connect`(`F:\open-english` には触れない)。 / Canonical name is `maid-cafe-english`; the old `open-english` is kept forever and **release tags are pushed to the old `open-english`** (CI mirrors them). Working clone: `F:\open-english-connect`.
+- **到達点 / Done**: aruaru-llm 呼び出し(web・mobile・server・scripts)は全て Connect 化。古い画面は自動再読み込み。VPS は自動更新あり。v0.8.16 の APK は CI が Android ネイティブ(.so)を毎回ビルドして検証。 / All aruaru-llm callers are on Connect; stale pages auto-reload; VPS auto-update is on; CI builds and verifies the Android native .so on every run (v0.8.16).
+- **未了 / Open**: 全てCIでビルドしたタグ(例 v0.8.17)の本番通し確認、`/open-english/demo/` の静的404(設定の確認)、`Cargo.lock` が環境依存、実機のデバッグ署名版 `tokyo.runo.openenglish` のアンインストール。 / End-to-end proof of an all-CI tag (e.g. v0.8.17), demo static 404, environment-dependent `Cargo.lock`, uninstall the debug-signed app on the phone.
+- 再開用メッセージは [`PORTING.md`](PORTING.md) 末尾。 / Resume message: end of PORTING.md.
