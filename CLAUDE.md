@@ -8622,3 +8622,5 @@ aruaru-llm は REST を全廃し `POST /aruaru_llm.v1.Llm/<Method>`(JSON)のみ�
 - **完了 / Done**: aruaru-llm 呼び出しの Connect 化(web/app.js・mobile webroot・server・line_bot・news_qa・scripts)、`staleCheck` による自動再読み込み、VPS 自動更新(`deploy/vps/open-english-autoupdate.*`)、Android ネイティブ .so の CI ビルド+APK 内検証、v0.8.15(旧.so入り、注意書き付き)→ v0.8.16 修正版。実機 moto g53y で確認済み。
 - **未了 / Open**: (1) 次のタグ(v0.8.17 等)で全 CI ビルドの本番通し確認。(2) `/open-english/demo/` の静的404(demo ユニットに `OPEN_ENGLISH_SERVER_ROOT` が無い)。(3) `server/Cargo.lock` が兄弟パス依存で環境依存(再現性なし)。(4) 実機のデバッグ署名アプリをアンインストールしてから正式 APK を入れる。(5) aruaru-IME デーモン経路の通し確認。
 - **注意 / Pitfalls**: Git Bash に python3 無し(`python`)、WSL パスは `MSYS_NO_PATHCONV=1`+スクリプトファイル、CLAUDE.md は他セッションの追記で衝突しやすい(両方残す)、秘密は出さない。
+
+- **2026-11-18 追記 / Update**: `/open-english/demo/` の静的404を解消(VPSの`open-english-demo.service.d/30-serverroot.conf`で`OPEN_ENGLISH_SERVER_ROOT`を設定、`/`・`version.json`・`app.js`が200、公開URLも200)。スマホ実機のテストは中止(ユーザー指示)。/ Fixed the static 404 on `/open-english/demo/` via a systemd drop-in setting `OPEN_ENGLISH_SERVER_ROOT` (all 200). Phone testing is stopped by user instruction.
