@@ -145,7 +145,7 @@ pub async fn refine_with_llm(limit: usize) -> usize {
         return 0;
     }
     let base = std::env::var("ARUARU_LLM_BIND").map(|b| format!("http://{b}")).unwrap_or_else(|_| "http://127.0.0.1:4600".to_string());
-    let client = match reqwest::Client::builder().timeout(std::time::Duration::from_secs(30)).build() {
+    let client = match reqwest::Client::builder().default_headers(crate::llm_tenant_headers()).timeout(std::time::Duration::from_secs(30)).build() {
         Ok(c) => c,
         Err(_) => return 0,
     };
