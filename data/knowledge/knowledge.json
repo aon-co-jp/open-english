@@ -1925,26 +1925,6 @@
     "created_unix": 1795033523
   },
   {
-    "id": 223,
-    "text": "【自動調査 2026-11-18・出典3件】following\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Following - Wikipedia — October 15, 2026 - Following is a 1998 British independent neo-noir film written, directed, photographed and edited by Christopher Nolan in  (en.wikipedia.org)\n・Recent headlines (stocked internet news): [BBC News Top stories] Owono undecided over future following De Miguel death | [BBC News Top stories] Met Police investigate several new reports on Russell Brand following his conviction | [The Japan Times Japan] Man arrested following string of attacks on w",
-    "tags": [
-      "following",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795036229
-  },
-  {
-    "id": 224,
-    "text": "【自動調査 2026-11-18・出典3件】米ドル\n・米ドル /円【USDJPY】：外国為替相場FXレート・チャートを ... — 米ドル/円【USDJPY】のリアルタイムFXレートとチャートで為替相場をご覧いただけます 。Yahoo!ファイナンスでは株価速報、チャート、ランキング、ポートフォリオ、 ... (finance.yahoo.co.jp)\n・米ドル /円（USDJPY）｜為替レート・チャート - みんかぶFX — 米ドル/円のレートとローソク足チャートをリアルタイム表示 。ローソク足チャートでは1分足・5分足・10分足・15分足・30分足・1時間足・日足・週足・月足から選択して ... (fx.minkabu.jp)\n・リアルタイム為替レート - 三井住友銀行 — 円貨→外貨（TTS）. 米ドル （1 USD）, 158.82, 159.32. ユーロ（1 EUR）, 174.19 ... 上記為替レートは、インターネットでの100万 米ドル 相当額未満の外貨預金取引に ... (smbc.co.jp)",
-    "tags": [
-      "米ドル",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795039381
-  },
-  {
     "id": 225,
     "text": "【自動調査 2026-11-19・出典2件】domains\n・Top-level domain — A top-level domain (TLD) is one of the domains at the highest level in the hierarchical Domain Name System of the Internet after the root do (en.wikipedia.org)\n・Access-Control-Allow-Origin Multiple Origin Domains? — Is there a way to allow multiple cross-domains using the Access-Control-Allow-Origin header? I'm aware of the *, but it is too open. I reall (stackoverflow.com)",
     "tags": [
@@ -2009,5 +1989,25 @@
     ],
     "source": "https://paiza.jp/works/paid_plan_lp/settlement",
     "created_unix": 1795120715
+  },
+  {
+    "id": 231,
+    "text": "【自動調査 2026-11-19・出典3件】following\n・Following - Wikipedia — October 15, 2026 - Following is a 1998 British independent neo-noir film written, directed, photographed and edited by Christopher Nolan in  (en.wikipedia.org)\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Recent headlines (stocked internet news): [BBC News Top stories] Owono undecided over future following De Miguel death | [BBC News Top stories] Met Police investigate several new reports on Russell Brand following his conviction | [The Japan Times Japan] Man arrested following string of attacks on w",
+    "tags": [
+      "following",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795122629
+  },
+  {
+    "id": 232,
+    "text": "【自動調査 2026-11-19・出典3件】米ドル\n・米ドル /円【USDJPY】：外国為替相場FXレート・チャートを ... — 米ドル/円【USDJPY】のリアルタイムFXレートとチャートで為替相場をご覧いただけます 。Yahoo!ファイナンスでは株価速報、チャート、ランキング、ポートフォリオ、 ... (finance.yahoo.co.jp)\n・米ドル /円（USDJPY）｜為替レート・チャート - みんかぶFX — 米ドル/円のレートとローソク足チャートをリアルタイム表示 。ローソク足チャートでは1分足・5分足・10分足・15分足・30分足・1時間足・日足・週足・月足から選択して ... (fx.minkabu.jp)\n・米ドル /円 - SBI証券 — マーケットでは日本をはじめとする世界の株価、チャート、為替、指数、金利のほか、いま投資家に人気の銘柄をご紹介するランキングも配信しています。 (sbisec.co.jp)",
+    "tags": [
+      "米ドル",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795125806
   }
 ]
