@@ -1621,3 +1621,7 @@ DATABASEに蓄積するデータが溢れる前に非公開GitHubリポジトリ
 
 **English**: Your chats and settings are saved first in a small file on your own computer (SQLite). If you connect aruaru-db / PostgreSQL, a copy is kept there too, so if one side breaks, the other side can repair it. You can choose where to save. You can back up with rsync, and if rsync is missing the app says "Let's install RSync!" and installs it for you. There is also a door for importing old data. See "HANDOFF 2026-11-19" in `CLAUDE.md` for details.
 
+
+## 2026-11-20 融合の記録: maid-cafe.tokyo / Fusion record
+**日本語**: このリポジトリ(英会話・学習)は、データ分析の realdata.pro と融合して **maid-cafe.tokyo** になりました。融合後の入口・配備の正本は [`maid-cafe-tokyo`](https://github.com/aon-co-jp/maid-cafe-tokyo) です。ここのコードは、融合後も英会話・学習の部品(open-english-server)として使われ続けます。リリースやミラーの手順は変えていません(コード自体の統合は、配備を壊さないよう別途、試験してから行います)。
+**English**: This repository (English learning) has been fused with data analysis (realdata.pro) into **maid-cafe.tokyo**. The entrance and deployment source of truth after the fusion is [`maid-cafe-tokyo`](https://github.com/aon-co-jp/maid-cafe-tokyo). The code here keeps serving as the English-learning part (open-english-server). Release and mirror steps are unchanged; merging the code itself will be done separately, after tests, so as not to break deployment.
