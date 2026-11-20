@@ -1419,3 +1419,11 @@ aruaru-llm の REST 全廃に合わせ、呼び出しを `POST /aruaru_llm.v1.Ll
 
 **English**: Paste the following as is.
 > Continuing `maid-cafe-english` (formerly `open-english`; tags are pushed to the old repo). Clone: `F:\open-english-connect`. Connect migration of aruaru-llm callers, auto-reload, VPS auto-update and the CI-built Android native .so are done; v0.8.16 is released and verified on a device. Open: (1) an end-to-end release from a fresh tag such as v0.8.17 built fully by CI, (2) the static 404 at `/open-english/demo/`, (3) environment-dependent `server/Cargo.lock`, (4) uninstall the debug-signed app on the phone, (5) end-to-end check of the aruaru-IME path. Start by reading HANDOFF 2026-11-18 at the end of `CLAUDE.md`, then investigate, verify, develop, test and debug to completion.
+
+
+## 再開用メッセージ 2026-11-19 / Resume message
+### 日本語
+`F:\open-english` と `F:\runo`、`F:\aruaru-llm` の続きをやります。まず `CLAUDE.md` の最後にある「HANDOFF 2026-11-19」を読んでください。データベース・rsync・旧データ取り込みは、もう作ってあります。残りは3つです。(1)rsync自動インストールを実際のPCで試す、(2)作業中の別の変更を整理する、(3)origin との差(約33コミット)を取り込む。返事は日本語で。push する前に必ず確認してください。
+
+### English (simple and friendly)
+Let's continue with `F:\open-english`, `F:\runo` and `F:\aruaru-llm`. First, read "HANDOFF 2026-11-19" at the end of `CLAUDE.md`. The database, rsync and old-data import are already built. Three things are left: (1) try the rsync auto-install on a real PC, (2) tidy the other unfinished changes, (3) catch up with origin (about 33 commits behind). Please ask before you push.

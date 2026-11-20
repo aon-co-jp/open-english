@@ -8630,3 +8630,19 @@ aruaru-llm は REST を全廃し `POST /aruaru_llm.v1.Llm/<Method>`(JSON)のみ�
 ## 2026-11-20 低VRAM・VRAM無し端末(VPS・PC・タブレット・スマホ)でのAI/LLMのノウハウ / Low-VRAM AI know-how
 日本語: AI・LLMを使う機能(推論・要約・補完等)は [aruaru-llm/docs/LOW-VRAM-KNOWHOW.md](https://github.com/aon-co-jp/aruaru-llm/blob/main/docs/LOW-VRAM-KNOWHOW.md) に従う: 短い文脈・上限・タイムアウト、VPSで重い推論を直接回さない、メモリが足りなければ小さいモデルへ自動で下げる。広い桁(FP64以上)は本番で使わず、試験の正解にだけ使う。
 English: Features that use AI/LLMs follow the file above: short context, caps and timeouts, no heavy inference directly on the VPS, auto-downgrade to a smaller model when memory is short. Wide floats (FP64 and above) are for test oracles only, not production.
+
+
+## HANDOFF 2026-11-19(別アカウントでの再開用 / Resume on another account)
+### 日本語
+- **ひとことで**: 会話の記録と設定を保存する「データベース機能」は、もう動いています。(1)手元のSQLiteに保存、(2)つなげれば aruaru-db / PostgreSQL にも同じ内容を写す(片方が壊れても、もう片方から直せる)、(3)保存場所を選べる、(4)rsyncでバックアップ(送り先も選べる)、(5)rsyncが無い人には「RSyncをインストールしましょう!」と案内して自動で入れる、(6)昔のデータの取り込み。
+- **旧データ取り込み**: `import_legacy` と `POST /openenglish.v1.Db/MigrateLegacy` が `server/src/` にあります。ただし、取り込む昔のデータは実際には存在しないので、どんなデータでも受けられる「入口」だけ作ってあります。
+- **場所(リポジトリ)**: `F:\open-english`(GitHub: `aon-co-jp/maid-cafe-english`。古い `aon-co-jp/open-english` もずっと残します。リリースのタグは古い方へ送ると、新しい方へコピーされます)、`F:\runo`(全体の目次)、`F:\aruaru-llm`。
+- **まだ確かめていないこと**: rsyncの自動インストールが成功する場面。このPCには winget も choco も無いためです。
+- **気をつけること**: 作業中の別の変更(`server/src/main.rs` のニュース検索、`web/app.js`)が残っています。origin より約33コミット遅れています。`git pull` は慎重に。コミットは自分の変更だけにしてください。
+
+### English (simple and friendly)
+- **In short**: The "database feature" that saves chats and settings already works. (1) It saves to a local SQLite file. (2) If you connect aruaru-db / PostgreSQL, it keeps a copy there too, so if one side breaks, the other side can fix it. (3) You can choose where to save. (4) You can back up with rsync and choose where the backup goes. (5) If rsync is missing, the app says "Let's install RSync!" and installs it for you. (6) It can import old data.
+- **Importing old data**: `import_legacy` and `POST /openenglish.v1.Db/MigrateLegacy` are in `server/src/`. But there is no real old data anywhere, so we only built a general "front door" that accepts any data.
+- **Where things live**: `F:\open-english` (GitHub: `aon-co-jp/maid-cafe-english`; the old `aon-co-jp/open-english` stays forever; push release tags to the old one and they are copied to the new one), `F:\runo` (the big table of contents), `F:\aruaru-llm`.
+- **Not checked yet**: the case where the rsync auto-install really succeeds. This PC has no winget or choco.
+- **Please be careful**: Some other work is still unfinished (news search in `server/src/main.rs`, and `web/app.js`). The repo is about 33 commits behind origin. Be careful with `git pull`, and commit only your own changes.

@@ -1614,3 +1614,10 @@ DATABASEに蓄積するデータが溢れる前に非公開GitHubリポジトリ
 - **到達点 / Done**: aruaru-llm 呼び出し(web・mobile・server・scripts)は全て Connect 化。古い画面は自動再読み込み。VPS は自動更新あり。v0.8.16 の APK は CI が Android ネイティブ(.so)を毎回ビルドして検証。 / All aruaru-llm callers are on Connect; stale pages auto-reload; VPS auto-update is on; CI builds and verifies the Android native .so on every run (v0.8.16).
 - **未了 / Open**: 全てCIでビルドしたタグ(例 v0.8.17)の本番通し確認、`/open-english/demo/` の静的404(設定の確認)、`Cargo.lock` が環境依存、実機のデバッグ署名版 `tokyo.runo.openenglish` のアンインストール。 / End-to-end proof of an all-CI tag (e.g. v0.8.17), demo static 404, environment-dependent `Cargo.lock`, uninstall the debug-signed app on the phone.
 - 再開用メッセージは [`PORTING.md`](PORTING.md) 末尾。 / Resume message: end of PORTING.md.
+
+
+## データ保存とバックアップ / Saving data and backups
+**日本語**: 会話の記録と設定は、まず手元のSQLiteに保存します。aruaru-db / PostgreSQL をつなぐと同じ内容を写し、片方が壊れてももう片方から直せます。保存場所は選べます。rsyncでバックアップでき、rsyncが無いときは「RSyncをインストールしましょう!」と案内して自動で入れます。昔のデータの取り込み口もあります。詳しくは `CLAUDE.md` の「HANDOFF 2026-11-19」へ。
+
+**English**: Your chats and settings are saved first in a small file on your own computer (SQLite). If you connect aruaru-db / PostgreSQL, a copy is kept there too, so if one side breaks, the other side can repair it. You can choose where to save. You can back up with rsync, and if rsync is missing the app says "Let's install RSync!" and installs it for you. There is also a door for importing old data. See "HANDOFF 2026-11-19" in `CLAUDE.md` for details.
+
