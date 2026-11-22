@@ -1987,26 +1987,6 @@
     "created_unix": 1795205823
   },
   {
-    "id": 237,
-    "text": "【自動調査 2026-11-20・出典4件】following\n・Following - Wikipedia — October 15, 2026 - Following is a 1998 British independent neo-noir film written, directed, photographed and edited by Christopher Nolan in  (en.wikipedia.org)\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・FOLLOWING Definition & Meaning - Merriam-Webster — 1 week ago - The meaning of FOLLOWING is being next in order or time . How to use following in a sentence. (merriam-webster.com)\n・Recent headlines (stocked internet news): [BBC News Top stories] Owono undecided over future following De Miguel death | [BBC News Top stories] Met Police investigate several new reports on Russell Brand following his conviction | [The Japan Times Japan] Man arrested following string of attacks on w",
-    "tags": [
-      "following",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795209027
-  },
-  {
-    "id": 238,
-    "text": "【自動調査 2026-11-20・出典3件】米ドル\n・米ドル/円（USDJPY）｜為替レート・チャート｜みんかぶ FX/為替 — 8 時間前 - ドル円一時１５８．６１レベル、ドル売り圧力で一段安＝ロンドン為替 ロンドン午後に入って、ドル売りが優勢になっている。ドル円は158.61レベルに安値を更新。ユーロドルは1.0999レベル、ポンドドルは1.3129レベルに高値を更新している。米10年債利回りは低下し (fx.minkabu.jp)\n・米ドル/円【USDJPY】：外国為替相場FXレート・チャートをリアルタイム表示 - Yahoo!ファイナンス — 2 時間前 - 米ドル /円【USDJPY=FX】 · 外国為替（インターバンクレート） · FXレート · ポートフォリオに追加 · Bid（売値） · 159.215 · Ask（買値） · 159.217 · Change（始値比） · -0.456 · Open（始値）  (finance.yahoo.co.jp)\n・リアルタイム為替レート ： 三井住友銀行 — 米ドル （1 USD）, 158.04, 158.54. ユーロ（1 EUR）, 173.15, 173.85. 英ポンド（1 GBP ... 上記為替レートは、インターネットでの100万 米ドル 相当額未満の外貨預金取引 ... (smbc.co.jp)",
-    "tags": [
-      "米ドル",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795212314
-  },
-  {
     "id": 239,
     "text": "【自動調査 2026-11-20・出典3件】南アフリカランド\n・南アフリカランド /円（ZAR/JPY） FX為替レート・チャート — 南アフリカランド/円（ZAR/JPY）の市場動向・FXレポート（マネ育チャンネル）を読む. 南アフリカランド通貨の特徴. 資源国通貨かつ、高金利通貨 . 特徴: 南アフリカは ... (gaitame.com)\n・南アフリカランド 円（ZARJPY） - 為替レート - みんかぶFX — 南アフリカランド円のレートとローソク足チャートをリアルタイム表示 。ローソク足チャートでは1分足・5分足・10分足・15分足・30分足・1時間足・日足・週足・月足から ... (fx.minkabu.jp)\n・南アフリカランド /円(ZAR/JPY) :外国為替 - 楽天証券 — 南アフリカランド /円(ZAR/JPY) の外国為替レート、チャートを10分更新で配信しております。 (rakuten-sec.co.jp)",
     "tags": [
@@ -2081,5 +2061,25 @@
     ],
     "source": "https://paiza.jp/works/paid_plan_lp/settlement",
     "created_unix": 1795292737
+  },
+  {
+    "id": 246,
+    "text": "【自動調査 2026-11-21・出典3件】following\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Cult following — A cult following is a group of fans who are highly dedicated to a person, idea, object, movement, or work, often an artist, in particular a  (en.wikipedia.org)\n・Recent headlines (stocked internet news): [BBC News Top stories] Owono undecided over future following De Miguel death | [BBC News Top stories] Met Police investigate several new reports on Russell Brand following his conviction | [The Japan Times Japan] Man arrested following string of attacks on w",
+    "tags": [
+      "following",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795295426
+  },
+  {
+    "id": 247,
+    "text": "【自動調査 2026-11-21・出典3件】米ドル\n・米ドル /円（USDJPY）｜為替レート・チャート - みんかぶFX — 米ドル/円のレートとローソク足チャートをリアルタイム表示 。ローソク足チャートでは1分足・5分足・10分足・15分足・30分足・1時間足・日足・週足・月足から選択して ... (fx.minkabu.jp)\n・米ドル /円【USDJPY】：外国為替相場FXレート・チャートを ... — 米ドル/円【USDJPY】のリアルタイムFXレートとチャートで為替相場をご覧いただけます 。Yahoo!ファイナンスでは株価速報、チャート、ランキング、ポートフォリオ、 ... (finance.yahoo.co.jp)\n・米ドル /円 - SBI証券 — マーケットでは日本をはじめとする世界の株価、チャート、為替、指数、金利のほか、いま投資家に人気の銘柄をご紹介するランキングも配信しています。 (sbisec.co.jp)",
+    "tags": [
+      "米ドル",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795298563
   }
 ]
