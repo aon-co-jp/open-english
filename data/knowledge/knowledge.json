@@ -2033,16 +2033,6 @@
     "created_unix": 1795334824
   },
   {
-    "id": 250,
-    "text": "【自動調査 2026-11-22・出典3件】domains\n・Top-level domain — A top-level domain (TLD) is one of the domains at the highest level in the hierarchical Domain Name System of the Internet after the root do (en.wikipedia.org)\n・Buy a Domain Name — Domain Name Search — Squarespace Domains — Every dream needs a domain. Get a domain from Squarespace for only $10. (domains.squarespace.com)\n・Access-Control-Allow-Origin Multiple Origin Domains? — Is there a way to allow multiple cross-domains using the Access-Control-Allow-Origin header? I'm aware of the *, but it is too open. I reall (stackoverflow.com)",
-    "tags": [
-      "domains",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795356445
-  },
-  {
     "id": 251,
     "text": "Verified price (2026-11-23): Dotinstall monthly plan costs 1480 yen including tax. ドットインストールの月額プランは1480円（税込）。公式ページ https://dotinstall.com/premium で確認。",
     "tags": [
@@ -2117,5 +2107,51 @@
     ],
     "source": "auto-research",
     "created_unix": 1795421268
+  },
+  {
+    "id": 258,
+    "text": "【自動調査 2026-11-23・出典2件】domains\n・Top-level domain — A top-level domain (TLD) is one of the domains at the highest level in the hierarchical Domain Name System of the Internet after the root do (en.wikipedia.org)\n・Access-Control-Allow-Origin Multiple Origin Domains? — Is there a way to allow multiple cross-domains using the Access-Control-Allow-Origin header? I'm aware of the *, but it is too open. I reall (stackoverflow.com)",
+    "tags": [
+      "domains",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795464028
+  },
+  {
+    "id": 259,
+    "text": "Verified price (2026-11-24): Dotinstall monthly plan costs 1480 yen including tax. ドットインストールの月額プランは1480円（税込）。公式ページ https://dotinstall.com/premium で確認。",
+    "tags": [
+      "dotinstall",
+      "price",
+      "verified",
+      "learning"
+    ],
+    "source": "https://dotinstall.com/premium",
+    "created_unix": 1795465294
+  },
+  {
+    "id": 260,
+    "text": "Verified price (2026-11-24): Progate monthly plan costs 1490 yen including tax. Progateの月額プランは1490円（税込）。公式ページ https://progate.com/plans/for_users で確認。",
+    "tags": [
+      "progate",
+      "price",
+      "verified",
+      "learning"
+    ],
+    "source": "https://progate.com/plans/for_users",
+    "created_unix": 1795465294
+  },
+  {
+    "id": 261,
+    "text": "Verified price (2026-11-24): paiza monthly plan costs 1490 yen including tax. paizaラーニングの月額プランは1490円（税込）。公式ページ https://paiza.jp/works/paid_plan_lp/settlement で確認。",
+    "tags": [
+      "paiza",
+      "price",
+      "verified",
+      "learning"
+    ],
+    "source": "https://paiza.jp/works/paid_plan_lp/settlement",
+    "created_unix": 1795465294
   }
 ]
