@@ -1,3 +1,5 @@
+> Latest translations / 翻訳の最新版: [0-LATEST-TRANSLATIONS.md](0-LATEST-TRANSLATIONS.md)
+
 ﻿# open-english
 
 > ⚠️ **廃止のお知らせ(日本語)**: この `open-english` は**廃止**し、**[maid-cafe.tokyo](https://maid-cafe.tokyo/)** へ引っ越しました。
