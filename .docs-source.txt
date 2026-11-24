@@ -1,3 +1,3 @@
 source: aon-co-jp/open-english
-commit: 44e87358d806a587d5eb1fdaaf3db3de495211c7
-updated: 2026-11-24T10:36:33Z
+commit: 0546b90cd754886f4765672e8c0a04e19c6bdb3a
+updated: 2026-11-24T13:02:27Z
