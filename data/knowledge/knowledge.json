@@ -2105,26 +2105,6 @@
     "created_unix": 1795465294
   },
   {
-    "id": 262,
-    "text": "【自動調査 2026-11-23・出典3件】following\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Cult following — A cult following is a group of fans who are highly dedicated to a person, idea, object, movement, or work, often an artist, in particular a  (en.wikipedia.org)\n・Recent headlines (stocked internet news): [BBC News Top stories] Owono undecided over future following De Miguel death | [BBC News Top stories] Met Police investigate several new reports on Russell Brand following his conviction | [The Japan Times Japan] Man arrested following string of attacks on w",
-    "tags": [
-      "following",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795468219
-  },
-  {
-    "id": 263,
-    "text": "【自動調査 2026-11-23・出典3件】米ドル\n・米ドル /円（USDJPY）｜為替レート・チャート - みんかぶFX — 米ドル/円のレートとローソク足チャートをリアルタイム表示 。ローソク足チャートでは1分足・5分足・10分足・15分足・30分足・1時間足・日足・週足・月足から選択して ... (fx.minkabu.jp)\n・米ドル /円 - SBI証券 — マーケットでは日本をはじめとする世界の株価、チャート、為替、指数、金利のほか、いま投資家に人気の銘柄をご紹介するランキングも配信しています。 (sbisec.co.jp)\n・リアルタイム為替レート - 三井住友銀行 — 円貨→外貨（TTS）. 米ドル （1 USD）, 158.01, 158.51. ユーロ（1 EUR）, 173.08, 173.78. 英ポンド（1 GBP）, 205.34, 207.34. スイスフラン（1 CHF）, 188.31, 188.76. (smbc.co.jp)",
-    "tags": [
-      "米ドル",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795471368
-  },
-  {
     "id": 264,
     "text": "【自動調査 2026-11-24・出典3件】南アフリカランド\n・為替レート＆チャート「 南アフリカランド / 円」 | 情報・ツール — 円⇒ ランド 定期預金金利一覧 · 10万 ランド 未満 · 10万 ランド 以上. 1ヶ月, 20.000%. 3ヶ月, 4.800%. 6ヶ月, 5.000%. 1年, 5.200 ... (jibunbank.co.jp)\n・南アフリカランド の特徴や変動の傾向 - マネースクエア — 南アフリカランドの特徴. 資源価格の影響を受けやすい「資源国通貨」 . 南アフリカは、金やダイヤモンド、プラチナなどの鉱物資源に恵まれており、世界有数の鉱山資源国 ... (m2j.co.jp)\n・南アフリカランド 円相場(ZARJPY)リアルタイムチャート ... — 南アフリカランド／円(ZARJPY). 南アフリカランドと円の為替レートです . 9.1258-9.1410(11/24 2:51)+0.1171(+ ... (nikkei.com)",
     "tags": [
@@ -2189,5 +2169,25 @@
     ],
     "source": "https://paiza.jp/works/paid_plan_lp/settlement",
     "created_unix": 1795552124
+  },
+  {
+    "id": 270,
+    "text": "【自動調査 2026-11-24・出典3件】following\n・Cult following — Cult Following is the second studio album by American-born, Montreal-based indie rock artist Little Scream (Laurel Sprengelmeyer). It was re (en.wikipedia.org)\n・Find all files containing a specific text (string) on Linux — Do the following: grep -rnw '/path/to/somewhere/' -e 'pattern' -r or -R is recursive, -n is line number, and -w stands for match the whole w (stackoverflow.com)\n・Recent headlines (stocked internet news): [The Japan Times Japan] Chubu Electric faces tough road ahead following data scandal | [BBC News Top stories] Owono undecided over future following De Miguel death | [BBC News Top stories] Met Police investigate several new reports on Russell Brand following",
+    "tags": [
+      "following",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795554619
+  },
+  {
+    "id": 271,
+    "text": "【自動調査 2026-11-24・出典3件】米ドル\n・米ドル /円（USD/JPY） 1分 FX為替レート・チャート — 取引量No.1の世界の基軸通貨 . 特徴: 米ドルは世界経済における中心の役割を果たす基軸通貨です。世界中で輸出入の支払いや金融取引、外貨準備に使われており、高い流動 ... (gaitame.com)\n・米ドル /円【USDJPY】：外国為替相場FXレート・チャートを ... — 銘柄を検索 · 詳細 · 掲示板. 米ドル/円 . 米ドル/円. USDJPY=FX; FX. Bid(売値): 159.216. Ask(買値): 159.21 ... (finance.yahoo.co.jp)\n・米ドル /円：外国為替 | マーケット情報 | 松井証券 — 「外国為替： 米ドル /円」のページです。最新のマーケット情報をご覧いただけます。松井証券は日本株(現物・信用)・米国株・投資信託・FXなどの豊富な投資サービスを ... (finance.matsui.co.jp)",
+    "tags": [
+      "米ドル",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795557921
   }
 ]
