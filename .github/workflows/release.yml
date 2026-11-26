@@ -185,7 +185,7 @@ jobs:
           cp ../open-cpu/target/aarch64-linux-android/release/libopen_cpu.so "$OUT/libopen_cpu.so"
           "$STRIP" "$OUT"/*.so
           # 新しい(Connect版)ことの確認: 旧REST版には無い文字列を含むこと
-          grep -qa 'aruaru_llm.v1.Llm' "$OUT/libaruarullm.so"
+          grep -qa 'aruaru_llm.Llm' "$OUT/libaruarullm.so"
           grep -qa 'openenglish.v1.' "$OUT/libopenenglishserver.so"
           ls -la "$OUT"
       - uses: actions/upload-artifact@v4
@@ -267,7 +267,7 @@ jobs:
           cp "$OUT_TABLET" ../../android-apks/open-english-android-tablet.apk
           # APKに新しい(Connect版)ネイティブライブラリが入っていることを確認(旧バイナリ混入の検出)
           for APK in "$OUT_PHONE" "$OUT_TABLET"; do
-            unzip -p "$APK" lib/arm64-v8a/libaruarullm.so | grep -qa 'aruaru_llm.v1.Llm' || { echo "FAIL: $APK has an old libaruarullm.so"; exit 1; }
+            unzip -p "$APK" lib/arm64-v8a/libaruarullm.so | grep -qa 'aruaru_llm.Llm' || { echo "FAIL: $APK has an old libaruarullm.so"; exit 1; }
             unzip -p "$APK" lib/arm64-v8a/libopenenglishserver.so | grep -qa 'openenglish.v1.' || { echo "FAIL: $APK has an old libopenenglishserver.so"; exit 1; }
           done
           echo "OK: both APKs contain the Connect-era native libraries"
