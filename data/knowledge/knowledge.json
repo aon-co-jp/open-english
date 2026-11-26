@@ -2019,16 +2019,6 @@
     "created_unix": 1795378936
   },
   {
-    "id": 257,
-    "text": "【自動調査 2026-11-23・出典3件】英ポンド\n・ポンド円相場(GBPJPY)リアルタイムチャート・為替レート推移 - 日本経済新聞 — 2026年9月29日 - ポンド／円 · 豪ドル／円 · スイスフラン／円 · カナダドル／円 · 韓国ウォン／円 · 香港ドル／円 · 南アフリカランド／円 · ブラジルレアル／円 · ニュージーランドドル／円 · 世界の市況 · 日本株ランキング · 米国株ランキング · 「 (nikkei.com)\n・英ポンド/円【GBPJPY】：外国為替相場FXレート・チャートをリアルタイム表示 - Yahoo!ファイナンス — 4 日前 - 英ポンド /円【GBPJPY=FX】 · 外国為替（インターバンクレート） · FXレート · ポートフォリオに追加 · Bid（売値） · 208.288 · Ask（買値） · 208.296 · Change（始値比） · 0.834 · Open（始値） · (finance.yahoo.co.jp)\n・英ポンド/円(GBP/JPY) :外国為替 | マーケット情報 | 楽天証券 — 3 週間前 - ホーム > マーケット情報 > 英ポンド /円(GBP/JPY):外国為替レート · X（旧Twitter） · 米ドル · ユーロ · 豪ドル · NZドル · カナダドル · 英ポンド · スイスフラン · 香港ドル · トルコリラ · 南アランド · (rakuten-sec.co.jp)",
-    "tags": [
-      "英ポンド",
-      "自動調査"
-    ],
-    "source": "auto-research",
-    "created_unix": 1795421268
-  },
-  {
     "id": 258,
     "text": "【自動調査 2026-11-23・出典2件】domains\n・Top-level domain — A top-level domain (TLD) is one of the domains at the highest level in the hierarchical Domain Name System of the Internet after the root do (en.wikipedia.org)\n・Access-Control-Allow-Origin Multiple Origin Domains? — Is there a way to allow multiple cross-domains using the Access-Control-Allow-Origin header? I'm aware of the *, but it is too open. I reall (stackoverflow.com)",
     "tags": [
@@ -2225,5 +2215,15 @@
     ],
     "source": "auto-research",
     "created_unix": 1795644299
+  },
+  {
+    "id": 281,
+    "text": "【自動調査 2026-11-26・出典3件】英ポンド\n・英ポンド /円（GBPJPY）｜為替レート・チャート｜みんかぶ FX/為替 — 英ポンド/円のレートとローソク足チャートをリアルタイム表示 。ローソク足チャートでは1分足・5分足・10分足・15分足・30分足・1時間足・日足・週足・月足から選択して ... (fx.minkabu.jp)\n・英ポンド の特徴や変動の傾向 - マネースクエア — 世界で4番目に取引量の多い、かつての基軸通貨 . イギリスの通貨。エジプトでも通貨単位としてポンドが使われていますが、単にポンドといえば、通常はイギリスのポンドを ... (m2j.co.jp)\n・英ポンド /円（GBP/JPY） 1分 FX為替レート・チャート — 取引量No.4のかつての基軸通貨 . 特徴: 英国は2021年1月1日に欧州連合（EU）から完全離脱を果たしたため、EUとの通商問題はこれまで以上にシビアです。 (gaitame.com)",
+    "tags": [
+      "英ポンド",
+      "自動調査"
+    ],
+    "source": "auto-research",
+    "created_unix": 1795680595
   }
 ]
