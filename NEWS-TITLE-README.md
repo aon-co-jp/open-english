@@ -35210,3 +35210,658 @@ Tags: `China (Japanese)` `2026-11`
 - [中華人民共和国の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E4%B8%AD%E8%8F%AF%E4%BA%BA%E6%B0%91%E5%85%B1%E5%92%8C%E5%9B%BD.html) — 最新 ニュース · 女の悲しみ伝える 中国 の「女文字」 33年通い続ける研究者の思い · 習氏、14カ国と首脳会談、台湾問題で布石 日本など4カ国非開催 · 習氏、14カ国と首脳会談 ...
 - [「 中国 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/china/) — 中国、政府職員に死刑判決 外国のスパイに国家機密引き渡した罪 11/24; 西太平洋での有事シナリオ、主要部隊の展開速度に懸念 米陸軍監査機関が報告 11/24; イラン、女性 ...
 
+
+## アーカイブ日 / Archived on 2026-11-26
+
+### China (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `China (Japanese)` `2026-11`
+
+- [最新 中国ニュース | ロイター - Reuters](https://www.reuters.com/jp/world/china/) — 中国 関連の最新 ニュース を24時間体制で多面的に展開。 中国 の内政や外交、経済、社会、企業、災害関連についての ニュース を幅広く発信しています。
+- [中国 ・台湾の最新 ニュース ・特集 - 日本経済新聞](https://www.nikkei.com/international/china-taiwan/) — 中国・台湾 · シーイン、米当局に160億円支払い 消費者保護めぐる訴訟で和解 · 小米「第3の柱」新エネ車に光明 大空間モデル快走、脱スマホ依存へ · 中国宇宙船に外国人初搭乗 ...
+- [中国 の ニュース ・速報|47NEWS（よんなな ニュース ）](https://www.47news.jp/world/china) — 中国のニュース・速報. 出発式に臨む、有人宇宙船「神舟24号」の乗組 員. 中国宇宙船に初の外国人 打ち上げ「完全に成功」. 14時49分. 共同通信. 【速報】中国有人宇宙 ...
+- [中国 ・台湾 < 国際 - 産経 ニュース](https://www.sankei.com/world/china/) — 習近平指導部の「反腐敗闘争」加速 上海トップ失脚、27年党大会へ「面従腹背を一掃」 · 中国、ソロモン諸島と豪州の新条約署名に注文 「第三者を標的にすべきでない」 · 中国 ...
+- [中華人民共和国の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E4%B8%AD%E8%8F%AF%E4%BA%BA%E6%B0%91%E5%85%B1%E5%92%8C%E5%9B%BD.html) — 最新 ニュース · 女の悲しみ伝える 中国 の「女文字」 33年通い続ける研究者の思い · 習氏、14カ国と首脳会談、台湾問題で布石 日本など4カ国非開催 · 習氏、14カ国と首脳会談 ...
+- [「 中国 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/china/) — 2026. 11/24: 発作を起こした男性、脳内にサナダムシが寄生 鍋料理の肉が原因か 19年 中国 · 中国 、政府職員に死刑判決 外国のスパイに国家機密引き渡した罪 ...
+- [「 中国 」 ニュース 一覧 - NHKニュース - NHK ONE](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000215) — 「 中国 」 ニュース 一覧 · ソロモン諸島 オーストラリアと安全保障の新条約に署名 · 中国 独自の宇宙ステーションにパキスタン人宇宙飛行士初参加 · 米中ロ首脳会談 何が ...
+- [中国 ・習近平政権 関連 ニュース ：時事ドットコム](https://www.jiji.com/jc/v7?id=Xi_Jinping) — 中国 、有人宇宙船「神舟24号」打ち上げ 初の外国人飛行士が搭乗(11月25日 17:06) · 中国 、有人宇宙船打ち上げ 外国人が初搭乗(11月25日 09:42) · ソロモン諸島、豪と包括 ...
+
+### Egypt (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Egypt (English)` `2026-11`
+
+- [El Koshary Today](https://en.wikipedia.org/wiki/El_Koshary_Today) — El Koshary Today is an Egyptian online news website that features satire and political parody. The website is named after a common Egyptian dish consisting of a spaghetti mixture that may also contain lentils, rice, and chickpeas.
+- [Al-Masry Al-Youm](https://en.wikipedia.org/wiki/Al-Masry_Al-Youm) — Al-Masry Al-Youm (Arabic: المصري اليوم, romanized: al-Maṣrī l-Yawm, IPA: [elˈmɑsˤɾi lˈjoːm], meaning The Egyptian Today) is an Egyptian privately owned daily newspaper that was first published in June 2004. It is published in Arabic as is its website, almasryalyoum.com.
+- [Sharm El Sheikh](https://en.wikipedia.org/wiki/Sharm_El_Sheikh) — Sharm El Sheikh, alternatively rendered Sharm el-Sheikh or Charm el Sheikh, is an Egyptian city located on the southern tip of the Sinai Peninsula, in South Sinai Governorate, on the coastal strip along the Red Sea in Asia. Its population is approximately 77,000 as of 2017.
+- [News](https://en.wikipedia.org/wiki/News) — News is information about current events. This may be provided through many different media: word of mouth, printing, postal systems, broadcasting, electronic communication, or through the testimony of observers and witnesses to events.
+- [Hoda Kotb](https://en.wikipedia.org/wiki/Hoda_Kotb) — Hoda Kotb ( HOH-də KOT-bee; born August 9, 1964) is an American broadcast journalist, television personality, and author. She was the main co-anchor of the NBC News morning show Today from 2018 to 2025, and co-host of its entertainment-focused fourth hour from 2007 to 2025.
+- [Crescent (Egyptian band)](https://en.wikipedia.org/wiki/Crescent_(Egyptian_band)) — Crescent is a blackened death metal band from Cairo, Egypt, founded in 1998. Crescent formed in 1998 as a black metal band, making it one of the oldest extreme metal bands in Egypt and the region.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [RT (TV network)](https://en.wikipedia.org/wiki/RT_(TV_network)) — RT, formerly Russia Today (Russian: Россия Сегодня, romanized: Rossiya Segodnya), is a Russian state-controlled international news television network funded by the Russian government. It operates pay television and free-to-air channels directed to audiences outside of Russia, as well as providing Internet content in Russian, English, Spanish, French, German, Arabic, Portuguese and Serbian.
+
+### Austria (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Austria (English)` `2026-11`
+
+- [Vienna](https://en.wikipedia.org/wiki/Vienna) — Vienna ( vee-EN-ə; German: Wien [viːn] ; Austro-Bavarian: Wean [veɐ̯n]) is the capital, most populous city, and one of the nine states of Austria. It is Austria's primate city, with just over two million inhabitants.
+- [Anif Palace](https://en.wikipedia.org/wiki/Anif_Palace) — Anif Palace (German: Schloss Anif), also known as the Water Palace Anif, is located beside an artificial pond in Anif on the southern edge of Salzburg, Austria. The palace was once the seat of the bishops of Chiemsee, and then later was used as a court until the nineteenth century.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [Breitbart News](https://en.wikipedia.org/wiki/Breitbart_News) — Breitbart News Network ( BRYTE-bart; known commonly as Breitbart News, Breitbart, or Breitbart.com) is an American far-right news, opinion, and commentary website founded in 2007 by American conservative commentator Andrew Breitbart. Its content has been described as misogynistic, xenophobic, and racist by various academics and journalists.
+- [Fake news](https://en.wikipedia.org/wiki/Fake_news) — Fake news is false or misleading information (misinformation, disinformation, propaganda, and hoaxes) claiming the aesthetics and legitimacy of news. Fake news often has the aim of damaging the reputation of a person or entity, or making money through advertising revenue.
+- [Murder of Don Solovich](https://en.wikipedia.org/wiki/Murder_of_Don_Solovich) — Don L. Solovich (6 April 1892 – 6 January 1928) was a gay man formerly from Austria-Hungary employed by famed actor Charlie Chaplin who was murdered by Sheldon Clark in 1928. The murder trial made international headlines.
+- [Breakfast television](https://en.wikipedia.org/wiki/Breakfast_television) — Breakfast television (Europe and Australia) or morning show (Canada and the United States) is a type of news or infotainment television programme that broadcasts live in the morning (typically scheduled between 5:00 and 10:00 a.m., or if it is a local programme, as early as 4:00 a.m.). Often presented by a small team of hosts, these programmes are typically marketed towards the combined demography of people getting ready for work and school and stay-at-home adults and parents.
+- [Santorini International Airport](https://en.wikipedia.org/wiki/Santorini_International_Airport) — Santorini International Airport (Greek: Διεθνής Αερολιμένας Σαντορίνης) (IATA: JTR, ICAO: LGSR) is an airport in Santorini, Greece, located north of the village of Kamari. The airport serves as both a military and a civil airport.
+
+### Switzerland (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Switzerland (Japanese)` `2026-11`
+
+- [スイス の最新 ニュース ： 今日 の主な出来事を日本語で](https://swipelynews.com/ja/news/country/ch) — スイス の最新 ニュース を日本語で。11媒体から 主要ニュース 12件、2026/11/23 1:30 UTC更新。見出しはAIが作成し、元の記事にリンクしています。
+- [スイス 、 ニュース と展望 - SWI swissinfo.ch](https://www.swissinfo.ch/jpn/) — スイスの主要メディアが報じた日本 関連ニュース を週1回、まとめてお届けする無料ニュースレターです。日本の国内報道からは得られにくい、国際的な視点も含んでいます。
+- [スイス の ニュース - SWI swissinfo.ch](https://www.swissinfo.ch/jpn/%E3%83%8B%E3%83%A5%E3%83%BC%E3%82%B9/) — スイス の政治、文化、経済を中心とした、さまざまなトピックについて、最新 ニュース を現地からお届けします。
+- [スイス の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%82%B9%E3%82%A4%E3%82%B9.html) — 最新ニュース · 北朝鮮、スイス外交事務所代表を追放 金与正氏の「撤収勧告」受け · 殺人ロボ国際規制、法的拘束力先送り ルール作り合意できず · グランドセイコーと大塚 ...
+- [「 スイス 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/20148) — スイス、北朝鮮の撤退勧告「正式通知なし」 平壌で再開の外交事務所 · 金与正氏、平壌のスイス外交事務所に「撤退を勧告」 制裁に反発 · スイス外相、23年ぶり北朝鮮訪問 「 ...
+- [「 スイス 」 ニュース 一覧 | NHK ニュース - NHK ONE](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000409) — 北朝鮮 スイスの制裁受け外交事務所代表に国外退去を要求 · スイス政府の制裁に北朝鮮キム・ヨジョン氏が反発 · AI自律兵器の国際会議 法的拘束力あるルール作りで合意できず.
+- [「 スイス 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/switzerland/) — 2026. 09/01: レイブ会場での銃乱射、男を逮捕 スイス ; 08/30: スイス 北部のレイブ会場で銃撃 1人死亡、5人負傷 容疑者追跡中; 07/12: アルゼンチン、3―1で スイス を ...
+- [スイス の ニュース ・読売新聞の最新記事](https://www.yomiuri.co.jp/keyword/68179/) — スイス · 高齢者の足裏刺激で転倒予防に期待… · ［地政学ウォッチ］「中立」アイルランド 迫る脅威… · 重み増す「中堅国家」の連携、外交ウィークに見た日本が日米同盟 ...
+
+### Russia (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Russia (Japanese)` `2026-11`
+
+- [ロシア - BBC ニュース](https://www.bbc.com/japanese/topics/cnq68k055pwt) — 英政府、ロシアの妨害工作への自衛策を「今すぐ取る」よう指示 ウクライナを支援する企業 に · ロシアのウクライナでの戦死者は約50万人 流出公式データをBBCが分析 · 【解説】 ...
+- [「 ロシア 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/20133) — ウクライナ、地中海で「ロシア軍艦撃沈」 リビアで海上ドローン攻撃 · ロシア拘束記者と領事面会「即時解放に全力」 木原官房長官 · NATO、ポーランドに早期警戒管制機 ...
+- [最新 ロシアニュース | ロイター - Reuters](https://www.reuters.com/jp/world/russia/) — ロシア · 59分前. リビアでのロシア船攻撃は正当な自衛行為、ウクライナ外相が主張 · リビア・ベンガジ沖で船舶に接近するドローンを捉えたとする映像。 · 1時間前. 中国・ ...
+- [「 ロシア 」 ニュース 一覧 | NHK ニュース - NHK ONE](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000220) — 「ロシア」ニュース一覧 · 米中ロ首脳会談 何が読み取れるか · ロシア軍の戦死者49万人超か ロシア独立系メディアが分析 · フィンランド沖でのロシア貨物船への無人機攻撃は ...
+- [ロシア の ニュース ・記事一覧 - Business Insider Japan](https://www.businessinsider.jp/tag/russia/) — イラン戦争後、ロシアの原油収入は2倍 になった 。 · 「シャヘド型ドローン」が現代の戦争を変えている… · プーチンが直面する「食品インフレ」が戦争継続の要所になる.
+- [「 ロシア 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/russia/) — 2026. 11/25: 4分に1人、 ロシア 兵72万人がウクライナ侵攻開始後に死亡か 流出データをもとに推計; 11/23: 北アフリカに停泊中の ロシア 軍艦、ウクライナのドローン攻撃 ...
+- [ロシア | 国際の ニュース | JBpress (ジェイビープレス)](https://jbpress.ismedia.jp/subcategory/%E3%83%AD%E3%82%B7%E3%82%A2) — ロシア · 北海道新聞記者はなぜ ロシア で「スパイ容疑」で拘束されたのか？元モスクワ特派員が語る北方領土取材の実態 · 独裁政治vs民主主義、ウクライナの自由を守らねば ...
+- [Russia ：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Russia) — 米中ロ首脳会談は「ヤルタ会談」と異なる、他国の運命を決めるものではない ロシア大統領府 · ロシア、米国の領土割譲案を公表したゼレンスキー氏を批判 · ウクライナ、1300 ...
+
+### Taiwan(検索日時 / searched at: 2026-11-25)
+
+Tags: `Taiwan` `2026-11`
+
+- [台灣 TV 新聞 |即時新聞、政治、財經、生活娛樂|最新 頭條 報導](https://www.tvn.com.tw/) — 
+- [今日頭條新聞網 | 今日新聞頭條 ,首屈一指的商業、科技、金融與財經新聞頭條平台](https://headnews.com.tw/) — 
+- [台灣週報 - 提供台灣及全球即時 頭條新聞 , 財經 信息,社會新聞,國際資訊](https://www.taiwanweekly.com/) — 
+- [首页_中国 台湾 网](https://www.taiwan.cn/m/) — 
+- [新华 台湾 _新华网](http://www.xinhuanet.com/tw) — 
+- [中国 台湾 网](http://taiwan.cn/) — 
+- [三立 新聞 台(家加 54) 節目表| 今天 播什麼、現在播出|TvGo](https://tvking.funorange.com.tw/channel/66) — 
+- [中国 台湾 网的微博_微](https://weibo.com/chinataiwan/) — 
+
+### Taiwan (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Taiwan (English)` `2026-11`
+
+- [Taiwanization](https://en.wikipedia.org/wiki/Taiwanization) — Taiwanization (Chinese: 臺灣本土化運動), also known as the Taiwanese localization movement, is a conceptual term used in Taiwan to emphasize the importance of a Taiwanese culture, society, economy, nationality, and identity rather than to regard Taiwan as solely an appendage of China. This involves the teaching of history, geography, and culture from a Taiwan-centric perspective, as well as promoting languages locally established in Taiwan, including Taiwanese Hokkien (Taiwanese), Hakka, and Formosan languages.
+- [The Diplomat Magazine Exposed Yan Limeng and Guo Wengui](https://news.ycombinator.com/item?id=36148847) — Hacker News · 4 points · 0 comments · 2023-06-01
+- [1450 Internet army](https://en.wikipedia.org/wiki/1450_Internet_army) — 1450 Internet army, also known as 1450, is a term referring to Internet users hired by the Taiwanese Democratic Progressive Party (DPP) to sway public opinion. The term originated in 2019, when the Council of Agriculture of Taiwan budgeted NT$14.5 million for public relations campaigns and the hiring of social media managers to debunk misinformation.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [News](https://en.wikipedia.org/wiki/News) — News is information about current events. This may be provided through many different media: word of mouth, printing, postal systems, broadcasting, electronic communication, or through the testimony of observers and witnesses to events.
+- [Taiwan Pride](https://en.wikipedia.org/wiki/Taiwan_Pride) — Taiwan Pride (Chinese: 臺灣同志遊行) is the annual LGBTQ pride parade in Taiwan. The parade was first held in 2003.
+- [Yan Limeng and Guo Wengui as anti-communist swindlers](https://news.ycombinator.com/item?id=36135865) — Hacker News · 1 points · 0 comments · 2023-05-31
+- [Taiwanese Mandarin](https://en.wikipedia.org/wiki/Taiwanese_Mandarin) — Taiwanese Mandarin, natively referred to as Guoyu (Chinese: 國語; pinyin: Guóyǔ; Zhuyin Fuhao: ㄍㄨㄛˊ ㄩˇ; lit. 'national language') or Huayu (Chinese: 華語; pinyin: Huáyǔ; Zhuyin Fuhao: ㄏㄨㄚˊ ㄩˇ; lit.
+
+### Philippines(検索日時 / searched at: 2026-11-25)
+
+Tags: `Philippines` `2026-11`
+
+- [List of Philippine television shows](https://en.wikipedia.org/wiki/List_of_Philippine_television_shows) — Here is the list of Philippine television shows categorised into its respective genres.
+- [Big News](https://en.wikipedia.org/wiki/Big_News) — Big News was a Philippine television news broadcasting show broadcast by ABC. Originally anchored by Duds Rivera and Bong Lapira, it aired from March 19, 1962 to September 22, 1972. The show returned on February 24, 1992.
+- [Daniel Razon](https://en.wikipedia.org/wiki/Daniel_Razon) — Daniel Soriano Razon (Tagalog: [ˈdɐnjɛl soɾˈjano ɾaˈson]; born October 11, 1967) is a Filipino preacher, broadcast journalist, and media executive. He is the Overall Servant of the Members Church of God International, succeeding Eli Soriano following the latter's death in February 2021.
+- [List of Philippine television programs by date](https://en.wikipedia.org/wiki/List_of_Philippine_television_programs_by_date) — The following is a partial list of Philippine television programs by date of first broadcast in the Philippines. The lists of television programs are in reverse chronological order by year; within each year, the list is chronological.
+- [List of TV5 original programming](https://en.wikipedia.org/wiki/List_of_TV5_original_programming) — TV5 (also known as 5 and formerly known as ABC) is a Philippine free-to-air television and radio network owned by TV5 Network, Inc. a subsidiary of MediaQuest Holdings, which is controlled by the telecommunications company of PLDT, Inc.
+- [List of programs broadcast by DZRH/DZRH News Television](https://en.wikipedia.org/wiki/List_of_programs_broadcast_by_DZRH/DZRH_News_Television) — These are the programs that have been currently aired on DZRH and through its TeleRadyo channel DZRH News Television.
+- [List of longest-running Philippine television series](https://en.wikipedia.org/wiki/List_of_longest-running_Philippine_television_series) — This is a list of the longest-running Philippine television series, ordered by number of years the show has been aired. This list includes only programs aired ten years and above.
+- [1987 in Philippine television](https://en.wikipedia.org/wiki/1987_in_Philippine_television) — The following is a list of events affecting Philippine television in 1987. Events listed include television show debuts, finales, cancellations, and channel launches, closures and rebrandings, as well as information about controversies and carriage disputes.
+
+### Thailand(検索日時 / searched at: 2026-11-25)
+
+Tags: `Thailand` `2026-11`
+
+- [สำนักข่าวไทย](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B9%84%E0%B8%97%E0%B8%A2) — สำนักข่าวไทย (ชื่อย่อ: สขท.; อังกฤษ: THAI NEWS AGENCY; TNA) เป็นหน่วยงานประกอบกิจการข่าวสารของอสมท จัดตั้งขึ้นเมื่อวันที่ 16 มิถุนายน พ.ศ.
+- [วันนักข่าว](https://th.wikipedia.org/wiki/%E0%B8%A7%E0%B8%B1%E0%B8%99%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7) — วันนักข่าว หรือวันสื่อสารมวลชนแห่งชาติ ในประเทศไทย ตรงกับวันที่ 5 มีนาคม ของทุกปี ซึ่งตรงกับวันสถาปนาสมาคมนักข่าวแห่งประเทศไทย (สมาคมนักข่าวนักหนังสือพิมพ์แห่งประเทศไทย ในปัจจุบัน)
+- [ครอบครัวข่าว 3](https://th.wikipedia.org/wiki/%E0%B8%84%E0%B8%A3%E0%B8%AD%E0%B8%9A%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7_3) — ครอบครัวข่าว 3 (อังกฤษ: Krobkruakao 3) เป็นหน่วยงานย่อยของกลุ่มบีอีซีเวิลด์ ซึ่งทำหน้าที่ผลิตข่าวสารทุกประเภท เพื่อสนับสนุนรายการโทรทัศน์ประเภทข่าวของช่อง 3 เอชดี โดยใช้ชื่อนี้เป็นตราสินค้ารวมของรายการข่าวในช่องตั้งแต่วันที่ 1 กรกฎาคม พ.ศ.
+- [สถานีโทรทัศน์แห่งประเทศไทย](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%B5%E0%B9%82%E0%B8%97%E0%B8%A3%E0%B8%97%E0%B8%B1%E0%B8%A8%E0%B8%99%E0%B9%8C%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%A8%E0%B9%84%E0%B8%97%E0%B8%A2) — สถานีโทรทัศน์แห่งประเทศไทย (อังกฤษ: The National Broadcasting Services of Thailand; ชื่อเดิม: สถานีวิทยุโทรทัศน์แห่งประเทศไทย; ชื่อย่อ: เอ็นบีที (NBT)) หรือ เอ็นบีที 2 เอชดี (อังกฤษ: NBT 2HD; อ่านว่า เอ็นบีที ทูเอชดี) เป็นหน่วยงานสถานีวิทยุโทรทัศน์ของรัฐบาล มีสถานะเป็นสถานีโทรทัศน์แห่งชาติของประเทศไทย สังกัดกรมประชาสัมพันธ์ สำนักนายกรัฐมนตรี (โดยมี ศุภมาส อิศรภักดี รัฐมนตรีประจำสำนักนายกรัฐมนตรี เป็นผู้กำกับดูแล) โดยมีการเปลี่ยนชื่อพร้อมปรับปรุงระบบการบริหารงานและรูปแบบของสถานีอยู่หลายครั้ง
+- [สำนักข่าวกรมประชาสัมพันธ์](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B8%81%E0%B8%A3%E0%B8%A1%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%8A%E0%B8%B2%E0%B8%AA%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%B1%E0%B8%99%E0%B8%98%E0%B9%8C) — สำนักข่าวแห่งชาติ กรมประชาสัมพันธ์ (อังกฤษ: National News Bureau of Thailand ชื่อย่อ: NNT) มีที่มาจากการรวบรวมกองข่าวในประเทศ และกองข่าวต่างประเทศ และสำนักข่าว กรมประชาสัมพันธ์ ของกรมประชาสัมพันธ์เข้าด้วยกัน โดยกำหนดสถานะเป็นสำนักข่าวตั้งแต่ปี พ.ศ. 2537 ต่อมาจัดตั้งขึ้นเป็นทางการ เมื่อวันที่ 21 มกราคม พ.ศ.
+- [ข่าวช่อง 7HD](https://th.wikipedia.org/wiki/%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B8%8A%E0%B9%88%E0%B8%AD%E0%B8%87_7HD) — ฝ่ายข่าว ช่อง 7HD (อังกฤษ: CH7HD News) เป็นหน่วยงานย่อยของบริษัท กรุงเทพโทรทัศน์และวิทยุ จำกัด หรือช่อง 7HD ที่ทำหน้าที่ผลิตข้อมูลข่าวสารทุกประเภท ในรูปของเนื้อหาข่าวสำหรับออกอากาศทางโทรทัศน์ ภาพบรรยากาศพิธีกรรม, การแข่งขันกีฬา และบรรยากาศอื่น ๆ และภาพวิดีโอข่าวสำหรับโทรทัศน์ หรือภาพนิ่งในบางกรณี เพื่อสนับสนุนกับรายการข่าวและเหตุการณ์ปัจจุบันที่สถานีฯ ผลิตขึ้นเอง รวมถึงสื่อประเภทอื่น ๆ ของช่อง 7 เอชดี เช่น เว็บไซต์ หรือสื่อสังคมออนไลน์ของสถานีฯ ก่อตั้งขึ้นในช่วงระยะแรกของการก่อตั้งสถานีฯ
+- [สนามข่าว 7 สี](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%99%E0%B8%B2%E0%B8%A1%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7_7_%E0%B8%AA%E0%B8%B5) — สนามข่าว 7 สี และ สนามข่าวเสาร์-อาทิตย์ เป็นรายการโทรทัศน์ประเภทรายการข่าวและเหตุการณ์ปัจจุบันของฝ่ายข่าวช่อง 7HD ที่สร้างความเข้มข้นและครบถ้วนในการรายงานของคนข่าวภาคสนามส่งตรงจากพื้นที่จริง ด้วยเนื้อหาและภาพที่ฉีกและแตกต่างไปจากรูปแบบของรายการข่าวอื่น ๆ โดยรายการนี้เป็นหนึ่งใน 3 รายการ ที่มีสถานะเทียบเท่ากับรายการภาคเช้าของช่อง 7HD โดยออกอากาศต่อเนื่องจากรายการ จ้อข่าวเช้า (เช้าข่าว 7 สี ตั้งแต่วันที่ 1 ตุลาคม 2557 - 31 พฤษภาคม 2567) และรายการ เช้านี้ที่หมอชิต ส่วนรายการในวันเสาร์-อาทิตย์ มีสถานะเทียบเท่ากับรายการภาคเช้าในวันเสาร์-อาทิตย์ (เดิมมีสถานะเป็นรายการข่าวที่ออกอากาศต่อเนื่องจากละครภาคค่ำ) โดยออกอากาศทุกวันจันทร์ - วันศุกร์ 07:00 - 08:20 น. และ รายการสนามข่าวเสาร์-อาทิตย์ ออกอากาศทุกวันเสาร์และวันอาทิตย์ 05:30 - 06:45 น.
+- [สมาคมนักข่าวนักหนังสือพิมพ์แห่งประเทศไทย](https://th.wikipedia.org/wiki/%E0%B8%AA%E0%B8%A1%E0%B8%B2%E0%B8%84%E0%B8%A1%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A7%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%AB%E0%B8%99%E0%B8%B1%E0%B8%87%E0%B8%AA%E0%B8%B7%E0%B8%AD%E0%B8%9E%E0%B8%B4%E0%B8%A1%E0%B8%9E%E0%B9%8C%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%A8%E0%B9%84%E0%B8%97%E0%B8%A2) — สมาคมนักข่าวนักหนังสือพิมพ์แห่งประเทศไทย เป็นองค์กรวิชาชีพของสื่อมวลชนไทย ก่อตั้งขึ้นเมื่อวันที่ 2 มีนาคม พ.ศ.
+
+### France (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `France (Japanese)` `2026-11`
+
+- [フランス - BBC ニュース](https://www.bbc.com/japanese/topics/cjgn7kqz4jpt) — フランス · パリ警察、一部の高校・大学の周囲で5日間の抗議禁止 · フランス、スーパーの冷蔵庫へのサイバー攻撃でイランを非難 · 【解説】抗議活動で勢いづく欧州の若者たち ...
+- [フランス の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B9.html) — 最新 ニュース · 「日本に被害生じさせない」 EU域内産業保護法案で、次期大使見解 · 欧州が認めた「秩父ワイン」 兄妹が挑む攻めと守りの老舗経営 · 美術が描き出す「星の王子 ...
+- [French：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/French) — French. 仏各地で6週連続の抗議デモ、参加者は減少傾向 · 仏メディア規制機関、大物ユーチューバーの政治的偏向を監視へ 大統領選控え ...
+- [「 フランス 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000293) — 「フランス」ニュース一覧 · FIFA会長選挙 田嶋幸三氏 “1期4年で透明性あるガバナンスを” · ウクライナ支援の有志連合 初の軍事演習をメディアに公開 · 仏大統領選元首相 ...
+- [「 フランス 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/france/) — 2026. 11/15: サザビーズによるピサロ絵画の売却、パリの裁判所が無効に; 11/10: 冷蔵庫狙った「前代未聞の」サイバー攻撃、 フランス がイランを非難; 11/06: フランス ...
+- [ニュース ・社会問題 Archives - OVNI| オヴニー・パリの新聞](https://ovninavi.com/category/mieux-connaitre-la-france/actualites/) — 今 フランス で起きていることをわかりやすく解説。 ニュース · フランス の出来事 · 三面記事 · 経済 · 抵抗する人 · 社会ラボ.
+- [「 フランス 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/20163) — 仏大統領選、元首相3人が立候補表明 シラク政権のドビルパン氏も参戦 · 仏極右ルペン氏「60歳定年」を公約 早期就労条件に、労働者票に的 · フランス暴動、極右ルペン氏「 ...
+- [今日 の フランス](https://www.parisettoi.fr/news/) — 2026.11.24. マクロン大統領、財政規律の憲法上の明文化で改憲を提案 · 2026.11.24. 投資促進イベント「チューズ・ フランス 」の フランス 版が開催に.
+
+### Brazil(検索日時 / searched at: 2026-11-25)
+
+Tags: `Brazil` `2026-11`
+
+- [Notícias falsas no Brasil](https://pt.wikipedia.org/wiki/Not%C3%ADcias_falsas_no_Brasil) — As notícias falsas no Brasil não são algo novo. No país, o fenômeno sempre foi conhecido de quem acompanhava o noticiário político.
+- [Brasil](https://pt.wikipedia.org/wiki/Brasil) — Brasil (localmente [bɾaˈziw]), oficialmente República Federativa do Brasil (), é o maior país da América do Sul e da região da América Latina, sendo o quinto maior do mundo em área territorial (equivalente a 47,3% do território sul-americano), com cerca de 8,5 milhões de quilômetros quadrados, e o sétimo em população (com 214,2 milhões de habitantes, em julho de 2026). É o único país na América onde se fala majoritariamente a língua portuguesa e o maior país lusófono do planeta, além de ser uma das nações mais multiculturais e etnicamente diversas, em decorrência da forte imigração oriunda de variados locais do mundo.
+- [Renata Vasconcellos](https://pt.wikipedia.org/wiki/Renata_Vasconcellos) — Renata Fernandes Vasconcellos (Rio de Janeiro, 10 de junho de 1972) é uma jornalista e ex-modelo brasileira. Trabalha no Grupo Globo desde 1996 e apresentou alguns dos principais jornalísticos da TV Globo, como Jornal Hoje, Bom Dia Brasil e Fantástico desde então.
+- [Notícia falsa](https://pt.wikipedia.org/wiki/Not%C3%ADcia_falsa) — Notícias falsas (sendo também muito comum o uso do termo em inglês: fake news) são uma forma de imprensa marrom que consiste na distribuição deliberada de desinformação ou boatos via jornal impresso, televisão, rádio, ou ainda online, através das mídias sociais. Este tipo de notícia é escrito e publicado com a intenção de enganar, a fim de se obter ganhos financeiros, pessoais ou políticos, muitas vezes com manchetes sensacionalistas, exageradas ou evidentemente falsas para chamar a atenção.
+- [Agência Nacional](https://pt.wikipedia.org/wiki/Ag%C3%AAncia_Nacional) — A Agência Nacional foi uma agência de notícias brasileira criada em 1º de março de 1937. Sua criação foi resultado do governo constitucional comandado pelo presidente Getúlio Vargas, que vigorou no Brasil entre os anos de 1934 e 1937.
+- [Região Nordeste do Brasil](https://pt.wikipedia.org/wiki/Regi%C3%A3o_Nordeste_do_Brasil) — A Região Nordeste do Brasil é a terceira maior região em extensão territorial do país. Compreende 1 554 291,744 km², aproximadamente um quinto da área do Brasil.
+- [Teleton (Brasil)](https://pt.wikipedia.org/wiki/Teleton_(Brasil)) — Teleton é uma maratona televisiva brasileira anualmente exibida pelo SBT em prol da Associação de Assistência à Criança Deficiente (AACD). A emissora cede, a cada ano, sempre no início de novembro, cerca de 24 horas de sua programação.
+- [Maju Coutinho](https://pt.wikipedia.org/wiki/Maju_Coutinho) — Maria Júlia dos Santos Coutinho Moura, conhecida como Maju Coutinho (São Paulo, 10 de agosto de 1978), é uma jornalista, apresentadora, comentarista, radialista e repórter brasileira. Desde 21 de novembro de 2021, é apresentadora do Fantástico.
+
+### Taiwan (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Taiwan (Japanese)` `2026-11`
+
+- [フォーカス 台湾 - 中央社日本語版](https://japan.focustaiwan.tw/) — 経済 · 東京・新宿の京王百貨店で「台湾フェア」開幕 グルメやスイーツが集結 · 社会 · 女性が毒ヘビにかまれる 台湾・台北市の市街地 · 政治 · 日本の対台湾窓口台北事務所 ...
+- [中央社フォーカス 台湾 の記事一覧 - Yahoo! ニュース](https://news.yahoo.co.jp/media/ftaiwan) — 台湾 北部の景勝地、観光客18人がスズメバチに刺される 新北市・十分瀑布. 11/22(日) 20:09 · 「ちいかわ」大判焼き店が台北にオープン 台湾 人の好み反映. 11/22(日) 17:23.
+- [ニュース - : Taiwan Today](https://jp.taiwantoday.tw/list_news) — 政治 · 第一線を退いて指導者に転じた元 台湾 代表選手9名を米国へ、スポーツ人材育成へ · 米国務省の「人身取引報告書」、 台湾 は17年連続で最高評価「ティア1」に格付け.
+- [「 台湾 」 ニュース 一覧 - NHKニュース - NHK ONE](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000222) — 「 台湾 」 ニュース 一覧 · 【動画】 台湾 伝統の“柿餅”づくりが最盛期 · 太平洋クロマグロ 韓国や 台湾 との協議で大型魚25％増枠へ · 高市首相 訪問先の中国で記者会見【動画 全編】.
+- [最新 台湾 情勢 ニュース | ロイター - Reuters](https://www.reuters.com/jp/world/taiwan/) — 台湾 情勢 · 4時間前. 米、過剰生産能力巡る調査結果公表へ 16カ国・地域に上乗せ関税か＝関係筋 · 1時間前. 台湾 、「英雄」フアン氏復帰に沸く 主要 株価指数も9％高で反応.
+- [中国・ 台湾 の最新 ニュース ・特集 - 日本経済新聞](https://www.nikkei.com/international/china-taiwan/) — 中国や台湾の最新ニュース・特集 をまとめました。中国の習近平国家主席の動向や中国経済、台湾を巡る情勢、TSMCや鴻海のニュースなどをお伝えします。
+- [最新 | フォーカス 台湾 - 中央社日本語版](https://japan.focustaiwan.tw/news) — 最新 · 「レシートくじ」9、10月分の当選番号発表 最高賞は約5千万円／ 台湾 · 28日は統一地方選の投票日 台東県選挙委、各自治体に投票用紙を配布／ 台湾 · 台湾 南東部海域でM5 ...
+- [台湾ニュース - 台北駐日経済文化代表処 - ROC-Taiwan.org](https://www.roc-taiwan.org/jp_ja/cat/14.html) — 駐日代表処について · 組織と業務 台湾 と日本の休日対照表お知らせ台日交流連絡先 ; 駐日代表の寄稿 · 李逸洋・代表 ; 最新情報 · 台湾ニュース Taiwan Today ; 台湾 について.
+
+### Russia (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Russia (English)` `2026-11`
+
+- [What in JavaScript can make both contentEditable and textarea unable to recieve any input?](https://stackoverflow.com/questions/26450780) — - box-1 ["Russia Today", "http://rt.com/"], ["Reuters", "http://www.reuters.com/"], ["Al Jazeera", "http://america.aljazeera.com/"], ["The Raw Story", "http://rawstory.com/"], &hellip; http://whatshouldireadnext.com/"], ["Which Book", "http://www.openingthebook.com/whichbook/"], ["TechRaptor", "http://techraptor.net/"], ["TechCrunch", "http://techcrunch.com/"], ["Gamer Headlines &hellip;
+- [How do i Parsing JSON in Php Seprate and loop through data](https://stackoverflow.com/questions/50705864) — That should worry Trump.", "description": "More legal pressure on Manafort=more chance he'll flip in the Russia investigation.", "url": "https://www.washingtonpost.com/news/the-fix &hellip; php $json = file_get_contents('https://newsapi.org/v2/top-headlines? &hellip;
+- [Failed to pass Service data to the Component](https://stackoverflow.com/questions/52760901) — { Observable, of } from 'rxjs'; import { switchMap } from 'rxjs/operators'; @Injectable() export class SportsService implements OnInit { sports: any = []; _urll = 'https://newsapi.org/v2/top-headlines &hellip; 'Bentley' on 25th birthday", "description": "Off the field News: India cricketer Hardik Pandya, who on Thursday turned 25, introduced a new addition to his family - 'Bentley' - through social &hellip;
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [RT (TV network)](https://en.wikipedia.org/wiki/RT_(TV_network)) — RT, formerly Russia Today (Russian: Россия Сегодня, romanized: Rossiya Segodnya), is a Russian state-controlled international news television network funded by the Russian government. It operates pay television and free-to-air channels directed to audiences outside of Russia, as well as providing Internet content in Russian, English, Spanish, French, German, Arabic, Portuguese and Serbian.
+- [Russia Beyond](https://en.wikipedia.org/wiki/Russia_Beyond) — Russia Beyond (formerly Russia Beyond The Headlines), rebranded as Gateway to Russia in December 2024, is a Russian multilingual project operated by RT (formerly Russia Today) parent ANO TV-Novosti, founded by the Russian state media agency RIA Novosti.
+- [Weekend Today](https://en.wikipedia.org/wiki/Weekend_Today) — Weekend editions of Today, an American morning news and talk program that airs daily on NBC, began with the launch of the Sunday edition of the program on September 20, 1987. After NBC expanded Today to seven days a week in the 1990s, the name Weekend Today was adapted primarily for promotional purposes.
+- [APEC China 2026](https://en.wikipedia.org/wiki/APEC_China_2026) — The APEC China 2026 was a year-long hosting of the Asia-Pacific Economic Cooperation (APEC) meetings, which concluded with the APEC Economic Leaders' Meeting in November 2026. It will be the third time China hosted the summit, having previously hosted in 2001 and 2014.
+
+### France(検索日時 / searched at: 2026-11-25)
+
+Tags: `France` `2026-11`
+
+- [Île-de-France](https://fr.wikipedia.org/wiki/%C3%8Ele-de-France) — L'Île-de-France est une région historique et administrative française. Il s'agit d'une région très fortement peuplée, qui représente à elle seule 18,8 % de la population de la France métropolitaine sur seulement 2,2 % de sa superficie, ce qui en fait la région la plus peuplée (12,46 millions d'habitants en 2023) et la plus densément peuplée (1 038 hab/km2) de France.
+- [Le Parisien](https://fr.wikipedia.org/wiki/Le_Parisien) — Le Parisien, intitulé Le Parisien libéré jusqu'en 1986, est un journal quotidien régional français fondé en 1944 et diffusé principalement en Île-de-France et dans l’Oise. Grâce à ses neuf éditions départementales, Le Parisien est le premier quotidien d'information régionale en Île-de-France et dans l'Oise.
+- [Liste des guerres de la France](https://fr.wikipedia.org/wiki/Liste_des_guerres_de_la_France) — Cette liste regroupe les guerres et conflits ayant vu la participation de la France sous ses différentes entités de 486 (chute du royaume gallo-romain de Soissons) à aujourd'hui. Ne sont pas listées les guerres de religion en France ni les différentes révolutions, insurrections ou soulèvements.
+- [Sam Zirah](https://fr.wikipedia.org/wiki/Sam_Zirah) — Sam Zirah, de son vrai nom Samuel Zirah, né à Montpellier, est un animateur, producteur et créateur de contenu français. Initialement dans l'industrie de la mode, il est aujourd'hui principalement connu pour ses interviews diffusées sur YouTube, notamment à travers ses émissions En Toute Intimité (ETI) et Au jour d'aujourd'hui (AJA).
+- [Franche Culture](https://fr.wikipedia.org/wiki/Franche_Culture) — Franche Culture est une émission de radio française, culturelle et humoristique, présentée par Maïtena Biraben : elle est diffusée sur France Inter depuis le 24 août 2026, du lundi au vendredi de 11 h à 12 h 30. Elle succède, dans la même tranche horaire, à La Bande originale animée pendant douze saisons par Nagui.
+- [Sophia Chikirou](https://fr.wikipedia.org/wiki/Sophia_Chikirou) — Sophia Chikirou, née le 3 juin 1979 à Bonneville (Haute-Savoie), est une femme politique française et communicante. Militante socialiste de 1997 à 2006, Sophia Chikirou rejoint en 2007 La Gauche moderne, fondée par Jean-Marie Bockel, ex-figure du PS ralliée à Nicolas Sarkozy, mais quitte le mouvement en 2008 faute d'avoir pu être tête de la liste soutenue par l'UMP lors des élections municipales de 2008 dans le 20e arrondissement de Paris.
+- [Thomas Snégaroff](https://fr.wikipedia.org/wiki/Thomas_Sn%C3%A9garoff) — Thomas Snégaroff, né le 8 juillet 1974 à Nancy, est un journaliste et historien français. Spécialiste des États-Unis contemporains, il est consultant à la télévision et la radio principalement sur les sujets concernant l'Amérique du nord.
+- [Pascal Praud](https://fr.wikipedia.org/wiki/Pascal_Praud) — Pascal Praud, né le 9 septembre 1964 à Nantes (Loire-Atlantique), est un journaliste sportif, chroniqueur, animateur de radio et de télévision français d'extrême droite. Il est également producteur de télévision.
+
+### Ukraine (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Ukraine (Japanese)` `2026-11`
+
+- [ウクライナ 情勢 | 最新 ウクライナニュース | ロイター - Reuters](https://www.reuters.com/jp/world/ukraine/) — ウクライナ 情勢 · 53分前. 対 ウクライナ 軍事支援、独国民の過半数が反対 賛否逆転＝調査 · ドイツのピストリウス国防相（左）と ウクライナ のフマラ国防相（右 · 59分前.
+- [新着 ニュース - ウクルインフォルム通信](https://www.ukrinform.jp/block-lastnews) — ウクライナ 中部キーウ州ディメルで、22日朝のロシア軍の無人機による攻撃を受けて集合住宅が倒壊した現場では、捜索・救助活動中に生存している児童が1名発見された。
+- [「 ウクライナ 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/ukraine/) — 2026. 11/25: 4分に1人、ロシア兵72万人が ウクライナ 侵攻開始後に死亡か 流出データをもとに推計; 11/23: 北アフリカに停泊中のロシア軍艦、 ウクライナ のドローン攻撃 ...
+- [ウクライナ 侵攻 - BBC ニュース](https://www.bbc.com/japanese/topics/c50vpymk750t) — 最新ニュース · ロシアのウクライナでの戦死者は約50万人 流出公式データをBBCが分析 · 【解説】 ウクライナでの戦争が拡大、リビア海域でのロシア艦船攻撃から分かること.
+- [【 ウクライナ 情勢】特集 ニュース 速報・解説・分析 - 朝日新聞](https://www.asahi.com/topics/AP-7274059d-8405-4d7f-8dbd-8203b01bbbc8/) — ウクライナ 情勢 · ウクライナ 侵攻3年 平行世界（パラレルワールド） · SNSが伝えた戦争 ウクライナ 侵攻1年 · 死の通り ブチャ 生存者の証言 · 2.24後の世界で ウクライナ 侵攻 ...
+- [ウクライナ 情勢 特集サイト - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000296) — ウクライナ外相が来日へ 復興支援や無人機など意見交わす考え · チョルノービリ原発周辺自治体 復興で福島県双葉町と協定締結 · ウクライナ 世界遺産の“危機”.
+- [ウクライナ 情勢 関連 ニュース ：時事ドットコム](https://www.jiji.com/jc/v7?id=202112ukraine) — ロシアはウクライナの非軍事化などを要求して全面攻撃を仕掛けたが、首都キーウの短期制圧に失敗 。欧米の支援を受けたウクライナが徹底抗戦し、戦闘は長期化した。25年1 ...
+- [ウクライナ 侵略最新情報 - 読売新聞](https://www.yomiuri.co.jp/feature/titlelist/ukraine_news/) — ウクライナ向け迎撃ミサイル、米国防総省の承認下りず引き渡しに遅れ … · 前政権はロシアに融和的だったハンガリー、5月就任の新首相がウクライナ訪問… · ロシア軍の死者49 ...
+
+### France (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `France (English)` `2026-11`
+
+- [France 24](https://en.wikipedia.org/wiki/France_24) — France 24 (France vingt-quatre in French) is a French state-owned publicly funded international news television network based in Paris. Its channels, broadcast in French, English, Arabic and Spanish, are aimed at the overseas market.
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [Real Raw News](https://en.wikipedia.org/wiki/Real_Raw_News) — Real Raw News is an American fake news website created in April 2020. Many of its published stories include misinformation about COVID-19 vaccines, fictional arrests and supposed executions of public figures.
+- [RT (TV network)](https://en.wikipedia.org/wiki/RT_(TV_network)) — RT, formerly Russia Today (Russian: Россия Сегодня, romanized: Rossiya Segodnya), is a Russian state-controlled international news television network funded by the Russian government. It operates pay television and free-to-air channels directed to audiences outside of Russia, as well as providing Internet content in Russian, English, Spanish, French, German, Arabic, Portuguese and Serbian.
+- [New York Daily News](https://en.wikipedia.org/wiki/New_York_Daily_News) — The Daily News, widely known as the New York Daily News, is an American newspaper outlet based in Jersey City, New Jersey. It was founded in 1919 by Joseph Medill Patterson in New York City as the Illustrated Daily News.
+- [NBC News](https://en.wikipedia.org/wiki/NBC_News) — NBC News is the news division of the American broadcast television network NBC. It operates under the NBCUniversal News Group, a unit of NBCUniversal, which itself is a subsidiary of Comcast. The news division's various operations report to the president of NBC News, Rebecca Blumenstein.
+- [CTV News Channel (Canadian TV channel)](https://en.wikipedia.org/wiki/CTV_News_Channel_(Canadian_TV_channel)) — CTV News Channel is a Canadian specialty news channel owned by Bell Media (a wholly owned subsidiary of Bell Canada). It broadcasts national and international news headlines, breaking news, and information.
+- [HLN (TV channel)](https://en.wikipedia.org/wiki/HLN_(TV_channel)) — HLN is an American basic cable television channel owned by CNN Worldwide, a division of Skydance. The channel primarily carries true-crime programming, recently drifting away from limited live news programming.
+
+### Austria (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Austria (Japanese)` `2026-11`
+
+- [ドイツ の最新 ニュース を日本語で毎日お届け -](http://www.newsdigest.de/newsde/news/news/) — （ベルリン 11月14日 時事） ドイツ 連邦議会は13日、スパイや過激派の動向を探る情報機関の権限を強める法案を賛成多数で可決した。ロシアや中国、イランによる非軍事的手段 ...
+- [「 ドイツ 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000225) — ロシアが年内に核弾頭搭載の衛星打ち上げ計画か ドイツ報道 · ドイツ最大労組 メルセデスの工場でも24時間ストライキ · トランプ大統領 アジア訪問終えホワイトハウスに 各国 ...
+- [ドイツ - BBC ニュース](https://www.bbc.com/japanese/topics/c7zp51608w0t) — ノルド・ストリーム爆破、ウクライナ人被告の裁判がドイツで始まる ... 黒い口ひげ、金の鎖、白いベストを身に着けた、赤. ロボットが少女にわいせつ ...
+- [「 ドイツ 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/germany/) — 2026. 11/19: ゴッホの「花咲く栗の木」、300億円で落札 ナチス巡る混乱もオークション記録更新; 11/16: 世界の「汚職度」ランキング、米国が過去最低順位に転落 ...
+- [ドイツ の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%83%89%E3%82%A4%E3%83%84.html) — 最新 ニュース · 「日本に被害生じさせない」 EU域内産業保護法案で、次期大使見解 · 参政党、 ドイツ 極右政党の幹部を招待へ 来年の政治資金パーティー · ドイツ 発「デュアル ...
+- [Germany：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Germany) — Germany. トランプ氏、ウクライナへのNATO型「安全の保証」に前向き 米特 使 · 米中ロ首脳会談は「メディア受け狙いのパフォーマンス」 独首相、「ヤルタ方式」を否定 ...
+- [ドイツ - ビジネス短信 - ジェトロ](https://www.jetro.go.jp/biznewstop/biznews/europe/de/) — EU首脳、AIで初の本格協議、技術主権へ大型投資の必要性で一致(米国、EU、イタリア、英国、 ドイツ 、フランス、ポーランド、ロシア、ウクライナ). 2026年11月24日.
+- [「 ドイツ 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/20157) — ドイツ国防相「ばかげている」発言で米次官に謝罪 ウクライナ巡り · 欧州首脳「ヤルタ方式で平和訪れぬ」 ウクライナ巡り米中ロ会談に警戒 · 中国も米国も信じぬ欧州 メルツ ...
+
+### Egypt(検索日時 / searched at: 2026-11-25)
+
+Tags: `Egypt` `2026-11`
+
+- [أخبار اليوم (جريدة مصرية)](https://ar.wikipedia.org/wiki/%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1_%D8%A7%D9%84%D9%8A%D9%88%D9%85_(%D8%AC%D8%B1%D9%8A%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%8A%D8%A9)) — جريدة أخبار اليوم من أكبر المؤسسات الصحفية في مصر والوطن العربي والشرق الأوسط وأشهرها. أسسها التوأم مصطفى أمين (21 فبراير 1914-13ابريل1997) وعلي أمين (21 فبراير 1914-3 أبريل 1976) عام 1944.
+- [الصفحة الرئيسة](https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9_%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D8%A9) — 
+- [دار أخبار اليوم](https://ar.wikipedia.org/wiki/%D8%AF%D8%A7%D8%B1_%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1_%D8%A7%D9%84%D9%8A%D9%88%D9%85) — دار أخبار اليوم من أكبر المؤسسات الصحفية في مصر والوطن العربي والشرق الأوسط وأشهرها. أسسها مصطفى أمين وعلي أمين عام 1944.
+- [الأخبار (جريدة مصرية)](https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1_(%D8%AC%D8%B1%D9%8A%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%8A%D8%A9)) — جريدة الأخبار وهي جريدة يومية رسمية تصدر في القاهرة، وتُوزَع في مصر والعالم العربي. أسسها الأخوان مصطفى وعلي أمين سنة 1952 عن مؤسسة أخبار اليوم ورئيس التحرير أسامة السعيد.
+- [القاهرة الإخبارية](https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9_%D8%A7%D9%84%D8%A5%D8%AE%D8%A8%D8%A7%D8%B1%D9%8A%D8%A9) — القاهرة الإخبارية هي قناة فضائية إخبارية مصرية، تتبع قطاع الاخبار بشركة المتحدة للخدمات الإعلامية، تُبث على القمر الصناعي المصري نايل سات، تختص بتقديم التغطيات الإخبارية للأحداث السياسية، الاقتصادية، الرياضية، الثقافية وغيرها، يقع مقرها الرئيسي بمدينة الإنتاج الإعلامي بالسادس من أكتوبر في محافظة الجيزة المصرية، وبدأت البث الرسمي على مدار 24 ساعة في 31 أكتوبر 2022.
+- [مصر](https://ar.wikipedia.org/wiki/%D9%85%D8%B5%D8%B1) — مِصرُ (رسميًّا: جُمْهُوْرِيَّةُ مِصْرَ العَرَبيَّةُ) دولةٌ عربية، عابرة للقارات، تمتد على الركن الشَّمالي الشرقي لإفريقيا والركنِ الجَنوبي الغربي من آسيا بجسر بري شكلته شبه جزيرة سَيناء. قُدِّر عدد سكانها بأكثرَ من 120 مليون نسَمة؛ لتكون الثالثةَ عشْرة بين دول العالم سكانًا، والأكثر سكاناً عربيًّا وشرقًا أوسطيًّا.
+- [كامل الوزير](https://ar.wikipedia.org/wiki/%D9%83%D8%A7%D9%85%D9%84_%D8%A7%D9%84%D9%88%D8%B2%D9%8A%D8%B1) — الفريق كامل عبد الهادي فرج الوزير (1957 - ) عسكري وسياسي مصري يشغل منصب وزير النقل، ووزير الصناعة والتجارة، ونائب رئيس مجلس الوزراء في مصر. خلف الوزير هشام عرفات، الذي استقال عقب كارثة محطة رمسيس للسكك الحديدية.
+- [الحرب الأهلية السودانية (2023–حتى الآن)](https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%AD%D8%B1%D8%A8_%D8%A7%D9%84%D8%A3%D9%87%D9%84%D9%8A%D8%A9_%D8%A7%D9%84%D8%B3%D9%88%D8%AF%D8%A7%D9%86%D9%8A%D8%A9_(2023%E2%80%93%D8%AD%D8%AA%D9%89_%D8%A7%D9%84%D8%A2%D9%86)) — الحرب الأهلية السودانية 2023 أو نزاع السودان 2023 هي حرب أهلية بدأت في الخامس عشر من نيسان/أبريل 2023 بين القوات المسلحة السودانية التي يقودها رئيس مجلس السيادة الانتقالي الفريق أول ركن عبد الفتاح البرهان وبين قوات الدعم السريع تحت قيادة محمد حمدان دقلو (حميدتي). تركّزت الاشتباكات في يومها الأول في العاصمة الخرطوم (ولاية الخرطوم) وخصوصًا في محيطِ القصر الرئاسي وفي مطار الخرطوم الدولي لكنها امتدَّت في الأيام اللاحقة لمدن وبلدات أخرى تقعُ في ولايات ثانية وتحديدًا الولاية الشمالية و‌ولايات دارفور (الشمال، والجنوب، والشرق، والغرب).
+
+### Italy (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Italy (Japanese)` `2026-11`
+
+- [イタリア の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2.html) — 朝日新聞の、 イタリア に関する ニュース や速報記事一覧です。 イタリア に関する現状や背景を、わかりやすくお伝えします。
+- [イタリア - 。 今日 の最新 ニュース と主な出来事。 - Sputnik 日本](https://sputniknews.jp/geo_italy/) — イタリア · 【新型戦闘機開発へ独が参加 プロジェクト全体の足枷となるか？ · 【10式戦車の暴発 高速発射が呼んだ惨事】 · ハンガリーのICC脱退は先見の明＝伊元議員 · 加藤 ...
+- [「 イタリア 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/italy/) — ... イタリア 」の ニュース . ... 注目 ニュース . 米CIAに不正アクセス、非機密情報に影響 米情報機関で相次ぐ被害 11/25; 4分に1人、ロシア兵72万人がウクライナ侵攻開始後に ...
+- [「 イタリア 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000517) — 「 イタリア 」 ニュース 一覧 ; ラグビー 日本の次戦の相手 スコットランドが豪に競り勝つ. 11月16日 15:55 ; ウクライナ和平協議にヨーロッパ代表も 英仏独など5か国. 11月14日 ...
+- [Italy：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Italy) — 46歳ロナウジーニョが伊3部で現役復帰、チームの勝利に貢献. Italy. メタに約1420億円の制裁金、写真へのアクセスで同意不十分 伊 · 欧州で偽の爆破予告相次ぐ 約20便 ...
+- [イタリア - BBC ニュース](https://www.bbc.com/japanese/topics/cr50ykzg072t) — イタリア · 欧州で数千の学校に偽の爆破予告 イタリア、英スコットランドなどで · 【解説】抗議活動で勢いづく欧州の若者たち、何で結びついているのか · ピザにパイナップル ...
+- [イタリア - ビジネス短信 - ジェトロ](https://www.jetro.go.jp/biznewstop/biznews/europe/it/) — イタリア · 2026年11月24日. EU首脳、AIで初の本格協議、技術主権へ大型投資の必要性で一致(米国、EU、 イタリア 、英国、ドイツ、フランス、ポーランド、ロシア、ウクライナ).
+- [「 イタリア 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/20138) — GCAP次期戦闘機開発、ドイツ参画にイタリア「反対」 FT報道 · 中国も米国も信じぬ欧州 メルツ独首相が語った「日本との絆」 · ドイツ国防相、次期戦闘機構想で日英伊への合流 ...
+
+### Iran(検索日時 / searched at: 2026-11-25)
+
+Tags: `Iran` `2026-11`
+
+- [واکنش‌ها به جنگ دوازده‌روزه](https://fa.wikipedia.org/wiki/%D9%88%D8%A7%DA%A9%D9%86%D8%B4%E2%80%8C%D9%87%D8%A7_%D8%A8%D9%87_%D8%AC%D9%86%DA%AF_%D8%AF%D9%88%D8%A7%D8%B2%D8%AF%D9%87%E2%80%8C%D8%B1%D9%88%D8%B2%D9%87) — پس از آغاز جنگ دوازده‌روزه، واکنش‌ها به حملات اولیه و ضدحملات ادامه‌دار بین دولت‌ها و نهادهای غیردولتی بین‌الملل متنوع بود. دولت ایران، مردم داخل کشور و ایرانیان خارج از کشور به این رویداد واکنش نشان دادند.
+- [تحریف در صدا و سیمای جمهوری اسلامی ایران](https://fa.wikipedia.org/wiki/%D8%AA%D8%AD%D8%B1%DB%8C%D9%81_%D8%AF%D8%B1_%D8%B5%D8%AF%D8%A7_%D9%88_%D8%B3%DB%8C%D9%85%D8%A7%DB%8C_%D8%AC%D9%85%D9%87%D9%88%D8%B1%DB%8C_%D8%A7%D8%B3%D9%84%D8%A7%D9%85%DB%8C_%D8%A7%DB%8C%D8%B1%D8%A7%D9%86) — تحریف در صدا و سیمای جمهوری اسلامی ایران بیش از چهار دهه سابقه دارد. به عقیدهٔ برخی از تحلیل‌گران، سازمان صدا و سیمای جمهوری اسلامی ایران به صورت سیستماتیک دروغ می‌گوید و اخبار و گزارش‌های جعلی، تحریف شده و نامعتبر را منتشر می‌کند.
+- [لیگ برتر والیبال ایران ۰۵–۱۴۰۴](https://fa.wikipedia.org/wiki/%D9%84%DB%8C%DA%AF_%D8%A8%D8%B1%D8%AA%D8%B1_%D9%88%D8%A7%D9%84%DB%8C%D8%A8%D8%A7%D9%84_%D8%A7%DB%8C%D8%B1%D8%A7%D9%86_%DB%B0%DB%B5%E2%80%93%DB%B1%DB%B4%DB%B0%DB%B4) — لیگ برتر والیبال مردان ایران در فصل ۱۴۰۴ – ۰۵ که با نام رسمی سی‌ونهمین دوره لیگ برتر والیبال قهرمانی باشگاه‌های ایران شناخته می‌شود، بالاترین سطح رقابت‌های باشگاهی والیبال در ایران است که زیر نظر فدراسیون والیبال جمهوری اسلامی ایران برگزار خواهد شد. فولاد سیرجان ایرانیان ، قهرمان فصل گذشته، مدافع عنوان قهرمانی در این دوره از مسابقات است.
+- [یل (مجموعه نمایش خانگی)](https://fa.wikipedia.org/wiki/%DB%8C%D9%84_(%D9%85%D8%AC%D9%85%D9%88%D8%B9%D9%87_%D9%86%D9%85%D8%A7%DB%8C%D8%B4_%D8%AE%D8%A7%D9%86%DA%AF%DB%8C)) — يَلْ مجموعهٔ نمایش خانگی ایرانی در ژانر درام جنایی به نویسندگی و کارگردانی جمشید محمودی و تهیه‌کنندگی نوید محمودی است که برای شبکهٔ اینترنتی فیلم‌نت ساخته شده است. نوید محمدزاده، میلاد کی‌مرام، حسین یاری، سید جواد رضویان، پردیس احمدیه، ندا جبرائیلی، محسن قصابیان و بابک حمیدیان از بازیگران این مجموعه هستند.
+- [جان‌سخت (مجموعه نمایش خانگی)](https://fa.wikipedia.org/wiki/%D8%AC%D8%A7%D9%86%E2%80%8C%D8%B3%D8%AE%D8%AA_(%D9%85%D8%AC%D9%85%D9%88%D8%B9%D9%87_%D9%86%D9%85%D8%A7%DB%8C%D8%B4_%D8%AE%D8%A7%D9%86%DA%AF%DB%8C)) — جان‌سخت مجموعهٔ نمایش خانگی ایرانی به کارگردانی و نویسندگی مصطفی تقی‌زاده و تهیه‌کنندگی سعید خانی است که از فیلم‌نت پخش می‌شد. مهرداد صدیقیان، الناز حبیبی، مجتبی پیرزاده، ماهور الوند و فرهاد اصلانی از بازیگران این مجموعه هستند.
+- [کارآگاه علوی ۳](https://fa.wikipedia.org/wiki/%DA%A9%D8%A7%D8%B1%D8%A2%DA%AF%D8%A7%D9%87_%D8%B9%D9%84%D9%88%DB%8C_%DB%B3) — کاراگاه علوی ۳ یک مجموعه تلویزیونی ایرانی به کارگردانی سیدجمال سیدحاتمی، نویسندگی حسن هدایت و تهیه‌کنندگی پرویز امیری محصول سال‌های ۱۴۰۴–۱۴۰۵ است، این مجموعه دنباله‌ای بر مجموعه‌های کارآگاه (۱۳۷۵) و کارگاه علوی ۲ (۱۳۸۷) است.
+- [زخم کاری](https://fa.wikipedia.org/wiki/%D8%B2%D8%AE%D9%85_%DA%A9%D8%A7%D8%B1%DB%8C) — زخم کاری یک مجموعهٔ نمایش خانگی ایرانی در ژانر درام جنایی به نویسندگی و کارگردانی محمدحسین مهدویان است که فصل اول آن بر پایهٔ رمان بیست زخم کاری نوشتهٔ محمود حسینی‌زاد و نمایشنامهٔ مکبث نوشتهٔ ویلیام شکسپیر برای سرویس پخش فیلیمو ساخته شده است. فصل دوم این سریال با نگاهی به نمایشنامهٔ هملت نوشتهٔ ویلیام شکسپیر و طراحی قصه مهدویان نوشته شده است.
+- [بازنده (مجموعه نمایش خانگی)](https://fa.wikipedia.org/wiki/%D8%A8%D8%A7%D8%B2%D9%86%D8%AF%D9%87_(%D9%85%D8%AC%D9%85%D9%88%D8%B9%D9%87_%D9%86%D9%85%D8%A7%DB%8C%D8%B4_%D8%AE%D8%A7%D9%86%DA%AF%DB%8C)) — بازنده یک مجموعهٔ نمایش خانگی ایرانی در ژانر درام جنایی به کارگردانی و نویسندگی امین حسین‌پور و به تهیه‌کنندگی احسان ظلی‌پور است. این مجموعه اقتباسی از رمان زوج همسایه اثری از شاری لاپنا است.
+
+### China (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `China (English)` `2026-11`
+
+- [China Today (TV program)](https://en.wikipedia.org/wiki/China_Today_(TV_program)) — China Today is a news program that focuses on news issues and current affairs around China. China Today 30 minute's episodes are broadcast on CCTV-9 at 22:00 China Standard Time (UTC+8), or 14:00 UTC every day, and rebroadcasts twice at 01:00 and 07:00 UTC+8 the next morning, or 17:00 and 23:00 UTC. The Sunday edition of China Today is called China This Week, which takes a look back at major issues happen around the country within the previous 6 days.
+- [Today Daily News (Toronto)](https://en.wikipedia.org/wiki/Today_Daily_News_(Toronto)) — Today Daily News (Chinese: 現代日報; pinyin: Xiàndài Rìbào) was a Chinese language newspaper in Canada, launched on November 1, 2005. It was published by Today Daily News International in Scarborough.
+- [Failed to pass Service data to the Component](https://stackoverflow.com/questions/52760901) — crash to 26 all out - again", "description": "Cricket News: ​China may have the world's biggest population and the second largest economy, but they are yet to impress in one area: the cricket &hellip; field, where they", "url": "https://timesofindia.indiatimes.com/sports/cricket/news/sticky-wicket-as-china-crash-to-26-all-out-again/articleshow/66164330.cms", "urlToImage": "https &hellip;
+- [Toutiao](https://en.wikipedia.org/wiki/Toutiao) — Toutiao (头条, "headlines") or Jinri Toutiao (今日头条, "Today's Headlines") is a Chinese news and information content platform, a core product of the China-based company ByteDance. By analyzing the features of content, users and users' interaction with content, the company's algorithm models generate a tailored feed list of content for each user.
+- [How do i Parsing JSON in Php Seprate and loop through data](https://stackoverflow.com/questions/50705864) — 48:40Z" }, { "source": { "id": "usa-today", "name": "USA Today" }, "author": "Erin Jensen", "title": "Miss &hellip; php $json = file_get_contents('https://newsapi.org/v2/top-headlines? &hellip;
+- [Headlines (disambiguation)](https://en.wikipedia.org/wiki/Headlines_(disambiguation)) — The headline is the text at the top of a newspaper article, indicating the nature of the article below it.
+- [The Diplomat Magazine Exposed Yan Limeng and Guo Wengui](https://news.ycombinator.com/item?id=36148847) — Hacker News · 4 points · 0 comments · 2023-06-01
+- [Yan Limeng and Guo Wengui as anti-communist swindlers](https://news.ycombinator.com/item?id=36135865) — Hacker News · 1 points · 0 comments · 2023-05-31
+
+### South Korea (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `South Korea (English)` `2026-11`
+
+- [NK News](https://en.wikipedia.org/wiki/NK_News) — NK News is an American subscription-based news website that provides stories and analysis about North Korea. The organization's main bureau is in Seoul, South Korea, with reporters in Washington, D.C., and London.
+- [North Korea](https://en.wikipedia.org/wiki/North_Korea) — North Korea, officially the Democratic People's Republic of Korea (DPRK), is a country in East Asia. It constitutes the northern half of the Korean Peninsula and borders China and Russia to the north at the Yalu (Amnok) and Tumen rivers, and South Korea (officially the Republic of Korea) to the south at the Korean Demilitarized Zone (DMZ).
+- [Jennie (singer)](https://en.wikipedia.org/wiki/Jennie_(singer)) — Jennie Kim (Korean: 김제니; born January 16, 1996) is a South Korean singer, rapper, songwriter, and actress. Born in South Korea, she moved to New Zealand in 2004 and returned to South Korea to successfully audition for YG Entertainment in 2010.
+- [Jung Kook](https://en.wikipedia.org/wiki/Jung_Kook) — Jeon Jung-kook (Korean: 전정국; born September 1, 1997), known professionally as Jung Kook, is a South Korean singer and songwriter. He rose to prominence as a member of South Korean boy band BTS. He has performed three solo songs as part of BTS' discography—"Begin" in 2016, "Euphoria" in 2018, and "My Time" in 2020—all of which charted on South Korea's Gaon Digital Chart.
+- [Ive (group)](https://en.wikipedia.org/wiki/Ive_(group)) — Ive (Korean: 아이브; RR: Aibeu; stylized in all caps) is a South Korean girl group formed by Starship Entertainment. The group is composed of six members: Gaeul, An Yu-jin, Rei, Jang Won-young, Liz, and Leeseo.
+- [BigBang (South Korean band)](https://en.wikipedia.org/wiki/BigBang_(South_Korean_band)) — BigBang (Korean: 빅뱅; stylized in all caps) is a South Korean boy band formed by YG Entertainment. The group consists of three members: G-Dragon, Taeyang, and Daesung.
+- [Blackpink](https://en.wikipedia.org/wiki/Blackpink) — Blackpink (Korean: 블랙핑크; stylized in all caps) is a South Korean girl group formed by YG Entertainment. The group is composed of four members: Jisoo, Jennie, Rosé, and Lisa.
+- [Babymonster](https://en.wikipedia.org/wiki/Babymonster) — Babymonster (Korean: 베이비몬스터; stylized in all caps), also referred to as Baemon ( BAY-mon; 베몬), is a South Korean girl group formed by YG Entertainment. The group is composed of seven members: Ruka, Pharita, Asa, Ahyeon, Rami, Rora, and Chiquita.
+
+### Afghanistan (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Afghanistan (English)` `2026-11`
+
+- [Elections in Afghanistan](https://en.wikipedia.org/wiki/Elections_in_Afghanistan) — Though Afghanistan has had democratic elections throughout the 20th century, the electoral institutions have varied as changes in the political regime have disrupted political continuity. Elections were last held under the Islamic Republic of Afghanistan, which was deposed by the Taliban in August 2021.
+- [2026 Shpageeza Cricket League](https://en.wikipedia.org/wiki/2026_Shpageeza_Cricket_League) — The 2026 Shpageeza Cricket League (also known as for sponsorship reasons as 2026 e& Shpageeza Cricket League) was the 11th edition of the Shpageeza Cricket League, a professional Twenty20 cricket (T20) league established by the Afghanistan Cricket Board (ACB) in 2013, and the seventh edition to have official T20 status. On 20 June 2026, Afghanistan Cricket Board announced the complete fixtures of the 2026 editions.
+- [RT (TV network)](https://en.wikipedia.org/wiki/RT_(TV_network)) — RT, formerly Russia Today (Russian: Россия Сегодня, romanized: Rossiya Segodnya), is a Russian state-controlled international news television network funded by the Russian government. It operates pay television and free-to-air channels directed to audiences outside of Russia, as well as providing Internet content in Russian, English, Spanish, French, German, Arabic, Portuguese and Serbian.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [List of current BBC newsreaders and reporters](https://en.wikipedia.org/wiki/List_of_current_BBC_newsreaders_and_reporters) — This is a list of newsreaders and journalists currently employed by BBC Television and BBC Radio. Presenters and journalists appear across BBC television and radio, and also contribute to BBC Online.
+- [Fox News](https://en.wikipedia.org/wiki/Fox_News) — The Fox News Channel (FNC), often referred to as Fox News, is an American multinational conservative news and political commentary television channel and website based in New York City. Owned by the Fox News Media subsidiary of Fox Corporation, as of 2022, it is the most-watched cable news network in the United States, and as of 2023, it generates approximately 70% of its parent company's pre-tax profit.
+- [PBS News Hour](https://en.wikipedia.org/wiki/PBS_News_Hour) — PBS News Hour (previously stylized as PBS NewsHour) is an American daily evening television news program broadcast on more than 350 PBS member stations since October 20, 1975. The nightly broadcast is known for its in-depth coverage of important issues and current events.
+- [The News Agents](https://en.wikipedia.org/wiki/The_News_Agents) — The News Agents is a British daily podcast produced by Global Media & Entertainment. It is presented by Emily Maitlis, Jon Sopel, and Lewis Goodall.
+
+### Egypt (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Egypt (Japanese)` `2026-11`
+
+- [エジプト の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%82%A8%E3%82%B8%E3%83%97%E3%83%88.html) — 朝日新聞の、 エジプト に関する ニュース や速報記事一覧です。 エジプト に関する現状や背景を、わかりやすくお伝えします。
+- [「 エジプト 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/egypt/) — 2026. 11/09: エジプトで列車が衝突、7人死亡 112人負 傷; 10/09: スフィンクスと同じ岩盤層で見つかったワニの化石、新種と判明; 10/08: 古代エジプト人、王の死に際し ...
+- [「 エジプト 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/30182) — 日本貿易保険、豊田通商などの エジプト 風力支援 300億円融資に保険 · エジプト で列車追突、脱線し7人死亡 100人以上負傷 · 盟主 エジプト がサウジ軍事支援決断 フーシ攻撃激化 ...
+- [「 エジプト 」 ニュース 一覧 - NHKニュース - NHK ONE](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000425) — G7外相会合閉幕 中東安定に向けた連携 ウクライナ支援継続確認 · エジプトで列車衝突事故 7人死亡 112人けが · サウジアラビア防衛のためイギリスやエジプトが軍事支援を表明.
+- [エジプト の ニュース ・読売新聞の最新記事](https://www.yomiuri.co.jp/keyword/39753/) — 新着一覧 · ガザ出身デザイナー 来日へCF 日本で市場調査 トークイベントも · エジプト ・カイロ近郊で列車同士が衝突、7人死亡・125人負傷… · 日本サッカー協会、 ...
+- [エジプト の ニュース ・記事一覧 - Business Insider Japan](https://www.businessinsider.jp/tag/egypt/) — エジプト · ミイラの本当の作り方… · 2300年前の少年のミイラから49個の護符を発見… · 金箔で覆われた4300年前のミイラを発見… · 古代 エジプト 人は病とどう向き合っていたのか…
+- [「 エジプト 」の検索結果 - Yahoo! ニュース](https://news.yahoo.co.jp/search?p=%E3%82%A8%E3%82%B8%E3%83%97%E3%83%88) — サウジアラビアでは24日、首都リヤドにあるビルが攻撃を受け、インドや エジプト の国籍を含む、少なくとも11人がけがをして病院で手当てを受けています。 … テレビ朝日系（ ...
+- [Egypt：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Egypt) — エジプトで列車同士が衝突、7人死亡 112人負 傷. Egypt. 有名テレビ司会者ら12人に死刑判決、合成麻薬を製造・密売 エジプト · クシュナー氏がガザ和平案推進に向け ...
+
+### Afghanistan (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Afghanistan (Japanese)` `2026-11`
+
+- [アフガニスタン 情勢 関連 ニュース ：時事ドットコム](https://www.jiji.com/jc/v7?id=2108afghanistan) — タリバン最高指導者が首都カブール訪問 異例の訴え、内部対立意識か―アフガン (11月18日 17:05) · アフガン隣国でケシ栽培急増 タリバンが禁止、越境作付けか(11月02日 16:11).
+- [「 アフガニスタン 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/10105) — アフガニスタン隣国でケシ栽培急増 タリバン禁止で越境作付け · アフガニスタン、中国国境への道路開通 交易路の確立目指す · パキスタンが非常事態宣言 北西部の州、治安 ...
+- [アフガニスタン ・イスラム共和国の関連情報 - フォロー](https://follow.yahoo.co.jp/themes/009cdd0d709727a72400/) — アフガニスタン ・イスラム共和国 · ヘンリー英王子、必要なら軍務に復帰しロシアと戦う用意 · 「ロシアを1減らすために、西側は3消耗しているようなもの」ウクライナ支援の陰 ...
+- [「 アフガニスタン 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000226) — 少女たちに何が 深刻化する児童婚 · パキスタンが アフガニスタン 攻撃 対立の激化懸念 · UNDP＝国連開発計画“ アフガニスタン の女性への支援継続を” · アフガニスタン 東部地震 ...
+- [アフガニスタン - BBC ニュース](https://www.bbc.com/japanese/topics/cr50ykzr421t) — BBCのFMラジオ放送、アフガニスタンで停止される · パキスタンのモスクに爆発物を積んだ車突入、少なくとも21人が死亡 · 9/11の3年前に「爆発物を積んだ航空機」の脅威を米 ...
+- [Afghanistan：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Afghanistan) — イラン目指したアフガン人14人、灼熱の砂漠で遺体で発見 · タリバン幹部射殺事件、イスラム国ホラサン州が犯行声明「背教者をマシンガンで殺害」 · アフガンのタリバン暫定 ...
+- [「 アフガニスタン 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/afghanistan/) — 西太平洋での有事シナリオ、 主要 部隊の展開速度に懸念 米陸軍監査機関が報告 11/24; イラン、女性歌手ら5人に鞭打ち刑執行か ヒジャブ非着用のパフォーマンスが理由と ...
+- [アフガニスタン の ニュース ・読売新聞の最新記事](https://www.yomiuri.co.jp/keyword/29272/) — 新着一覧 · クリケットの初戦は強豪・アフガニスタンに完敗 、主将が語った「今の日本に足りないもの」… · 佐野市に本拠を構える「クリケット協会」、知られざる日本の現在地 ...
+
+### Myanmar(検索日時 / searched at: 2026-11-25)
+
+Tags: `Myanmar` `2026-11`
+
+- (no items / 記事なし)
+
+### Brazil (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Brazil (English)` `2026-11`
+
+- [Toutiao](https://en.wikipedia.org/wiki/Toutiao) — Toutiao (头条, "headlines") or Jinri Toutiao (今日头条, "Today's Headlines") is a Chinese news and information content platform, a core product of the China-based company ByteDance. By analyzing the features of content, users and users' interaction with content, the company's algorithm models generate a tailored feed list of content for each user.
+- [News](https://en.wikipedia.org/wiki/News) — News is information about current events. This may be provided through many different media: word of mouth, printing, postal systems, broadcasting, electronic communication, or through the testimony of observers and witnesses to events.
+- [Brazil v Germany (2014 FIFA World Cup)](https://en.wikipedia.org/wiki/Brazil_v_Germany_(2014_FIFA_World_Cup)) — The Brazil versus Germany football match (also known by its score as 7–1, or Mineiraço in Brazil) was the first of two semi-final matches of the 2014 FIFA World Cup that took place on 8 July 2014 at the Mineirão stadium in Belo Horizonte, Brazil. Both Brazil and Germany reached the semi-finals with an undefeated record in the competition, with the Brazilians' quarter-final with Colombia causing them to lose forward Neymar to injury, and defender and captain Thiago Silva to accumulation of yellow cards.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [RT (TV network)](https://en.wikipedia.org/wiki/RT_(TV_network)) — RT, formerly Russia Today (Russian: Россия Сегодня, romanized: Rossiya Segodnya), is a Russian state-controlled international news television network funded by the Russian government. It operates pay television and free-to-air channels directed to audiences outside of Russia, as well as providing Internet content in Russian, English, Spanish, French, German, Arabic, Portuguese and Serbian.
+- [List of news presenters](https://en.wikipedia.org/wiki/List_of_news_presenters) — This is a list of news presenters by nationality.
+- [List of miscellaneous fake news websites](https://en.wikipedia.org/wiki/List_of_miscellaneous_fake_news_websites) — This is a list of miscellaneous fake news websites that do not fit into any of the other fake news website lists such as these lists of: fake news website campaigns by individuals, corporate disinformation website campaigns, fraudulent fact-checking websites, fake news websites based on generative AI hate group-sponsored fake news websites, elsewhere, satirical fake news websites, troll farm websites involved in fake news, user-generated fake news websites, and other fake news online networks.
+- [HLN (TV channel)](https://en.wikipedia.org/wiki/HLN_(TV_channel)) — HLN is an American basic cable television channel owned by CNN Worldwide, a division of Skydance. The channel primarily carries true-crime programming, recently drifting away from limited live news programming.
+
+### Thailand (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Thailand (English)` `2026-11`
+
+- [Thailand](https://en.wikipedia.org/wiki/Thailand) — Thailand, officially the Kingdom of Thailand, and formerly known as Siam, is a country located in Mainland Southeast Asia. It shares land borders with Myanmar to the west and northwest, Laos to the east and northeast, Cambodia to the southeast, and Malaysia to the south.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [CNA (TV network)](https://en.wikipedia.org/wiki/CNA_(TV_network)) — CNA (abbreviated from Channel NewsAsia) is a Singapore-based multinational news channel owned by Mediacorp, the country's state-owned media conglomerate. The network is broadcast in Singapore on free-to-air terrestrial television and Mediacorp's streaming service meWatch, and is distributed internationally via television providers in the Asia–Pacific, as well as streaming and free ad-supported streaming television (FAST) platforms.
+- [Horse racing in Thailand](https://en.wikipedia.org/wiki/Horse_racing_in_Thailand) — Horse racing was introduced to Thailand in the late nineteenth century and continues to take place at several locations throughout the country. Betting on horse races is one of the few legal forms of gambling in Thailand, and the sport became highly popular during the mid-twentieth century but has largely declined since.
+- [Jenna Bush Hager](https://en.wikipedia.org/wiki/Jenna_Bush_Hager) — Jenna Welch Bush Hager (née Bush; born November 25, 1981) is an American news personality, author, and journalist. She is the co-host of Today with Jenna & Sheinelle, the fourth hour of NBC's morning news program, Today.
+- [Lisa (rapper)](https://en.wikipedia.org/wiki/Lisa_(rapper)) — Lalisa Manobal (Thai: ลลิษา มโนบาล; born Pranpriya Manobal, March 27, 1997), known mononymously as Lisa (Thai: ลิซ่า; Korean: 리사), is a Thai rapper, singer, dancer, and actress. She rose to prominence as a member of the South Korean girl group Blackpink, which debuted under YG Entertainment in August 2016 and became one of the best-selling girl groups of all time.
+- [BBC News](https://en.wikipedia.org/wiki/BBC_News) — BBC News is an operational business division of the British Broadcasting Corporation (BBC) responsible for the gathering and broadcasting of news and current affairs in the UK and around the world. The department is the world's largest broadcast news organisation and generates about 120 hours of radio and television output each day, as well as online news coverage.
+- [HLN (TV channel)](https://en.wikipedia.org/wiki/HLN_(TV_channel)) — HLN is an American basic cable television channel owned by CNN Worldwide, a division of Skydance. The channel primarily carries true-crime programming, recently drifting away from limited live news programming.
+
+### Iran (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Iran (Japanese)` `2026-11`
+
+- [イラン 情勢の ニュース ・速報 - 47NEWS](https://www.47news.jp/topic/iran-situation) — イラン 情勢の ニュース ・速報. 200件中 1~20件表示. 米中ロ首脳会談大国都合が前面分断危惧. 10時10分. 福井新聞 · 首都リヤドの高層ビルが立ち並ぶエリア「キング ...
+- [イラン 情勢 関連 ニュース ：時事ドットコム](https://www.jiji.com/jc/v7?id=201905iran) — イラン 情勢 関連 ニュース · フーシ派がビル攻撃、11人負傷 サウジ首都(11月25日 06:23) · イラン 再攻撃の可能性警告 来年以降、交渉決裂なら―米大統領(11月23日 13:54).
+- [イラン 大統領の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%82%A4%E3%83%A9%E3%83%B3%E5%A4%A7%E7%B5%B1%E9%A0%98.html) — 最新ニュース · イラン「我々こそテロ被害者」 米との交渉再開にも含み 大統領演説 · 国連で「我々はテロ被害者」 イラン大統領演説、米代表は退席 · 「我々はテロの被害者」 ...
+- [「 イラン 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/iran/) — 2026. 11/24: イラン 、女性歌手ら5人に鞭打ち刑執行か ヒジャブ非着用のパフォーマンスが理由と人権団体; 11/23: ホルムズ海峡における イラン の攻撃、紛争開始以来の ...
+- [「 イラン 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000217) — 「イラン」ニュース一覧 · イギリス人スイマー ホルムズ海峡を遠泳「戦争をやめるべき」 · イラン バーレーンの米軍施設を標的に攻撃と発表 緊張続く · 米財務長官 米中で「 ...
+- [イラン 軍事衝突 最新 ニュース と解説 - 日本経済新聞](https://www.nikkei.com/topics/19061400) — イラン軍事衝突 · 米国防総省、GMやフォードと軍用ドローン部品の生産協議 米報道 · フーシ、サウジ首都リヤドの金融地区に攻撃 11人負傷 · 塩ビ樹脂のアジア価格、11月積みの ...
+- [イラン - BBC ニュース](https://www.bbc.com/japanese/topics/c8y946g2nz3t) — イラン · 米中ロ3首脳、顔を合わせ握手 中国での歴史的会談を前に · イラン 、バーレーンの米軍基地をドローン攻撃 · ビデオ, トランプ氏、 イラン 戦争に「我々は勝った」と発言 ...
+- [イラン の関連情報 - フォロー - Yahoo! JAPAN](https://follow.yahoo.co.jp/themes/06fd6249c78927c72400/) — ニューヨーク州連邦地裁がファーウェイに有罪評決、米企業の営業秘密盗むため共謀・ イラン への経済制裁違反 · イラン 、米の海上封鎖を懸念せず 物価上昇抑制へ＝第1副 ...
+
+### Tajikistan (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Tajikistan (Japanese)` `2026-11`
+
+- [タジキスタン - 。 今日 の最新 ニュース と主な出来事。](https://sputniknews.jp/geo_tajikistan/) — タジキスタン · 岸田首相、中央アジア訪問 新規事業に3000億円の保証枠設置へ · 岸田首相、8月中旬に中央アジア歴訪 新たな協力枠組み発表 · 習主席、カザフスタンで開催の ...
+- [Tajikistan：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Tajikistan) — タジキスタン、ロシアでの10歳児童刺殺事件を非難「民族憎悪」 . Tajikistan. スイス氷河崩落は世界への警鐘 専門家が指摘 · 女性が着るべき服装の「指針本」出版へ ...
+- [「 タジキスタン 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/tajikistan/) — 選手の不安が現実に タリバンが女性のスポーツ禁止、代表チーム相次ぎ出国 · Video.
+- [タジキスタン の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%82%BF%E3%82%B8%E3%82%AD%E3%82%B9%E3%82%BF%E3%83%B3.html) — ICC支援、手段限られる日本 · 高市首相がICC赤根所長と面会 27年分担金の年内前倒し拠出表明 · タジキスタン 、「ICC脱退」 ロシア同盟国 · ロシア同盟国がICC脱退を通告 ...
+- [タジキスタン の ニュース ・読売新聞の最新記事](https://www.yomiuri.co.jp/keyword/74884/) — 国際刑事裁判所（ICC）締約国会議の正副議長国は23日、中央アジアの タジキスタン がICC脱退の手続きを開始したと発表した。脱退を正式に表明した国は、7か国目 ...
+- [トピック ニュース | 駐日 タジキスタン 共和国大使館](https://www.mfa.tj/ja/tokyo/topical-news-ja) — 2024年12月4日付けで発令された タジキスタン 共和国大統領令により、マジュリシ・ナモヤンダゴンおよび地方議会議員の選挙が2025年3月2日に開かれます。 この選挙は、 ...
+- [タジキスタン 共和国の関連情報 - フォロー - Yahoo! JAPAN](https://follow.yahoo.co.jp/themes/0ee2889867904a8f2378/) — 中国首相、タジキスタンとの安全保障協力深化呼びかけ · 「屈辱的記録を次々更新」中国代表、タジキスタンに史上初黒星 泥沼3連敗に現地は嘆き「日本に対する敗北以来最も ...
+- [「 タジキスタン 」の検索結果 - Yahoo! ニュース](https://news.yahoo.co.jp/search?p=%E3%82%BF%E3%82%B8%E3%82%AD%E3%82%B9%E3%82%BF%E3%83%B3) — タジキスタンからの国費留学生受け入れで合意 日本語学校経営者協会 · 【PANCRASE】3大王座戦に！ · 米国務長官、中央アジア5カ国外相と会談 ウズベクと投資合意も · 中国首相 ...
+
+### Iran (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Iran (English)` `2026-11`
+
+- [How do i Parsing JSON in Php Seprate and loop through data](https://stackoverflow.com/questions/50705864) — 48:40Z" }, { "source": { "id": "usa-today", "name": "USA Today" }, "author": "Erin Jensen", "title": "Miss &hellip; php $json = file_get_contents('https://newsapi.org/v2/top-headlines? &hellip;
+- [2025–2026 Iranian protests](https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests) — The 2025–2026 Iranian protests are a series of nationwide demonstrations against the government of Iran that began on 28 December 2025 amid a deepening economic crisis. The unrest followed a sharp depreciation of the Iranian rial, rising inflation, and widespread shortages linked to international sanctions and government mismanagement.
+- [Reactions to the 2026 Iran war](https://en.wikipedia.org/wiki/Reactions_to_the_2026_Iran_war) — On 28 February 2026, the United States and Israel launched joint airstrikes on Iran, starting the 2026 Iran war. The strikes targeted Iranian officials, military commanders, and military assets, assassinating Ali Khamenei, the supreme leader of Iran.
+- [Headline](https://en.wikipedia.org/wiki/Headline) — A headline is the text indicating the content or nature of the article below it, typically a news piece, by providing a form of brief summary of its contents. The large type front page headline did not come into use until the late 19th century when increased competition between newspapers led to the use of attention-getting headlines.
+- [List of newspapers in Iran](https://en.wikipedia.org/wiki/List_of_newspapers_in_Iran) — The first Iranian newspapers appeared in the mid-19th century during the reign of Naser al-Din Shah. More specifically, the first newspaper in Iran, Kaghaz-e Akhbar (The Newspaper), was launched for the government by Mirza Saleh Shirazi in 1837.
+- [TikTok in Iran](https://en.wikipedia.org/wiki/TikTok_in_Iran) — TikTok in Iran, despite being heavily restricted due to domestic policies (Internet censorship) and international sanctions, holds significant cultural, social, and political importance. Following the lifting of restrictions on Iranian user registration in 2023, Iranians were able to access the platform using VPNs.
+- [2026 Strait of Hormuz crisis](https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis) — Shipping traffic through the Strait of Hormuz, a major maritime choke point for world energy trade, has been largely blocked by Iran since 28 February 2026, when the United States and Israel launched an air war against Iran. In retaliation, the Iranian Revolutionary Guard Corps (IRGC) issued warnings forbidding passage through the strait, boarded and attacked merchant ships, and laid sea mines in the strait.
+- [Economic impact of the 2026 Iran war](https://en.wikipedia.org/wiki/Economic_impact_of_the_2026_Iran_war) — The 2026 Iran war, including the closure of the Strait of Hormuz, has led to what the International Energy Agency has characterized as the "largest supply disruption in the history of the global oil market". The conflict has echoed the 1970s energy crisis through acute supply shortages, currency volatility, inflation and heightened risks of stagflation and recession.
+
+### Afghanistan(検索日時 / searched at: 2026-11-25)
+
+Tags: `Afghanistan` `2026-11`
+
+- [افغانستان](https://ps.wikipedia.org/wiki/%D8%A7%D9%81%D8%BA%D8%A7%D9%86%D8%B3%D8%AA%D8%A7%D9%86) — افغانستان په رسمي توګه د افغانستان اسلامي امارت په غرونو کې کلابند يو غرنيز او سمسور هېواد دی چې د "۴۳ میلیونه" وګړو او «۶۵۲۸۶۴» کیلومتره مربع ځمکي په درلودلو سره د آسيا په زړه کي پروت دی. په ټولیزه توګه دا هېواد د منځنۍ اسيا يوه ستراتېژیکه سیمه ګڼل کېږي چي په لوېدیځ کي له ایران، په شمال لوېدیځ کي له ترکمنستان، په شمال کي له ازبکستان او تاجکستان او په شمال ختیځ کي له چین سره ګډې پولې لري.
+- [د لنډې کيسې تاريخچه](https://ps.wikipedia.org/wiki/%D8%AF_%D9%84%D9%86%DA%89%DB%90_%DA%A9%D9%8A%D8%B3%DB%90_%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE%DA%86%D9%87) — 
+- [انځور خبريالي](https://ps.wikipedia.org/wiki/%D8%A7%D9%86%DA%81%D9%88%D8%B1_%D8%AE%D8%A8%D8%B1%D9%8A%D8%A7%D9%84%D9%8A) — د ليكلو توكيو ترڅنگ د انځورونو خپراوى د انځوريزې خبريالۍ په نوم ياديږي. په اوسني پرمختللي پېر كې انځورخبريالي دډله یيزو رسنيو يوه بايده برخه گرځېدلې او له انځور پرته د ورځپاڼو خپراوى ناشونى او بيخونده برېښي.
+
+### Germany(検索日時 / searched at: 2026-11-25)
+
+Tags: `Germany` `2026-11`
+
+- [Heute (Fernsehsendung)](https://de.wikipedia.org/wiki/Heute_(Fernsehsendung)) — heute ist eine Nachrichtensendung des Zweiten Deutschen Fernsehens (ZDF) mit aktuellen Meldungen des Tages aus den Bereichen Politik, Wirtschaft, Wissenschaft, Kultur, Gesellschaft, Sport und Wetter. Die Hauptausgabe der heute-Sendung wird täglich um 19:00 Uhr ausgestrahlt.
+- [Deutschland](https://de.wikipedia.org/wiki/Deutschland) — Deutschland (; Vollform des Staatsnamens: Bundesrepublik Deutschland) ist ein Bundesstaat in Mitteleuropa. Es besteht aus 16 Ländern und ist als freiheitlich-demokratischer und sozialer Rechtsstaat verfasst.
+- [Heute-journal](https://de.wikipedia.org/wiki/Heute-journal) — Das heute-journal ist ein Nachrichtenmagazin des ZDF.
+- [Heute-show](https://de.wikipedia.org/wiki/Heute-show) — Die heute-show (Eigenschreibweise auch heute show und heute SHOW) ist eine deutsche Comedy- und Satiresendung im ZDF mit Stilelementen einer Nachrichtensendung. Ihr Name wurde in Anlehnung an die ZDF-Nachrichtenformate heute und heute-journal sowie die ARD-Sendung Tagesschau gewählt.
+- [Nachrichten](https://de.wikipedia.org/wiki/Nachrichten) — Unter Nachrichten als Plural von Nachricht (oft auch synonym für Nachrichtensendung) ist die regelmäßige Berichterstattung in Form von mehreren journalistischen Nachrichten über aktuelle politische, wirtschaftliche, soziale, kulturelle, sportliche und sonstige Ereignisse in komprimierter Form zu verstehen.
+- [Bundespräsident (Deutschland)](https://de.wikipedia.org/wiki/Bundespr%C3%A4sident_(Deutschland)) — Der Bundespräsident (Abkürzung BPr, auch BPräs) ist das Staatsoberhaupt (Art. 54–61 GG) der Bundesrepublik Deutschland und protokollarisch ihr höchstes Verfassungsorgan.
+- [Redaktionsnetzwerk Deutschland](https://de.wikipedia.org/wiki/Redaktionsnetzwerk_Deutschland) — Die RND Redaktionsnetzwerk Deutschland GmbH (Eigenschreibweise RedaktionsNetzwerk Deutschland, kurz rnd bzw. RND) mit Sitz in Hannover ist die Redaktion für überregionale Inhalte der Verlagsgesellschaft Madsack GmbH & Co.
+- [Bundeskanzler (Deutschland)](https://de.wikipedia.org/wiki/Bundeskanzler_(Deutschland)) — Der Bundeskanzler der Bundesrepublik Deutschland (kurz: Bundeskanzler; Abkürzung BK) ist der Regierungschef der Bundesrepublik Deutschland. Er bildet zusammen mit den Bundesministern die Bundesregierung und bestimmt laut Verfassung die Richtlinien deren Politik.
+
+### Switzerland(検索日時 / searched at: 2026-11-25)
+
+Tags: `Switzerland` `2026-11`
+
+- [Heute (Fernsehsendung)](https://de.wikipedia.org/wiki/Heute_(Fernsehsendung)) — heute ist eine Nachrichtensendung des Zweiten Deutschen Fernsehens (ZDF) mit aktuellen Meldungen des Tages aus den Bereichen Politik, Wirtschaft, Wissenschaft, Kultur, Gesellschaft, Sport und Wetter. Die Hauptausgabe der heute-Sendung wird täglich um 19:00 Uhr ausgestrahlt.
+- [Schweiz](https://de.wikipedia.org/wiki/Schweiz) — Die Schweiz (schweizerdeutsch Schwiz, französisch [sɥis(ə)], italienisch [ˈzvitːsera], rätoromanisch [ˈʒviːtsrɐ] oder [ˈʒviːtsʁɐ], lateinisch Helvetia), amtlich Schweizerische Eidgenossenschaft (schweizerdeutsch Schwizerischi Eidgnosseschaft, französisch Confédération suisse, italienisch Confederazione Svizzera, rätoromanisch , lateinisch Confoederatio Helvetica), ist ein föderalistischer, demokratischer Staat in Mitteleuropa. Er grenzt im Norden an Deutschland, im Osten an Österreich und Liechtenstein, im Süden an Italien und im Westen an Frankreich.
+- [Freiburger Nachrichten](https://de.wikipedia.org/wiki/Freiburger_Nachrichten) — Die Freiburger Nachrichten sind eine regionale Schweizer Tageszeitung in Freiburg im Üechtland.
+- [Heute-journal](https://de.wikipedia.org/wiki/Heute-journal) — Das heute-journal ist ein Nachrichtenmagazin des ZDF.
+- [Neue Zürcher Nachrichten](https://de.wikipedia.org/wiki/Neue_Z%C3%BCrcher_Nachrichten) — Die Neuen Zürcher Nachrichten (NZN) waren eine katholische Tageszeitung, die von 1904 bis 1991 in der Stadt Zürich erschien. Die Zeitung stand der 1896 in Zürich gegründeten Christlichsozialen Partei (heutige Christlichdemokratische Volkspartei, CVP) nahe und unterstützte den Aufbau und die Festigung der katholischen Verbände und der christlich-sozialen Parteiarbeit rund um Zürich.
+- [Basler Zeitung](https://de.wikipedia.org/wiki/Basler_Zeitung) — Die Basler Zeitung (kurz BaZ) ist eine Schweizer Tageszeitung mit Sitz in Basel. Sie ging im Januar 1977 aus der Fusion der linksliberalen National-Zeitung mit den bürgerlich-konservativen Basler Nachrichten hervor und wird von den Basler Zeitung Medien herausgegeben.
+- [Schweizer Radio DRS](https://de.wikipedia.org/wiki/Schweizer_Radio_DRS) — Das Schweizer Radio DRS (Radio der deutschen und rätoromanischen Schweiz (SR DRS)) war zusammen mit dem Schweizer Fernsehen (SF) eines der beiden ehemaligen Schweizer Medienunternehmen, die am 1. Januar 2011 in der Unternehmung Schweizer Radio und Fernsehen (SRF) vereint wurden.
+- [Verband Schweizer Medien](https://de.wikipedia.org/wiki/Verband_Schweizer_Medien) — Der Verband Schweizer Medien (VSM) ist die Branchenorganisation der privaten Schweizer Medienunternehmen mit Schwerpunkt Print und Digital. Er vereinigt über 70 Unternehmen und branchennahe assoziierte Mitglieder, die zusammen rund 300 Zeitungen und Zeitschriften herausgeben sowie verschiedene Newsplattformen und elektronische Medien anbieten.
+
+### Austria(検索日時 / searched at: 2026-11-25)
+
+Tags: `Austria` `2026-11`
+
+- [Heute (Fernsehsendung)](https://de.wikipedia.org/wiki/Heute_(Fernsehsendung)) — heute ist eine Nachrichtensendung des Zweiten Deutschen Fernsehens (ZDF) mit aktuellen Meldungen des Tages aus den Bereichen Politik, Wirtschaft, Wissenschaft, Kultur, Gesellschaft, Sport und Wetter. Die Hauptausgabe der heute-Sendung wird täglich um 19:00 Uhr ausgestrahlt.
+- [Deutschland](https://de.wikipedia.org/wiki/Deutschland) — Deutschland (; Vollform des Staatsnamens: Bundesrepublik Deutschland) ist ein Bundesstaat in Mitteleuropa. Es besteht aus 16 Ländern und ist als freiheitlich-demokratischer und sozialer Rechtsstaat verfasst.
+- [Heute-journal](https://de.wikipedia.org/wiki/Heute-journal) — Das heute-journal ist ein Nachrichtenmagazin des ZDF.
+- [Heute-show](https://de.wikipedia.org/wiki/Heute-show) — Die heute-show (Eigenschreibweise auch heute show und heute SHOW) ist eine deutsche Comedy- und Satiresendung im ZDF mit Stilelementen einer Nachrichtensendung. Ihr Name wurde in Anlehnung an die ZDF-Nachrichtenformate heute und heute-journal sowie die ARD-Sendung Tagesschau gewählt.
+- [Bundespräsident (Deutschland)](https://de.wikipedia.org/wiki/Bundespr%C3%A4sident_(Deutschland)) — Der Bundespräsident (Abkürzung BPr, auch BPräs) ist das Staatsoberhaupt (Art. 54–61 GG) der Bundesrepublik Deutschland und protokollarisch ihr höchstes Verfassungsorgan.
+- [Redaktionsnetzwerk Deutschland](https://de.wikipedia.org/wiki/Redaktionsnetzwerk_Deutschland) — Die RND Redaktionsnetzwerk Deutschland GmbH (Eigenschreibweise RedaktionsNetzwerk Deutschland, kurz rnd bzw. RND) mit Sitz in Hannover ist die Redaktion für überregionale Inhalte der Verlagsgesellschaft Madsack GmbH & Co.
+- [Bundeskanzler (Deutschland)](https://de.wikipedia.org/wiki/Bundeskanzler_(Deutschland)) — Der Bundeskanzler der Bundesrepublik Deutschland (kurz: Bundeskanzler; Abkürzung BK) ist der Regierungschef der Bundesrepublik Deutschland. Er bildet zusammen mit den Bundesministern die Bundesregierung und bestimmt laut Verfassung die Richtlinien deren Politik.
+- [BR24](https://de.wikipedia.org/wiki/BR24) — BR24 ist eine Hörfunkwelle des Bayerischen Rundfunks, die ganztägig Nachrichten verbreitet, und zugleich eine plattformübergreifende Nachrichtenmarke des BR. Zum 1. Juli 2021 wurde der bis dahin gültige Name B5 aktuell im Zuge eines einheitlichen Markenauftritts durch BR24 ersetzt.
+
+### Myanmar (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Myanmar (English)` `2026-11`
+
+- [Myanmar civil war (2021–present)](https://en.wikipedia.org/wiki/Myanmar_civil_war_(2021%E2%80%93present)) — The Myanmar civil war began following the military coup on 1 February 2021. The seizure of power triggered mass anti-coup demonstrations and a violent crackdown by the Tatmadaw (Myanmar armed forces), which significantly escalated the country's longstanding insurgencies.
+- [Timeline of the Myanmar civil war (2021–present)](https://en.wikipedia.org/wiki/Timeline_of_the_Myanmar_civil_war_(2021%E2%80%93present)) — The following is a timeline of major events during the Myanmar civil war (2021–present), following the 2021 military coup d'état and protests. It was also a renewed intensity of the existing Myanmar conflict.
+- [Myanmar conflict](https://en.wikipedia.org/wiki/Myanmar_conflict) — Myanmar has been in armed conflict since 1948, when the country, then known as Burma, gained independence from the United Kingdom. The conflict has largely been ethnic-based, with ethnic armed organisations fighting Myanmar's armed forces, the Tatmadaw, for self-determination.
+- [CB Bank](https://en.wikipedia.org/wiki/CB_Bank) — CB Bank is one of Myanmar's largest commercial banks. Established in 1992, it was the first bank in Myanmar to introduce ATM cards and credit cards.
+- [CNA (TV network)](https://en.wikipedia.org/wiki/CNA_(TV_network)) — CNA (abbreviated from Channel NewsAsia) is a Singapore-based multinational news channel owned by Mediacorp, the country's state-owned media conglomerate. The network is broadcast in Singapore on free-to-air terrestrial television and Mediacorp's streaming service meWatch, and is distributed internationally via television providers in the Asia–Pacific, as well as streaming and free ad-supported streaming television (FAST) platforms.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [Fake news](https://en.wikipedia.org/wiki/Fake_news) — Fake news is false or misleading information (misinformation, disinformation, propaganda, and hoaxes) claiming the aesthetics and legitimacy of news. Fake news often has the aim of damaging the reputation of a person or entity, or making money through advertising revenue.
+- [List of miscellaneous fake news websites](https://en.wikipedia.org/wiki/List_of_miscellaneous_fake_news_websites) — This is a list of miscellaneous fake news websites that do not fit into any of the other fake news website lists such as these lists of: fake news website campaigns by individuals, corporate disinformation website campaigns, fraudulent fact-checking websites, fake news websites based on generative AI hate group-sponsored fake news websites, elsewhere, satirical fake news websites, troll farm websites involved in fake news, user-generated fake news websites, and other fake news online networks.
+
+### Switzerland (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Switzerland (English)` `2026-11`
+
+- [SWI swissinfo](https://en.wikipedia.org/wiki/SWI_swissinfo) — SWI swissinfo.ch is a Swiss multilingual international news and information company based in Bern. It is a part of the Swiss Broadcasting Corporation (SRG SSR).
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [List of current BBC newsreaders and reporters](https://en.wikipedia.org/wiki/List_of_current_BBC_newsreaders_and_reporters) — This is a list of newsreaders and journalists currently employed by BBC Television and BBC Radio. Presenters and journalists appear across BBC television and radio, and also contribute to BBC Online.
+- [CNN](https://en.wikipedia.org/wiki/CNN) — Cable News Network, Inc. (CNN) is an American multinational news media company and the flagship namesake property of CNN Worldwide, a division of Skydance.
+- [Oded Balilty](https://en.wikipedia.org/wiki/Oded_Balilty) — Oded Balilty (Hebrew: עודד בלילטי; born March 30, 1979, Jerusalem) is an Israeli documentary photographer. He is an Associated Press (AP) photographer and won the Pulitzer Prize for Breaking News Photography in 2007.
+- [Prince Philipp of Liechtenstein](https://en.wikipedia.org/wiki/Prince_Philipp_of_Liechtenstein) — Prince Philipp of Liechtenstein (Philipp Erasmus Alois Ferdinand Maria Sebaldus; born 19 August 1946) is a member of the princely family of Liechtenstein.
+- [Primetime (film)](https://en.wikipedia.org/wiki/Primetime_(film)) — Primetime is a 2026 American psychological crime thriller film written by Ajon Singh and directed by Lance Oppenheim. It dramatizes the production of the reality television series To Catch a Predator (2004–2007); Robert Pattinson portrays its host Chris Hansen, an NBC journalist who works with the vigilante group Perverted-Justice to catch child predators in sting operations.
+
+### Cambodia(検索日時 / searched at: 2026-11-25)
+
+Tags: `Cambodia` `2026-11`
+
+- [Kun Khmer](https://en.wikipedia.org/wiki/Kun_Khmer) — Kun Khmer (Khmer: គុនខ្មែរ [kun kʰmae] lit. 'Khmer martial arts'), or Pradal Serey (Khmer: ប្រដាល់សេរី [prɑɗal seːrəj] lit. 'free boxing'), is a combat sport that originated in Cambodia. The sport consists of stand up striking and clinch fighting, where the objective is to knock an opponent out, force a technical knockout, or win a match by points.
+
+### Japan (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Japan (English)` `2026-11`
+
+- [Margin on a flex item pushes another flex item instead](https://stackoverflow.com/questions/69353901) — DOCTYPE html> <html> <head> <link rel = "shortcut icon" href = "images/icon.png"> <title>News: U.S and World News Headlines: VPR</title> <link rel = "stylesheet" type = "text/css" href = &hellip; </h3> </div> <div class = "item third-story"> <h4>Japan</h4> <h3>Japan Animation Industry Sales Fall 1.8% In 2020,<br> First Drop In Decade. &hellip;
+- [Japanese newspapers](https://en.wikipedia.org/wiki/Japanese_newspapers) — Japanese newspapers (新聞 shinbun, or older spelling shimbun), similar to their worldwide counterparts, run the gamut from general news-oriented papers to special-interest newspapers devoted to economics, sports, literature, industry, and trade. Newspapers are circulated either nationally, by region (such as Kantō or Kansai), by each prefecture, or by each city.
+- [Headline](https://en.wikipedia.org/wiki/Headline) — A headline is the text indicating the content or nature of the article below it, typically a news piece, by providing a form of brief summary of its contents. The large type front page headline did not come into use until the late 19th century when increased competition between newspapers led to the use of attention-getting headlines.
+- [How best create parent child relationship in Elasticsearch](https://stackoverflow.com/questions/51523980) — One contains news articles and the other comments about the same articles. I'd like to create a parent-child relationship between each article and that articles comments except for headline. &hellip; A typical message containing, entity_name, source_name, headline, which comes through Logstash looks like this: "Thomson Reuters Corp.","Japan Today","Trump claims victory after forcing NATO crisis &hellip;
+- [Toutiao](https://en.wikipedia.org/wiki/Toutiao) — Toutiao (头条, "headlines") or Jinri Toutiao (今日头条, "Today's Headlines") is a Chinese news and information content platform, a core product of the China-based company ByteDance. By analyzing the features of content, users and users' interaction with content, the company's algorithm models generate a tailored feed list of content for each user.
+- [News](https://en.wikipedia.org/wiki/News) — News is information about current events. This may be provided through many different media: word of mouth, printing, postal systems, broadcasting, electronic communication, or through the testimony of observers and witnesses to events.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [BBC News (British TV channel)](https://en.wikipedia.org/wiki/BBC_News_(British_TV_channel)) — The BBC News channel is a British free-to-air public broadcast television news channel owned and operated by the BBC. The channel is based at and broadcasts from Broadcasting House in the West End of London from which it is anchored during British daytime, with overnight broadcasts anchored from Washington, D.C. and Singapore. It was launched as BBC News 24 on 9 November 1997 at 17:30, as part of the BBC's foray into digital domestic television channels, becoming the first competitor to Sky News, which had been running since 1989.
+
+### Thailand (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Thailand (Japanese)` `2026-11`
+
+- [タイ の経済 ニュース ・ビジネス情報 - NNA ASIA](https://www.nna.jp/countries/thailand) — タイ 経済の詳細やビジネスに直結する新着 ニュース を掲載。現地の最新動向を一目で把握できます。法律、会計、労務などの特集も多数掲載。
+- [newsclip.be | " タイ ニュース "”タイランド ニュース ”"バンコク ...](https://newsclip.be/) — タイ・エアアジアXの成田発便遅延、運輸省が航空会社に適切な補償を指導 · タイ洪水被害2100億円相当、農業が最大打撃 エルニーニョの干ばつにも警戒 · バンコクでのバラバラ ...
+- [「 タイ 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/10084) — タイ王室系金融SCBX、デジタル銀行に参入 5年で300万人獲得目標 · タイ中銀、政策金利3会合連続据え置き 景気減速対応が最優先に · タイ不動産大手、伊高級ホテル買収 ...
+- [時事速報：アジア／バンコク版－時事通信社](https://jijiweb.jiji.com/info/sample/bangkok.html) — 《各地の タイ 関連 ニュース 》. 小鵬の「G9L」、 タイ とインドネシアに投入＝現地生産・販売網拡充―中国; 正恩氏「友好国と協力強化」＝北朝鮮、外交多極化に意欲.
+- [タイニュース | バンコク週報](https://bangkokshuho.com/category/thainews/) — 【社会】 タイ 北部の河川でヒ素汚染、政府が12月2日に150キロを管理区域に指定 · 2026-11-24. 【不動産】 タイ の注文住宅市場が2130億バーツへ、地方が8割で高級住宅も ...
+- [バンコクの最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%83%90%E3%83%B3%E3%82%B3%E3%82%AF.html) — 最新ニュース · 英国、ミ ャ ンマー国軍に制裁 資産凍結や渡航禁止 ジェノサイド判決 · 最優秀監督に黒田氏 サッカー · バイクの免許、初めて発行？ · 高島屋、好調の背景 円安で ...
+- [「 タイ 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000386) — 「タイ」ニュース一覧 · 日本政府がミャンマー避難民の就労を支援へ · 「ルフィ」事件 詐欺グループトップ 拠点立ち上げ経緯明かす · “ニセ警察官詐欺”に生成AIの影 · 特殊詐欺 ...
+- [タイランド ニュース | タイランドハイパーリンクス：Thai Hyper](https://www.thaich.net/news) — タイ 版「ドラゴンボール超」孫悟空役に71歳のベテラン声優が復帰、誹謗中傷で約100人に法的措置へ · タイ の 今日 は何の日？ 11月25日は「ワチラーウットの日」 · ムック ...
+
+### South Korea (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `South Korea (Japanese)` `2026-11`
+
+- [聯合 ニュース](https://jp.yna.co.kr/) — 孫正義氏 韓国 ・大邱で先祖の墓参り＝家族ら伴い非公開で · ソウル地下鉄のスト回避 始発から通常運行＝賃金交渉妥結 · 韓国主要 紙の朝刊ヘッドライン（11月25日） · 芸能 ...
+- [最新の 韓国ニュース - ライブドアニュース - livedoor](https://news.livedoor.com/article/category/44/) — 韓国 に関連する最新の ニュース をお届けします。
+- [中央日報 - 韓国 の最新 ニュース を日本語でサービスします。](https://japanese.joins.com/) — 揺れる 韓国 証券市場 ジェンスン・フアン氏の帰還に安堵する 韓国 企業…「もう ... 今日 が初出勤」…社員ら歓声 · 中国国家秘密保護局「政府幹部にスパイ容疑で死刑判決 ...
+- [韓国 ・朝鮮半島に関する ニュース と解説 - 日本経済新聞](https://www.nikkei.com/international/korea/) — 韓国 と北朝鮮に関する ニュース と解説、特集をまとめました。日韓関係やサムスン、現代自動車などの 韓国 企業、北朝鮮のミサイル問題などの ニュース を読めます。
+- [朝鮮日報オンライン：Chosunonline.com](https://www.chosunonline.com/) — 韓国 最大の発行部数を誇る朝鮮日報の日本語 ニュース サイト。朝鮮日報の 主要 記事をはじめ、社会、国際、北朝鮮、政治、経済、スポーツ、芸能など、 韓国 の幅広い ニュース を
+- [聯合 ニュース の記事一覧 - Yahoo!ニュース](https://news.yahoo.co.jp/media/yonh) — 韓国 外相 オマーンにアデン湾派遣部隊の活動協力要請 · 李大統領 アデン湾部隊の活動範囲拡大に「戦争不介入、ホルムズは範囲外」 · 韓国 きょうの ニュース （11月25日）.
+- [ハンギョレ新聞 : 日文版](https://japan.hani.co.kr/) — 韓国 、国家安保室長以外の外交・安保陣容を「刷新」…韓米対立の突破口への布石 李在明（イ・ジェミョン）大統領は23日、国家情報院長と外交部長官、統一部 ...
+- [韓国 | 最新 韓国ニュース | ロイター - Reuters](https://www.reuters.com/jp/world/korea/) — 韓国 ; 北朝鮮が初のAIチャットボット公開か、米シンクタンク分析 · 北朝鮮の金正恩総書記 ; 北朝鮮、寧辺の核施設にウラン濃縮施設増設＝IAEA · 北朝鮮・寧辺の核関連 ...
+
+### Myanmar (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Myanmar (Japanese)` `2026-11`
+
+- [ミャンマー 最新 ニュース ・情報誌－MYANMAR JAPON](https://myanmarjapon.com/) — 【国際】【経済】 · ミャンマー産アボカド、中国への正式輸出に向け準備進む ; 【国際】【経済】 · ミャンマー、韓国の国際コーヒー見本市で公式招待国に選出 ; 【政治】 · 民主 ...
+- [「 ミャンマー 」の ニュース 一覧 - 日本経済新聞](https://www.nikkei.com/regions/10101) — マレーシア副首相、ロヒンギャ難民のトルコへの移住巡る投稿を削除 · マレーシア、ロヒンギャ難民1万人をトルコへ 移住計画決定 · マレーシアがミャンマー人送還、親軍政権に ...
+- [ミャンマー の経済 ニュース ・ビジネス情報 - NNA ASIA](https://www.nna.jp/countries/myanmar) — ニュースヘッドライン · マウビンで天然ガス増産、砂層から試験採取 · 商業副大臣、アセアンと中国の協力深化呼びかけ · 武装勢力の攻撃による死者、5年間で8千人超 · 親軍 ...
+- [「 ミャンマー 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000207) — ミャンマー政権側 ICJ判決に「不公平」と反発 · ロヒンギャ迫害はジェノサイドと認定 国際司法裁判所が判決 · ミャンマー政権トップ「ASEANとの関係見直す」 · 日本政府が ...
+- [ミャンマー 連邦の関連情報 - フォロー - Yahoo! JAPAN](https://follow.yahoo.co.jp/themes/0b2a6a8f9979b8202346/) — 3:22 · 2:37 · ミャンマー、外交方針見直しも ICJ判決受け解決圧力 · 【ミャンマー】親軍政権、徴兵制度巡る不正で199人に法的措置 · ICJ判決、14カ国が追認 ミャンマーの ...
+- [ミャンマー 情勢 関連 ニュース ：時事ドットコム](https://www.jiji.com/jc/v7?id=202102Myanmar) — 《 ミャンマー 情勢の最新 ニュース 、解説記事一覧は下に》. ICJ判決、14カ国が追認 ミャンマー のジェノサイド巡り(11月24日 14:26). ミャンマー によるロヒンギャ迫害 ...
+- [ミャンマー 最新情報 - GIC](https://gicjp.com/myanmar-information) — こちらのページでは、 ミャンマー の最新 ニュース 、政府方針の影響分析、そして現地ネットワークを活用した独自の視点で、他では得られない価値ある情報をお届けします。
+- [ミャンマー の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%83%9F%E3%83%A3%E3%83%B3%E3%83%9E%E3%83%BC.html) — 2021/5/7 - 朝日新聞の、ミャンマーに関するニュースや速報記事一覧 です。ミャンマーに関する現状や背景を、わかりやすくお伝えします。
+
+### Italy(検索日時 / searched at: 2026-11-25)
+
+Tags: `Italy` `2026-11`
+
+- [Italia Oggi](https://it.wikipedia.org/wiki/Italia_Oggi) — Italia Oggi è un quotidiano economico, giuridico e politico.
+- [Pagina principale](https://it.wikipedia.org/wiki/Pagina_principale) — 
+- [Italia](https://it.wikipedia.org/wiki/Italia) — L'Italia (AFI: /iˈtalja/, ), ufficialmente Repubblica Italiana, è un paese dell'Europa meridionale e occidentale, il cui territorio coincide in gran parte con l'omonima regione geografica; Stato membro dell'Unione europea, l'Italia conta una popolazione di circa 59 milioni di abitanti, che ne fanno il terzo Stato dell'Unione per numero di abitanti dopo Germania e Francia. Delimitata dall'arco alpino, l'Italia confina a nord, da ovest a est, con Francia, Svizzera, Austria e Slovenia; la penisola italiana si protende nel mar Mediterraneo, circondata dai mari Ligure, Tirreno, Ionio e Adriatico, e da numerose isole (le maggiori sono Sicilia e Sardegna), per un totale di 302068,26 km².
+- [Episodi di Squadra antimafia - Palermo oggi (quinta stagione)](https://it.wikipedia.org/wiki/Episodi_di_Squadra_antimafia_-_Palermo_oggi_(quinta_stagione)) — La quinta stagione della serie televisiva Squadra antimafia - Palermo oggi è stata trasmessa in prima visione in Italia da Canale 5 dal 9 settembre 2013.
+- [Striscia la notizia](https://it.wikipedia.org/wiki/Striscia_la_notizia) — Striscia la notizia, anche noto semplicemente come Striscia, è stato un programma televisivo italiano di genere infotainment, investigativo e satirico ideato da Antonio Ricci. È andato in onda dal 7 novembre 1988 al 7 giugno 2025 in access prime time, dal lunedi al sabato (e per brevi periodi anche la domenica).
+- [Italia 1](https://it.wikipedia.org/wiki/Italia_1) — Italia 1 è un canale televisivo italiano privato di tipo generalista con target giovanile, diffuso a livello nazionale ed edito da Mediaset, società che ha acquistato il canale nel dicembre del 1982 dalla Rusconi, che lo aveva lanciato il 3 gennaio dello stesso anno.
+- [Episodi di Squadra antimafia - Palermo oggi (quarta stagione)](https://it.wikipedia.org/wiki/Episodi_di_Squadra_antimafia_-_Palermo_oggi_(quarta_stagione)) — La quarta stagione della serie televisiva Squadra antimafia - Palermo oggi è stata trasmessa in prima visione in Italia da Canale 5 dal 10 settembre al 19 novembre 2012.
+- [Notizia](https://it.wikipedia.org/wiki/Notizia) — Una notizia (dalla lingua latina latino notitia) è, in generale, un'informazione di cui si viene a conoscenza. Per gran parte della storia umana le notizie sono state trasmesse oralmente.
+
+### Tajikistan (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Tajikistan (English)` `2026-11`
+
+- [Bondi Beach shooting](https://en.wikipedia.org/wiki/Bondi_Beach_shooting) — On 14 December 2025, an antisemitic and Islamic State (IS)–inspired terrorist attack occurred at the Archer Park area of Bondi Beach in Sydney, New South Wales, Australia, during a celebration of the Jewish holiday of Hanukkah attended by around 1,000 people. Sajid Akram and his son, Naveed Akram, allegedly shot dead 15 people, aged between 10 and 87, and injured 40 others, including two police officers.
+- [September 11 attacks](https://en.wikipedia.org/wiki/September_11_attacks) — The September 11 attacks, colloquially known as 9/11, were a coordinated series of suicide attacks perpetrated by the Islamic terrorist organization al-Qaeda against the United States in 2001. A total of 19 hijackers commandeered four commercial passenger airliners.
+- [2026](https://en.wikipedia.org/wiki/2026) — 2026 (MMXXVI) is the current year, and is a common year starting on Thursday of the Gregorian calendar, the 2026th year of the Common Era (CE) and Anno Domini (AD) designations, the 26th year of the 3rd millennium and the 21st century, and the 7th year of the 2020s decade. The early part of the year saw escalating armed conflicts in the Americas and Middle East.
+- [Islamic veiling practices by country](https://en.wikipedia.org/wiki/Islamic_veiling_practices_by_country) — Various styles of head coverings, most notably the khimar, hijab, chador, niqab, paranja, yashmak, tudong, shayla, safseri, çarşaf, haik, dupatta, boshiya and burqa, are worn by Muslim women around the world, where the practice varies from mandatory to optional or restricted in different majority Muslim and non-Muslim countries. Wearing the hijab is mandatory in Islamic Republic of Iran and the Taliban-led Islamic Emirate of Afghanistan.
+- [Kash Patel](https://en.wikipedia.org/wiki/Kash_Patel) — Kashyap Pramod Patel (born February 25, 1980) is an American lawyer who has served since 2025 as the director of the Federal Bureau of Investigation. Patel also served as acting director of the Bureau of Alcohol, Tobacco, Firearms and Explosives from February to April 2025.
+- [Eurasian Economic Union](https://en.wikipedia.org/wiki/Eurasian_Economic_Union) — The Eurasian Economic Union (EAEU or EEU) is an economic union of five post-Soviet states located in Eurasia. The EAEU has an integrated single market.
+- [Geographical distribution of Russian speakers](https://en.wikipedia.org/wiki/Geographical_distribution_of_Russian_speakers) — This article details the geographical distribution of Russian speakers. After the dissolution of the Soviet Union in 1991, the status of the Russian language often became a matter of controversy.
+- [List of earthquakes in 2026](https://en.wikipedia.org/wiki/List_of_earthquakes_in_2026) — This is a list of earthquakes in 2026. Only earthquakes of magnitude 6 or above are included, unless they result in significant damage and/or casualties.
+
+### Ukraine (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Ukraine (English)` `2026-11`
+
+- [How do I solve an error with a Python scraping program](https://stackoverflow.com/questions/80009348) — We have some exciting news to share! &hellip; What with political upheaval on both sides of the Atlantic, and the continued conflicts in Ukraine and the Middle East, knowing where to invest has never been trickier.And yet, despite the UK stock market &hellip;
+- [Strana.ua](https://en.wikipedia.org/wiki/Strana.ua) — Strana.ua is a Ukrainian online newspaper launched on 16 February 2016. It was founded by journalist Igor Guzhva, and is one of the most popular Ukrainian online media, being one of the top 5 most visited online newspapers in Ukraine.
+- [Disinformation in the Russo-Ukrainian war](https://en.wikipedia.org/wiki/Disinformation_in_the_Russo-Ukrainian_war) — As part of the Russian invasion of Ukraine, the Russian state and state-controlled media have spread disinformation in their information war against Ukraine. This disinformation has also been spread and promoted by so-called Russian web brigades, using fake profiles on social media.
+- [2025 Trump–Zelenskyy Oval Office meeting](https://en.wikipedia.org/wiki/2025_Trump%E2%80%93Zelenskyy_Oval_Office_meeting) — On February 28, 2025, U.S. president Donald Trump and U.S. vice president JD Vance held a highly contentious bilateral meeting with Ukrainian president Volodymyr Zelenskyy inside the Oval Office at the White House in Washington, D.C. Televised live and arranged with the intention to discuss continued U.S. support for Ukraine in repelling the ongoing Russo-Ukrainian war, it was expected to conclude with the signing of the Ukraine–United States Mineral Resources Agreement; however, the meeting ended abruptly and without a clear resolution. During its last ten minutes, Trump and Vance repeatedly criticized Zelenskyy, at times drowning out his voice.
+- [RT (TV network)](https://en.wikipedia.org/wiki/RT_(TV_network)) — RT, formerly Russia Today (Russian: Россия Сегодня, romanized: Rossiya Segodnya), is a Russian state-controlled international news television network funded by the Russian government. It operates pay television and free-to-air channels directed to audiences outside of Russia, as well as providing Internet content in Russian, English, Spanish, French, German, Arabic, Portuguese and Serbian.
+- [Far-right politics in Ukraine](https://en.wikipedia.org/wiki/Far-right_politics_in_Ukraine) — Far-right politics does not have widespread electoral support in modern Ukraine. The country's far-right movement emerged in western Ukraine in the 1920s in the aftermath of the failed Ukrainian War of Independence, with the Organization of Ukrainian Nationalists (OUN) founded in 1929.
+- [Veterans Today](https://en.wikipedia.org/wiki/Veterans_Today) — Veterans Today, also known as VT Foreign Policy, is an American antisemitic and conspiracy theory website. It describes itself as a "military veterans and foreign affairs journal", while multiple sources describe it as a pro-Kremlin propaganda outlet.
+- [Ask HN: Is this is a new kind of war?](https://news.ycombinator.com/item?id=35979060) — Hacker News · 7 points · 6 comments · 2023-05-17
+
+### South Africa(検索日時 / searched at: 2026-11-25)
+
+Tags: `South Africa` `2026-11`
+
+- [My horizontal navigation bar is not horizontal...it's a square](https://stackoverflow.com/questions/34983807) — </p> </div> <div class="content"> <h1>Elon Musk</h1> <p>Born in South Africa in 1971, Elon Musk became a multimillionaire in his late 20s when he sold his start-up company &hellip; </p> <h3>Young Elon</h3> <p>Born and raised in South Africa, Elon Musk purchased his first computer at age 10. &hellip;
+- [Democratic Alliance (South Africa)](https://en.wikipedia.org/wiki/Democratic_Alliance_(South_Africa)) — The Democratic Alliance (DA) is a liberal political party in South Africa, sitting on the centre to centre-right of the political spectrum. It has been the second-largest party in the country since its foundation in 2000.
+- [South Africa national soccer team](https://en.wikipedia.org/wiki/South_Africa_national_soccer_team) — The South Africa national soccer team represents South Africa in men's international soccer and is run by the South African Football Association, the governing body for soccer in South Africa. Nicknamed Bafana Bafana, the team plays at various stadiums around the country.
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [Australian cricket team in South Africa in 2026–27](https://en.wikipedia.org/wiki/Australian_cricket_team_in_South_Africa_in_2026%E2%80%9327) — The Australia national cricket team toured South Africa in September and October 2026 to play three One Day International (ODI) and three Test matches. The Test series formed part of the 2025–2027 World Test Championship cycle.
+- [Second Boer War](https://en.wikipedia.org/wiki/Second_Boer_War) — The Second Boer War was a conflict fought between 1899 and 1902 between the British Empire and the Boer republics (the South African Republic and Orange Free State), triggered by the discovery of gold in the Transvaal, specifically the Witwatersrand gold fields, and the ensuing political dispute over the voting rights of British expatriates (Uitlanders). In 1877, the British annexed the bankrupt Transvaal, and the British military neutralized the regional threat of the Zulu Kingdom in 1879 in the Anglo-Zulu War.
+- [Fake news](https://en.wikipedia.org/wiki/Fake_news) — Fake news is false or misleading information (misinformation, disinformation, propaganda, and hoaxes) claiming the aesthetics and legitimacy of news. Fake news often has the aim of damaging the reputation of a person or entity, or making money through advertising revenue.
+- [BBC News (British TV channel)](https://en.wikipedia.org/wiki/BBC_News_(British_TV_channel)) — The BBC News channel is a British free-to-air public broadcast television news channel owned and operated by the BBC. The channel is based at and broadcasts from Broadcasting House in the West End of London from which it is anchored during British daytime, with overnight broadcasts anchored from Washington, D.C. and Singapore. It was launched as BBC News 24 on 9 November 1997 at 17:30, as part of the BBC's foray into digital domestic television channels, becoming the first competitor to Sky News, which had been running since 1989.
+
+### Germany (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Germany (Japanese)` `2026-11`
+
+- [ドイツ の最新 ニュース を日本語で毎日お届け -](http://www.newsdigest.de/newsde/news/news/) — （ベルリン 11月14日 時事） ドイツ 連邦議会は13日、スパイや過激派の動向を探る情報機関の権限を強める法案を賛成多数で可決した。ロシアや中国、イランによる非軍事的手段 ...
+- [「 ドイツ 」 ニュース 一覧 - NHKニュース](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000225) — ロシアが年内に核弾頭搭載の衛星打ち上げ計画か ドイツ報道 · ドイツ最大労組 メルセデスの工場でも24時間ストライキ · トランプ大統領 アジア訪問終えホワイトハウスに 各国 ...
+- [ドイツ - BBC ニュース](https://www.bbc.com/japanese/topics/c7zp51608w0t) — ノルド・ストリーム爆破、ウクライナ人被告の裁判がドイツで始まる ... 黒い口ひげ、金の鎖、白いベストを身に着けた、赤. ロボットが少女にわいせつ ...
+- [「 ドイツ 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/germany/) — 2026. 11/19: ゴッホの「花咲く栗の木」、300億円で落札 ナチス巡る混乱もオークション記録更新; 11/16: 世界の「汚職度」ランキング、米国が過去最低順位に転落 ...
+- [ドイツ の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%83%89%E3%82%A4%E3%83%84.html) — 最新 ニュース · 「日本に被害生じさせない」 EU域内産業保護法案で、次期大使見解 · 参政党、 ドイツ 極右政党の幹部を招待へ 来年の政治資金パーティー · ドイツ 発「デュアル ...
+- [Germany：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Germany) — Germany. トランプ氏、ウクライナへのNATO型「安全の保証」に前向き 米特 使 · 米中ロ首脳会談は「メディア受け狙いのパフォーマンス」 独首相、「ヤルタ方式」を否定 ...
+- [ドイツ - ビジネス短信 - ジェトロ](https://www.jetro.go.jp/biznewstop/biznews/europe/de/) — EU首脳、AIで初の本格協議、技術主権へ大型投資の必要性で一致(米国、EU、イタリア、英国、 ドイツ 、フランス、ポーランド、ロシア、ウクライナ). 2026年11月24日.
+- [「 ドイツ 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/20157) — ドイツ国防相「ばかげている」発言で米次官に謝罪 ウクライナ巡り · 欧州首脳「ヤルタ方式で平和訪れぬ」 ウクライナ巡り米中ロ会談に警戒 · 中国も米国も信じぬ欧州 メルツ ...
+
+### Malaysia(検索日時 / searched at: 2026-11-25)
+
+Tags: `Malaysia` `2026-11`
+
+- [BeautifulSoup scraping news article](https://stackoverflow.com/questions/60065910) — [SALAH] Passing Grade Universitas Indonesia 18 Tidak ada media arus utama yang mengangkat ber... &hellip; [BERITA] Kemenpan RB: Tidak Ada Pengangkatan C... 198 Juru Bicara Kepala BIN, Wawan Hari Purwanto me... &hellip;
+- [Media Prima](https://en.wikipedia.org/wiki/Media_Prima) — Media Prima Berhad is a Malaysian media company based in Bangsar, Kuala Lumpur. It is the largest media and entertainment conglomerate in Malaysia with business interests in television, print, radio, out-of-home advertising, content creation, and digital media.
+- [List of programmes broadcast by TV3 (Malaysian TV network)](https://en.wikipedia.org/wiki/List_of_programmes_broadcast_by_TV3_(Malaysian_TV_network)) — This is a list of television programmes broadcast by TV3 either currently broadcast or formerly broadcast on TV3 in Malaysia.
+- [Kool FM (Malaysia)](https://en.wikipedia.org/wiki/Kool_FM_(Malaysia)) — Kool FM (briefly known as Buletin FM and KOOL 101) is a Malaysian private radio station owned by Media Prima Berhad through its radio subsidiary, Media Prima Audio, which broadcasts in the Malay language. It was launched on 1 March 2016.
+- [Bernama](https://en.wikipedia.org/wiki/Bernama) — The Malaysian National News Agency (Malay: Pertubuhan Berita Nasional Malaysia), is a news agency of the government of Malaysia. It is an autonomous body under the Ministry of Communications.
+- [TV9 (Malaysian TV network)](https://en.wikipedia.org/wiki/TV9_(Malaysian_TV_network)) — Ch-9 Media Sdn Bhd, operating as TV9 (spelled as tivi sembilan) is a Malaysian free-to-air television network owned and operated by Media Prima Berhad. It airs programming that tends mostly towards the Malay demographic.
+- [TV1 (Malaysian TV network)](https://en.wikipedia.org/wiki/TV1_(Malaysian_TV_network)) — RTM TV1 (stylised as tv1) is a Malaysian free-to-air public television channel owned and operated by Radio Televisyen Malaysia, a broadcasting department of the Malaysian Government. Launched on 28 December 1963, TV1 is the first and oldest TV station in Malaysia.
+- [TV3 (Malaysian TV network)](https://en.wikipedia.org/wiki/TV3_(Malaysian_TV_network)) — Sistem Televisyen Malaysia Berhad, operating as TV3 (read as TV Tiga in Malay pronounced [tivi tiga], "TV Three" in English) is a Bangsar-based Malaysian commercial free-to-air television channel owned by Malaysian media conglomerate, Media Prima. TV3 is the third oldest TV station in Malaysia.
+
+### Germany (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Germany (English)` `2026-11`
+
+- [Heute](https://en.wikipedia.org/wiki/Heute) — heute (German pronunciation: [ˈhoʏtə] ; German for today) is a television news program on the German channel ZDF. The main program is broadcast at 19:00, and includes news, with an emphasis on political news from Germany, Europe and the world, plus 'mixed' news from cultural life or entertainment, and the sports news with an extra presenter. The weather forecast comes up at about 19:22 after a break with commercials.
+- [Headline](https://en.wikipedia.org/wiki/Headline) — A headline is the text indicating the content or nature of the article below it, typically a news piece, by providing a form of brief summary of its contents. The large type front page headline did not come into use until the late 19th century when increased competition between newspapers led to the use of attention-getting headlines.
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [Nazi Germany](https://en.wikipedia.org/wiki/Nazi_Germany) — Nazi Germany, officially the German Reich and later the Greater German Reich, was the German state between 1933 and 1945, when Adolf Hitler and the Nazi Party controlled the country, transforming it into a totalitarian dictatorship. The Third Reich, meaning "Third Empire", was the Nazi claim that Nazi Germany was the successor to the Holy Roman Empire (800–1806) and the German Empire (1871–1918); the Nazis called it the Thousand-Year Reich, but it ended just 12 years later in May 1945, when the Allies defeated Germany and entered Berlin, ending World War II in Europe.
+- [News](https://en.wikipedia.org/wiki/News) — News is information about current events. This may be provided through many different media: word of mouth, printing, postal systems, broadcasting, electronic communication, or through the testimony of observers and witnesses to events.
+- [News ticker](https://en.wikipedia.org/wiki/News_ticker) — A news ticker (sometimes called a crawler, crawl, slide, zipper, ticker tape, or chyron) is a horizontal or vertical (depending on the language's writing system) text-based display either in the form of a graphic that typically resides in the lower third of the screen space on a television station or network (usually during news programming) or as a long, thin scoreboard-style display seen around the facades of some offices or public buildings dedicated to presenting headlines or minor pieces of news. It is an evolution of the paper strips tapes, a continuous paper print-out of stock quotes from a printing telegraph which was mainly used to transmit companies' share price information over telegraph lines before the advance of technology in the 1960s.
+- [NBC News](https://en.wikipedia.org/wiki/NBC_News) — NBC News is the news division of the American broadcast television network NBC. It operates under the NBCUniversal News Group, a unit of NBCUniversal, which itself is a subsidiary of Comcast. The news division's various operations report to the president of NBC News, Rebecca Blumenstein.
+- [New York Daily News](https://en.wikipedia.org/wiki/New_York_Daily_News) — The Daily News, widely known as the New York Daily News, is an American newspaper outlet based in Jersey City, New Jersey. It was founded in 1919 by Joseph Medill Patterson in New York City as the Illustrated Daily News.
+
+### Italy (English)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Italy (English)` `2026-11`
+
+- [Rai News 24](https://en.wikipedia.org/wiki/Rai_News_24) — Rai News 24 (Italian: Rai News Ventiquattro) is an Italian free-to-air television channel operated by a state-owned public broadcaster RAI. It is the company's all-news television channel, and is known for its 24-hour rolling news service and its live coverage of breaking news.
+- [USA Today](https://en.wikipedia.org/wiki/USA_Today) — USA Today (often stylized in all caps) is an American daily newspaper and news broadcasting company. Founded by Al Neuharth in 1980 and launched with its first issue on September 15, 1982, the newspaper operates from USA Today Co.'s corporate headquarters in New York City.
+- [News](https://en.wikipedia.org/wiki/News) — News is information about current events. This may be provided through many different media: word of mouth, printing, postal systems, broadcasting, electronic communication, or through the testimony of observers and witnesses to events.
+- [List of news television channels](https://en.wikipedia.org/wiki/List_of_news_television_channels) — 
+- [The Day Today](https://en.wikipedia.org/wiki/The_Day_Today) — The Day Today is a British comedy television show that parodies television news and current affairs programmes, broadcast from 19 January to 23 February 1994 on BBC2. It was created by Armando Iannucci and Chris Morris and is an adaptation of the radio programme On the Hour, which was broadcast on BBC Radio 4 between 9 August 1991 and 28 May 1992 and was also written by Morris, Iannucci, Steven Wells, Andrew Glover, Stewart Lee, Richard Herring, David Quantick, and the cast.
+- [List of miscellaneous fake news websites](https://en.wikipedia.org/wiki/List_of_miscellaneous_fake_news_websites) — This is a list of miscellaneous fake news websites that do not fit into any of the other fake news website lists such as these lists of: fake news website campaigns by individuals, corporate disinformation website campaigns, fraudulent fact-checking websites, fake news websites based on generative AI hate group-sponsored fake news websites, elsewhere, satirical fake news websites, troll farm websites involved in fake news, user-generated fake news websites, and other fake news online networks.
+- [Fox News](https://en.wikipedia.org/wiki/Fox_News) — The Fox News Channel (FNC), often referred to as Fox News, is an American multinational conservative news and political commentary television channel and website based in New York City. Owned by the Fox News Media subsidiary of Fox Corporation, as of 2022, it is the most-watched cable news network in the United States, and as of 2023, it generates approximately 70% of its parent company's pre-tax profit.
+- [New Zealand at the 2026 Winter Olympics](https://en.wikipedia.org/wiki/New_Zealand_at_the_2026_Winter_Olympics) — New Zealand competed at the 2026 Winter Olympics in Milan and Cortina d'Ampezzo, Italy, from 6 to 22 February 2026. The team consisting of 17 athletes (11 men and 6 women) was the largest to be sent by New Zealand to a Winter Olympic Games.
+
+### Brazil (Japanese)(検索日時 / searched at: 2026-11-25)
+
+Tags: `Brazil (Japanese)` `2026-11`
+
+- [ブラジル の最新 ニュース - 朝日新聞](https://www.asahi.com/topics/word/%E3%83%96%E3%83%A9%E3%82%B8%E3%83%AB.html) — 朝日新聞の、 ブラジル に関する ニュース や速報記事一覧です。 ブラジル に関する現状や背景を、わかりやすくお伝えします。
+- [ブラジル 日報の記事一覧 - Yahoo! ニュース](https://news.yahoo.co.jp/media/nikkey) — 《 ブラジル 》刃長20センチの包丁が首を貫通＝就寝中に統合失調症の妻が刺す＝急所すり抜け奇跡の生還劇 · コチア青年＝コチア産業組合中央会100年祭へ＝12月臨時総会で正式 ...
+- [「 ブラジル 」の ニュース - CNN.co.jp](https://www.cnn.co.jp/topic/brazil/) — 西太平洋での有事シナリオ、 主要 部隊の展開速度に懸念 米陸軍監査機関が報告 17:00; イラン、女性歌手ら5人に鞭打ち刑執行か ヒジャブ非着用のパフォーマンスが理由と ...
+- [「 ブラジル 」 ニュース 一覧 - NHKニュース - NHK ONE](https://news.web.nhk/newsweb/pl/news-nwa-topic-nationwide-E0000000420) — 「ブラジル」ニュース一覧 · サッカー日本代表 ブラジルに勝利 W杯の雪辱果たす 通算2勝目 · エルニーニョ現象 過去最大の強さに どんな影響が · サッカー日本代表 強化試合の ...
+- [「 ブラジル 」の ニュース 一覧 - 日本経済新聞](https://r.nikkei.com/regions/40282) — ブラジル発SNS選挙術、フランスに上陸 大統領選へ「成功例」追随 · 仏大統領選へ半年 極右追う急進左派、与党系3氏分裂で浮かぶ「両極」 · 仏極右ルペン氏「法の支配を回復」 ...
+- [南米の鼓動をキャッチ！ ブラジル 日報](https://brasilnippou.com/) — ブラジル ・南米 · 【24日の市況・速報】Ibovespa前日比0.43%安の16万4089.81／資産運用各社「1ドル=6.50レアル」視野に／アルゼンチン、景気後退入りか／イタウCEO「経済の ...
+- [Brazil：国際 ニュース ：AFPBB News](https://www.afpbb.com/subcategory/Brazil) — Brazil. ノリスがサンパウロGP制覇、メルセデスはコンストラクターズタイトル獲得 · ブラジル大統領選敗北のフラビオ氏、米逃亡は「迫害」が理由と主張 ...
+- [ブラジル - BBC ニュース](https://www.bbc.com/japanese/topics/c5qvpx7pjwzt) — ブラジル大統領選で敗れたボルソナロ氏、国外逃亡を否定 米マイアミ到着後. 2026年 ... BBCニュースを他言語で読む; Do not share or sell my info. © 2026 BBC. BBC ...
+
+### Tajikistan(検索日時 / searched at: 2026-11-25)
+
+Tags: `Tajikistan` `2026-11`
+
+- [Рӯзнома](https://tg.wikipedia.org/wiki/%D0%A0%D3%AF%D0%B7%D0%BD%D0%BE%D0%BC%D0%B0) — Рӯзнома (форсӣ: روزنامه‎), газета, — нашрияе аст, ки ба таври мураттаб ва муназзам таҳия, чоп ва пахш мешавад ва бе ҳеч қайду шарте дар дастраси мардум қарор мегирад. Рӯзнома на баёния аст ва на иттилоъия ва барои равшан сохтани афкори мардум, балки ба нашри ахбору иттилоот дар заминаҳои гуногун ва интиқоду салоҳандешӣ дар умурӣ умумӣ мепардозад.
+- [Бозор](https://tg.wikipedia.org/wiki/%D0%91%D0%BE%D0%B7%D0%BE%D1%80) — Бозор (форсӣ: بازار‎ — bâzâr ← порсии миёна: wāzār ← порсии бостон: vāčar ← эронии бостон: *wahā-čarana аз *wahā- «додуситад кардан» + *čārana- «гаштугузор кардан») — ҷойи додуситад ва хариду фурӯши коло, маҳаллм иҷтимоъ ва додуситади фурӯшандагону харидорон.
+- [Кӯлоб](https://tg.wikipedia.org/wiki/%D0%9A%D3%AF%D0%BB%D0%BE%D0%B1) — Кӯлоб (форсӣ: کولاب‎) — шаҳр дар вилояти Хатлон. Аз ҷумлаи қадимтарин шаҳрҳои Осиёи Марказӣ маҳсуб мешавад.
+
