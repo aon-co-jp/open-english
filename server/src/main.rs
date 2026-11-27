@@ -3656,6 +3656,7 @@ async fn main() {
     sync_web_assets(&root);
 
     let db_path = db::db_path(&root);
+    let ai_gate_tokens_path = std::env::var("OPEN_ENGLISH_AI_GATE_TOKENS").map(std::path::PathBuf::from).unwrap_or_else(|_| db_path.parent().map(|p| p.join("ai-gate-tokens.json")).unwrap_or_else(|| std::path::PathBuf::from("data/ai-gate-tokens.json")));
     let db = Arc::new(Db::open(db_path).expect("failed to open local SQLite DB (data/open-english.sqlite3)"));
     println!(
         "conversation DB: {} (mirror: {})",
@@ -3785,6 +3786,7 @@ async fn main() {
                 async move { auth_set_config(req, db).await }
             })));
         // AI入口(2026-11-27、maid-cafe-vsc 向け。版なしConnect、ログイン必須、メモリ監視つき入場制限)。
+        ai_gate::init_store(ai_gate_tokens_path.clone());
         ai_gate::spawn_monitor();
         app = app.at("/openenglish.AiGate/RequestOtp", post(handler_fn(move |req, _p| async move { ai_gate::request_otp(req).await })));
         app = app.at("/openenglish.AiGate/VerifyOtp", post(handler_fn(move |req, _p| async move { ai_gate::verify_otp(req).await })));

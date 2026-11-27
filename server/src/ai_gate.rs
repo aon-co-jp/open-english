@@ -79,6 +79,7 @@ struct Gate {
     latency_ewma_ms: AtomicU64,
     saturated_since_adjust: AtomicUsize,
     notify: tokio::sync::Notify,
+    /// キーはトークンの SHA-256(16進)。値は(メール, 期限)。
     tokens: Mutex<HashMap<String, (String, SystemTime)>>,
 }
 
@@ -237,12 +238,89 @@ fn bearer(req: &Request) -> Option<String> {
     (!t.is_empty()).then(|| t.to_string())
 }
 
-pub fn token_email(token: &str) -> Option<String> {
+/// トークン保存先(2026-11-27): 再起動で消えないよう、トークンの SHA-256 だけを
+/// JSON ファイル(権限600)に保存する。平文のトークンはディスクに書かない。
+static STORE_PATH: OnceLock<std::path::PathBuf> = OnceLock::new();
+
+/// 保存先を設定し、ディスクから有効なトークンを読み込む(起動時に1回)。
+pub fn init_store(path: std::path::PathBuf) {
+    let loaded = load_store(&path);
+    let _ = STORE_PATH.set(path);
     let mut map = gate().tokens.lock().unwrap();
-    match map.get(token) {
+    for (k, v) in loaded {
+        map.entry(k).or_insert(v);
+    }
+}
+
+fn hash_token(token: &str) -> String {
+    use sha2::{Digest, Sha256};
+    Sha256::digest(token.as_bytes()).iter().map(|b| format!("{b:02x}")).collect()
+}
+
+fn load_store(path: &std::path::Path) -> HashMap<String, (String, SystemTime)> {
+    let mut out = HashMap::new();
+    let Ok(text) = std::fs::read_to_string(path) else { return out };
+    let Ok(v) = serde_json::from_str::<serde_json::Value>(&text) else { return out };
+    let now = SystemTime::now();
+    if let Some(obj) = v.get("tokens").and_then(|t| t.as_object()) {
+        for (h, e) in obj {
+            let email = e.get("email").and_then(|x| x.as_str());
+            let exp = e.get("exp").and_then(|x| x.as_u64());
+            if let (Some(email), Some(exp)) = (email, exp) {
+                let exp = SystemTime::UNIX_EPOCH + Duration::from_secs(exp);
+                if exp > now && h.len() == 64 {
+                    out.insert(h.clone(), (email.to_string(), exp));
+                }
+            }
+        }
+    }
+    out
+}
+
+fn save_store(map: &HashMap<String, (String, SystemTime)>) {
+    let Some(path) = STORE_PATH.get() else { return };
+    let mut obj = serde_json::Map::new();
+    for (h, (email, exp)) in map {
+        let secs = exp.duration_since(SystemTime::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+        obj.insert(h.clone(), serde_json::json!({"email": email, "exp": secs}));
+    }
+    let body = serde_json::json!({"tokens": obj}).to_string();
+    if let Some(dir) = path.parent() {
+        let _ = std::fs::create_dir_all(dir);
+    }
+    let tmp = path.with_extension("json.tmp");
+    let write = || -> std::io::Result<()> {
+        use std::io::Write;
+        let mut opts = std::fs::OpenOptions::new();
+        opts.write(true).create(true).truncate(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            opts.mode(0o600);
+        }
+        let mut f = opts.open(&tmp)?;
+        f.write_all(body.as_bytes())?;
+        f.sync_all()?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&tmp, std::fs::Permissions::from_mode(0o600))?;
+        }
+        std::fs::rename(&tmp, path)
+    };
+    if let Err(e) = write() {
+        eprintln!("ai_gate: token store save failed: {e}");
+    }
+}
+
+pub fn token_email(token: &str) -> Option<String> {
+    let key = hash_token(token);
+    let mut map = gate().tokens.lock().unwrap();
+    match map.get(&key) {
         Some((email, exp)) if SystemTime::now() < *exp => Some(email.clone()),
         Some(_) => {
-            map.remove(token);
+            map.remove(&key);
+            save_store(&map);
             None
         }
         None => None,
@@ -257,7 +335,8 @@ pub fn issue_token(email: &str) -> String {
     let mut map = gate().tokens.lock().unwrap();
     let now = SystemTime::now();
     map.retain(|_, (_, exp)| *exp > now);
-    map.insert(token.clone(), (email.to_string(), now + TOKEN_TTL));
+    map.insert(hash_token(&token), (email.to_string(), now + TOKEN_TTL));
+    save_store(&map);
     token
 }
 
@@ -388,5 +467,30 @@ mod tests {
         let t = issue_token("a@example.com");
         assert_eq!(token_email(&t).as_deref(), Some("a@example.com"));
         assert_eq!(token_email("nope"), None);
+    }
+
+    #[test]
+    fn token_store_survives_reload_hashed_and_expiring() {
+        let dir = std::env::temp_dir().join(format!("aigate-test-{}", std::process::id()));
+        let path = dir.join("ai-gate-tokens.json");
+        let _ = std::fs::remove_dir_all(&dir);
+        init_store(path.clone());
+        let t = issue_token("b@example.com");
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(!text.contains(&t), "plain token must not be on disk");
+        assert!(text.contains(&hash_token(&t)));
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            assert_eq!(std::fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o600);
+        }
+        // 再起動の模擬: ディスクから読み直す
+        let loaded = load_store(&path);
+        assert_eq!(loaded.get(&hash_token(&t)).map(|v| v.0.as_str()), Some("b@example.com"));
+        // 期限切れは読み込まない
+        let expired = serde_json::json!({"tokens": {hash_token("x"): {"email": "c@example.com", "exp": 1}}});
+        std::fs::write(&path, expired.to_string()).unwrap();
+        assert!(load_store(&path).is_empty());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
