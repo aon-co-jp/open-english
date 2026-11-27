@@ -80,16 +80,31 @@ Japanese and English are always the newest. Other languages are not translated e
 
 ## CLAUDE.md
 
-- 日本語 / ja: 2026-11-20 (latest)
-- English / en: 2026-11-20
+- 日本語 / ja: 2026-11-27 (latest)
+- English / en: 2026-11-20 (older than 2026-11-27)
 - 简体中文 / zh-Hans: not yet / まだ
 - 繁體中文 / zh-Hant: not yet / まだ
 - 한국어 / ko: not yet / まだ
-- Deutsch / de: 2026-10-28 (older than 2026-11-20)
+- Deutsch / de: 2026-10-28 (older than 2026-11-27)
 - Français / fr: not yet / まだ
 - Español / es: not yet / まだ
 - Português / pt: not yet / まだ
-- Русский / ru: 2026-10-28 (older than 2026-11-20)
+- Русский / ru: 2026-10-28 (older than 2026-11-27)
+- العربية / ar: not yet / まだ
+- فارسی / fa: not yet / まだ
+
+## POLICY.md
+
+- 日本語 / ja: 2026-11-27 (latest)
+- English / en: not yet / まだ
+- 简体中文 / zh-Hans: not yet / まだ
+- 繁體中文 / zh-Hant: not yet / まだ
+- 한국어 / ko: not yet / まだ
+- Deutsch / de: not yet / まだ
+- Français / fr: not yet / まだ
+- Español / es: not yet / まだ
+- Português / pt: not yet / まだ
+- Русский / ru: not yet / まだ
 - العربية / ar: not yet / まだ
 - فارسی / fa: not yet / まだ
 
@@ -165,6 +180,21 @@ Japanese and English are always the newest. Other languages are not translated e
 - Español / es: not yet / まだ
 - Português / pt: not yet / まだ
 - Русский / ru: (file)
+- العربية / ar: not yet / まだ
+- فارسی / fa: not yet / まだ
+
+## PORTING.md
+
+- 日本語 / ja: 2026-11-27 (latest)
+- English / en: not yet / まだ
+- 简体中文 / zh-Hans: not yet / まだ
+- 繁體中文 / zh-Hant: not yet / まだ
+- 한국어 / ko: not yet / まだ
+- Deutsch / de: not yet / まだ
+- Français / fr: not yet / まだ
+- Español / es: not yet / まだ
+- Português / pt: not yet / まだ
+- Русский / ru: not yet / まだ
 - العربية / ar: not yet / まだ
 - فارسی / fa: not yet / まだ
 
@@ -275,15 +305,15 @@ Japanese and English are always the newest. Other languages are not translated e
 
 ## README.md
 
-- 日本語 / ja: 2026-11-20 (latest)
-- English / en: 2026-09-30 (older than 2026-11-20)
+- 日本語 / ja: 2026-11-27 (latest)
+- English / en: 2026-09-30 (older than 2026-11-27)
 - 简体中文 / zh-Hans: not yet / まだ
 - 繁體中文 / zh-Hant: not yet / まだ
 - 한국어 / ko: not yet / まだ
-- Deutsch / de: 2026-09-30 (older than 2026-11-20)
+- Deutsch / de: 2026-09-30 (older than 2026-11-27)
 - Français / fr: not yet / まだ
 - Español / es: not yet / まだ
 - Português / pt: not yet / まだ
-- Русский / ru: 2026-09-30 (older than 2026-11-20)
+- Русский / ru: 2026-09-30 (older than 2026-11-27)
 - العربية / ar: not yet / まだ
 - فارسی / fa: not yet / まだ
