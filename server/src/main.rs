@@ -32,6 +32,7 @@ mod kokoro_pool;
 mod vps_agent;
 mod world_lab;
 mod api_docs;
+mod ai_gate;
 
 use db::Db;
 
@@ -3783,6 +3784,14 @@ async fn main() {
                 let db = Arc::clone(&db_for_auth_set);
                 async move { auth_set_config(req, db).await }
             })));
+        // AI入口(2026-11-27、maid-cafe-vsc 向け。版なしConnect、ログイン必須、メモリ監視つき入場制限)。
+        ai_gate::spawn_monitor();
+        app = app.at("/openenglish.AiGate/RequestOtp", post(handler_fn(move |req, _p| async move { ai_gate::request_otp(req).await })));
+        app = app.at("/openenglish.AiGate/VerifyOtp", post(handler_fn(move |req, _p| async move { ai_gate::verify_otp(req).await })));
+        app = app.at("/openenglish.AiGate/Status", post(handler_fn(move |req, _p| async move { ai_gate::status(req).await })));
+        app = app.at("/openenglish.AiGate/Translate", post(handler_fn(move |req, _p| async move { ai_gate::forward(req, "Translate").await })));
+        app = app.at("/openenglish.AiGate/Generate", post(handler_fn(move |req, _p| async move { ai_gate::forward(req, "Generate").await })));
+        app = app.at("/openenglish.AiGate/Ocr", post(handler_fn(move |req, _p| async move { ai_gate::forward(req, "Ocr").await })));
         app = app.at("/openenglish.Auth/RequestOtp", post(handler_fn(move |req, _p| async move { auth_request_otp(req).await })));
         app = app.at("/openenglish.Auth/RequestSmsOtp", post(handler_fn(move |req, _p| async move { auth_request_sms_otp(req).await })));
         let db_for_verify_otp = Arc::clone(&db);

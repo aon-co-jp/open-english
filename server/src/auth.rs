@@ -210,7 +210,35 @@ pub async fn request_otp(email1: &str, email2: Option<&str>) -> Result<()> {
     if !is_admin_email(&email1) || email2.as_deref().map_or(false, |e| !is_admin_email(e)) {
         bail!("this login is for administrators only / このログインは管理者専用です");
     }
-    let cfg = smtp_config().context("SMTP not configured")?;
+    issue_and_send_code(email1, email2).await
+}
+
+/// AI入口(`ai_gate.rs`)用: 管理者制限なしで、どのメールアドレスにもコードを送る
+/// (2026-11-27新設)。発行・送信・再送間隔の処理は`request_otp`と同じものを使う。
+/// ここで検証したメールで得られるのはAI入口専用のトークンだけで、通常のログイン
+/// セッション(管理画面など)は発行しない。
+pub async fn request_otp_any(email: &str) -> Result<()> {
+    let email = email.trim().to_lowercase();
+    if email.is_empty() || !email.contains('@') || email.len() > 254 {
+        bail!("invalid email address");
+    }
+    issue_and_send_code(email, None).await
+}
+
+/// コードを検証するだけ(セッションは発行しない)。AI入口用の公開ラッパー。
+pub fn verify_code(identifier: &str, code: &str) -> Result<String> {
+    verify_otp_code_only(identifier, code)
+}
+
+/// 開発用: SMTP未設定で、かつ`OPEN_ENGLISH_AI_GATE_DEV_PRINT_CODE=1`のときだけ、
+/// メールを送る代わりにコードを標準エラーへ出す。本番(SMTP設定済み)では働かない。
+fn dev_print_code_enabled() -> bool {
+    smtp_config().is_err() && std::env::var("OPEN_ENGLISH_AI_GATE_DEV_PRINT_CODE").ok().as_deref() == Some("1")
+}
+
+async fn issue_and_send_code(email1: String, email2: Option<String>) -> Result<()> {
+    let dev_print = dev_print_code_enabled();
+    let cfg = if dev_print { None } else { Some(smtp_config().context("SMTP not configured")?) };
 
     let now = SystemTime::now();
     {
@@ -233,6 +261,10 @@ pub async fn request_otp(email1: &str, email2: Option<&str>) -> Result<()> {
         }
     }
 
+    let Some(cfg) = cfg else {
+        eprintln!("[ai-gate dev] login code for {email1}: {code}");
+        return Ok(());
+    };
     let body = format!(
         "Your open-english login code / open-englishのログインコード: {code}\n\n\
          This code expires in 10 minutes. / このコードは10分で失効します。\n\
