@@ -36180,3 +36180,114 @@ Tags: `Iran (English)` `2026-11`
 
 - (no items / 記事なし)
 
+
+## アーカイブ日 / Archived on 2026-11-28
+
+### Switzerland(検索日時 / searched at: 2026-11-27)
+
+Tags: `Switzerland` `2026-11`
+
+- (no items / 記事なし)
+
+### France(検索日時 / searched at: 2026-11-27)
+
+Tags: `France` `2026-11`
+
+- (no items / 記事なし)
+
+### Malaysia(検索日時 / searched at: 2026-11-27)
+
+Tags: `Malaysia` `2026-11`
+
+- (no items / 記事なし)
+
+### Japan(検索日時 / searched at: 2026-11-27)
+
+Tags: `Japan` `2026-11`
+
+- (no items / 記事なし)
+
+### Italy(検索日時 / searched at: 2026-11-27)
+
+Tags: `Italy` `2026-11`
+
+- (no items / 記事なし)
+
+### Ukraine(検索日時 / searched at: 2026-11-27)
+
+Tags: `Ukraine` `2026-11`
+
+- (no items / 記事なし)
+
+### Taiwan(検索日時 / searched at: 2026-11-27)
+
+Tags: `Taiwan` `2026-11`
+
+- (no items / 記事なし)
+
+### United Kingdom(検索日時 / searched at: 2026-11-27)
+
+Tags: `United Kingdom` `2026-11`
+
+- (no items / 記事なし)
+
+### Germany(検索日時 / searched at: 2026-11-27)
+
+Tags: `Germany` `2026-11`
+
+- (no items / 記事なし)
+
+### Thailand(検索日時 / searched at: 2026-11-27)
+
+Tags: `Thailand` `2026-11`
+
+- (no items / 記事なし)
+
+### Austria(検索日時 / searched at: 2026-11-27)
+
+Tags: `Austria` `2026-11`
+
+- (no items / 記事なし)
+
+### China(検索日時 / searched at: 2026-11-27)
+
+Tags: `China` `2026-11`
+
+- (no items / 記事なし)
+
+### Philippines(検索日時 / searched at: 2026-11-27)
+
+Tags: `Philippines` `2026-11`
+
+- (no items / 記事なし)
+
+### India(検索日時 / searched at: 2026-11-27)
+
+Tags: `India` `2026-11`
+
+- (no items / 記事なし)
+
+### Cambodia(検索日時 / searched at: 2026-11-27)
+
+Tags: `Cambodia` `2026-11`
+
+- (no items / 記事なし)
+
+### South Korea(検索日時 / searched at: 2026-11-27)
+
+Tags: `South Korea` `2026-11`
+
+- (no items / 記事なし)
+
+### United States(検索日時 / searched at: 2026-11-27)
+
+Tags: `United States` `2026-11`
+
+- (no items / 記事なし)
+
+### Russia(検索日時 / searched at: 2026-11-27)
+
+Tags: `Russia` `2026-11`
+
+- (no items / 記事なし)
+
