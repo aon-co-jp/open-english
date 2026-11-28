@@ -36291,3 +36291,264 @@ Tags: `Russia` `2026-11`
 
 - (no items / 記事なし)
 
+
+## アーカイブ日 / Archived on 2026-11-28
+
+### Myanmar(検索日時 / searched at: 2026-11-27)
+
+Tags: `Myanmar` `2026-11`
+
+- (no items / 記事なし)
+
+### Austria (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Austria (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Iran (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Iran (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Iran (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Iran (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Germany (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Germany (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### South Africa(検索日時 / searched at: 2026-11-27)
+
+Tags: `South Africa` `2026-11`
+
+- (no items / 記事なし)
+
+### Egypt (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Egypt (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Egypt (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Egypt (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Tajikistan (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Tajikistan (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Switzerland (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Switzerland (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Italy (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Italy (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Israel(検索日時 / searched at: 2026-11-27)
+
+Tags: `Israel` `2026-11`
+
+- (no items / 記事なし)
+
+### France (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `France (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Russia (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Russia (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Italy (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Italy (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Tajikistan(検索日時 / searched at: 2026-11-27)
+
+Tags: `Tajikistan` `2026-11`
+
+- (no items / 記事なし)
+
+### South Korea (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `South Korea (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Austria (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Austria (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Ukraine (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Ukraine (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Japan (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Japan (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Afghanistan(検索日時 / searched at: 2026-11-27)
+
+Tags: `Afghanistan` `2026-11`
+
+- (no items / 記事なし)
+
+### Brazil (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Brazil (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Russia (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Russia (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Thailand (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Thailand (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### China (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `China (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Myanmar (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Myanmar (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Taiwan (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Taiwan (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Switzerland (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Switzerland (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### China (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `China (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### France (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `France (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Tajikistan (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Tajikistan (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### South Korea (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `South Korea (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Taiwan (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Taiwan (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Ukraine (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Ukraine (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Brazil (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Brazil (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Germany (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Germany (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Afghanistan (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Afghanistan (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Myanmar (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Myanmar (English)` `2026-11`
+
+- (no items / 記事なし)
+
+### Egypt(検索日時 / searched at: 2026-11-27)
+
+Tags: `Egypt` `2026-11`
+
+- (no items / 記事なし)
+
+### Iran(検索日時 / searched at: 2026-11-27)
+
+Tags: `Iran` `2026-11`
+
+- (no items / 記事なし)
+
+### Afghanistan (Japanese)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Afghanistan (Japanese)` `2026-11`
+
+- (no items / 記事なし)
+
+### Brazil(検索日時 / searched at: 2026-11-27)
+
+Tags: `Brazil` `2026-11`
+
+- (no items / 記事なし)
+
+### Thailand (English)(検索日時 / searched at: 2026-11-27)
+
+Tags: `Thailand (English)` `2026-11`
+
+- (no items / 記事なし)
+
